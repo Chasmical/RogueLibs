@@ -1,6 +1,27 @@
 # RogueLibs
 This modding library allows you to easily add custom mutators and localization lines.
 
+## One-line patches ##
+Instead of writing all of this:
+```cs
+public void Awake()
+{
+    Harmony harmony = new Harmony(pluginGuid);
+    MethodInfo original = AccessTools.Method(typeof(SomeClass), "DoSomething");
+    MethodInfo patch = AccessTools.Method(typeof(MyPatches), "DoSomething_Patch");
+    harmony.Patch(original, patch);
+}
+```
+You can use this.PatchPrefix(..) or this.PatchPostfix(..):
+```cs
+using RogueLibsCore;
+
+public void Awake()
+{
+    bool success = this.PatchPrefix(typeof(SomeClass), "DoSomething", typeof(MyPatches), "DoSomething_Patch");
+}
+```
+This method will also handle and log all exceptions. If patch was successful, returns true, otherwise - false.
 ## Mutators ##
 To create a mutator use one of the following methods:
 ```cs
