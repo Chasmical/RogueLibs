@@ -17,6 +17,8 @@ Mutator mutator = RogueLibs.SetMutator("MyMutatorId", false,
     new MutatorInfo("name", "description"), // Russian
     null, // French
     null); // Korean
+    
+// RogueLibs doesn't save localization strings, so this code has to run every time!
 ```
 You can get a custom mutator by its Id:
 ```cs
