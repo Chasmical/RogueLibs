@@ -84,14 +84,37 @@ You can delete your custom mutators (I have no idea why would you want to do tha
 // bool DeleteMutator(Mutator mutator) / bool DeleteMutator(string id)
 ```
 ## Custom Names ##
-You can create your own custom localization strings:
+You can create your own custom localization strings, for your own purposes, or that will overwrite in-game default ones:
 ```cs
-// SetCustomName(string id, string type, string english, string schinese = null, string german = null, string spanish = null, string brazilian = null, string russian = null, string french = null, string koreana = null)
+// RogueLibs only affects NameDB.GetName(string myName, string type);
+
+// CustomName SetCustomName(string id, string type, string english, string schinese = null, string german = null, string spanish = null, string brazilian = null, string russian = null, string french = null, string koreana = null)
 // CustomName SetCustomName(string id, string type, CustomNameInfo info)
 
 CustomNameInfo info = new CustomNameInfo("english", "schinese", "german", "spanish", "brazilian", "russian", "french", "koreana");
 // if string is null, English will be used instead of that string
 CustomName name = RogueLibs.SetCustomName(stringId, stringType, info);
 // If you don't know what type you need, use null.
+```
+You can get existing custom names:
+```cs
+// CustomName GetCustomName(string id)
+CustomName found = RogueLibs.GetCustomName("MyName");
+// searches by id only
+
+// CustomName GetCustomName(string id, string type)
+CustomName found = RogueLibs.GetCustomName("MyName", "Agent");
+// searches by id and type
+```
+And, you can delete your custom names:
+```cs
+// bool DeleteCustomName(string id)
+// bool DeleteCustomName(CustomName customName)
+// bool DeleteCustomName(string id, string type)
+RogueLibs.DeleteCustomName("MyCustomLine", "Description");
+```
+## Extra functions ##
+You can get mouse cursor's in-game position:
+```cs
 
 ```
