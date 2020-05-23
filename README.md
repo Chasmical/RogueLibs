@@ -5,9 +5,13 @@ This modding library allows you to easily add custom mutators and localization l
 To create a mutator use one of the following methods:
 ```cs
 // Mutator SetMutator(string id, bool unlockedInitially, CustomNameInfo name, CustomNameInfo description)
+
+CustomName name = RogueLibs.SetCustomName(..);
+CustomName description = RogueLibs.SetCustomName(..);
 Mutator mutator = RogueLibs.SetMutator("MyMutatorId", true, name, description);
 
 // Mutator SetMutator(string id, bool unlockedInitially, MutatorInfo english, MutatorInfo schinese = null, MutatorInfo german = null, MutatorInfo spanish = null, MutatorInfo brazilian = null, MutatorInfo russian = null, MutatorInfo french = null, MutatorInfo koreana = null)
+
 Mutator mutator = RogueLibs.SetMutator("MyMutatorId", false,
     new MutatorInfo("English Name", "English Description"), // English
     null, // Simplified Chinese
@@ -44,6 +48,7 @@ You can make mutators, that will automatically disable other mutators. It is use
 ```cs
 // void AddConflicting(params string[] conflictingMutators)
 // void AddConflicting(params Mutator[] conflictingMutators)
+
 mutator1.AddConflicting(mutator2, mutator3);
 mutator2.AddConflicting(mutator3.Id, "GorillaTown");
 
@@ -59,6 +64,7 @@ It is also possible to make one mutator cancel another mutator, but not be cance
 ```cs
 // void AddCancellations(params string[] cancellations)  / void RemoveCancellations(params string[] cancellations)
 // void AddCancellations(params Mutator[] cancellations) / void RemoveCancellations(params Mutator[] cancellations)
+
 mutator1.AddCancellations(mutator2);
 
 // if you enable mutator1, mutator2 will be disabled.
@@ -67,6 +73,7 @@ mutator1.AddCancellations(mutator2);
 ```cs
 // void AddCancelledBy(params string[] cancelledBy)  / void RemoveCancelledBy(params string[] cancelledBy)
 // void AddCancelledBy(params Mutator[] cancelledBy) / void RemoveCancelledBy(params Mutator[] cancelledBy)
+
 mutator1.AddCancelledBy(mutator2);
 
 // if you enable mutator1, mutator2 WON'T be disabled.
@@ -79,5 +86,12 @@ You can delete your custom mutators (I have no idea why would you want to do tha
 ## Custom Names ##
 You can create your own custom localization strings:
 ```cs
+// SetCustomName(string id, string type, string english, string schinese = null, string german = null, string spanish = null, string brazilian = null, string russian = null, string french = null, string koreana = null)
+// CustomName SetCustomName(string id, string type, CustomNameInfo info)
+
+CustomNameInfo info = new CustomNameInfo("english", "schinese", "german", "spanish", "brazilian", "russian", "french", "koreana");
+// if string is null, English will be used instead of that string
+CustomName name = RogueLibs.SetCustomName(stringId, stringType, info);
+// If you don't know what type you need, use null.
 
 ```
