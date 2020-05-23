@@ -116,5 +116,55 @@ RogueLibs.DeleteCustomName("MyCustomLine", "Description");
 ## Extra functions ##
 You can get mouse cursor's in-game position:
 ```cs
+// Vector2 MouseIngamePosition()
+Vector2 cursorPos = RogueLibs.MouseIngamePosition();
+```
+And you can spawn agents (NPCs) and items:
+```cs
+// Agent SpawnAgent(Vector2 position, string agentId)
+Agent spawned = SpawnAgent(cursorPos, "Assassin");
 
+// Item SpawnItem(Vector2 position, string itemId, int amount)
+Item item = SpawnItem(cursorPos, "Flamethrower", 9000);
+```
+## Plugin Example ##
+```cs
+using System;
+using BepInEx;
+using RogueLibsCore;
+
+namespace RocketBulletsMutator
+{
+	[BepInPlugin(pluginGuid, pluginName, pluginVersion)]
+	[BepInDependency(RogueLibs.pluginGuid, "1.0")]
+    public class RocketBulletsMutator : BaseUnityPlugin
+    {
+		public const string pluginGuid = "abbysssal.streetsofrogue.rocketbulletsmutator";
+		public const string pluginName = "Rocket Bullets Mutator";
+		public const string pluginVersion = "1.0";
+
+		public static Mutator RocketBulletsCommon { get; set; }
+
+		protected void Awake()
+		{
+			RocketBulletsCommon = RogueLibs.SetMutator("RocketBulletsCommon", true,
+				new MutatorInfo("Rocket Bullets (Common weapons)", "Replaces common bullets (Pistol, Shotgun, Machinegun, etc.) with rockets. Rate of fire is unchanged."),
+				null,
+				null,
+				null,
+				null,
+				new MutatorInfo("Ракетные пули (Простое оружие)", "Заменяет простые пули (Пистолет, Дробовик, Автомат и т.п.) на ракеты. Скорость стрельбы не изменена."),
+				null,
+				null);
+			RocketBulletsCommon.AddConflicting("RocketLaunchers", "NoGuns");
+
+			this.PatchPrefix(typeof(Gun), "spawnBullet", GetType(), "Gun_spawnBullet", new Type[] { typeof(bulletStatus), typeof(InvItem), typeof(int), typeof(bool), typeof(string) });
+		}
+		protected static void Gun_spawnBullet(ref bulletStatus bulletType)
+		{
+			if (RocketBulletsCommon.IsActive && (bulletType == bulletStatus.Normal || bulletType == bulletStatus.Shotgun || bulletType == bulletStatus.Revolver))
+				bulletType = bulletStatus.Rocket;
+		}
+	}
+}
 ```
