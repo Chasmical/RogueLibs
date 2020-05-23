@@ -122,10 +122,10 @@ Vector2 cursorPos = RogueLibs.MouseIngamePosition();
 And you can spawn agents (NPCs) and items:
 ```cs
 // Agent SpawnAgent(Vector2 position, string agentId)
-Agent spawned = SpawnAgent(cursorPos, "Assassin");
+Agent spawned = RogueLibs.SpawnAgent(cursorPos, "Assassin");
 
 // Item SpawnItem(Vector2 position, string itemId, int amount)
-Item item = SpawnItem(cursorPos, "Flamethrower", 9000);
+Item item = RogueLibs.SpawnItem(cursorPos, "Flamethrower", 9000);
 ```
 ## Plugin Example ##
 ```cs
