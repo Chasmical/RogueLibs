@@ -1,6 +1,9 @@
 # RogueLibs
 This modding library allows you to easily add custom mutators and localization lines.
 
+## How to use RogueLibs in your mods ##
+You can find instructions on how to do that here (9. Modding Libraries, RogueLibs):
+https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116
 ## One-line patches ##
 Instead of writing all of this:
 ```cs
