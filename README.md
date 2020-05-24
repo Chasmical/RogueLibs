@@ -1,15 +1,15 @@
-### [Contents](https://github.com/Abbysssal/RogueLibs) ###
+## [Contents](https://github.com/Abbysssal/RogueLibs) ##
 
 1. **Main page**
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
 3. [Mutators](https://github.com/Abbysssal/RogueLibs/blob/master/Mutators.md)
 4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
 
-### Links ###
+## Links ##
 *  [RogueLibs on GitHub](https://github.com/Abbysssal/RogueLibs)
 *  [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
 
-### Mods using RogueLibs ###
+## Mods using RogueLibs ##
 *  [ECTD (Edit Characters Through Description](https://github.com/Abbysssal/ECTD)
 *  Custom Loader - you can find this mod in #modding-gallery at [official Streets of Rogue Discord server](https://discord.com/invite/streetsofrogue)
 
