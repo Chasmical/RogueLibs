@@ -1,4 +1,4 @@
-### [Contents](https://github.com/Abbysssal/RogueLibs) ###
+## [Contents](https://github.com/Abbysssal/RogueLibs) ##
 
 1. [Main page](https://github.com/Abbysssal/RogueLibs/blob/master/README.md)
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
