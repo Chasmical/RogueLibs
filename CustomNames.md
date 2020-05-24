@@ -4,7 +4,8 @@
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
 3. [Mutators](https://github.com/Abbysssal/RogueLibs/blob/master/Mutators.md)
 4. **CustomNames**
-5. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+5. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
+6. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
 
 ## Creating CustomNames ##
 ```cs
@@ -24,36 +25,16 @@ CustomName name = RogueLibs.SetCustomName("myId", "Agent", new CustomNameInfo(
 
 // If you don't know which type you need, use null.
 ```
+You can also get CustomName by its id and type:
 ```cs
-public static CustomName SetCustomName(string id, string type, string english, string schinese = null, string german = null, string spanish = null, string brazilian = null, string russian = null, string french = null, string koreana = null);
-```
-```cs
-CustomName name2 = RogueLibs.SetCustomName("myId", null,
-    "english",
-	"schinese",
-	null,
-	null,
-	null,
-	null,
-	null,
-	null);
-// null strings will default to english.
-
-// If you don't know which type you need, use null.
-```
-You can also get CustomName by its Id (or both Id and type):
-```cs
-public static CustomName GetCustomName(string id);
 public static CustomName GetCustomName(string id, string type);
 ```
 ```cs
-CustomName found = RogueLibs.GetCustomName("MyNameId");
-CustomName found2 = RogueLibs.GetCustomName("MyNameId", "MyType");
+CustomName found = RogueLibs.GetCustomName("MyNameId", "MyType");
 ```
 ## Deleting CustomNames ##
 Just in case you don't need your CustomNames anymore:
 ```cs
-public static bool DeleteCustomName(string id);
 public static bool DeleteCustomName(CustomName customName);
 public static bool DeleteCustomName(string id, string type);
 ```
@@ -67,7 +48,7 @@ public string Type { get; }
 string myId = myCustomName.Id;
 string myType = myCustomName.Type;
 ```
-You can access different localization lines:
+You can access different localization strings:
 ```cs
 public string English { get; set; }
 public string SChinese { get; set; }

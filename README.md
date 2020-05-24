@@ -4,7 +4,8 @@
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
 3. [Mutators](https://github.com/Abbysssal/RogueLibs/blob/master/Mutators.md)
 4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
-5. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+5. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
+6. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
 
 ## Links ##
 *  [RogueLibs on GitHub](https://github.com/Abbysssal/RogueLibs)
@@ -14,7 +15,7 @@
 *  [ECTD (Edit Characters Through Description)](https://github.com/Abbysssal/ECTD)
 *  Custom Loader - you can find this mod in #modding-gallery at [official Streets of Rogue Discord server](https://discord.com/invite/streetsofrogue)
 
-# RogueLibs v1.0.1 #
+# RogueLibs v1.1 #
 This modding library allows you to easily add custom mutators and localization lines, plus it has some extra functions that you might need.
 
 ## How to use RogueLibs in your mods ##
@@ -30,26 +31,26 @@ using RogueLibsCore;
 namespace RocketBulletsMutator
 {
     [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-    [BepInDependency(RogueLibs.pluginGuid, "1.0")]
+    [BepInDependency(RogueLibs.pluginGuid, "1.1")]
     public class RocketBulletsMutator : BaseUnityPlugin
     {
         public const string pluginGuid = "abbysssal.streetsofrogue.rocketbulletsmutator";
-        public const string pluginName = "Rocket Bullets Mutator";
+        public const string pluginName = "Rocket Bullets Mutators";
         public const string pluginVersion = "1.0";
 
-        public static Mutator RocketBulletsCommon { get; set; }
+        public static CustomMutator RocketBulletsCommon { get; set; }
 
         protected void Awake()
         {
             RocketBulletsCommon = RogueLibs.SetMutator("RocketBulletsCommon", true,
-                new MutatorInfo("Rocket Bullets (Common weapons)", "Replaces common bullets (Pistol, Shotgun, Machinegun, etc.) with rockets. Rate of fire is unchanged."),
-                null,
-                null,
-                null,
-                null,
-                new MutatorInfo("Ракетные пули (Простое оружие)", "Заменяет простые пули (Пистолет, Дробовик, Автомат и т.п.) на ракеты. Скорость стрельбы не изменена."),
-                null,
-                null);
+                new CustomNameInfo("Rocket Bullets (Common weapons)",
+                                    null, null, null, null,
+                                    "Ракетные пули (Простое оружие)",
+                                    null, null),
+                new CustomNameInfo("Replaces common bullets (Pistol, Shotgun, Machinegun, etc.) with rockets. Rate of fire is unchanged.",
+                                    null, null, null, null,
+                                    "Заменяет простые пули (Пистолет, Дробовик, Автомат и т.п.) на ракеты. Скорость стрельбы не изменена.",
+                                    null, null));
             RocketBulletsCommon.AddConflicting("RocketLaunchers", "NoGuns");
 
             this.PatchPrefix(typeof(Gun), "spawnBullet", GetType(), "Gun_spawnBullet", new Type[] { typeof(bulletStatus), typeof(InvItem), typeof(int), typeof(bool), typeof(string) });
