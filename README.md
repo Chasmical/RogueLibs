@@ -4,6 +4,7 @@
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
 3. [Mutators](https://github.com/Abbysssal/RogueLibs/blob/master/Mutators.md)
 4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
+5. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
 
 ## Links ##
 *  [RogueLibs on GitHub](https://github.com/Abbysssal/RogueLibs)
@@ -13,7 +14,7 @@
 *  [ECTD (Edit Characters Through Description)](https://github.com/Abbysssal/ECTD)
 *  Custom Loader - you can find this mod in #modding-gallery at [official Streets of Rogue Discord server](https://discord.com/invite/streetsofrogue)
 
-# RogueLibs #
+# RogueLibs v1.0.1 #
 This modding library allows you to easily add custom mutators and localization lines, plus it has some extra functions that you might need.
 
 ## How to use RogueLibs in your mods ##

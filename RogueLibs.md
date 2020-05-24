@@ -4,6 +4,7 @@
 2. **RogueLibs**
 3. [Mutators](https://github.com/Abbysssal/RogueLibs/blob/master/Mutators.md)
 4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
+5. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
 
 ## Faster Patches ##
 You can replace this part of your code:

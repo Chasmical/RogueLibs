@@ -4,6 +4,7 @@
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
 3. [Mutators](https://github.com/Abbysssal/RogueLibs/blob/master/Mutators.md)
 4. **CustomNames**
+5. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
 
 ## Creating CustomNames ##
 ```cs
