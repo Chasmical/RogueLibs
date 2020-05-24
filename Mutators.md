@@ -90,7 +90,7 @@ public bool ShowInMenu { get; set; }
 myMutator.ShowInMenu = false;
 // Your mutator won't show in Mutator Menu at Home Base.
 
-if (myMutator.ShowInMenu)
+if (!myMutator.ShowInMenu)
     Logger.LogWarn("The mutator is not showing in the menu!");
 ```
 ## Cancellations ##
