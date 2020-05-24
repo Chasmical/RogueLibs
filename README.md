@@ -10,7 +10,7 @@
 *  [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
 
 ## Mods using RogueLibs ##
-*  [ECTD (Edit Characters Through Description](https://github.com/Abbysssal/ECTD)
+*  [ECTD (Edit Characters Through Description)](https://github.com/Abbysssal/ECTD)
 *  Custom Loader - you can find this mod in #modding-gallery at [official Streets of Rogue Discord server](https://discord.com/invite/streetsofrogue)
 
 # RogueLibs #
