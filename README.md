@@ -12,7 +12,7 @@
 *  [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
 
 ## Mods using RogueLibs ##
-*  Custom Loader - you can find this mod in #modding-gallery at [official Streets of Rogue Discord server](https://discord.com/invite/streetsofrogue)
+
 
 # RogueLibs v1.1 #
 This modding library allows you to easily add custom mutators and localization lines, plus it has some extra functions that you might need.
