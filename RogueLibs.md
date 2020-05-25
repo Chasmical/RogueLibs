@@ -36,12 +36,12 @@ You can use pluginGuid in your BepInDependency attribute. But DO NOT use pluginV
 You can get the RogueLibs instance that is being used right now and its Mutators and Names:
 ```cs
 public static RogueLibs Instance { get; internal set; }
-public List<Mutator> Mutators { get; set; }
+public List<CustomMutator> Mutators { get; set; }
 public List<CustomName> Names { get; set; }
 ```
 ```cs
 RogueLibs myLibs = RogueLibs.Instance;
-List<Mutator> myMutators = myLibs.Mutators;
+List<CustomMutator> myMutators = myLibs.Mutators;
 List<CustomName> myNames = myLibs.Names;
 ```
 ## Some Features ##
