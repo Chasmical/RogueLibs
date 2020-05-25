@@ -13,14 +13,14 @@ public static CustomName SetCustomName(string id, string type, CustomNameInfo in
 ```
 ```cs
 CustomName name = RogueLibs.SetCustomName("myId", "Agent", new CustomNameInfo(
-    "english",
-	"schinese",
-	null,
-	null,
-	null,
-	null,
-	null,
-	null));
+        "english",
+        "schinese",
+        null,
+        null,
+        null,
+        null,
+        null,
+        null));
 // null strings will default to english.
 
 // If you don't know which type you need, use null.
