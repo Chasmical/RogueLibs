@@ -69,7 +69,7 @@ Or you can access the translations array itself:
 public string[] Translations { get; set; }
 ```
 ```cs
-string randomString = myCustomName.Translations[Random.NextInt(8)];
+string randomString = myCustomName.Translations[Random.Next(0, 8)];
 myCustomName.Translations[3] = "NewName";
 ```
 
