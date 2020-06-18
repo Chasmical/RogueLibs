@@ -2,19 +2,21 @@
 
 1. **Main page**
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
-3. [Mutators](https://github.com/Abbysssal/RogueLibs/blob/master/Mutators.md)
+3. [CustomMutators](https://github.com/Abbysssal/RogueLibs/blob/master/CustomMutators.md)
 4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
 5. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
 6. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
 
 ## Links ##
-*  [RogueLibs on GitHub](https://github.com/Abbysssal/RogueLibs)
+*  [Download RogueLibs](https://github.com/Abbysssal/RogueLibs/releases)
 *  [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
 
 ## Mods using RogueLibs ##
 
+* **Ammo and Durability (AaD) Mutators** and **More Throwable Weapons (MTW) Mutators** - more info in the official Streets of Rogue Discord server (channel #modding-gallery): https://discord.com/invite/streetsofrogue
+* **a Ton of Mutators (aToM)** - *work-in-progress*
 
-# RogueLibs v1.1 #
+# RogueLibs v1.2 #
 This modding library allows you to easily add custom mutators and localization lines, plus it has some extra functions that you might need.
 
 ## How to use RogueLibs in your mods ##
@@ -22,6 +24,8 @@ You can find instructions on how to do that here (9. Modding Libraries, RogueLib
 https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116
 
 ## Plugin Example ##
+You can find more examples here (after 10.):
+https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116
 ```cs
 using System;
 using BepInEx;

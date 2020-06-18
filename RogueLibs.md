@@ -2,7 +2,7 @@
 
 1. [Main page](https://github.com/Abbysssal/RogueLibs/blob/master/README.md)
 2. **RogueLibs**
-3. [Mutators](https://github.com/Abbysssal/RogueLibs/blob/master/Mutators.md)
+3. [CustomMutators](https://github.com/Abbysssal/RogueLibs/blob/master/CustomMutators.md)
 4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
 5. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
 6. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)

@@ -2,7 +2,7 @@
 
 1. [Main page](https://github.com/Abbysssal/RogueLibs/blob/master/README.md)
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
-3. [Mutators](https://github.com/Abbysssal/RogueLibs/blob/master/Mutators.md)
+3. [CustomMutators](https://github.com/Abbysssal/RogueLibs/blob/master/CustomMutators.md)
 4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
 5. **Extras**
 6. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
@@ -19,14 +19,61 @@ Sprite sprite = RogueUtilities.ConvertToSprite("D:\Images\MyImage.png");
 byte[] data = File.ReadAllBytes("D:\Images\MyImage.png");
 Sprite sprite2 = RogueUtilities.ConvertToSprite(data);
 ```
-And convert .mp3, .ogg, .wav, .aiff files into Audioclips:
+And convert .mp3, .ogg, .wav, .aiff files into Audioclips. It is recommended to use .ogg, because other formats might not load properly:
 ```cs
 public static AudioClip ConvertToAudioClip(string filePath);
 ```
 ```cs
 AudioClip clip = RogueUtilities.ConvertToAudioClip("D:\Sounds\MySound.ogg");
 ```
-It is recommended to use .ogg, because other formats might not load properly.
+You can also use this method to add conflicting CustomMutators:
+```cs
+public static void CrossConflict(params CustomMutator[] mutators);
+```
+```cs
+CrossConflict(rocketBulletsMutator, waterBulletsMutator, lavaBulletsMutator);
+// It's a shortcut for:
+// rocketBulletsMutator.AddConflicting(waterBulletsMutator, lavaBulletsMutator);
+// waterBulletsMutator.AddConflicting(rocketBulletsMutator, lavaBulletsMutator);
+// lavaBulletsMutator.AddConflicting(rocketBulletsMutator, waterBulletsMutator);
+```
+And this to add conflicting original mutators to your CustomMutators:
+```cs
+public static void EachConflict(IEnumerable<string> conflicts, params CustomMutator[] mutators);
+```
+```cs
+List<string> list = new List<string>() { "NoGuns", "InfiniteAmmo" };
+EachConflict(list, rocketBulletsMutator, waterBulletsMutator, lavaBulletsMutator);
+// It's a shortcut for:
+// rocketBulletsMutator.AddConflicting(list.ToArray());
+// waterBulletsMutator.AddConflicting(list.ToArray());
+// lavaBulletsMutator.AddConflicting(list.ToArray());
+```
+## RogueChat ##
+This class has OnCommand event, that is triggered every time a player enters a command (message starting with a slash '/'):
+```cs
+public static event OnMessageEvent OnCommand; // delegate void OnMessageEvent(MessageArgs a);
+```
+```cs
+RogueChat.OnCommand += MyListener;
+```
+MessageArgs class consists only of one property:
+```cs
+public string Text { get; set; }
+```
+```cs
+public void MyListener(MessageArgs e)
+{
+    if (e.Text.StartsWith("/spawn-npc "))
+	{
+	    ...
+	}
+	else if (e.Text == "/heal")
+	{
+	    ...
+	}
+}
+```
 ## RoguePatcher ##
 This class allows you to further simplify this code:
 ```cs
