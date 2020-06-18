@@ -12,9 +12,11 @@
 *  [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
 
 ## Mods using RogueLibs ##
+You can find these mods in [the official Streets of Rogue Discord server](https://discord.com/invite/streetsofrogue) (channel #modding-gallery):
 
-* **Ammo and Durability (AaD) Mutators** and **More Throwable Weapons (MTW) Mutators** - more info and download in [the official SoR Discord server](https://discord.com/invite/streetsofrogue) (channel #modding-gallery);
-* **a Ton of Mutators (aToM)** - adds... a ton of mutators. More info and download in [the official SoR Discord](https://discord.com/invite/streetsofrogue) (channel #modding-gallery);
+* **Ammo and Durability (AaD) Mutators** *by Abbysssal* - adds 6 mutators (2x/4x/8x More Throwables and 2x/4x/8x Throwable Damage);
+* **More Throwable Weapons (MTW) Mutators** *by Abbysssal* - adds 6 mutators (Melee Durability x2/x4/x8 and Ammo x2/x4/x8) ;
+* **a Ton of Mutators (aToM)** *by Abbysssal* - adds... a lot of mutators. Seriously, a lot. About fifty;
 
 # RogueLibs v1.2 #
 This modding library allows you to easily add custom mutators and localization lines, plus it has some extra functions that you might need.
