@@ -79,6 +79,21 @@ myMutator.ShowInMenu = false;
 if (!myMutator.ShowInMenu)
     Logger.LogWarn("The mutator is not showing in the menu!");
 ```
+You can also set your custom sorting order for mutators:
+```cs
+firstMutator.SortingOrder = 60;
+secondMutator.SortingOrder = 70;
+thirdMutator.SortingOrder = 80;
+```
+If SortingOrder values are the same for two mutators, then SortingIndex values are used instead:
+```cs
+firstMutator.SortingOrder = 5;
+firstMutator.SortingIndex = 1;
+secondMutator.SortingOrder = 5;
+secondMutator.SortingIndex = 2;
+thirdMutator.SortingOrder = 5;
+thirdMutator.SortingIndex = 3;
+```
 ## Conflicting Mutators ##
 You can add Conflicting mutators - mutators, that when enabled will automatically disable your mutator, and will be automatically disabled when your mutator is enabled.
 <br/>Basically, you won't be able to enable both of them at the same time:
@@ -110,12 +125,12 @@ myMutator.Description = new CustomName(...);
 ## Events ##
 There are two events that you can listen to:
 ```cs
-public event OnChangeState OnEnabled;
-public event OnChangeState OnDisabled;
+public event OnChangeState OnEnabled; // delegate void OnChangeState();
+public event OnChangeState OnDisabled; // delegate void OnChangeState();
+public event OnState OnChangedState; // delegate void OnState(bool newState);
 ```
 ```cs
 myMutator.OnEnabled += MyListener;
 myMutator.OnDisabled += MyListener2;
-
-myMutator.OnEnabled -= MyListener;
+myMutator.OnChangedState += MyListener3;
 ```
