@@ -13,8 +13,8 @@
 
 ## Mods using RogueLibs ##
 
-* **Ammo and Durability (AaD) Mutators** and **More Throwable Weapons (MTW) Mutators** - more info in the official Streets of Rogue Discord server (channel #modding-gallery): https://discord.com/invite/streetsofrogue
-* **a Ton of Mutators (aToM)** - *work-in-progress*
+* **Ammo and Durability (AaD) Mutators** and **More Throwable Weapons (MTW) Mutators** - more info and download in [the official SoR Discord server](https://discord.com/invite/streetsofrogue) (channel #modding-gallery);
+* **a Ton of Mutators (aToM)** - adds... a ton of mutators. More info and download in [the official SoR Discord](https://discord.com/invite/streetsofrogue) (channel #modding-gallery);
 
 # RogueLibs v1.2 #
 This modding library allows you to easily add custom mutators and localization lines, plus it has some extra functions that you might need.
