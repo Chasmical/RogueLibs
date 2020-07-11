@@ -23,21 +23,21 @@ You can find these mods in [the official Streets of Rogue Discord server](https:
     * 2x/4x/8x More Throwables - Throwable Weapons appear in 2x/4x/8x larger stacks;
 	* 2x/4x/8x Throwable Damage - Throwable Weapons deal 2x/4x/8x more damage;
 * **a Ton of Mutators (aToM)** *by Abbysssal* - adds... a lot (76) of mutators. They are separated into 5 dropdown categories "Melee", "Thrown", "Ranged", "Projectile" and "Explosion" so they don't take a lot of space in the menu:
-* Melee Damage x0/x0.25/x0.5/x2/x4/x8/x999;
-* Melee Durability 1/x0.25/x0.5/x2/x4/x8;
-* Melee Lunge x0/x0.25/x0.5/x2/x4/x8;
-* Melee Speed x0.25/x0.5/x2/x4;
-* Thrown Damage x0/x0.25/x0.5/x2/x4/x8/x999;
-* Thrown Count x0.25/x0.5/x2/x4/x8;
-* Thrown Distance x0.25/x0.5/x2/x4;
-* Ranged Damage x0/x0.25/x0.5/x2/x4/x8/x999;
-* Ranged Ammo 1/x0.25/x0.5/x2/x4/x8;
-* Ranged Firerate x0.25/x0.5/x2/x4/x8;
-* Fully Automatic Ranged Weapons;
-* Projectile Speed x0/x0.25/x0.5/x2/x4;
-* Rocket/Random/Random Effect Projectiles;
-* Explosion Damage x0.25/x0.5/x2/x4/x8;
-* Explosion Power x0.25/x0.5/x2/x4/x8;
+  * Melee Damage x0/x0.25/x0.5/x2/x4/x8/x999;
+  * Melee Durability 1/x0.25/x0.5/x2/x4/x8;
+  * Melee Lunge x0/x0.25/x0.5/x2/x4/x8;
+  * Melee Speed x0.25/x0.5/x2/x4;
+  * Thrown Damage x0/x0.25/x0.5/x2/x4/x8/x999;
+  * Thrown Count x0.25/x0.5/x2/x4/x8;
+  * Thrown Distance x0.25/x0.5/x2/x4;
+  * Ranged Damage x0/x0.25/x0.5/x2/x4/x8/x999;
+  * Ranged Ammo 1/x0.25/x0.5/x2/x4/x8;
+  * Ranged Firerate x0.25/x0.5/x2/x4/x8;
+  * Fully Automatic Ranged Weapons;
+  * Projectile Speed x0/x0.25/x0.5/x2/x4;
+  * Rocket/Random/Random Effect Projectiles;
+  * Explosion Damage x0.25/x0.5/x2/x4/x8;
+  * Explosion Power x0.25/x0.5/x2/x4/x8;
 
 # RogueLibs v1.3 #
 This modding library allows you to easily add custom mutators, items and localization lines, plus it has some extra functions that you might need.
