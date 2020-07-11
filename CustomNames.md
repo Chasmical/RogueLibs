@@ -3,9 +3,11 @@
 1. [Main page](https://github.com/Abbysssal/RogueLibs/blob/master/README.md)
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
 3. [CustomMutators](https://github.com/Abbysssal/RogueLibs/blob/master/CustomMutators.md)
-4. **CustomNames**
-5. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
-6. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+4. [CustomItems](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md)
+5. **CustomNames**
+6. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
+7. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+8. [Mod Examples](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md)
 
 ## Creating CustomNames ##
 ```cs

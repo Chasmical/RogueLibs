@@ -3,9 +3,11 @@
 1. **Main page**
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
 3. [CustomMutators](https://github.com/Abbysssal/RogueLibs/blob/master/CustomMutators.md)
-4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
-5. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
-6. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+4. [CustomItems](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md)
+5. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
+6. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
+7. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+8. [Mod Examples](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md)
 
 ## Links ##
 *  [Download RogueLibs](https://github.com/Abbysssal/RogueLibs/releases)
@@ -20,7 +22,7 @@ You can find these mods in [the official Streets of Rogue Discord server](https:
 * **More Throwable Weapons (MTW) Mutators** *by Abbysssal* - adds 6 mutators:
     * 2x/4x/8x More Throwables - Throwable Weapons appear in 2x/4x/8x larger stacks;
 	* 2x/4x/8x Throwable Damage - Throwable Weapons deal 2x/4x/8x more damage;
-* [**a Ton of Mutators (aToM)**](https://github.com/Abbysssal/aToM) *by Abbysssal* - adds... a lot (76) of mutators. They are separated into 4 dropdown categories "Melee", "Thrown", "Ranged" and "Explosion" so they don't take a lot of space in the menu:
+* **a Ton of Mutators (aToM)** *by Abbysssal* - adds... a lot (76) of mutators. They are separated into 5 dropdown categories "Melee", "Thrown", "Ranged", "Projectile" and "Explosion" so they don't take a lot of space in the menu:
 * Melee Damage x0/x0.25/x0.5/x2/x4/x8/x999;
 * Melee Durability 1/x0.25/x0.5/x2/x4/x8;
 * Melee Lunge x0/x0.25/x0.5/x2/x4/x8;
@@ -35,55 +37,11 @@ You can find these mods in [the official Streets of Rogue Discord server](https:
 * Projectile Speed x0/x0.25/x0.5/x2/x4;
 * Rocket/Random/Random Effect Projectiles;
 * Explosion Damage x0.25/x0.5/x2/x4/x8;
-* Explosion Power x0.25/x0.5/x2/x4/x8.
+* Explosion Power x0.25/x0.5/x2/x4/x8;
 
-# RogueLibs v1.2 #
-This modding library allows you to easily add custom mutators and localization lines, plus it has some extra functions that you might need.
+# RogueLibs v1.3 #
+This modding library allows you to easily add custom mutators, items and localization lines, plus it has some extra functions that you might need.
 
 ## How to use RogueLibs in your mods ##
 You can find instructions on how to do that here (9. Modding Libraries, RogueLibs):
 https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116
-
-## Plugin Example ##
-You can find more examples here (after 10.):
-https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116
-```cs
-using System;
-using BepInEx;
-using RogueLibsCore;
-
-namespace RocketBulletsMutator
-{
-    [BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-    [BepInDependency(RogueLibs.pluginGuid, "1.1")]
-    public class RocketBulletsMutator : BaseUnityPlugin
-    {
-        public const string pluginGuid = "abbysssal.streetsofrogue.rocketbulletsmutator";
-        public const string pluginName = "Rocket Bullets Mutators";
-        public const string pluginVersion = "1.0";
-
-        public static CustomMutator RocketBulletsCommon { get; set; }
-
-        protected void Awake()
-        {
-            RocketBulletsCommon = RogueLibs.SetMutator("RocketBulletsCommon", true,
-                new CustomNameInfo("Rocket Bullets (Common weapons)",
-                                    null, null, null, null,
-                                    "Ракетные пули (Простое оружие)",
-                                    null, null),
-                new CustomNameInfo("Replaces common bullets (Pistol, Shotgun, Machinegun, etc.) with rockets. Rate of fire is unchanged.",
-                                    null, null, null, null,
-                                    "Заменяет простые пули (Пистолет, Дробовик, Автомат и т.п.) на ракеты. Скорость стрельбы не изменена.",
-                                    null, null));
-            RocketBulletsCommon.AddConflicting("RocketLaunchers", "NoGuns");
-
-            this.PatchPrefix(typeof(Gun), "spawnBullet", GetType(), "Gun_spawnBullet", new Type[] { typeof(bulletStatus), typeof(InvItem), typeof(int), typeof(bool), typeof(string) });
-        }
-        protected static void Gun_spawnBullet(ref bulletStatus bulletType)
-        {
-            if (RocketBulletsCommon.IsActive && (bulletType == bulletStatus.Normal || bulletType == bulletStatus.Shotgun || bulletType == bulletStatus.Revolver))
-                bulletType = bulletStatus.Rocket;
-        }
-    }
-}
-```

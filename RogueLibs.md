@@ -3,9 +3,11 @@
 1. [Main page](https://github.com/Abbysssal/RogueLibs/blob/master/README.md)
 2. **RogueLibs**
 3. [CustomMutators](https://github.com/Abbysssal/RogueLibs/blob/master/CustomMutators.md)
-4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
-5. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
-6. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+4. [CustomItems](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md)
+5. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
+6. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
+7. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+8. [Mod Examples](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md)
 
 ## Faster Patches ##
 You can replace this part of your code:
@@ -29,14 +31,15 @@ You can access RogueLibs' GUID, Name and Version:
 ```cs
 public const string pluginGuid = "abbysssal.streetsofrogue.roguelibs";
 public const string pluginName = "RogueLibs";
-public const string pluginVersion = "1.0";
+public const string pluginVersion = "1.3";
 ```
 You can use pluginGuid in your BepInDependency attribute. But DO NOT use pluginVersion in it! Otherwise, BepInEx will think that your mod requires the version of RogueLibs that the user has installed.
 
-You can get the RogueLibs instance that is being used right now and its Mutators and Names:
+You can get the RogueLibs instance that is being used right now and its Mutators, Items and Names:
 ```cs
 public static RogueLibs Instance { get; internal set; }
 public List<CustomMutator> Mutators { get; set; }
+public List<CustomItem> Items { get; set; }
 public List<CustomName> Names { get; set; }
 ```
 ```cs

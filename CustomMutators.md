@@ -3,9 +3,11 @@
 1. [Main page](https://github.com/Abbysssal/RogueLibs/blob/master/README.md)
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
 3. **CustomMutators**
-4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
-5. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
-6. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+4. [CustomItems](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md)
+5. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
+6. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
+7. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
+8. [Mod Examples](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md)
 
 ## Creating CustomMutators ##
 ```cs
@@ -13,10 +15,11 @@ public static CustomMutator SetMutator(string id, bool unlockedFromStart, Custom
 ```
 ```cs
 CustomMutator myMutator = RogueLibs.SetMutator("RocketBullets", true,
-    new CustomNameInfo("english name", "schinese", null, null, null, null, null, null),
-	new CustomNameInfo("description", null, null, null, null, null, null, null));
+    new CustomNameInfo("english name", null, null, null, null, null, null, null),
+    new CustomNameInfo("description", null, null, null, null, null, null, null));
 
 // null strings will default to english.
+// Or you can just use new CustomNameInfo("english") without specifying other languages.
 // After doing that your mutator will appear in Mutator Menu at Home Base.
 ```
 ## Deleting CustomMutators ##
@@ -61,7 +64,7 @@ public bool Unlocked { get; set; }
 ```cs
 if (!myMutator.Unlocked)
     Logger.LogInfo("The mutator is not unlocked yet!");
-	
+    
 ...
 myMutator.Unlocked = true;
 // This state will be saved in RogueLibs config file,

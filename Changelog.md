@@ -3,21 +3,27 @@
 1. [Main page](https://github.com/Abbysssal/RogueLibs/blob/master/README.md)
 2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
 3. [CustomMutators](https://github.com/Abbysssal/RogueLibs/blob/master/CustomMutators.md)
-4. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
-5. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
-6. **RogueLibs Changelog**
+4. [CustomItems](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md)
+5. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
+6. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
+7. **RogueLibs Changelog**
+8. [Mod Examples](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md)
 
 ## Changelog ##
 Here you will find all updates on RogueLibs, so you can specify your RogueLibs' version dependency better.
 
+#### RogueLibs v1.3 ####
+* Added CustomItem class, more info [here](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md);
+* Added [Examples.md](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md);
+
 #### RogueLibs v1.2 ####
 * Added RogueUtilities.CrossConflict(params CustomMutator[] mutators) method;
-* Added RogueUtilities.EachConflict(IEnumerable<string> conflicts, params CustomMutator[] mutators) method;
+* Added RogueUtilities.EachConflict(IEnumerable\<string\> conflicts, params CustomMutator[] mutators) method;
 * Added CustomMutator.OnChangedState event;
 * Added CustomMutator.SortingOrder and CustomMutator.SortingIndex properties;
 * Added a small class RogueChat, more info [here](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md#roguechat);
 * Fixed a bug, when custom mutators replaced original mutators in the Mutator Menu;
-* Fixed a bug, when OnEnabled and OnDisabled weren't triggered;
+* Fixed a bug, when CustomMutator's OnEnabled and OnDisabled weren't triggered;
 
 #### RogueLibs v1.1.2 ####
 * Fixed configuration loading errors;
