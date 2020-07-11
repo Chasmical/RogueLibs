@@ -14,7 +14,8 @@ Here you will find all updates on RogueLibs, so you can specify your RogueLibs' 
 
 #### RogueLibs v1.3 ####
 * Added CustomItem class, more info [here](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md);
-* Added [Examples.md](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md);
+* Added [Examples.md](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md) section;
+* Added missing XML comments;
 
 #### RogueLibs v1.2 ####
 * Added RogueUtilities.CrossConflict(params CustomMutator[] mutators) method;

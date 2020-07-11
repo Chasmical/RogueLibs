@@ -17,11 +17,11 @@
 You can find these mods in [the official Streets of Rogue Discord server](https://discord.com/invite/streetsofrogue) (channel #modding-gallery):
 
 * **Ammo and Durability (AaD) Mutators** *by Abbysssal* - adds 6 mutators:
-    * Melee Durability x2/x4/x8 - Melee weapons take 2x/4x/8x less damage;
-	* Ammo x2/x4/x8 - Common guns have 50%/75%/87.5% to not consume ammo;
+  * Melee Durability x2/x4/x8 - Melee weapons take 2x/4x/8x less damage;
+  * Ammo x2/x4/x8 - Common guns have 50%/75%/87.5% to not consume ammo;
 * **More Throwable Weapons (MTW) Mutators** *by Abbysssal* - adds 6 mutators:
-    * 2x/4x/8x More Throwables - Throwable Weapons appear in 2x/4x/8x larger stacks;
-	* 2x/4x/8x Throwable Damage - Throwable Weapons deal 2x/4x/8x more damage;
+  * 2x/4x/8x More Throwables - Throwable Weapons appear in 2x/4x/8x larger stacks;
+  * 2x/4x/8x Throwable Damage - Throwable Weapons deal 2x/4x/8x more damage;
 * **a Ton of Mutators (aToM)** *by Abbysssal* - adds... a lot (76) of mutators. They are separated into 5 dropdown categories "Melee", "Thrown", "Ranged", "Projectile" and "Explosion" so they don't take a lot of space in the menu:
   * Melee Damage x0/x0.25/x0.5/x2/x4/x8/x999;
   * Melee Durability 1/x0.25/x0.5/x2/x4/x8;
