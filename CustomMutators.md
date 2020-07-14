@@ -1,13 +1,13 @@
 ## [Contents](https://github.com/Abbysssal/RogueLibs) ##
 
-1. [Main page](https://github.com/Abbysssal/RogueLibs/blob/master/README.md)
-2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
+1. [Main page](/README.md)
+2. [RogueLibs](/RogueLibs.md)
 3. **CustomMutators**
-4. [CustomItems](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md)
-5. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
-6. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
-7. [RogueLibs Changelog](https://github.com/Abbysssal/RogueLibs/blob/master/Changelog.md)
-8. [Mod Examples](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md)
+4. [CustomItems](/CustomItems.md)
+5. [CustomNames](/CustomNames.md)
+6. [Extras](/Extras.md)
+7. [RogueLibs Changelog](/Changelog.md)
+8. [Mod Examples](/Examples.md)
 
 ## Creating CustomMutators ##
 ```cs

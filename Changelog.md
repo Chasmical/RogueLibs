@@ -1,20 +1,23 @@
 ## [Contents](https://github.com/Abbysssal/RogueLibs) ##
 
-1. [Main page](https://github.com/Abbysssal/RogueLibs/blob/master/README.md)
-2. [RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.md)
-3. [CustomMutators](https://github.com/Abbysssal/RogueLibs/blob/master/CustomMutators.md)
-4. [CustomItems](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md)
-5. [CustomNames](https://github.com/Abbysssal/RogueLibs/blob/master/CustomNames.md)
-6. [Extras](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md)
+1. [Main page](/README.md)
+2. [RogueLibs](/RogueLibs.md)
+3. [CustomMutators](/CustomMutators.md)
+4. [CustomItems](/CustomItems.md)
+5. [CustomNames](/CustomNames.md)
+6. [Extras](/Extras.md)
 7. **RogueLibs Changelog**
-8. [Mod Examples](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md)
+8. [Mod Examples](/Examples.md)
 
 ## Changelog ##
 Here you will find all updates on RogueLibs, so you can specify your RogueLibs' version dependency better.
 
+#### RogueLibs v1.3.1 ####
+* Added CombineTooltip
+
 #### RogueLibs v1.3 ####
-* Added CustomItem class, more info [here](https://github.com/Abbysssal/RogueLibs/blob/master/CustomItems.md);
-* Added [Examples.md](https://github.com/Abbysssal/RogueLibs/blob/master/Examples.md) section;
+* **Added CustomItem class, more info [here](/CustomItems.md)**;
+* Added [Examples.md](/Examples.md) section;
 * Added missing XML comments;
 
 #### RogueLibs v1.2 ####
@@ -22,7 +25,7 @@ Here you will find all updates on RogueLibs, so you can specify your RogueLibs' 
 * Added RogueUtilities.EachConflict(IEnumerable\<string\> conflicts, params CustomMutator[] mutators) method;
 * Added CustomMutator.OnChangedState event;
 * Added CustomMutator.SortingOrder and CustomMutator.SortingIndex properties;
-* Added a small class RogueChat, more info [here](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md#roguechat);
+* Added a small class RogueChat, more info [here](/Extras.md#roguechat);
 * Fixed a bug, when custom mutators replaced original mutators in the Mutator Menu;
 * Fixed a bug, when CustomMutator's OnEnabled and OnDisabled weren't triggered;
 
@@ -39,11 +42,11 @@ Here you will find all updates on RogueLibs, so you can specify your RogueLibs' 
 * **Removed DeleteCustomName(id), use DeleteCustomName(id, type) instead!**;
 * CustomNameInfo is now a struct;
 * Changed some configuration loading code;
-* Added class RoguePatcher, more info [here](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md#roguepatcher);
-* Added static class RogueUtilities, more info [here](https://github.com/Abbysssal/RogueLibs/blob/master/Extras.md#rogueutilities);
+* Added class RoguePatcher, more info [here](/Extras.md#roguepatcher);
+* Added static class RogueUtilities, more info [here](/Extras.md#rogueutilities);
 
 #### RogueLibs v1.0.1 ####
 * Fixed a bug, when deleted mods' mutators were showing in the Mutator Menu;
 
 #### RogueLibs v1.0 ####
-* Added Mutator and CustomName classes and some extra functions.
+* **Added Mutator and CustomName classes and some extra functions.**
