@@ -13,7 +13,7 @@
 Here you will find all updates on RogueLibs, so you can specify your RogueLibs' version dependency better.
 
 #### RogueLibs v1.3.1 ####
-* Added CombineTooltip
+* Added InvItem.CombineTooltip delegate to determine the tooltip text when combining items. Like with the Sell-o-matic showing items' sell values;
 
 #### RogueLibs v1.3 ####
 * **Added CustomItem class, more info [here](/CustomItems.md)**;

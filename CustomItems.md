@@ -75,6 +75,7 @@ moneyContainer.UseItem = (item, agent) =>
 ```cs
 public Func<InvItem, Agent, InvItem, bool> CombineFilter { get; set; }
 public Action<InvItem, Agent, InvItem, int> CombineItem { get; set; }
+public Func<InvItem, Agent, InvItem, string> CombineTooltip { get; set; }
 ```
 ```cs
 CustomItem repairer = RogueLibs.SetItem(...);
@@ -99,6 +100,17 @@ repairer.CombineItem = (item, agent, otherItem, slotNum) =>
         agent.mainGUI.invInterface.HideTarget();
     }
 };
+repairer.CombineTooltip = (item, agent, otherItem) =>
+{
+    int needRepair = otherItem.rewardCount - otherItem.invItemCount;
+    if (needRepair == 0) return null;
+    // the weapon doesn't need repair - do not add tooltip
+    int lower = Mathf.Min(needRepair, 30);
+    int upper = Mathf.Min(needRepair, 50);
+    if (lower == upper) return "+" + lower.ToString();
+    return "+" + lower.ToString() + "-" + upper.ToString();
+    // returns a range of possible repair values
+}
 ```
 ## Making Targeting Items ##
 ```cs

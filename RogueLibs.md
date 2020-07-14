@@ -31,7 +31,7 @@ You can access RogueLibs' GUID, Name and Version:
 ```cs
 public const string pluginGuid = "abbysssal.streetsofrogue.roguelibs";
 public const string pluginName = "RogueLibs";
-public const string pluginVersion = "1.3";
+public const string pluginVersion = "1.3.1";
 ```
 You can use pluginGuid in your BepInDependency attribute. But DO NOT use pluginVersion in it! Otherwise, BepInEx will think that your mod requires the version of RogueLibs that the user has installed.
 
