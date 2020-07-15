@@ -1,9 +1,8 @@
-﻿using System;
-using System.Reflection;
-using System.Collections.Generic;
-using BepInEx;
-using HarmonyLib;
+﻿using BepInEx;
 using BepInEx.Logging;
+using HarmonyLib;
+using System;
+using System.Reflection;
 
 namespace RogueLibsCore
 {
@@ -30,7 +29,7 @@ namespace RogueLibsCore
 		public static bool PatchPrefix(this BaseUnityPlugin me, Type type, string methodName, Type patchType, string patchMethodName, params Type[] types)
 		{
 			if (types.Length == 0)
-					types = null;
+				types = null;
 			MethodInfo original;
 			MethodInfo patch;
 			try

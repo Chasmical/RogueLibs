@@ -45,7 +45,7 @@ namespace RogueLibsCore
 		///   <para>Text that will be displayed when targeting objects.</para>
 		/// </summary>
 		public CustomName HoverText { get; set; }
-		
+
 		/// <summary>
 		///   <para>Delegate that will be used to determine whether an item can be combined with this item.</para>
 		///   <para><see cref="InvItem"/> arg1 is this custom item;<br/><see cref="Agent"/> arg2 is the owner of this custom item;<br/><see cref="InvItem"/> arg3 is the other item.</para>

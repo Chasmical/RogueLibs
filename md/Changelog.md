@@ -12,6 +12,10 @@
 ## Changelog ##
 Here you will find all updates on RogueLibs, so you can specify your RogueLibs' version dependency better.
 
+#### RogueLibs v1.3.2 ####
+* RogueLibs source code is now available on [GitHub](https://github.com/Abbysssal/RogueLibs)!;
+* Added RogueUtilities.ConvertToSprite(string filePath, int ppu) and RogueUtilities.ConvertToSprite(byte[] data, int ppu), so you can specify your image's pixel-per-unit scale;
+
 #### RogueLibs v1.3.1 ####
 * Added InvItem.CombineTooltip delegate to determine the tooltip text when combining items;
 

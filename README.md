@@ -39,7 +39,7 @@ You can find these mods in [the official Streets of Rogue Discord server](https:
   * Explosion Damage x0.25/x0.5/x2/x4/x8;
   * Explosion Power x0.25/x0.5/x2/x4/x8;
 
-# RogueLibs v1.3.1 #
+# RogueLibs v1.3.2 #
 This modding library allows you to easily add custom mutators, items and localization lines, plus it has some extra functions that you might need.
 
 ## How to use RogueLibs in your mods ##

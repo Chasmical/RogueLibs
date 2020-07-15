@@ -1,12 +1,11 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Logging;
-using UnityEngine;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using UnityEngine;
 using UnityEngine.UI;
-using System.Net;
 
 namespace RogueLibsCore
 {
@@ -28,8 +27,6 @@ namespace RogueLibsCore
 			string dataPath = Path.Combine(Paths.ConfigPath, "RogueLibs2.xml");
 			RogueLibs.Instance.Start(dataPath);
 
-			if (File.Exists(Path.Combine(Paths.ConfigPath, "AbbLabs.xml")))
-				File.Delete(Path.Combine(Paths.ConfigPath, "AbbLabs.xml"));
 			if (File.Exists(Path.Combine(Paths.ConfigPath, "RogueLibs.xml")))
 				File.Delete(Path.Combine(Paths.ConfigPath, "RogueLibs.xml"));
 
@@ -39,13 +36,13 @@ namespace RogueLibsCore
 		protected void MakePatches()
 		{
 			RoguePatcher patcher = new RoguePatcher(this, GetType());
-			
+
 			patcher.Postfix(typeof(ScrollingMenu), "MakeButtonsVisible");
 
 			patcher.Postfix(typeof(NameDB), "GetName");
 			patcher.Postfix(typeof(ScrollingMenu), "SortUnlocks");
 			patcher.Postfix(typeof(ScrollingMenu), "PushedButton");
-			
+
 			patcher.Prefix(typeof(ObjectMult), "ShowChatCommand");
 
 			patcher.Postfix(typeof(InvItem), "SetupDetails");
@@ -99,7 +96,7 @@ namespace RogueLibsCore
 					cancellations = new List<string>(mutator.Conflicting)
 				};
 				customMutators.Add(unlock);
-				
+
 			}
 			//customMutators.Sort();
 			___listUnlocks.InsertRange(1, customMutators);
@@ -231,7 +228,7 @@ namespace RogueLibsCore
 				}
 		}
 
-		public static void InvSlot_SetColor(InvSlot __instance, Text ___itemText)
+		protected static void InvSlot_SetColor(InvSlot __instance, Text ___itemText)
 		{
 			/*
 			__instance.toolbarNumTextGo.SetActive(false);
@@ -257,7 +254,7 @@ namespace RogueLibsCore
 			InvItem targetItem = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
 			if (targetItem == null) return;
 			InvItem thisItem = __instance.curItemList[__instance.slotNumber];
-			
+
 			CustomItem cItem = RogueLibs.Instance.Items.Find(i => i.Id == targetItem.invItemName);
 			if (cItem == null || cItem.CombineFilter == null || cItem.CombineItem == null || cItem.CombineTooltip == null) return;
 

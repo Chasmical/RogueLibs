@@ -1,10 +1,10 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Xml;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Logging;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml;
+using UnityEngine;
 
 namespace RogueLibsCore
 {

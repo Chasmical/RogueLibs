@@ -13,12 +13,15 @@
 With RogueUtilities class you can convert .png or .jpg files into Sprites:
 ```cs
 public static Sprite ConvertToSprite(string filePath);
+public static Sprite ConvertToSprite(string filePath, int ppu);
 public static Sprite ConvertToSprite(byte[] data);
+public static Sprite ConvertToSprite(byte[] data, int ppu);
 ```
 ```cs
 Sprite sprite = RogueUtilities.ConvertToSprite("D:\Images\MyImage.png");
+// Default pixel-per-unit value is 64
 
-byte[] data = File.ReadAllBytes("D:\Images\MyImage.png");
+byte[] data = File.ReadAllBytes("D:\Images\MyImage.png", 64);
 Sprite sprite2 = RogueUtilities.ConvertToSprite(data);
 ```
 And convert .mp3, .ogg, .wav, .aiff files into Audioclips. It is recommended to use .ogg, because other formats might not load properly:
