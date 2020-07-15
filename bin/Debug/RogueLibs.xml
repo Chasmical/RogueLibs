@@ -1,0 +1,544 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>RogueLibs</name>
+    </assembly>
+    <members>
+        <member name="T:RogueLibsCore.CustomItem">
+            <summary>
+              <para>Represents a custom in-game item.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.Id">
+            <summary>
+              <para>Id of this <see cref="T:RogueLibsCore.CustomItem"/>.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.SetupDetails">
+            <summary>
+              <para>Delegate that will be invoked when setting up this custom item. See <see cref="M:InvItem.SetupDetails(System.Boolean)"/> for more details.</para>
+              <para><see cref="T:InvItem"/> obj is this custom item.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.UseItem">
+            <summary>
+              <para>Delegate that will be invoked when used/consumed on right-click. See <see cref="M:ItemFunctions.UseItem(InvItem,Agent)"/> for more details.</para>
+              <para><see cref="T:InvItem"/> arg1 is this custom item;<br/><see cref="T:Agent"/> arg2 is the owner of this custom item.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.TargetFilter">
+            <summary>
+              <para>Delegate that will be used to determine whether an object can be targeted by this item.</para>
+              <para><see cref="T:InvItem"/> arg1 is this custom item;<br/><see cref="T:Agent"/> arg2 is the owner of this custom item;<br/><see cref="T:PlayfieldObject"/> arg3 is an object that is being targeted.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.TargetObject">
+            <summary>
+              <para>Delegate that will be invoked when used on an object. See <see cref="M:ItemFunctions.TargetObject(InvItem,Agent,PlayfieldObject,System.String)"/> for more details.</para>
+              <para><see cref="T:InvItem"/> arg1 is this custom item;<br/><see cref="T:Agent"/> arg2 is the owner of this custom item;<br/><see cref="T:PlayfieldObject"/> arg3 is an object that is being targeted.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.HoverText">
+            <summary>
+              <para>Text that will be displayed when targeting objects.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.CombineFilter">
+            <summary>
+              <para>Delegate that will be used to determine whether an item can be combined with this item.</para>
+              <para><see cref="T:InvItem"/> arg1 is this custom item;<br/><see cref="T:Agent"/> arg2 is the owner of this custom item;<br/><see cref="T:InvItem"/> arg3 is the other item.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.CombineItem">
+            <summary>
+              <para>Delegate that will be invoked when combined with an item. See <see cref="M:ItemFunctions.CombineItems(InvItem,Agent,InvItem,System.Int32,System.String)"/> for more details.</para>
+              <para><see cref="T:InvItem"/> arg1 is this custom item;<br/><see cref="T:Agent"/> arg2 is the owner of this custom item;<br/><see cref="T:InvItem"/> arg3 is the other item;<br/><see cref="T:System.Int32"/> arg4 is the item's slot number.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.CombineTooltip">
+            <summary>
+              <para>Delegate that will be used to determine the tooltip text when combining items with this item. Return <see langword="null"/> or <see cref="F:System.String.Empty"/> to not add the tooltip text.</para>
+              <para><see cref="T:InvItem"/> arg1 is this custom item;<br/><see cref="T:Agent"/> arg2 is the owner of this custom item;<br/><see cref="T:InvItem"/> arg3 is the other item.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.Sprite">
+            <summary>
+              <para><see cref="P:RogueLibsCore.CustomItem.Sprite"/> that will be used for this item.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.Name">
+            <summary>
+              <para>Localizable name of this <see cref="T:RogueLibsCore.CustomItem"/>.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.Description">
+            <summary>
+              <para>Localizable description of this <see cref="T:RogueLibsCore.CustomItem"/>.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomItem.SpawnDictionary">
+            <summary>
+              <para>Dictionary of RandomLists' names that this item will spawn in and spawn chances. See <see cref="M:RandomItems.fillItems"/> for more details.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomItem.SetHoverText(RogueLibsCore.CustomNameInfo)">
+            <summary>
+              <para>Sets this item's hover text.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomItem.AddSpawnList(System.String,System.Int32)">
+            <summary>
+              <para>Adds this item to a <see cref="T:RandomList"/> with the specified <paramref name="listName"/>, with the specified <paramref name="spawnChance"/>. See <see cref="M:RandomItems.fillItems"/> for more info.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.MessageArgs">
+            <summary>
+              <para><see cref="T:System.EventArgs"/> that are used for <see cref="E:RogueLibsCore.RogueChat.OnCommand"/> event.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.MessageArgs.Text">
+            <summary>
+              <para>Text of the command.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.RogueChat">
+            <summary>
+              <para>A class for catching and processing in-game commands.</para>
+            </summary>
+        </member>
+        <member name="E:RogueLibsCore.RogueChat.OnCommand">
+            <summary>
+              <para>An event that is invoked every time a new message in chat is created.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.RogueLibs">
+            <summary>
+              <para>A collection of useful functions for modding Streets of Rogue.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.RogueLibs.pluginGuid">
+            <summary>
+              <para><see cref="T:RogueLibsCore.RogueLibs"/>' GUID. Use it in your <see cref="T:BepInEx.BepInDependency"/> attribute.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.RogueLibs.pluginName">
+            <summary>
+              <para><see cref="T:RogueLibsCore.RogueLibs"/>' display name.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.RogueLibs.pluginVersion">
+            <summary>
+              <para>Do not use this constant in your BepInDependency attribute!</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.Instance">
+            <summary>
+              <para>An instance of <see cref="T:RogueLibsCore.RogueLibs"/>, containing all <see cref="T:RogueLibsCore.CustomMutator"/>s and <see cref="T:RogueLibsCore.CustomName"/>s.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.Mutators">
+            <summary>
+              <para>List of all <see cref="T:RogueLibsCore.CustomMutator"/>s.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.Items">
+            <summary>
+              <para>List of all <see cref="T:RogueLibsCore.CustomItem"/>s.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.Names">
+            <summary>
+              <para>List of all <see cref="T:RogueLibsCore.CustomName"/>s.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.MouseIngamePosition">
+            <summary>
+              <para>Gets in-game position of the mouse cursor.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.SpawnAgent(UnityEngine.Vector2,System.String)">
+            <summary>
+              <para>Spawns an <see cref="T:Agent"/> with <paramref name="agentId"/> at <paramref name="position"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.SpawnItem(UnityEngine.Vector2,System.String,System.Int32)">
+            <summary>
+              <para>Spawns an <see cref="T:Item"/> with <paramref name="itemId"/> (<paramref name="amount"/>) at <paramref name="position"/>.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.RogueLibs.languages">
+            <summary>
+              <para>An array of game languages.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetCustomName(System.String,System.String)">
+            <summary>
+              <para>Gets a <see cref="T:RogueLibsCore.CustomName"/> with the specified <paramref name="id"/> and <paramref name="type"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.SetCustomName(System.String,System.String,RogueLibsCore.CustomNameInfo)">
+            <summary>
+              <para>Creates or updates a <see cref="T:RogueLibsCore.CustomName"/> using the specified <paramref name="id"/>, <paramref name="type"/> and <paramref name="info"/>. If you don't know which <paramref name="type"/> you need, use <see langword="null"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.DeleteCustomName(System.String,System.String)">
+            <summary>
+              <para>Deletes a <see cref="T:RogueLibsCore.CustomName"/> with the specified <paramref name="id"/> and <paramref name="type"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.DeleteCustomName(RogueLibsCore.CustomName)">
+            <summary>
+              <para>Deletes the specified <paramref name="customName"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetMutator(System.String)">
+            <summary>
+              <para>Gets a <see cref="T:RogueLibsCore.CustomMutator"/> with the specified <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.SetMutator(System.String,System.Boolean,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo)">
+            <summary>
+              <para>Creates or updates a <see cref="T:RogueLibsCore.CustomMutator"/> using the specified <paramref name="id"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.DeleteMutator(System.String)">
+            <summary>
+              <para>Deletes a <see cref="T:RogueLibsCore.CustomMutator"/> with the specified <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.DeleteMutator(RogueLibsCore.CustomMutator)">
+            <summary>
+              <para>Deletes the specified <paramref name="customMutator"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetItem(System.String)">
+            <summary>
+              <para>Gets a <see cref="T:RogueLibsCore.CustomItem"/> with the specified <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.SetItem(System.String,UnityEngine.Sprite,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo,System.Action{InvItem})">
+            <summary>
+              <para>Creates or updates a <see cref="T:RogueLibsCore.CustomItem"/> using the specified <paramref name="id"/>, <paramref name="name"/>, <paramref name="description"/>, <paramref name="sprite"/> and <paramref name="setupDetails"/> function.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.DeleteItem(System.String)">
+            <summary>
+              <para>Deletes a <see cref="T:RogueLibsCore.CustomItem"/> with the specified <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.DeleteItem(RogueLibsCore.CustomItem)">
+            <summary>
+              <para>Deletes the specified <paramref name="customItem"/>.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.BaseUnityPluginExtensions">
+            <summary>
+              <para>Collection of RogueLibs extension methods.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.BaseUnityPluginExtensions.LogErrorWith(BepInEx.BaseUnityPlugin,System.String,System.Exception)">
+            <summary>
+              <para>It's just a shortcut for: <c>Logger.LogError(<paramref name="message"/>); Logger.LogError(<paramref name="e"/>);</c>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.BaseUnityPluginExtensions.PatchPrefix(BepInEx.BaseUnityPlugin,System.Type,System.String,System.Type,System.String,System.Type[])">
+            <summary>
+              <para>Patches an original method so that the given patch method will be called right before the original.</para>
+              <para>Automatically catches and logs all errors. Returns true if the patch was successful, returns false if an error occured.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.BaseUnityPluginExtensions.PatchPostfix(BepInEx.BaseUnityPlugin,System.Type,System.String,System.Type,System.String,System.Type[])">
+            <summary>
+              <para>Patches an original method so that the given patch method will be called right after the original.</para>
+              <para>Automatically catches and logs all errors. Returns true if the patch was successful, returns false if an error occured.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.CustomName">
+            <summary>
+              <para>Represents a custom in-game string with localizations.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.Id">
+            <summary>
+              <para>Id of this <see cref="T:RogueLibsCore.CustomName"/>.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.Type">
+            <summary>
+              <para>Type of this <see cref="T:RogueLibsCore.CustomName"/>. Use <see langword="null"/>, if you don't know which one you need.</para>
+              <para>Default types are: Agent, Item, Object, StatusEffect, Interface, Dialogue, Description, Unlock.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.Translations">
+            <summary>
+              <para>An array of translation strings for this <see cref="T:RogueLibsCore.CustomName"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomName.SetTranslations(RogueLibsCore.CustomNameInfo)">
+            <summary>
+              <para>Uses the given <paramref name="customNameInfo"/> to get localization strings.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.English">
+            <summary>
+              <para>Gets and sets the English string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.SChinese">
+            <summary>
+              <para>Gets and sets the Simplified Chinese string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.German">
+            <summary>
+              <para>Gets and sets the German string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.Spanish">
+            <summary>
+              <para>Gets and sets the Spanish string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.Brazilian">
+            <summary>
+              <para>Gets and sets the Brazilian string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.Russian">
+            <summary>
+              <para>Gets and sets the Russian string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.French">
+            <summary>
+              <para>Gets and sets the French string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomName.KoreanA">
+            <summary>
+              <para>Gets and sets the Korean (A?) string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.CustomNameInfo">
+            <summary>
+              <para>Helper struct for creating <see cref="T:RogueLibsCore.CustomName"/>.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.CustomNameInfo.English">
+            <summary>
+              <para>Localization string for this language.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.CustomNameInfo.SChinese">
+            <summary>
+              <para>Localization string for this language.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.CustomNameInfo.German">
+            <summary>
+              <para>Localization string for this language.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.CustomNameInfo.Spanish">
+            <summary>
+              <para>Localization string for this language.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.CustomNameInfo.Brazilian">
+            <summary>
+              <para>Localization string for this language.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.CustomNameInfo.Russian">
+            <summary>
+              <para>Localization string for this language.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.CustomNameInfo.French">
+            <summary>
+              <para>Localization string for this language.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.CustomNameInfo.KoreanA">
+            <summary>
+              <para>Localization string for this language.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomNameInfo.#ctor(System.String)">
+            <summary>
+              <para>Initializes a new instance of <see cref="T:RogueLibsCore.CustomNameInfo"/> with the specified <paramref name="english"/> string.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomNameInfo.#ctor(System.String,System.String,System.String,System.String,System.String,System.String,System.String,System.String)">
+            <summary>
+              <para>Initializes a new instance of <see cref="T:RogueLibsCore.CustomNameInfo"/> with the specified language strings.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.CustomMutator">
+            <summary>
+              <para>Represents a custom in-game mutator (also known as challenge).</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomMutator.Id">
+            <summary>
+              <para>Id of this <see cref="T:RogueLibsCore.CustomMutator"/>.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomMutator.Unlocked">
+            <summary>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomMutator"/> is unlocked in the Mutator Menu.</para>
+              <para>This value is saved in <see cref="T:RogueLibsCore.RogueLibs"/> configuration file.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomMutator.IsActive">
+            <summary>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomMutator"/> is active in-game.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomMutator.ShowInMenu">
+            <summary>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomMutator"/> will be displayed in the Mutator Menu.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomMutator.Conflicting">
+            <summary>
+              <para><see cref="T:RogueLibsCore.CustomMutator"/> IDs that will be automatically disabled, when this <see cref="T:RogueLibsCore.CustomMutator"/> is enabled.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomMutator.SortingOrder">
+            <summary>
+              <para>Determines the position of this <see cref="T:RogueLibsCore.CustomMutator"/> in the list.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomMutator.SortingIndex">
+            <summary>
+              <para>Determines the position of this <see cref="T:RogueLibsCore.CustomMutator"/> in the list if the SortingOrder equals to another <see cref="T:RogueLibsCore.CustomMutator"/>'s SortingOrder.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomMutator.Name">
+            <summary>
+              <para>Localizable Name of this <see cref="T:RogueLibsCore.CustomMutator"/>.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomMutator.Description">
+            <summary>
+              <para>Localizable Description of this <see cref="T:RogueLibsCore.CustomMutator"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomMutator.AddConflicting(System.String[])">
+            <summary>
+              <para>Add conflicting <see cref="T:RogueLibsCore.CustomMutator"/> IDs, so that it won't be possible to enable both them and this <see cref="T:RogueLibsCore.CustomMutator"/> at the same time.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomMutator.AddConflicting(RogueLibsCore.CustomMutator[])">
+            <summary>
+              <para>Add conflicting <see cref="T:RogueLibsCore.CustomMutator"/>s, so that it won't be possible to enable both them and this <see cref="T:RogueLibsCore.CustomMutator"/> at the same time.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomMutator.RemoveConflicting(System.String[])">
+            <summary>
+              <para>Remove conflicting <see cref="T:RogueLibsCore.CustomMutator"/> IDs, so that it will be possible to enable both them and this <see cref="T:RogueLibsCore.CustomMutator"/> at the same time.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomMutator.RemoveConflicting(RogueLibsCore.CustomMutator[])">
+            <summary>
+              <para>Remove conflicting <see cref="T:RogueLibsCore.CustomMutator"/>s, so that it will be possible to enable both them and this <see cref="T:RogueLibsCore.CustomMutator"/> at the same time.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.CustomMutator.OnChangeState">
+            <summary>
+              <para><see langword="delegate"/> method for <see cref="E:RogueLibsCore.CustomMutator.OnEnabled"/> and <see cref="E:RogueLibsCore.CustomMutator.OnDisabled"/> events.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.CustomMutator.OnState">
+            <summary>
+              <para><see langword="delegate"/> for <see cref="E:RogueLibsCore.CustomMutator.OnChangedState"/> event.</para>
+            </summary>
+        </member>
+        <member name="E:RogueLibsCore.CustomMutator.OnEnabled">
+            <summary>
+              <para>An <see langword="event"/> that is called when this <see cref="T:RogueLibsCore.CustomMutator"/> is enabled. Triggers only when a player turns on the mutator in the Mutator Menu.</para>
+            </summary>
+        </member>
+        <member name="E:RogueLibsCore.CustomMutator.OnDisabled">
+            <summary>
+              <para>An <see langword="event"/> that is called when this <see cref="T:RogueLibsCore.CustomMutator"/> is disabled. Triggers only when a player turns off the mutator in the Mutator Menu.</para>
+            </summary>
+        </member>
+        <member name="E:RogueLibsCore.CustomMutator.OnChangedState">
+            <summary>
+              <para>An event that is called when this <see cref="T:RogueLibsCore.CustomMutator"/> is enabled or disabled.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.RoguePatcher">
+            <summary>
+              <para>A class to simplify Harmony patching.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RoguePatcher.TypeWithPatches">
+            <summary>
+              <para>Type, that this <see cref="T:RogueLibsCore.RoguePatcher"/> will search patch methods in.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RoguePatcher.#ctor(BepInEx.BaseUnityPlugin,System.Type)">
+            <summary>
+              <para>Initializes a new instance of <see cref="T:RogueLibsCore.RoguePatcher"/> for the specified <paramref name="plugin"/> with <paramref name="typeWithPatches"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RoguePatcher.SwitchTo(System.Type)">
+            <summary>
+              <para>Changes this <see cref="T:RogueLibsCore.RoguePatcher"/>'s target type.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RoguePatcher.Prefix(System.Type,System.String,System.Type[])">
+            <summary>
+              <para>Patches an original method with a prefix-method called "<paramref name="type"/>_<paramref name="methodName"/>" in this <see cref="P:RogueLibsCore.RoguePatcher.TypeWithPatches"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RoguePatcher.Postfix(System.Type,System.String,System.Type[])">
+            <summary>
+              <para>Patches an original method with a postfix-method called "<paramref name="type"/>_<paramref name="methodName"/>" in this <see cref="P:RogueLibsCore.RoguePatcher.TypeWithPatches"/>.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.RogueUtilities">
+            <summary>
+              <para>Collection of some useful functions, that you might need.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.ConvertToSprite(System.String)">
+            <summary>
+              <para>Converts a .png or .jpg file into a <see cref="T:UnityEngine.Sprite"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.ConvertToSprite(System.String,System.Int32)">
+            <summary>
+              <para>Converts a .png or .jpg file into a <see cref="T:UnityEngine.Sprite"/> with the specified pixel-per-unit value (default - 64).</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.ConvertToSprite(System.Byte[])">
+            <summary>
+              <para>Converts a .png or .jpg byte array into a <see cref="T:UnityEngine.Sprite"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.ConvertToSprite(System.Byte[],System.Int32)">
+            <summary>
+              <para>Converts a .png or .jpg byte array into a <see cref="T:UnityEngine.Sprite"/> with the specified pixel-per-unit value (default - 64).</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.ConvertToAudioClip(System.String)">
+            <summary>
+              <para>Converts a .mp3, .ogg, .wav or .aiff (it is recommended to use .ogg, since other formats might not load properly) file into an <see cref="T:UnityEngine.AudioClip"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.CrossConflict(RogueLibsCore.CustomMutator[])">
+            <summary>
+              <para>Cross conflicts all <paramref name="mutators"/>, so it will be possible to enable only one of them at a time.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.EachConflict(System.Collections.Generic.IEnumerable{System.String},RogueLibsCore.CustomMutator[])">
+            <summary>
+              <para>Conflicts all <paramref name="mutators"/> with all mutators in the <paramref name="conflicts"/> collection, so it won't be possible to enable any of the <see cref="T:RogueLibsCore.CustomMutator"/>s with any mutator from the <paramref name="conflicts"/> collection.</para>
+            </summary>
+        </member>
+    </members>
+</doc>

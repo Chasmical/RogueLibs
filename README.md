@@ -1,4 +1,4 @@
-## [Contents](https://github.com/Abbysssal/RogueLibs) ##
+## Contents ##
 
 1. **Main page**
 2. [RogueLibs](/md/RogueLibs.md)

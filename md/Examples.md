@@ -1,6 +1,6 @@
-﻿## [Contents](https://github.com/Abbysssal/RogueLibs) ##
+﻿## Contents ##
 
-1. [Main page](../README.md)
+1. [Main page](https://github.com/Abbysssal/RogueLibs)
 2. [RogueLibs](./RogueLibs.md)
 3. [CustomMutators](./CustomMutators.md)
 4. [CustomItems](./CustomItems.md)
