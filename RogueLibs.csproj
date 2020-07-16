@@ -84,7 +84,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="source\CustomItem.cs" />
-    <Compile Include="source\MessageArgs.cs" />
     <Compile Include="source\RogueChat.cs" />
     <Compile Include="source\RogueLibs.cs" />
     <Compile Include="source\RogueLibsPlugin.cs" />

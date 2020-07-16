@@ -1,13 +1,13 @@
 ## Contents ##
 
 1. **Main page**
-2. [RogueLibs](/md/RogueLibs.md)
-3. [CustomMutators](/md/CustomMutators.md)
-4. [CustomItems](/md/CustomItems.md)
-5. [CustomNames](/md/CustomNames.md)
-6. [Extras](/md/Extras.md)
-7. [RogueLibs Changelog](/md/Changelog.md)
-8. [Mod Examples](/md/Examples.md)
+2. [RogueLibs](./md/RogueLibs.md)
+3. [CustomMutators](./md/CustomMutators.md)
+4. [CustomItems](./md/CustomItems.md)
+5. [CustomNames](./md/CustomNames.md)
+6. [Extras](./md/Extras.md)
+7. [RogueLibs Changelog](./md/Changelog.md)
+8. [Mod Examples](./md/Examples.md)
 
 ## Links ##
 *  [Download RogueLibs](https://github.com/Abbysssal/RogueLibs/releases)
@@ -39,7 +39,7 @@ You can find these mods in [the official Streets of Rogue Discord server](https:
   * Explosion Damage x0.25/x0.5/x2/x4/x8;
   * Explosion Power x0.25/x0.5/x2/x4/x8;
 
-# RogueLibs v1.3.2 #
+# RogueLibs v1.3.3 #
 This modding library allows you to easily add custom mutators, items and localization lines, plus it has some extra functions that you might need.
 
 ## How to use RogueLibs in your mods ##

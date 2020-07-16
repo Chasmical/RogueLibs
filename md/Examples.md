@@ -148,12 +148,6 @@ namespace RogueLibsCore.Examples
                     agent.agentInvDatabase.SubtractFromItemCount(item, 1);
                     
                 item.gc.audioHandler.Play(agent, "CombineItem");
-
-                if (item.invItemCount <= 0)
-                {
-                    agent.mainGUI.invInterface.HideDraggedItem();
-                    agent.mainGUI.invInterface.HideTarget();
-                }
             };
             repairer.CombineTooltip = (item, agent, otherItem) =>
             {

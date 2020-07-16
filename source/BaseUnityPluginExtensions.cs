@@ -28,10 +28,8 @@ namespace RogueLibsCore
 		/// </summary>
 		public static bool PatchPrefix(this BaseUnityPlugin me, Type type, string methodName, Type patchType, string patchMethodName, params Type[] types)
 		{
-			if (types.Length == 0)
-				types = null;
-			MethodInfo original;
-			MethodInfo patch;
+			if (types.Length == 0) types = null;
+			MethodInfo original, patch;
 			try
 			{
 				original = AccessTools.Method(type, methodName, types);
@@ -67,10 +65,8 @@ namespace RogueLibsCore
 		/// </summary>
 		public static bool PatchPostfix(this BaseUnityPlugin me, Type type, string methodName, Type patchType, string patchMethodName, params Type[] types)
 		{
-			if (types.Length == 0)
-				types = null;
-			MethodInfo original;
-			MethodInfo patch;
+			if (types.Length == 0) types = null;
+			MethodInfo original, patch;
 			try
 			{
 				original = AccessTools.Method(type, methodName, types);

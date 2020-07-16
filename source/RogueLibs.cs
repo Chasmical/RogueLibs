@@ -24,7 +24,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Do not use this constant in your BepInDependency attribute!</para>
 		/// </summary>
-		public const string pluginVersion = "1.3.1";
+		public const string pluginVersion = "1.3.3";
 
 		internal static RogueLibsPlugin PluginInstance { get; set; }
 		/// <summary>
@@ -196,10 +196,7 @@ namespace RogueLibsCore
 			CustomName name = Instance.Names.Find(n => n.Id == id && n.Type == type);
 			bool createNew = name == null;
 			if (createNew)
-			{
-				name = new CustomName(id, type);
-				Instance.Names.Add(name);
-			}
+				Instance.Names.Add(name = new CustomName(id, type));
 			name.SetTranslations(info);
 
 			Instance.Logger.LogInfo("CustomName " + id + " (" + name.English + ") was " + (createNew ? "created" : "updated") + ".");
@@ -220,12 +217,9 @@ namespace RogueLibsCore
 		/// </summary>
 		public static bool DeleteCustomName(CustomName customName)
 		{
-			if (Instance.Names.Remove(customName))
-			{
-				Instance.Logger.LogInfo("CustomName " + customName.Id + " (" + customName.English + ") was deleted.");
-				return true;
-			}
-			return false;
+			bool res = Instance.Names.Remove(customName);
+			if (res) Instance.Logger.LogInfo("CustomName " + customName.Id + " (" + customName.English + ") was deleted.");
+			return res;
 		}
 
 		/// <summary>
@@ -241,8 +235,7 @@ namespace RogueLibsCore
 			bool createNew = mutator == null;
 			if (createNew)
 			{
-				mutator = new CustomMutator(id, unlockedFromStart);
-				Instance.Mutators.Add(mutator);
+				Instance.Mutators.Add(mutator = new CustomMutator(id, unlockedFromStart));
 				Instance.SaveData();
 
 				if (!unlockedFromStart && Instance.MutatorsStates.ContainsKey(id))
@@ -271,13 +264,14 @@ namespace RogueLibsCore
 		{
 			DeleteCustomName(customMutator.Name);
 			DeleteCustomName(customMutator.Description);
-			if (Instance.Mutators.Remove(customMutator))
+
+			bool res = Instance.Mutators.Remove(customMutator);
+			if (res)
 			{
 				Instance.Logger.LogInfo("CustomMutator " + customMutator.Id + " (" + customMutator.Name?.English + ") was deleted.");
 				Instance.SaveData();
-				return true;
 			}
-			return false;
+			return res;
 		}
 
 		/// <summary>
@@ -285,19 +279,18 @@ namespace RogueLibsCore
 		/// </summary>
 		public static CustomItem GetItem(string id) => Instance.Items.Find(i => i.Id == id);
 		/// <summary>
-		///   <para>Creates or updates a <see cref="CustomItem"/> using the specified <paramref name="id"/>, <paramref name="name"/>, <paramref name="description"/>, <paramref name="sprite"/> and <paramref name="setupDetails"/> function.</para>
+		///   <para>Creates or updates a <see cref="CustomItem"/> using the specified <paramref name="id"/>, <paramref name="name"/>, <paramref name="description"/>, <paramref name="sprite"/> and <paramref name="setupDetails"/> delegate.</para>
 		/// </summary>
 		public static CustomItem SetItem(string id, Sprite sprite, CustomNameInfo name, CustomNameInfo description, Action<InvItem> setupDetails)
 		{
 			CustomItem item = Instance.Items.Find(i => i.Id == id);
 			bool createNew = item == null;
 			if (createNew)
-			{
-				item = new CustomItem(id);
-				Instance.Items.Add(item);
-			}
+				Instance.Items.Add(item = new CustomItem(id));
+
 			item.Sprite = sprite;
 			GameController.gameController?.gameResources?.itemDic?.Add(item.Id, item.Sprite);
+			GameController.gameController?.gameResources?.itemList?.Add(item.Sprite);
 			item.Name = SetCustomName(id, "Item", name);
 			item.Description = SetCustomName(id, "Description", description);
 			item.SetupDetails = setupDetails;
@@ -322,12 +315,10 @@ namespace RogueLibsCore
 		{
 			DeleteCustomName(customItem.Name);
 			DeleteCustomName(customItem.Description);
-			if (Instance.Items.Remove(customItem))
-			{
-				Instance.Logger.LogInfo("CustomItem " + customItem.Id + " (" + customItem.Name?.English + ") was deleted.");
-				return true;
-			}
-			return false;
+
+			bool res = Instance.Items.Remove(customItem);
+			if (res) Instance.Logger.LogInfo("CustomItem " + customItem.Id + " (" + customItem.Name?.English + ") was deleted.");
+			return res;
 		}
 
 		internal static RandomList GetRandomList(string name, string category, string objectType)

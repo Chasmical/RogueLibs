@@ -91,16 +91,6 @@
               <para>Adds this item to a <see cref="T:RandomList"/> with the specified <paramref name="listName"/>, with the specified <paramref name="spawnChance"/>. See <see cref="M:RandomItems.fillItems"/> for more info.</para>
             </summary>
         </member>
-        <member name="T:RogueLibsCore.MessageArgs">
-            <summary>
-              <para><see cref="T:System.EventArgs"/> that are used for <see cref="E:RogueLibsCore.RogueChat.OnCommand"/> event.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.MessageArgs.Text">
-            <summary>
-              <para>Text of the command.</para>
-            </summary>
-        </member>
         <member name="T:RogueLibsCore.RogueChat">
             <summary>
               <para>A class for catching and processing in-game commands.</para>
@@ -109,6 +99,16 @@
         <member name="E:RogueLibsCore.RogueChat.OnCommand">
             <summary>
               <para>An event that is invoked every time a new message in chat is created.</para>
+            </summary>
+        </member>
+        <member name="T:RogueLibsCore.MessageArgs">
+            <summary>
+              <para><see cref="T:System.EventArgs"/> that are used for <see cref="E:RogueLibsCore.RogueChat.OnCommand"/> event.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.MessageArgs.Text">
+            <summary>
+              <para>Text of the command.</para>
             </summary>
         </member>
         <member name="T:RogueLibsCore.RogueLibs">
@@ -218,7 +218,7 @@
         </member>
         <member name="M:RogueLibsCore.RogueLibs.SetItem(System.String,UnityEngine.Sprite,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo,System.Action{InvItem})">
             <summary>
-              <para>Creates or updates a <see cref="T:RogueLibsCore.CustomItem"/> using the specified <paramref name="id"/>, <paramref name="name"/>, <paramref name="description"/>, <paramref name="sprite"/> and <paramref name="setupDetails"/> function.</para>
+              <para>Creates or updates a <see cref="T:RogueLibsCore.CustomItem"/> using the specified <paramref name="id"/>, <paramref name="name"/>, <paramref name="description"/>, <paramref name="sprite"/> and <paramref name="setupDetails"/> delegate.</para>
             </summary>
         </member>
         <member name="M:RogueLibsCore.RogueLibs.DeleteItem(System.String)">
@@ -445,16 +445,6 @@
               <para>Remove conflicting <see cref="T:RogueLibsCore.CustomMutator"/>s, so that it will be possible to enable both them and this <see cref="T:RogueLibsCore.CustomMutator"/> at the same time.</para>
             </summary>
         </member>
-        <member name="T:RogueLibsCore.CustomMutator.OnChangeState">
-            <summary>
-              <para><see langword="delegate"/> method for <see cref="E:RogueLibsCore.CustomMutator.OnEnabled"/> and <see cref="E:RogueLibsCore.CustomMutator.OnDisabled"/> events.</para>
-            </summary>
-        </member>
-        <member name="T:RogueLibsCore.CustomMutator.OnState">
-            <summary>
-              <para><see langword="delegate"/> for <see cref="E:RogueLibsCore.CustomMutator.OnChangedState"/> event.</para>
-            </summary>
-        </member>
         <member name="E:RogueLibsCore.CustomMutator.OnEnabled">
             <summary>
               <para>An <see langword="event"/> that is called when this <see cref="T:RogueLibsCore.CustomMutator"/> is enabled. Triggers only when a player turns on the mutator in the Mutator Menu.</para>
@@ -467,7 +457,8 @@
         </member>
         <member name="E:RogueLibsCore.CustomMutator.OnChangedState">
             <summary>
-              <para>An event that is called when this <see cref="T:RogueLibsCore.CustomMutator"/> is enabled or disabled.</para>
+              <para>An event that is called when this <see cref="T:RogueLibsCore.CustomMutator"/> is enabled or disabled. Triggers only when a player turns on/off the mutator in the Mutator Menu.</para>
+              <para><see cref="T:System.Boolean"/> obj determines whether the mutator is enabled.</para>
             </summary>
         </member>
         <member name="T:RogueLibsCore.RoguePatcher">

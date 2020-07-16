@@ -12,7 +12,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Type, that this <see cref="RoguePatcher"/> will search patch methods in.</para>
 		/// </summary>
-		public Type TypeWithPatches { get; internal set; }
+		public Type TypeWithPatches { get; set; }
 
 		/// <summary>
 		///   <para>Initializes a new instance of <see cref="RoguePatcher"/> for the specified <paramref name="plugin"/> with <paramref name="typeWithPatches"/>.</para>

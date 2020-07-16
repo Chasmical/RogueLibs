@@ -19,13 +19,8 @@ namespace RogueLibsCore
 		{
 			Logger.LogInfo("RogueLibs starting...");
 			RogueLibs.PluginInstance = this;
-			RogueLibs.Instance = new RogueLibs
-			{
-				Logger = Logger
-			};
-			MyLogger = Logger;
-			string dataPath = Path.Combine(Paths.ConfigPath, "RogueLibs2.xml");
-			RogueLibs.Instance.Start(dataPath);
+			RogueLibs.Instance = new RogueLibs { Logger = MyLogger = Logger };
+			RogueLibs.Instance.Start(Path.Combine(Paths.ConfigPath, "RogueLibs2.xml"));
 
 			if (File.Exists(Path.Combine(Paths.ConfigPath, "RogueLibs.xml")))
 				File.Delete(Path.Combine(Paths.ConfigPath, "RogueLibs.xml"));
@@ -59,9 +54,7 @@ namespace RogueLibsCore
 
 		protected static IEnumerator ScrollingMenu_MakeButtonsVisible(IEnumerator __result, ScrollingMenu __instance)
 		{
-			float initValue = __instance.scrollBar.value;
-			if (initValue == 0)
-				initValue = 1f;
+			float initValue = __instance.scrollBar.value != 0f ? __instance.scrollBar.value : 1f;
 			while (__result.MoveNext())
 			{
 				__instance.scrollBar.value = initValue;
@@ -72,6 +65,7 @@ namespace RogueLibsCore
 			}
 			__instance.scrollBar.value = initValue;
 		}
+
 		protected static void NameDB_GetName(NameDB __instance, string myName, string type, ref string __result)
 		{
 			foreach (CustomName name in RogueLibs.Instance.Names)
@@ -85,67 +79,63 @@ namespace RogueLibsCore
 		}
 		protected static void ScrollingMenu_SortUnlocks(ScrollingMenu __instance, string unlockType, List<Unlock> ___listUnlocks)
 		{
-			if (unlockType != "Challenge") return;
-			List<Unlock> customMutators = new List<Unlock>();
-
-			foreach (CustomMutator mutator in RogueLibs.Instance.Mutators)
+			if (unlockType == "Challenge")
 			{
-				if (!mutator.ShowInMenu) continue;
-				Unlock unlock = new Unlock(mutator.Id, "Challenge", mutator.Unlocked)
-				{
-					cancellations = new List<string>(mutator.Conflicting)
-				};
-				customMutators.Add(unlock);
+				List<Unlock> customMutators = new List<Unlock>();
 
+				RogueLibs.Instance.Mutators.Sort();
+				foreach (CustomMutator mutator in RogueLibs.Instance.Mutators)
+					if (mutator.ShowInMenu)
+						customMutators.Add(new Unlock(mutator.Id, "Challenge", mutator.Unlocked)
+						{
+							cancellations = new List<string>(mutator.Conflicting)
+						});
+				___listUnlocks.InsertRange(1, customMutators);
+				__instance.numButtons += customMutators.Count;
 			}
-			//customMutators.Sort();
-			___listUnlocks.InsertRange(1, customMutators);
-			__instance.numButtons += customMutators.Count;
 		}
 		protected static void ScrollingMenu_PushedButton(ScrollingMenu __instance, ButtonHelper myButton)
 		{
-			if (__instance.menuType != "Challenges") return;
-			if (!myButton.scrollingButtonUnlock.unlocked || !__instance.gc.serverPlayer) return;
-			if (myButton.scrollingButtonType == "ClearAll" || myButton.scrollingButtonType == "CreateAMutator") return;
-
-			if (myButton.scrollingHighlighted)
+			if (__instance.menuType == "Challenges")
 			{
-				foreach (CustomMutator mutator in RogueLibs.Instance.Mutators)
-				{
-					if (Array.IndexOf(mutator.Conflicting, myButton.scrollingButtonType) != -1)
-					{
-						foreach (ButtonData buttonData in __instance.buttonsData)
-						{
-							if (buttonData.scrollingButtonType == mutator.Id)
-							{
-								if (buttonData.scrollingHighlighted)
-									mutator.TriggerStateChange(false);
+				if (!myButton.scrollingButtonUnlock.unlocked || !__instance.gc.serverPlayer || myButton.scrollingButtonType == "ClearAll" || myButton.scrollingButtonType == "CreateAMutator") return;
 
-								buttonData.scrollingHighlighted = false;
-								buttonData.highlightedSprite = __instance.solidObjectButton;
-								__instance.gc.challenges.Remove(buttonData.scrollingButtonType);
-								__instance.gc.originalChallenges.Remove(buttonData.scrollingButtonType);
+				if (myButton.scrollingHighlighted)
+				{
+					foreach (CustomMutator mutator in RogueLibs.Instance.Mutators)
+					{
+						if (Array.IndexOf(mutator.Conflicting, myButton.scrollingButtonType) != -1)
+						{
+							foreach (ButtonData buttonData in __instance.buttonsData)
+							{
+								if (buttonData.scrollingButtonType == mutator.Id)
+								{
+									if (buttonData.scrollingHighlighted)
+										mutator.TriggerStateChange(false);
+
+									buttonData.scrollingHighlighted = false;
+									buttonData.highlightedSprite = __instance.solidObjectButton;
+									__instance.gc.challenges.Remove(buttonData.scrollingButtonType);
+									__instance.gc.originalChallenges.Remove(buttonData.scrollingButtonType);
+								}
 							}
 						}
 					}
+					int index = RogueLibs.Instance.Mutators.FindIndex(m => m.Id == myButton.scrollingButtonType);
+					if (index != -1) RogueLibs.Instance.Mutators[index].TriggerStateChange(true);
+
+					__instance.gc.SetDailyRunText();
+					__instance.UpdateOtherVisibleMenus(__instance.menuType);
 				}
-				int index = RogueLibs.Instance.Mutators.FindIndex(m => m.Id == myButton.scrollingButtonType);
-				if (index != -1)
-					RogueLibs.Instance.Mutators[index].TriggerStateChange(true);
+				else
+				{
+					int index = RogueLibs.Instance.Mutators.FindIndex(m => m.Id == myButton.scrollingButtonType);
+					if (index != -1) RogueLibs.Instance.Mutators[index].TriggerStateChange(false);
 
-				__instance.gc.SetDailyRunText();
-				__instance.UpdateOtherVisibleMenus(__instance.menuType);
+					__instance.gc.SetDailyRunText();
+					__instance.UpdateOtherVisibleMenus(__instance.menuType);
+				}
 			}
-			else
-			{
-				int index = RogueLibs.Instance.Mutators.FindIndex(m => m.Id == myButton.scrollingButtonType);
-				if (index != -1)
-					RogueLibs.Instance.Mutators[index].TriggerStateChange(false);
-
-				__instance.gc.SetDailyRunText();
-				__instance.UpdateOtherVisibleMenus(__instance.menuType);
-			}
-
 		}
 
 		protected static void ObjectMult_ShowChatCommand(string myMessage)
@@ -165,16 +155,14 @@ namespace RogueLibsCore
 		{
 			CustomItem item = RogueLibs.Instance.Items.Find(i => i.Id == __instance.invItemName);
 			if (item == null) return;
-			if (__instance.itemIcon == null)
-				__instance.itemIcon = item.Sprite;
+			__instance.itemIcon = __instance.itemIcon ?? item.Sprite;
 		}
 		protected static void ItemFunctions_UseItem(InvItem item, Agent agent)
 		{
 			CustomItem citem = RogueLibs.Instance.Items.Find(i => i.Id == item.invItemName);
-			if (citem == null) return;
-			if (citem.TargetFilter != null || citem.TargetObject != null)
+			if (citem?.TargetObject != null)
 				item.invInterface.ShowOrHideTarget(item);
-			else
+			else if (citem != null)
 				citem.UseItem?.Invoke(item, agent);
 		}
 		protected static void ItemFunctions_TargetObject(InvItem item, Agent agent, PlayfieldObject otherObject, string combineType, ref bool __result)
@@ -182,11 +170,14 @@ namespace RogueLibsCore
 			CustomItem citem = RogueLibs.Instance.Items.Find(i => i.Id == item.invItemName);
 			if (citem?.TargetObject == null) return;
 
-			if (citem.TargetFilter == null || citem.TargetFilter(item, agent, otherObject))
+			if ((__result = citem.TargetFilter == null || citem.TargetFilter(item, agent, otherObject)) && combineType == "Combine")
 			{
-				if (combineType == "Combine")
-					citem.TargetObject(item, agent, otherObject);
-				__result = true;
+				citem.TargetObject(item, agent, otherObject);
+				if (item.invItemCount < 1)
+				{
+					agent.mainGUI.invInterface.HideDraggedItem();
+					agent.mainGUI.invInterface.HideTarget();
+				}
 			}
 		}
 		protected static void ItemFunctions_CombineItems(InvItem item, Agent agent, InvItem otherItem, int slotNum, string combineType, ref bool __result)
@@ -194,11 +185,14 @@ namespace RogueLibsCore
 			CustomItem citem = RogueLibs.Instance.Items.Find(i => i.Id == item.invItemName);
 			if (citem?.CombineItem == null) return;
 
-			if (citem.CombineFilter == null || citem.CombineFilter(item, agent, otherItem))
+			if ((__result = citem.CombineFilter == null || citem.CombineFilter(item, agent, otherItem)) && combineType == "Combine")
 			{
-				if (combineType == "Combine")
-					citem.CombineItem(item, agent, otherItem, slotNum);
-				__result = true;
+				citem.CombineItem(item, agent, otherItem, slotNum);
+				if (item.invItemCount < 1)
+				{
+					agent.mainGUI.invInterface.HideDraggedItem();
+					agent.mainGUI.invInterface.HideTarget();
+				}
 			}
 		}
 
@@ -214,6 +208,7 @@ namespace RogueLibsCore
 		{
 			foreach (RandomListInfo info in RogueLibs.Instance.RandomLists)
 				__instance.CreateRandomList(info.name, info.category, info.objectType);
+
 			foreach (CustomItem item in RogueLibs.Instance.Items)
 				foreach (KeyValuePair<string, int> pair in item.SpawnDictionary)
 				{
@@ -230,33 +225,13 @@ namespace RogueLibsCore
 
 		protected static void InvSlot_SetColor(InvSlot __instance, Text ___itemText)
 		{
-			/*
-			__instance.toolbarNumTextGo.SetActive(false);
-			__instance.toolbarNumText.text = "";
-
-			InvItem item = __instance.database.invInterface.draggedInvItem ?? __instance.database.invInterface.mainGUI.targetItem;
-			if (item == null) return;
-			CustomItem cItem = RogueLibs.Instance.Items.Find(i => i.Id == item.invItemName);
-			if (cItem == null) return;
-			if (cItem.CombineFilter == null || cItem.Highlighter == null) return;
-
-			InvItem otherItem = __instance.item;
-			if (otherItem.invItemName == null) return;
-			if (!cItem.CombineFilter(item, item.agent, otherItem)) return;
-
-			string result = cItem.Highlighter(item, item.agent, otherItem);
-			if (result == string.Empty) result = string.Empty;
-
-			__instance.toolbarNumTextGo.SetActive(true);
-			__instance.toolbarNumText.text = result;
-			*/
 			__instance.toolbarNumTextGo.SetActive(false);
 			InvItem targetItem = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
 			if (targetItem == null) return;
 			InvItem thisItem = __instance.curItemList[__instance.slotNumber];
 
 			CustomItem cItem = RogueLibs.Instance.Items.Find(i => i.Id == targetItem.invItemName);
-			if (cItem == null || cItem.CombineFilter == null || cItem.CombineItem == null || cItem.CombineTooltip == null) return;
+			if (cItem?.CombineTooltip == null) return;
 
 			if (targetItem != null && (__instance.slotType == "Player" || __instance.slotType == "Toolbar" || __instance.slotType == "Chest" || __instance.slotType == "NPCChest"))
 			{

@@ -15,27 +15,34 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Converts a .png or .jpg file into a <see cref="Sprite"/>.</para>
 		/// </summary>
-		public static Sprite ConvertToSprite(string filePath) => ConvertToSprite(filePath, 64);
+		public static Sprite ConvertToSprite(string filePath)
+		{
+			byte[] data = null;
+			try
+			{
+				data = File.ReadAllBytes(Path.GetFullPath(filePath));
+			}
+			catch (Exception e)
+			{
+				RogueLibs.PluginInstance.LogErrorWith("Could not load Sprite from \"" + filePath + "\"!", e);
+			}
+			return ConvertToSprite(data, 64);
+		}
 		/// <summary>
 		///   <para>Converts a .png or .jpg file into a <see cref="Sprite"/> with the specified pixel-per-unit value (default - 64).</para>
 		/// </summary>
 		public static Sprite ConvertToSprite(string filePath, int ppu)
 		{
-			string path = Path.GetFullPath(filePath);
-			Sprite sprite = null;
+			byte[] data = null;
 			try
 			{
-				byte[] data = File.ReadAllBytes(path);
-				Texture2D texture = new Texture2D(7, 8);
-				if (!texture.LoadImage(data))
-					throw new Exception();
-				sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero, ppu);
+				data = File.ReadAllBytes(Path.GetFullPath(filePath));
 			}
 			catch (Exception e)
 			{
-				RogueLibs.PluginInstance.LogErrorWith("Could not load Sprite from \"" + path + "\"!", e);
+				RogueLibs.PluginInstance.LogErrorWith("Could not load Sprite from \"" + filePath + "\"!", e);
 			}
-			return sprite;
+			return ConvertToSprite(data, ppu);
 		}
 		/// <summary>
 		///   <para>Converts a .png or .jpg byte array into a <see cref="Sprite"/>.</para>
@@ -55,7 +62,6 @@ namespace RogueLibsCore
 			}
 			catch (Exception e)
 			{
-
 				RogueLibs.PluginInstance.LogErrorWith("Could not load Sprite from an array of bytes!", e);
 			}
 			return sprite;

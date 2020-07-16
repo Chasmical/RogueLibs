@@ -32,14 +32,14 @@ namespace RogueLibsCore
 		/// </summary>
 		public void SetTranslations(CustomNameInfo customNameInfo)
 		{
-			English = customNameInfo.English;
-			SChinese = customNameInfo.SChinese;
-			German = customNameInfo.German;
-			Spanish = customNameInfo.Spanish;
-			Brazilian = customNameInfo.Brazilian;
-			Russian = customNameInfo.Russian;
-			French = customNameInfo.French;
-			KoreanA = customNameInfo.KoreanA;
+			Translations[0] = customNameInfo.English;
+			Translations[1] = customNameInfo.SChinese;
+			Translations[2] = customNameInfo.German;
+			Translations[3] = customNameInfo.Spanish;
+			Translations[4] = customNameInfo.Brazilian;
+			Translations[5] = customNameInfo.Russian;
+			Translations[6] = customNameInfo.French;
+			Translations[7] = customNameInfo.KoreanA;
 		}
 
 		/// <summary>

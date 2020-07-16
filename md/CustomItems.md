@@ -93,12 +93,6 @@ repairer.CombineItem = (item, agent, otherItem, slotNum) =>
         agent.agentInvDatabase.SubtractFromItemCount(item, 1);
 
     item.gc.audioHandler.Play(agent, "CombineItem");
-
-    if (item.invItemCount < 1) // Stop combining if the repairer has 0 uses left
-    {
-        agent.mainGUI.invInterface.HideDraggedItem();
-        agent.mainGUI.invInterface.HideTarget();
-    }
 };
 repairer.CombineTooltip = (item, agent, otherItem) =>
 {
@@ -130,6 +124,7 @@ remoteGiantizer.TargetFilter = (item, agent, target) => target is Agent a && !a.
 remoteGiantizer.TargetObject = (item, agent, target) =>
 {
     item.invInterface.HideTarget();
+    // after using, you will need to select this item again
 
     Agent a = (Agent)target;
     a.statusEffects.AddStatusEffect("Giant", true, true, 999999);

@@ -14,11 +14,7 @@ namespace RogueLibsCore
 		/// </summary>
 		public string Id { get; }
 
-		internal CustomItem(string id)
-		{
-			Id = id;
-			SpawnDictionary = new Dictionary<string, int>();
-		}
+		internal CustomItem(string id) => Id = id;
 
 		/// <summary>
 		///   <para>Delegate that will be invoked when setting up this custom item. See <see cref="InvItem.SetupDetails(bool)"/> for more details.</para>
@@ -74,12 +70,7 @@ namespace RogueLibsCore
 		/// </summary>
 		public CustomName Name
 		{
-			get
-			{
-				if (name == null)
-					name = RogueLibs.GetCustomName(Id, "Item");
-				return name;
-			}
+			get => name = name ?? RogueLibs.GetCustomName(Id, "Item");
 			set => name = value;
 		}
 		/// <summary>
@@ -87,24 +78,19 @@ namespace RogueLibsCore
 		/// </summary>
 		public CustomName Description
 		{
-			get
-			{
-				if (description == null)
-					description = RogueLibs.GetCustomName(Id, "Description");
-				return description;
-			}
+			get => description = description ?? RogueLibs.GetCustomName(Id, "Description");
 			set => description = value;
 		}
 
 		/// <summary>
 		///   <para>Dictionary of RandomLists' names that this item will spawn in and spawn chances. See <see cref="RandomItems.fillItems"/> for more details.</para>
 		/// </summary>
-		public Dictionary<string, int> SpawnDictionary { get; set; }
+		public Dictionary<string, int> SpawnDictionary { get; set; } = new Dictionary<string, int>();
 
 		/// <summary>
 		///   <para>Sets this item's hover text.</para>
 		/// </summary>
-		public void SetHoverText(CustomNameInfo info) => HoverText = RogueLibs.SetCustomName("Verb" + Id, "Interface", info);
+		public CustomName SetHoverText(CustomNameInfo info) => HoverText = RogueLibs.SetCustomName("Verb" + Id, "Interface", info);
 		/// <summary>
 		///   <para>Adds this item to a <see cref="RandomList"/> with the specified <paramref name="listName"/>, with the specified <paramref name="spawnChance"/>. See <see cref="RandomItems.fillItems"/> for more info.</para>
 		/// </summary>
