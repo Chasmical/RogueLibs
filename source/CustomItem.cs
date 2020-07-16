@@ -90,7 +90,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Sets this item's hover text.</para>
 		/// </summary>
-		public CustomName SetHoverText(CustomNameInfo info) => HoverText = RogueLibs.SetCustomName("Verb" + Id, "Interface", info);
+		public void SetHoverText(CustomNameInfo info) => HoverText = RogueLibs.SetCustomName("Verb" + Id, "Interface", info);
 		/// <summary>
 		///   <para>Adds this item to a <see cref="RandomList"/> with the specified <paramref name="listName"/>, with the specified <paramref name="spawnChance"/>. See <see cref="RandomItems.fillItems"/> for more info.</para>
 		/// </summary>
