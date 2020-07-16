@@ -14,7 +14,6 @@ Here you will find all updates on RogueLibs, so you can specify your RogueLibs' 
 
 #### RogueLibs v1.3.3 ####
 * Optimized and cleaned up the code;
-* Replaced `CustomMutator.OnChangeState` and `CustomMutator.OnState` delegates with `System.Action` and `System.Action<bool>`;
 * Now RogueLibs will check if the combinable/targetable item was depleted after usage, so there is no need to check that at the end of `InvItem.TargetObject`/`InvItem.CombineItem`;
 
 #### RogueLibs v1.3.2 ####

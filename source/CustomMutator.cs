@@ -139,19 +139,24 @@ namespace RogueLibsCore
 			Conflicting = conflicts.ToArray();
 		}
 
+#pragma warning disable CS1591
+		public delegate void OnChangeState();
+		public delegate void OnState(bool newValue);
+#pragma warning restore CS1591
+
 		/// <summary>
 		///   <para>An <see langword="event"/> that is called when this <see cref="CustomMutator"/> is enabled. Triggers only when a player turns on the mutator in the Mutator Menu.</para>
 		/// </summary>
-		public event Action OnEnabled;
+		public event OnChangeState OnEnabled;
 		/// <summary>
 		///   <para>An <see langword="event"/> that is called when this <see cref="CustomMutator"/> is disabled. Triggers only when a player turns off the mutator in the Mutator Menu.</para>
 		/// </summary>
-		public event Action OnDisabled;
+		public event OnChangeState OnDisabled;
 		/// <summary>
 		///   <para>An event that is called when this <see cref="CustomMutator"/> is enabled or disabled. Triggers only when a player turns on/off the mutator in the Mutator Menu.</para>
 		///   <para><see cref="bool"/> obj determines whether the mutator is enabled.</para>
 		/// </summary>
-		public event Action<bool> OnChangedState;
+		public event OnState OnChangedState;
 
 		internal void TriggerStateChange(bool newState)
 		{
