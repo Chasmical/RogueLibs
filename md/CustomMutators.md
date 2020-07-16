@@ -128,9 +128,9 @@ myMutator.Description = new CustomName(...);
 ## Events ##
 There are three events that you can listen to:
 ```cs
-public event OnChangeState OnEnabled; // delegate void OnChangeState();
-public event OnChangeState OnDisabled; // delegate void OnChangeState();
-public event OnState OnChangedState; // delegate void OnState(bool newState);
+public event Action OnEnabled;
+public event Action OnDisabled;
+public event Action<bool> OnChangedState;
 ```
 ```cs
 myMutator.OnEnabled += MyListener;
