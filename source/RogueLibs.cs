@@ -24,7 +24,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Do not use this constant in your BepInDependency attribute!</para>
 		/// </summary>
-		public const string pluginVersion = "1.3.3";
+		public const string pluginVersion = "1.4.0";
 
 		internal static RogueLibsPlugin PluginInstance { get; set; }
 		/// <summary>
@@ -43,6 +43,10 @@ namespace RogueLibsCore
 		///   <para>List of all <see cref="CustomItem"/>s.</para>
 		/// </summary>
 		public List<CustomItem> Items { get; set; }
+		/// <summary>
+		///   <para>List of all <see cref="CustomAbility"/>s.</para>
+		/// </summary>
+		public List<CustomAbility> Abilities { get; set; }
 		/// <summary>
 		///   <para>List of all <see cref="CustomName"/>s.</para>
 		/// </summary>
@@ -339,6 +343,28 @@ namespace RogueLibsCore
 				Instance.RandomLists.Add(info);
 			}
 			return list;
+		}
+
+		/// <summary>
+		///   <para>Gets a <see cref="CustomAbility"/> with the specified <paramref name="id"/>.</para>
+		/// </summary>
+		public static CustomAbility GetAbility(string id) => Instance.Abilities.Find(a => a.Id == id);
+		/// <summary>
+		///   <para>Creates or updates a <see cref="CustomAbility"/> using the specified <paramref name="item"/>.</para>
+		/// </summary>
+		public static CustomAbility SetAbility(CustomItem item, Func<Agent, PlayfieldObject> findObject = null, Action<Agent, PlayfieldObject> onPressed = null)
+		{
+			CustomAbility ability = Instance.Abilities.Find(a => a.Id == item.Id);
+			bool createNew = ability == null;
+			if (createNew)
+				Instance.Abilities.Add(ability = new CustomAbility(item));
+
+			ability.FindObject = findObject;
+			ability.OnPressed = onPressed;
+
+			Instance.Logger.LogInfo("CustomAbility " + item.Id + " (" + item.Name?.English + ") was " + (createNew ? "created" : "updated") + ".");
+
+			return ability;
 		}
 
 	}

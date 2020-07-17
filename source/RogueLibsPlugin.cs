@@ -50,6 +50,8 @@ namespace RogueLibsCore
 			patcher.Postfix(typeof(RandomSelection), "LoadRandomness");
 
 			patcher.Postfix(typeof(InvSlot), "SetColor");
+
+			patcher.Postfix(typeof(StatusEffects), "PressedSpecialAbility");
 		}
 
 		protected static IEnumerator ScrollingMenu_MakeButtonsVisible(IEnumerator __result, ScrollingMenu __instance)
@@ -274,6 +276,14 @@ namespace RogueLibsCore
 					__instance.invInterface.OnSelectionBox(__instance.slotType, __instance.tr.position);
 			}
 		}
+
+		protected static void StatusEffects_PressedSpecialAbility(StatusEffects __instance)
+		{
+			if (__instance.agent.ghost || __instance.agent.teleporting) return;
+
+			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.specialAbility);
+		}
+
 
 
 

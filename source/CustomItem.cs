@@ -59,7 +59,7 @@ namespace RogueLibsCore
 		public Func<InvItem, Agent, InvItem, string> CombineTooltip { get; set; }
 
 		/// <summary>
-		///   <para><see cref="Sprite"/> that will be used for this item.</para>
+		///   <para><see cref="UnityEngine.Sprite"/> that will be used for this item.</para>
 		/// </summary>
 		public Sprite Sprite { get; set; }
 
