@@ -4,6 +4,51 @@
         <name>RogueLibs</name>
     </assembly>
     <members>
+        <member name="T:RogueLibsCore.CustomAbility">
+            <summary>
+              <para>Represents a custom in-game ability.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomAbility.FindObject">
+            <summary>
+              <para>Delegate that will be used to determine the special ability's target object. See <see cref="M:StatusEffects.FindSpecialAbilityObject"/> for more details.</para>
+              <para><see cref="T:Agent"/> arg is the special ability's owner.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomAbility.InterfaceCheck">
+            <summary>
+              <para>Delegate that will be used to determine whether a special ability indicator will be shown. See <see cref="M:StatusEffects.SpecialAbilityInterfaceCheck"/> for more details.</para>
+              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:PlayfieldObject"/> arg2 is the target object that was found using <see cref="P:RogueLibsCore.CustomAbility.FindObject"/> delegate.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomAbility.RechargePeriod">
+            <summary>
+              <para>Delegate that will be used to determine the special ability's recharge period.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomAbility.Recharge">
+            <summary>
+              <para>Delegate that will be used to determine the recharging process for the special ability.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomAbility.OnPressed">
+            <summary>
+              <para>Delegate that will be invoked when the player presses the special ability button. See <see cref="M:StatusEffects.PressedSpecialAbility"/> for more details.</para>
+              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:PlayfieldObject"/> arg2 is the target object that was found using <see cref="P:RogueLibsCore.CustomAbility.FindObject"/> delegate.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomAbility.OnHeld">
+            <summary>
+              <para>Delegate that will be invoked when the player holds the special ability button. See <see cref="M:StatusEffects.HeldSpecialAbility"/> for more details.</para>
+              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:PlayfieldObject"/> arg2 is the target object that was found using <see cref="P:RogueLibsCore.CustomAbility.FindObject"/> delegate.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomAbility.OnReleased">
+            <summary>
+              <para>Delegate that will be invoked when the player releases the special ability button. See <see cref="M:StatusEffects.ReleasedSpecialAbility"/> for more details.</para>
+              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:PlayfieldObject"/> arg2 is the target object that was found using <see cref="P:RogueLibsCore.CustomAbility.FindObject"/> delegate.</para>
+            </summary>
+        </member>
         <member name="T:RogueLibsCore.CustomItem">
             <summary>
               <para>Represents a custom in-game item.</para>
@@ -63,7 +108,7 @@
         </member>
         <member name="P:RogueLibsCore.CustomItem.Sprite">
             <summary>
-              <para><see cref="P:RogueLibsCore.CustomItem.Sprite"/> that will be used for this item.</para>
+              <para><see cref="T:UnityEngine.Sprite"/> that will be used for this item.</para>
             </summary>
         </member>
         <member name="P:RogueLibsCore.CustomItem.Name">
@@ -144,6 +189,11 @@
         <member name="P:RogueLibsCore.RogueLibs.Items">
             <summary>
               <para>List of all <see cref="T:RogueLibsCore.CustomItem"/>s.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.Abilities">
+            <summary>
+              <para>List of all <see cref="T:RogueLibsCore.CustomAbility"/>s.</para>
             </summary>
         </member>
         <member name="P:RogueLibsCore.RogueLibs.Names">
@@ -229,6 +279,16 @@
         <member name="M:RogueLibsCore.RogueLibs.DeleteItem(RogueLibsCore.CustomItem)">
             <summary>
               <para>Deletes the specified <paramref name="customItem"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetAbility(System.String)">
+            <summary>
+              <para>Gets a <see cref="T:RogueLibsCore.CustomAbility"/> with the specified <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.SetAbility(RogueLibsCore.CustomItem)">
+            <summary>
+              <para>Creates or updates a <see cref="T:RogueLibsCore.CustomAbility"/> using the specified <paramref name="item"/>.</para>
             </summary>
         </member>
         <member name="T:RogueLibsCore.BaseUnityPluginExtensions">

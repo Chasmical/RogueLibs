@@ -352,15 +352,12 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Creates or updates a <see cref="CustomAbility"/> using the specified <paramref name="item"/>.</para>
 		/// </summary>
-		public static CustomAbility SetAbility(CustomItem item, Func<Agent, PlayfieldObject> findObject = null, Action<Agent, PlayfieldObject> onPressed = null)
+		public static CustomAbility SetAbility(CustomItem item)
 		{
 			CustomAbility ability = Instance.Abilities.Find(a => a.Id == item.Id);
 			bool createNew = ability == null;
 			if (createNew)
 				Instance.Abilities.Add(ability = new CustomAbility(item));
-
-			ability.FindObject = findObject;
-			ability.OnPressed = onPressed;
 
 			Instance.Logger.LogInfo("CustomAbility " + item.Id + " (" + item.Name?.English + ") was " + (createNew ? "created" : "updated") + ".");
 

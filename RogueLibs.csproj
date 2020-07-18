@@ -94,6 +94,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="source\RoguePatcher.cs" />
     <Compile Include="source\RogueUtilities.cs" />
+    <Compile Include="source\Test\TestPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="md\Changelog.md" />

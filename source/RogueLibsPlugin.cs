@@ -51,7 +51,12 @@ namespace RogueLibsCore
 
 			patcher.Postfix(typeof(InvSlot), "SetColor");
 
+			patcher.Postfix(typeof(StatusEffects), "FindSpecialAbilityObject");
+			patcher.Postfix(typeof(StatusEffects), "SpecialAbilityInterfaceCheck2");
+			patcher.Postfix(typeof(StatusEffects), "RechargeSpecialAbility2");
 			patcher.Postfix(typeof(StatusEffects), "PressedSpecialAbility");
+			patcher.Postfix(typeof(StatusEffects), "HeldSpecialAbility");
+			patcher.Postfix(typeof(StatusEffects), "ReleasedSpecialAbility");
 		}
 
 		protected static IEnumerator ScrollingMenu_MakeButtonsVisible(IEnumerator __result, ScrollingMenu __instance)
@@ -277,12 +282,77 @@ namespace RogueLibsCore
 			}
 		}
 
+		protected static void StatusEffects_FindSpecialAbilityObject(StatusEffects __instance, ref PlayfieldObject __result)
+		{
+			if (__instance.agent.ghost || __instance.agent.teleporting) return;
+
+			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.specialAbility);
+			if (ability?.FindObject == null) return;
+			__result = ability.FindObject(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+		}
+		protected static IEnumerator StatusEffects_SpecialAbilityInterfaceCheck2(IEnumerator iEnumerator, StatusEffects __instance)
+		{
+			while (iEnumerator.MoveNext())
+			{
+				CustomAbility ability = RogueLibs.GetAbility(__instance.agent?.specialAbility);
+				if (ability?.InterfaceCheck != null)
+				{
+					PlayfieldObject target = ability.FindObject?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+					ability.InterfaceCheck(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility, target);
+				}
+				yield return iEnumerator.Current;
+			}
+		}
+		protected static IEnumerator StatusEffects_RechargeSpecialAbility2(IEnumerator iEnumerator, StatusEffects __instance)
+		{
+			while (iEnumerator.MoveNext())
+			{
+				CustomAbility ability = RogueLibs.GetAbility(__instance.agent?.specialAbility);
+				if (ability == null)
+					yield return iEnumerator.Current;
+				else
+				{
+					WaitForSeconds obj = ability.RechargePeriod?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+					ability.Recharge?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+					yield return obj;
+				}
+			}
+		}
+		protected static void StatusEffects_GiveSpecialAbility(StatusEffects __instance, string abilityName)
+		{
+			if (__instance.agent.name == "DummyAgent" || __instance.agent.name.Contains("BackupAgent")) return;
+
+			CustomAbility ability = RogueLibs.GetAbility(__instance.agent?.specialAbility);
+
+			if (ability?.InterfaceCheck != null) __instance.SpecialAbilityInterfaceCheck();
+			if (ability?.Recharge != null) __instance.RechargeSpecialAbility(abilityName);
+		}
 		protected static void StatusEffects_PressedSpecialAbility(StatusEffects __instance)
 		{
 			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
 			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.specialAbility);
+			if (ability?.OnPressed == null) return;
+			PlayfieldObject target = ability.FindObject?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+			ability.OnPressed(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility, target);
 		}
+		protected static void StatusEffects_HeldSpecialAbility(StatusEffects __instance)
+		{
+			if (__instance.agent.ghost || __instance.agent.teleporting) return;
+
+			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.specialAbility);
+			if (ability?.OnHeld == null) return;
+			ability.OnHeld(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+		}
+		protected static void StatusEffects_ReleasedSpecialAbility(StatusEffects __instance)
+		{
+			if (__instance.agent.ghost || __instance.agent.teleporting) return;
+
+			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.specialAbility);
+			if (ability?.OnHeld == null) return;
+			ability.OnHeld(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+		}
+
 
 
 
