@@ -53,8 +53,9 @@ namespace RogueLibsCore
 		public List<CustomName> Names { get; set; }
 
 		internal List<RandomListInfo> RandomLists { get; set; }
-
+		
 		internal Dictionary<string, bool> MutatorsStates { get; set; }
+		internal Dictionary<string, int> AbilityIds { get; set; }
 
 		internal void Start(string dataPath)
 		{
@@ -68,10 +69,13 @@ namespace RogueLibsCore
 		{
 			Mutators = new List<CustomMutator>();
 			Items = new List<CustomItem>();
+			Abilities = new List<CustomAbility>();
 			Names = new List<CustomName>();
+
 			RandomLists = new List<RandomListInfo>();
 
 			MutatorsStates = new Dictionary<string, bool>();
+			AbilityIds = new Dictionary<string, int>();
 		}
 
 		internal void LoadData(string dataPath, bool throwException = false)
@@ -357,7 +361,10 @@ namespace RogueLibsCore
 			CustomAbility ability = Instance.Abilities.Find(a => a.Id == item.Id);
 			bool createNew = ability == null;
 			if (createNew)
+			{
 				Instance.Abilities.Add(ability = new CustomAbility(item));
+				Instance.AbilityIds.Add(ability.Id, ability.Id.GetHashCode());
+			}
 
 			Instance.Logger.LogInfo("CustomAbility " + item.Id + " (" + item.Name?.English + ") was " + (createNew ? "created" : "updated") + ".");
 

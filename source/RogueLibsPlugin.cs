@@ -51,6 +51,9 @@ namespace RogueLibsCore
 
 			patcher.Postfix(typeof(InvSlot), "SetColor");
 
+			patcher.Postfix(typeof(ObjectMultAgent), "convertIntToSpecialAbility");
+			patcher.Postfix(typeof(ObjectMultAgent), "convertSpecialAbilityToInt");
+
 			patcher.Postfix(typeof(StatusEffects), "FindSpecialAbilityObject");
 			patcher.Postfix(typeof(StatusEffects), "SpecialAbilityInterfaceCheck2");
 			patcher.Postfix(typeof(StatusEffects), "RechargeSpecialAbility2");
@@ -282,6 +285,27 @@ namespace RogueLibsCore
 			}
 		}
 
+		protected static void ObjectMultAgent_convertIntToSpecialAbility(int myAbility, ref string __result)
+		{
+			if (__result != string.Empty) return;
+			foreach (KeyValuePair<string, int> pair in RogueLibs.Instance.AbilityIds)
+				if (pair.Value == myAbility)
+				{
+					__result = pair.Key;
+					return;
+				}
+		}
+		protected static void ObjectMultAgent_convertSpecialAbilityToInt(string myAbility, ref int __result)
+		{
+			if (__result != 0) return;
+			foreach (KeyValuePair<string, int> pair in RogueLibs.Instance.AbilityIds)
+				if (pair.Key == myAbility)
+				{
+					__result = pair.Value;
+					return;
+				}
+		}
+
 		protected static void StatusEffects_FindSpecialAbilityObject(StatusEffects __instance, ref PlayfieldObject __result)
 		{
 			if (__instance.agent.ghost || __instance.agent.teleporting) return;
@@ -305,27 +329,43 @@ namespace RogueLibsCore
 		}
 		protected static IEnumerator StatusEffects_RechargeSpecialAbility2(IEnumerator iEnumerator, StatusEffects __instance)
 		{
-			while (iEnumerator.MoveNext())
+			Debug.LogWarning("Entered recharge first");
+			do
 			{
+				Debug.LogWarning("RECHARGE 1 \"" + __instance.agent?.agentName + "\"");
 				CustomAbility ability = RogueLibs.GetAbility(__instance.agent?.specialAbility);
+				Debug.LogWarning("RECHARGE 2 \"" + __instance.agent?.specialAbility + "\"");
+				Debug.LogWarning("Recharge \"" + ability?.Item?.Id + "\"");
 				if (ability == null)
 					yield return iEnumerator.Current;
 				else
 				{
+					Debug.LogWarning("RECHARGE 3");
+					Debug.LogWarning("Entered recharge cycle \"" + ability.Item.Id + "\"");
+					Debug.LogWarning("RECHARGE 4");
 					WaitForSeconds obj = ability.RechargePeriod?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+					Debug.LogWarning("RECHARGE 5");
 					ability.Recharge?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+					Debug.LogWarning("RECHARGE 6");
 					yield return obj;
+					Debug.LogWarning("RECHARGE 7");
 				}
-			}
+			} while (iEnumerator.MoveNext());
 		}
 		protected static void StatusEffects_GiveSpecialAbility(StatusEffects __instance, string abilityName)
 		{
+			Debug.LogWarning("GIVEABILITY 0");
+			if (GameController.gameController.levelType == "HomeBase" && !__instance.agent.isDummy) return;
+			Debug.LogWarning("GIVEABILITY 1");
 			if (__instance.agent.name == "DummyAgent" || __instance.agent.name.Contains("BackupAgent")) return;
+			Debug.LogWarning("GIVEABILITY 2");
 
-			CustomAbility ability = RogueLibs.GetAbility(__instance.agent?.specialAbility);
+			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.inventory.equippedSpecialAbility.invItemName);
 
+			Debug.LogWarning("GIVEABILITY 3 " + ability?.Id?.ToString());
 			if (ability?.InterfaceCheck != null) __instance.SpecialAbilityInterfaceCheck();
 			if (ability?.Recharge != null) __instance.RechargeSpecialAbility(abilityName);
+			Debug.LogWarning("GIVEABILITY 4");
 		}
 		protected static void StatusEffects_PressedSpecialAbility(StatusEffects __instance)
 		{
