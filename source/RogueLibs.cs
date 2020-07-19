@@ -371,11 +371,17 @@ namespace RogueLibsCore
 			return ability;
 		}
 
+		/// <summary>
+		///   <para>Deletes a <see cref="CustomAbility"/> with the specified <paramref name="id"/>.</para>
+		/// </summary>
 		public static bool DeleteAbility(string id)
 		{
 			CustomAbility found = Instance.Abilities.Find(i => i.Id == id);
 			return found != null && DeleteAbility(found);
 		}
+		/// <summary>
+		///   <para>Deletes the specified <paramref name="customAbility"/>.</para>
+		/// </summary>
 		public static bool DeleteAbility(CustomAbility customAbility)
 		{
 			DeleteItem(customAbility.Item);

@@ -2,10 +2,10 @@
 
 1. [Main page](https://github.com/Abbysssal/RogueLibs)
 2. [RogueLibs](./RogueLibs.md)
-3. [CustomMutators](./CustomMutators.md)
-4. [CustomItems](./CustomItems.md)
-5. [CustomAbilities](./CustomAbilities.md)
-6. [CustomNames](./CustomNames.md)
+3. [CustomNames](./CustomNames.md)
+4. [CustomMutators](./CustomMutators.md)
+5. [CustomItems](./CustomItems.md)
+6. [CustomAbilities](./CustomAbilities.md)
 7. [Extras](./Extras.md)
 8. [RogueLibs Changelog](./Changelog.md)
 9. **Mod Examples**

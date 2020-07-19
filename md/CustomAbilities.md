@@ -2,10 +2,10 @@
 
 1. [Main page](https://github.com/Abbysssal/RogueLibs)
 2. [RogueLibs](./RogueLibs.md)
-3. [CustomMutators](./CustomMutators.md)
-4. [CustomItems](./CustomItems.md)
-5. **CustomAbilities**
-6. [CustomNames](./CustomNames.md)
+3. [CustomNames](./CustomNames.md)
+4. [CustomMutators](./CustomMutators.md)
+5. [CustomItems](./CustomItems.md)
+6. **CustomAbilities**
 7. [Extras](./Extras.md)
 8. [RogueLibs Changelog](./Changelog.md)
 9. [Mod Examples](./Examples.md)
@@ -63,12 +63,9 @@ public Action<InvItem, Agent> OnReleased { get; set; }
 CustomItem cItem = RogueLibs.SetItem(...);
 CustomAbility regeneration = RogueLibs.SetAbility(cItem);
 
-regeneration.OnPressed = (item, agent) =>
-{
-    item.invItemCount = 1;
-
+regeneration.OnPressed = (item, agent)
+    => item.invItemCount = 1;
     // see StatusEffects.PressedSpecialAbility() for more info
-};
 regeneration.OnHeld = (item, agent) =>
 {
     if (agent.gc.playerControl.pressedSpecialAbilityTime[agent.isPlayer - 1] * 2f > item.invItemCount)
@@ -77,7 +74,6 @@ regeneration.OnHeld = (item, agent) =>
             item.invItemCount++;
         // each half second the item count is incremented
     }
-
     // see StatusEffects.HeldSpecialAbility() for more info
 };
 regeneration.OnReleased = (item, agent) =>

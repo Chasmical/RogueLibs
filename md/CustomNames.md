@@ -2,10 +2,10 @@
 
 1. [Main page](https://github.com/Abbysssal/RogueLibs)
 2. [RogueLibs](./RogueLibs.md)
-3. [CustomMutators](./CustomMutators.md)
-4. [CustomItems](./CustomItems.md)
-5. [CustomAbilities](./CustomAbilities.md)
-6. **CustomNames**
+3. **CustomNames**
+4. [CustomMutators](./CustomMutators.md)
+5. [CustomItems](./CustomItems.md)
+6. [CustomAbilities](./CustomAbilities.md)
 7. [Extras](./Extras.md)
 8. [RogueLibs Changelog](./Changelog.md)
 9. [Mod Examples](./Examples.md)
@@ -17,13 +17,13 @@ public static CustomName SetCustomName(string id, string type, CustomNameInfo in
 ```cs
 CustomName name = RogueLibs.SetCustomName("myId", "Agent", new CustomNameInfo(
         "english",
-        "schinese",
-        null,
-        null,
-        null,
-        null,
-        null,
-        null));
+        null, // Chinese
+        null, // German
+        null, // Spanish
+        null, // Brazilian
+        null, // Russian
+        null, // French
+        null)); // Korean
 // null strings will default to english.
 
 // If you don't know which type you need, use null.
@@ -73,7 +73,7 @@ public string[] Translations { get; set; }
 ```
 ```cs
 string randomString = myCustomName.Translations[Random.Next(0, 8)];
-myCustomName.Translations[3] = "NewName";
+myCustomName.Translations[3] = randomString;
 ```
 
 

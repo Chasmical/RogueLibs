@@ -69,12 +69,9 @@ namespace RogueLibsCore.Test
 				item => { });
 			CustomAbility regeneration = RogueLibs.SetAbility(cItem);
 
-			regeneration.OnPressed = (item, agent) =>
-			{
-				item.invItemCount = 1;
-
-				// see StatusEffects.PressedSpecialAbility() for more info
-			};
+			regeneration.OnPressed = (item, agent)
+				=> item.invItemCount = 1;
+			    // see StatusEffects.PressedSpecialAbility() for more info
 			regeneration.OnHeld = (item, agent) =>
 			{
 				if (agent.gc.playerControl.pressedSpecialAbilityTime[agent.isPlayer - 1] * 2f > item.invItemCount)

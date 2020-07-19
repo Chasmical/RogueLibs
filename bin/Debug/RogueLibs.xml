@@ -312,6 +312,16 @@
               <para>Creates or updates a <see cref="T:RogueLibsCore.CustomAbility"/> using the specified <paramref name="customItem"/>.</para>
             </summary>
         </member>
+        <member name="M:RogueLibsCore.RogueLibs.DeleteAbility(System.String)">
+            <summary>
+              <para>Deletes a <see cref="T:RogueLibsCore.CustomAbility"/> with the specified <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.DeleteAbility(RogueLibsCore.CustomAbility)">
+            <summary>
+              <para>Deletes the specified <paramref name="customAbility"/>.</para>
+            </summary>
+        </member>
         <member name="T:RogueLibsCore.BaseUnityPluginExtensions">
             <summary>
               <para>Collection of RogueLibs extension methods.</para>
