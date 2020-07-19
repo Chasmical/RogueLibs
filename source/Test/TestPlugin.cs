@@ -66,7 +66,11 @@ namespace RogueLibsCore.Test
 			CustomItem cItem = RogueLibs.SetItem("RegenerationAbility", sprite2,
 				new CustomNameInfo("Regeneration"),
 				new CustomNameInfo("Use it to regenerate health"),
-				item => { });
+				item =>
+				{
+					item.initCount = 0;
+					item.stackable = true;
+				});
 			CustomAbility regeneration = RogueLibs.SetAbility(cItem);
 
 			regeneration.OnPressed = (item, agent)
