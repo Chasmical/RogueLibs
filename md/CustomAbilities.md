@@ -13,6 +13,7 @@
 ## Creating CustomAbilities ##
 ```cs
 public static CustomAbility SetAbility(CustomItem item);
+public static CustomAbility SetAbility(string id, Sprite sprite, CustomNameInfo name, CustomNameInfo description, Action<InvItem> setupDetails);
 ```
 ```cs
 CustomItem item = RogueLibs.SetItem(..., item =>
@@ -24,8 +25,7 @@ CustomItem item = RogueLibs.SetItem(..., item =>
     item.stackable = true;
 });
 CustomAbility ability = RogueLibs.SetAbility(item);
-// the ability is basically a usable item in the inventory,
-// so you have to make a CustomItem first, and then make CustomAbility
+// ability is basically a usable item in the inventory
 ```
 ## Deleting CustomAbilities ##
 ```cs
