@@ -4,10 +4,11 @@
 2. [RogueLibs](./RogueLibs.md)
 3. **CustomMutators**
 4. [CustomItems](./CustomItems.md)
-5. [CustomNames](./CustomNames.md)
-6. [Extras](./Extras.md)
-7. [RogueLibs Changelog](./Changelog.md)
-8. [Mod Examples](./Examples.md)
+5. [CustomAbilities](./CustomAbilities.md)
+6. [CustomNames](./CustomNames.md)
+7. [Extras](./Extras.md)
+8. [RogueLibs Changelog](./Changelog.md)
+9. [Mod Examples](./Examples.md)
 
 ## Creating CustomMutators ##
 ```cs
@@ -30,7 +31,7 @@ public static bool DeleteMutator(string id);
 ```
 You can use these in case you rename your mutator:
 ```cs
-CustomMutator newMutator = RogueLibs.CreateMutator(...);
+CustomMutator newMutator = RogueLibs.SetMutator(...);
 CustomMutator oldMutator = RogueLibs.GetMutator("oldName");
 if (oldMutator.Unlocked)
     newMutator.Unlocked = true;

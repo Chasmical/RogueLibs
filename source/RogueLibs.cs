@@ -354,21 +354,35 @@ namespace RogueLibsCore
 		/// </summary>
 		public static CustomAbility GetAbility(string id) => Instance.Abilities.Find(a => a.Id == id);
 		/// <summary>
-		///   <para>Creates or updates a <see cref="CustomAbility"/> using the specified <paramref name="item"/>.</para>
+		///   <para>Creates or updates a <see cref="CustomAbility"/> using the specified <paramref name="customItem"/>.</para>
 		/// </summary>
-		public static CustomAbility SetAbility(CustomItem item)
+		public static CustomAbility SetAbility(CustomItem customItem)
 		{
-			CustomAbility ability = Instance.Abilities.Find(a => a.Id == item.Id);
+			CustomAbility ability = Instance.Abilities.Find(a => a.Id == customItem.Id);
 			bool createNew = ability == null;
 			if (createNew)
 			{
-				Instance.Abilities.Add(ability = new CustomAbility(item));
+				Instance.Abilities.Add(ability = new CustomAbility(customItem));
 				Instance.AbilityIds.Add(ability.Id, ability.Id.GetHashCode());
 			}
 
-			Instance.Logger.LogInfo("CustomAbility " + item.Id + " (" + item.Name?.English + ") was " + (createNew ? "created" : "updated") + ".");
+			Instance.Logger.LogInfo("CustomAbility " + customItem.Id + " (" + customItem.Name?.English + ") was " + (createNew ? "created" : "updated") + ".");
 
 			return ability;
+		}
+
+		public static bool DeleteAbility(string id)
+		{
+			CustomAbility found = Instance.Abilities.Find(i => i.Id == id);
+			return found != null && DeleteAbility(found);
+		}
+		public static bool DeleteAbility(CustomAbility customAbility)
+		{
+			DeleteItem(customAbility.Item);
+
+			bool res = Instance.Abilities.Remove(customAbility);
+			if (res) Instance.Logger.LogInfo("CustomItem " + customAbility.Id + " (" + customAbility.Name?.English + ") was deleted.");
+			return res;
 		}
 
 	}

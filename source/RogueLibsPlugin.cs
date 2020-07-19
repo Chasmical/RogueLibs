@@ -54,12 +54,14 @@ namespace RogueLibsCore
 			patcher.Postfix(typeof(ObjectMultAgent), "convertIntToSpecialAbility");
 			patcher.Postfix(typeof(ObjectMultAgent), "convertSpecialAbilityToInt");
 
-			patcher.Postfix(typeof(StatusEffects), "FindSpecialAbilityObject");
 			patcher.Postfix(typeof(StatusEffects), "SpecialAbilityInterfaceCheck2");
 			patcher.Postfix(typeof(StatusEffects), "RechargeSpecialAbility2");
+			patcher.Postfix(typeof(StatusEffects), "GiveSpecialAbility");
 			patcher.Postfix(typeof(StatusEffects), "PressedSpecialAbility");
 			patcher.Postfix(typeof(StatusEffects), "HeldSpecialAbility");
 			patcher.Postfix(typeof(StatusEffects), "ReleasedSpecialAbility");
+
+			patcher.Postfix(typeof(SpecialAbilityIndicator), "ShowIndicator", new Type[] { typeof(PlayfieldObject), typeof(string), typeof(string) });
 		}
 
 		protected static IEnumerator ScrollingMenu_MakeButtonsVisible(IEnumerator __result, ScrollingMenu __instance)
@@ -306,91 +308,65 @@ namespace RogueLibsCore
 				}
 		}
 
-		protected static void StatusEffects_FindSpecialAbilityObject(StatusEffects __instance, ref PlayfieldObject __result)
-		{
-			if (__instance.agent.ghost || __instance.agent.teleporting) return;
-
-			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.specialAbility);
-			if (ability?.FindObject == null) return;
-			__result = ability.FindObject(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
-		}
 		protected static IEnumerator StatusEffects_SpecialAbilityInterfaceCheck2(IEnumerator iEnumerator, StatusEffects __instance)
 		{
 			while (iEnumerator.MoveNext())
 			{
 				CustomAbility ability = RogueLibs.GetAbility(__instance.agent?.specialAbility);
-				if (ability?.InterfaceCheck != null)
-				{
-					PlayfieldObject target = ability.FindObject?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
-					ability.InterfaceCheck(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility, target);
-				}
+				ability?.InterfaceCheck?.Invoke( __instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
 				yield return iEnumerator.Current;
 			}
 		}
 		protected static IEnumerator StatusEffects_RechargeSpecialAbility2(IEnumerator iEnumerator, StatusEffects __instance)
 		{
-			Debug.LogWarning("Entered recharge first");
-			do
+			while (iEnumerator.MoveNext())
 			{
-				Debug.LogWarning("RECHARGE 1 \"" + __instance.agent?.agentName + "\"");
 				CustomAbility ability = RogueLibs.GetAbility(__instance.agent?.specialAbility);
-				Debug.LogWarning("RECHARGE 2 \"" + __instance.agent?.specialAbility + "\"");
-				Debug.LogWarning("Recharge \"" + ability?.Item?.Id + "\"");
 				if (ability == null)
 					yield return iEnumerator.Current;
 				else
 				{
-					Debug.LogWarning("RECHARGE 3");
-					Debug.LogWarning("Entered recharge cycle \"" + ability.Item.Id + "\"");
-					Debug.LogWarning("RECHARGE 4");
-					WaitForSeconds obj = ability.RechargePeriod?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
-					Debug.LogWarning("RECHARGE 5");
-					ability.Recharge?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
-					Debug.LogWarning("RECHARGE 6");
-					yield return obj;
-					Debug.LogWarning("RECHARGE 7");
+					yield return ability.RechargePeriod?.Invoke(__instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
+					ability.Recharge?.Invoke(__instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
 				}
-			} while (iEnumerator.MoveNext());
+			}
 		}
 		protected static void StatusEffects_GiveSpecialAbility(StatusEffects __instance, string abilityName)
 		{
-			Debug.LogWarning("GIVEABILITY 0");
 			if (GameController.gameController.levelType == "HomeBase" && !__instance.agent.isDummy) return;
-			Debug.LogWarning("GIVEABILITY 1");
 			if (__instance.agent.name == "DummyAgent" || __instance.agent.name.Contains("BackupAgent")) return;
-			Debug.LogWarning("GIVEABILITY 2");
 
 			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.inventory.equippedSpecialAbility.invItemName);
 
-			Debug.LogWarning("GIVEABILITY 3 " + ability?.Id?.ToString());
 			if (ability?.InterfaceCheck != null) __instance.SpecialAbilityInterfaceCheck();
 			if (ability?.Recharge != null) __instance.RechargeSpecialAbility(abilityName);
-			Debug.LogWarning("GIVEABILITY 4");
 		}
 		protected static void StatusEffects_PressedSpecialAbility(StatusEffects __instance)
 		{
 			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
 			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.specialAbility);
-			if (ability?.OnPressed == null) return;
-			PlayfieldObject target = ability.FindObject?.Invoke(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
-			ability.OnPressed(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility, target);
+			ability?.OnPressed?.Invoke(__instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
 		}
 		protected static void StatusEffects_HeldSpecialAbility(StatusEffects __instance)
 		{
 			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
 			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.specialAbility);
-			if (ability?.OnHeld == null) return;
-			ability.OnHeld(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+			ability?.OnHeld?.Invoke(__instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
 		}
 		protected static void StatusEffects_ReleasedSpecialAbility(StatusEffects __instance)
 		{
 			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
 			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.specialAbility);
-			if (ability?.OnHeld == null) return;
-			ability.OnHeld(__instance.agent, __instance.agent?.inventory?.equippedSpecialAbility);
+			ability?.OnHeld?.Invoke(__instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
+		}
+
+		protected static void SpecialAbilityIndicator_ShowIndicator(SpecialAbilityIndicator __instance, string specialAbilityType)
+		{
+			CustomAbility ability = RogueLibs.GetAbility(specialAbilityType);
+			__instance.image.sprite = ability.Sprite;
 		}
 
 

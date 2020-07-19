@@ -4,10 +4,11 @@
 2. [RogueLibs](./RogueLibs.md)
 3. [CustomMutators](./CustomMutators.md)
 4. [CustomItems](./CustomItems.md)
-5. **CustomNames**
-6. [Extras](./Extras.md)
-7. [RogueLibs Changelog](./Changelog.md)
-8. [Mod Examples](./Examples.md)
+5. [CustomAbilities](./CustomAbilities.md)
+6. **CustomNames**
+7. [Extras](./Extras.md)
+8. [RogueLibs Changelog](./Changelog.md)
+9. [Mod Examples](./Examples.md)
 
 ## Creating CustomNames ##
 ```cs

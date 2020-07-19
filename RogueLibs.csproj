@@ -98,6 +98,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="md\Changelog.md" />
+    <None Include="md\CustomAbilities.md" />
     <None Include="md\CustomItems.md" />
     <None Include="md\CustomMutators.md" />
     <None Include="md\CustomNames.md" />

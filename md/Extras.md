@@ -4,10 +4,11 @@
 2. [RogueLibs](./RogueLibs.md)
 3. [CustomMutators](./CustomMutators.md)
 4. [CustomItems](./CustomItems.md)
-5. [CustomNames](./CustomNames.md)
-6. **Extras**
-7. [RogueLibs Changelog](./Changelog.md)
-8. [Mod Examples](./Examples.md)
+5. [CustomAbilities](./CustomAbilities.md)
+6. [CustomNames](./CustomNames.md)
+7. **Extras**
+8. [RogueLibs Changelog](./Changelog.md)
+9. [Mod Examples](./Examples.md)
 
 ## RogueUtilities ##
 With RogueUtilities class you can convert .png or .jpg files into Sprites:
