@@ -12,13 +12,18 @@
 
 ## Changelog ##
 
+#### RogueLibs v1.4 ####
+* **Added `CustomAbility` class, more info [here](./CustomAbilities.md)**;
+* Added `RogueLibs.nameTypes` field, an array of default localization string types;
+* Cleaned up and optimized some code;
+
 #### RogueLibs v1.3.3 ####
 * Optimized and cleaned up the code;
 * Now RogueLibs will check if the combinable/targetable item was depleted after usage, so there is no need to check that at the end of `InvItem.TargetObject`/`InvItem.CombineItem`;
 
 #### RogueLibs v1.3.2 ####
 * RogueLibs source code is now available on [GitHub](https://github.com/Abbysssal/RogueLibs)!;
-* Added `RogueUtilities.ConvertToSprite(string filePath, int ppu)` and `RogueUtilities.ConvertToSprite(byte[] data, int ppu)`, so you can specify your image's pixel-per-unit scale;
+* Added `RogueUtilities.ConvertToSprite(string filePath, int ppu)` and `RogueUtilities.ConvertToSprite(byte[] data, int ppu)`;
 
 #### RogueLibs v1.3.1 ####
 * Added `InvItem.CombineTooltip` delegate to determine the tooltip text when combining items;

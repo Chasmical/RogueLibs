@@ -287,23 +287,29 @@ namespace RogueLibsCore
 			}
 		}
 
+		private static int MyGetHashCode(string str)
+		{
+			int hash = 0;
+			for (int i = 0; i < str.Length; hash = (hash << 3) ^ str[i++]) ;
+			return hash;
+		}
 		protected static void ObjectMultAgent_convertIntToSpecialAbility(int myAbility, ref string __result)
 		{
 			if (__result != string.Empty) return;
-			foreach (KeyValuePair<string, int> pair in RogueLibs.Instance.AbilityIds)
-				if (pair.Value == myAbility)
+			foreach (CustomAbility ability in RogueLibs.Instance.Abilities)
+				if (MyGetHashCode(ability.Id) == myAbility)
 				{
-					__result = pair.Key;
+					__result = ability.Id;
 					return;
 				}
 		}
 		protected static void ObjectMultAgent_convertSpecialAbilityToInt(string myAbility, ref int __result)
 		{
 			if (__result != 0) return;
-			foreach (KeyValuePair<string, int> pair in RogueLibs.Instance.AbilityIds)
-				if (pair.Key == myAbility)
+			foreach (CustomAbility ability in RogueLibs.Instance.Abilities)
+				if (ability.Id == myAbility)
 				{
-					__result = pair.Value;
+					__result = MyGetHashCode(myAbility);
 					return;
 				}
 		}
@@ -313,7 +319,14 @@ namespace RogueLibsCore
 			while (iEnumerator.MoveNext())
 			{
 				CustomAbility ability = RogueLibs.GetAbility(__instance.agent?.specialAbility);
-				ability?.InterfaceCheck?.Invoke( __instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
+				if (ability?.IndicatorCheck != null)
+				{
+					PlayfieldObject res = ability.IndicatorCheck.Invoke(__instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
+					if (res == null)
+						__instance.agent.specialAbilityIndicator.Revert();
+					else
+						__instance.agent.specialAbilityIndicator.ShowIndicator(res, __instance.agent?.specialAbility);
+				}
 				yield return iEnumerator.Current;
 			}
 		}
@@ -326,7 +339,7 @@ namespace RogueLibsCore
 					yield return iEnumerator.Current;
 				else
 				{
-					yield return ability.RechargePeriod?.Invoke(__instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
+					yield return ability.RechargeInterval?.Invoke(__instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
 					ability.Recharge?.Invoke(__instance.agent?.inventory?.equippedSpecialAbility, __instance.agent);
 				}
 			}
@@ -338,7 +351,7 @@ namespace RogueLibsCore
 
 			CustomAbility ability = RogueLibs.GetAbility(__instance.agent.inventory.equippedSpecialAbility.invItemName);
 
-			if (ability?.InterfaceCheck != null) __instance.SpecialAbilityInterfaceCheck();
+			if (ability?.IndicatorCheck != null) __instance.SpecialAbilityInterfaceCheck();
 			if (ability?.Recharge != null) __instance.RechargeSpecialAbility(abilityName);
 		}
 		protected static void StatusEffects_PressedSpecialAbility(StatusEffects __instance)

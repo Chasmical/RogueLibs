@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 namespace RogueLibsCore
@@ -49,33 +46,33 @@ namespace RogueLibsCore
 		internal CustomAbility(CustomItem item) => Item = item;
 
 		/// <summary>
-		///   <para>Delegate that will be used to display special ability's indicator. See <see cref="StatusEffects.SpecialAbilityInterfaceCheck"/> for more details.</para>
-		///   <para><see cref="Agent"/> arg1 is the special ability's owner;<br/><see cref="InvItem"/> arg2 is special ability's item.</para>
+		///   <para>Delegate that will be used to determine whether to display special ability's indicator. See <see cref="StatusEffects.SpecialAbilityInterfaceCheck"/> for more details.</para>
+		///   <para><see cref="InvItem"/> arg1 is special ability item;<br/><see cref="Agent"/> arg2 is the special ability's owner;<br/><see cref="PlayfieldObject"/> result, if not <see langword="null"/> displays the special ability indicator (item icon) over that object; otherwise hides the indicator.</para>
 		/// </summary>
-		public Action<InvItem, Agent> InterfaceCheck { get; set; }
+		public Func<InvItem, Agent, PlayfieldObject> IndicatorCheck { get; set; }
 		/// <summary>
 		///   <para>Delegate that will be used to determine the special ability's recharge period.</para>
-		///   <para><see cref="Agent"/> arg1 is the special ability's owner;<br/><see cref="InvItem"/> arg2 is special ability's item;<br/><see cref="WaitForSeconds"/> result is the interval between invoking <see cref="Recharge"/> delegate.</para>
+		///   <para><see cref="InvItem"/> arg1 is special ability item;<br/><see cref="Agent"/> arg2 is the special ability's owner;<br/><see cref="WaitForSeconds"/> result is the interval between invoking <see cref="Recharge"/> delegate. Return <see langword="null"/> if special ability is not recharging.</para>
 		/// </summary>
-		public Func<InvItem, Agent, WaitForSeconds> RechargePeriod { get; set; }
+		public Func<InvItem, Agent, WaitForSeconds> RechargeInterval { get; set; }
 		/// <summary>
 		///   <para>Delegate that will be used to determine the recharging process for the special ability. See <see cref="StatusEffects.RechargeSpecialAbility(string)"/> for more details.</para>
-		///   <para><see cref="Agent"/> arg1 is the special ability's owner;<br/><see cref="InvItem"/> arg2 is special ability's item.</para>
+		///   <para><see cref="InvItem"/> arg1 is special ability item;<br/><see cref="Agent"/> arg2 is the special ability's owner.</para>
 		/// </summary>
 		public Action<InvItem, Agent> Recharge { get; set; }
 		/// <summary>
 		///   <para>Delegate that will be invoked when the player presses the special ability button. See <see cref="StatusEffects.PressedSpecialAbility"/> for more details.</para>
-		///   <para><see cref="Agent"/> arg1 is the special ability's owner;<br/><see cref="InvItem"/> arg2 is special ability's item.</para>
+		///   <para><see cref="InvItem"/> arg1 is special ability item;<br/><see cref="Agent"/> arg2 is the special ability's owner.</para>
 		/// </summary>
 		public Action<InvItem, Agent> OnPressed { get; set; }
 		/// <summary>
 		///   <para>Delegate that will be invoked when the player holds the special ability button. See <see cref="StatusEffects.HeldSpecialAbility"/> for more details.</para>
-		///   <para><see cref="Agent"/> arg1 is the special ability's owner;<br/><see cref="InvItem"/> arg2 is special ability's item.</para>
+		///   <para><see cref="InvItem"/> arg1 is special ability item;<br/><see cref="Agent"/> arg2 is the special ability's owner.</para>
 		/// </summary>
 		public Action<InvItem, Agent> OnHeld { get; set; }
 		/// <summary>
 		///   <para>Delegate that will be invoked when the player releases the special ability button. See <see cref="StatusEffects.ReleasedSpecialAbility"/> for more details.</para>
-		///   <para><see cref="Agent"/> arg1 is the special ability's owner;<br/><see cref="InvItem"/> arg2 is special ability's item.</para>
+		///   <para><see cref="InvItem"/> arg1 is special ability item;<br/><see cref="Agent"/> arg2 is the special ability's owner.</para>
 		/// </summary>
 		public Action<InvItem, Agent> OnReleased { get; set; }
 

@@ -35,6 +35,7 @@ namespace RogueLibsCore
 		internal ManualLogSource Logger { get; set; }
 
 		internal string DataPath { get; set; }
+
 		/// <summary>
 		///   <para>List of all <see cref="CustomMutator"/>s.</para>
 		/// </summary>
@@ -53,9 +54,7 @@ namespace RogueLibsCore
 		public List<CustomName> Names { get; set; }
 
 		internal List<RandomListInfo> RandomLists { get; set; }
-		
 		internal Dictionary<string, bool> MutatorsStates { get; set; }
-		internal Dictionary<string, int> AbilityIds { get; set; }
 
 		internal void Start(string dataPath)
 		{
@@ -73,9 +72,7 @@ namespace RogueLibsCore
 			Names = new List<CustomName>();
 
 			RandomLists = new List<RandomListInfo>();
-
 			MutatorsStates = new Dictionary<string, bool>();
-			AbilityIds = new Dictionary<string, int>();
 		}
 
 		internal void LoadData(string dataPath, bool throwException = false)
@@ -187,10 +184,18 @@ namespace RogueLibsCore
 		}
 
 		/// <summary>
-		///   <para>An array of game languages.</para>
+		///   <para>An array of game languages: "english", "schinese", "german", "spanish", "brazilian", "russian", "french", "koreana".</para>
 		/// </summary>
 		public static readonly string[] languages = new string[]
 		{ "english", "schinese", "german", "spanish", "brazilian", "russian", "french", "koreana" };
+
+		/// <summary>
+		///   <para>An array of default localization string types: "Agent", "Item", "Object", "StatusEffect", "Interface", "Dialogue", "Description", "Unlock".</para>
+		///   <para>For more info, see files in /StreetsOfRogue_Data/Localization folder.</para>
+		/// </summary>
+		///   <remarks>"Agent" - agent names;<br/>"Item" - item and ability names;<br/>"Object" - object and floor names;<br/>"StatusEffect" - status effect and trait names;<br/>"Interface" - menu buttons;<br/>"Dialogue" - dialogues;<br/>"Description" - agent, item, ability, status effect, trait and disaster descriptions;<br/>"Unlock" - mutator and Big Quest names and descriptions.</remarks>
+		public static readonly string[] nameTypes = new string[]
+		{ "Agent", "Item", "Object", "StatusEffect", "Interface", "Dialogue", "Description", "Unlock" };
 
 		/// <summary>
 		///   <para>Gets a <see cref="CustomName"/> with the specified <paramref name="id"/> and <paramref name="type"/>.</para>
@@ -207,7 +212,7 @@ namespace RogueLibsCore
 				Instance.Names.Add(name = new CustomName(id, type));
 			name.SetTranslations(info);
 
-			Instance.Logger.LogInfo("CustomName " + id + " (" + name.English + ") was " + (createNew ? "created" : "updated") + ".");
+			Instance.Logger.LogInfo(string.Concat("CustomName ", id, " (", name.English, ") was ", (createNew ? "created" : "updated"), "."));
 
 			return name;
 		}
@@ -226,7 +231,7 @@ namespace RogueLibsCore
 		public static bool DeleteCustomName(CustomName customName)
 		{
 			bool res = Instance.Names.Remove(customName);
-			if (res) Instance.Logger.LogInfo("CustomName " + customName.Id + " (" + customName.English + ") was deleted.");
+			if (res) Instance.Logger.LogInfo(string.Concat("CustomName ", customName.Id, " (", customName.English, ") was deleted."));
 			return res;
 		}
 
@@ -252,7 +257,7 @@ namespace RogueLibsCore
 			mutator.Name = SetCustomName(id, "Unlock", name);
 			mutator.Description = SetCustomName("D_" + id, "Unlock", description);
 
-			Instance.Logger.LogInfo("CustomMutator " + id + " (" + mutator.Name?.English + ") was " + (createNew ? "created" : "updated") + ".");
+			Instance.Logger.LogInfo(string.Concat("CustomMutator ", id, " (", mutator.Name?.English, ") was ", (createNew ? "created" : "updated"), "."));
 
 			return mutator;
 		}
@@ -276,7 +281,7 @@ namespace RogueLibsCore
 			bool res = Instance.Mutators.Remove(customMutator);
 			if (res)
 			{
-				Instance.Logger.LogInfo("CustomMutator " + customMutator.Id + " (" + customMutator.Name?.English + ") was deleted.");
+				Instance.Logger.LogInfo(string.Concat("CustomMutator ", customMutator.Id, " (", customMutator.Name?.English, ") was deleted."));
 				Instance.SaveData();
 			}
 			return res;
@@ -303,7 +308,7 @@ namespace RogueLibsCore
 			item.Description = SetCustomName(id, "Description", description);
 			item.SetupDetails = setupDetails;
 
-			Instance.Logger.LogInfo("CustomItem " + id + " (" + item.Name?.English + ") was " + (createNew ? "created" : "updated") + ".");
+			Instance.Logger.LogInfo(string.Concat("CustomItem ", id, " (", item.Name?.English, ") was ", (createNew ? "created" : "updated"), "."));
 
 			return item;
 		}
@@ -325,7 +330,7 @@ namespace RogueLibsCore
 			DeleteCustomName(customItem.Description);
 
 			bool res = Instance.Items.Remove(customItem);
-			if (res) Instance.Logger.LogInfo("CustomItem " + customItem.Id + " (" + customItem.Name?.English + ") was deleted.");
+			if (res) Instance.Logger.LogInfo(string.Concat("CustomItem ", customItem.Id, " (", customItem.Name?.English, ") was deleted."));
 			return res;
 		}
 
@@ -354,6 +359,14 @@ namespace RogueLibsCore
 		/// </summary>
 		public static CustomAbility GetAbility(string id) => Instance.Abilities.Find(a => a.Id == id);
 		/// <summary>
+		///   <para>Creates or updates a <see cref="CustomAbility"/> using the specified <paramref name="id"/>, <paramref name="sprite"/>, <paramref name="name"/>, <paramref name="description"/> and <paramref name="setupDetails"/> delegate.</para>
+		/// </summary>
+		public static CustomAbility SetAbility(string id, Sprite sprite, CustomNameInfo name, CustomNameInfo description, Action<InvItem> setupDetails)
+		{
+			CustomItem item = SetItem(id, sprite, name, description, setupDetails);
+			return SetAbility(item);
+		}
+		/// <summary>
 		///   <para>Creates or updates a <see cref="CustomAbility"/> using the specified <paramref name="customItem"/>.</para>
 		/// </summary>
 		public static CustomAbility SetAbility(CustomItem customItem)
@@ -361,12 +374,9 @@ namespace RogueLibsCore
 			CustomAbility ability = Instance.Abilities.Find(a => a.Id == customItem.Id);
 			bool createNew = ability == null;
 			if (createNew)
-			{
 				Instance.Abilities.Add(ability = new CustomAbility(customItem));
-				Instance.AbilityIds.Add(ability.Id, ability.Id.GetHashCode());
-			}
 
-			Instance.Logger.LogInfo("CustomAbility " + customItem.Id + " (" + customItem.Name?.English + ") was " + (createNew ? "created" : "updated") + ".");
+			Instance.Logger.LogInfo(string.Concat("CustomAbility ", customItem.Id, " (", customItem.Name?.English, ") was ", (createNew ? "created" : "updated"), "."));
 
 			return ability;
 		}
@@ -387,7 +397,7 @@ namespace RogueLibsCore
 			DeleteItem(customAbility.Item);
 
 			bool res = Instance.Abilities.Remove(customAbility);
-			if (res) Instance.Logger.LogInfo("CustomItem " + customAbility.Id + " (" + customAbility.Name?.English + ") was deleted.");
+			if (res) Instance.Logger.LogInfo(string.Concat("CustomItem ", customAbility.Id, " (", customAbility.Name?.English, ") was deleted."));
 			return res;
 		}
 

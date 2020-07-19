@@ -34,40 +34,40 @@
               <para>Localizable description if this <see cref="T:RogueLibsCore.CustomAbility"/>.</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomAbility.InterfaceCheck">
+        <member name="P:RogueLibsCore.CustomAbility.IndicatorCheck">
             <summary>
-              <para>Delegate that will be used to display special ability's indicator. See <see cref="M:StatusEffects.SpecialAbilityInterfaceCheck"/> for more details.</para>
-              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:InvItem"/> arg2 is special ability's item.</para>
+              <para>Delegate that will be used to determine whether to display special ability's indicator. See <see cref="M:StatusEffects.SpecialAbilityInterfaceCheck"/> for more details.</para>
+              <para><see cref="T:InvItem"/> arg1 is special ability item;<br/><see cref="T:Agent"/> arg2 is the special ability's owner;<br/><see cref="T:PlayfieldObject"/> result, if not <see langword="null"/> displays the special ability indicator (item icon) over that object; otherwise hides the indicator.</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomAbility.RechargePeriod">
+        <member name="P:RogueLibsCore.CustomAbility.RechargeInterval">
             <summary>
               <para>Delegate that will be used to determine the special ability's recharge period.</para>
-              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:InvItem"/> arg2 is special ability's item;<br/><see cref="T:UnityEngine.WaitForSeconds"/> result is the interval between invoking <see cref="P:RogueLibsCore.CustomAbility.Recharge"/> delegate.</para>
+              <para><see cref="T:InvItem"/> arg1 is special ability item;<br/><see cref="T:Agent"/> arg2 is the special ability's owner;<br/><see cref="T:UnityEngine.WaitForSeconds"/> result is the interval between invoking <see cref="P:RogueLibsCore.CustomAbility.Recharge"/> delegate. Return <see langword="null"/> if special ability is not recharging.</para>
             </summary>
         </member>
         <member name="P:RogueLibsCore.CustomAbility.Recharge">
             <summary>
               <para>Delegate that will be used to determine the recharging process for the special ability. See <see cref="M:StatusEffects.RechargeSpecialAbility(System.String)"/> for more details.</para>
-              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:InvItem"/> arg2 is special ability's item.</para>
+              <para><see cref="T:InvItem"/> arg1 is special ability item;<br/><see cref="T:Agent"/> arg2 is the special ability's owner.</para>
             </summary>
         </member>
         <member name="P:RogueLibsCore.CustomAbility.OnPressed">
             <summary>
               <para>Delegate that will be invoked when the player presses the special ability button. See <see cref="M:StatusEffects.PressedSpecialAbility"/> for more details.</para>
-              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:InvItem"/> arg2 is special ability's item.</para>
+              <para><see cref="T:InvItem"/> arg1 is special ability item;<br/><see cref="T:Agent"/> arg2 is the special ability's owner.</para>
             </summary>
         </member>
         <member name="P:RogueLibsCore.CustomAbility.OnHeld">
             <summary>
               <para>Delegate that will be invoked when the player holds the special ability button. See <see cref="M:StatusEffects.HeldSpecialAbility"/> for more details.</para>
-              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:InvItem"/> arg2 is special ability's item.</para>
+              <para><see cref="T:InvItem"/> arg1 is special ability item;<br/><see cref="T:Agent"/> arg2 is the special ability's owner.</para>
             </summary>
         </member>
         <member name="P:RogueLibsCore.CustomAbility.OnReleased">
             <summary>
               <para>Delegate that will be invoked when the player releases the special ability button. See <see cref="M:StatusEffects.ReleasedSpecialAbility"/> for more details.</para>
-              <para><see cref="T:Agent"/> arg1 is the special ability's owner;<br/><see cref="T:InvItem"/> arg2 is special ability's item.</para>
+              <para><see cref="T:InvItem"/> arg1 is special ability item;<br/><see cref="T:Agent"/> arg2 is the special ability's owner.</para>
             </summary>
         </member>
         <member name="T:RogueLibsCore.CustomItem">
@@ -239,8 +239,15 @@
         </member>
         <member name="F:RogueLibsCore.RogueLibs.languages">
             <summary>
-              <para>An array of game languages.</para>
+              <para>An array of game languages: "english", "schinese", "german", "spanish", "brazilian", "russian", "french", "koreana".</para>
             </summary>
+        </member>
+        <member name="F:RogueLibsCore.RogueLibs.nameTypes">
+            <summary>
+              <para>An array of default localization string types: "Agent", "Item", "Object", "StatusEffect", "Interface", "Dialogue", "Description", "Unlock".</para>
+              <para>For more info, see files in /StreetsOfRogue_Data/Localization folder.</para>
+            </summary>
+              <remarks>"Agent" - agent names;<br/>"Item" - item and ability names;<br/>"Object" - object and floor names;<br/>"StatusEffect" - status effect and trait names;<br/>"Interface" - menu buttons;<br/>"Dialogue" - dialogues;<br/>"Description" - agent, item, ability, status effect, trait and disaster descriptions;<br/>"Unlock" - mutator and Big Quest names and descriptions.</remarks>
         </member>
         <member name="M:RogueLibsCore.RogueLibs.GetCustomName(System.String,System.String)">
             <summary>
@@ -305,6 +312,11 @@
         <member name="M:RogueLibsCore.RogueLibs.GetAbility(System.String)">
             <summary>
               <para>Gets a <see cref="T:RogueLibsCore.CustomAbility"/> with the specified <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.SetAbility(System.String,UnityEngine.Sprite,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo,System.Action{InvItem})">
+            <summary>
+              <para>Creates or updates a <see cref="T:RogueLibsCore.CustomAbility"/> using the specified <paramref name="id"/>, <paramref name="sprite"/>, <paramref name="name"/>, <paramref name="description"/> and <paramref name="setupDetails"/> delegate.</para>
             </summary>
         </member>
         <member name="M:RogueLibsCore.RogueLibs.SetAbility(RogueLibsCore.CustomItem)">

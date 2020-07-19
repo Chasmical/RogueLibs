@@ -1,4 +1,3 @@
-D:\repos\RogueLibs\bin\Debug\RogueLibs.xml
 D:\repos\RogueLibs\bin\Debug\RogueLibs.dll
 D:\repos\RogueLibs\bin\Debug\RogueLibs.pdb
 D:\repos\RogueLibs\bin\Debug\0Harmony.dll
@@ -20,3 +19,4 @@ D:\repos\RogueLibs\obj\Debug\RogueLibs.csproj.CoreCompileInputs.cache
 D:\repos\RogueLibs\obj\Debug\RogueLibs.csproj.CopyComplete
 D:\repos\RogueLibs\obj\Debug\RogueLibs.dll
 D:\repos\RogueLibs\obj\Debug\RogueLibs.pdb
+D:\repos\RogueLibs\bin\Debug\RogueLibs.xml

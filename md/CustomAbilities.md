@@ -87,7 +87,7 @@ regeneration.OnReleased = (item, agent) =>
 ```
 ## Rechargeable CustomAbilities ##
 ```cs
-public Func<Agent, InvItem, WaitForSeconds> RechargePeriod { get; set; }
+public Func<Agent, InvItem, WaitForSeconds> RechargeInterval { get; set; }
 public Action<Agent, InvItem> Recharge { get; set; }
 ```
 ```cs
@@ -108,7 +108,7 @@ giantAbility.OnPressed = (item, agent) =>
     }
 };
 
-giantAbility.RechargePeriod = (item, agent)
+giantAbility.RechargeInterval = (item, agent)
     => item.invItemCount > 0 ? new WaitForSeconds(0.13f) : null;
 
 giantAbility.Recharge = (item, agent) =>
@@ -128,7 +128,7 @@ giantAbility.Recharge = (item, agent) =>
 ```
 ## Targetable CustomAbilities ##
 ```cs
-public Action<InvItem, Agent> InterfaceCheck { get; set; }
+public Func<InvItem, Agent, Playfield> IndicatorCheck { get; set; }
 ```
 ```cs
 CustomItem cItem = RogueLibs.SetItem(...);
@@ -138,13 +138,10 @@ CustomAbility silentKill = RogueLibs.SetAbility(cItem);
 // for more info, see StatusEffects.FindSpecialAbilityObject()
 Func<InvItem, Agent, PlayfieldObject> FindTarget = ...
 
-silentKill.InterfaceCheck = (item, agent) =>
+silentKill.IndicatorCheck = (item, agent) =>
 {
     Agent target = (Agent)FindTarget(item, agent);
-    if (target != null && item.invItemCount == 0 && agent.statusEffects.CanShowSpecialAbilityIndicator())
-        agent.specialAbilityIndicator.ShowIndicator(target, item.invItemName);
-    else
-        agent.specialAbilityIndicator.Revert();
+    return (target != null && item.invItemCount == 0 && agent.statusEffects.CanShowSpecialAbilityIndicator()) ? target : null;
 };
 silentKill.OnPressed = (item, agent) =>
 {

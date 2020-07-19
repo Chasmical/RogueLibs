@@ -1,25 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using BepInEx;
-using UnityEngine;
-
-namespace RogueLibsCore.Test
+﻿namespace RogueLibsCore.Test
 {
 #pragma warning disable CS1591
+	/*
 	[BepInPlugin(pluginGuid, pluginName, pluginVersion)]
 	[BepInDependency(RogueLibs.pluginGuid, "1.4.0")]
 	public class TestPlugin : BaseUnityPlugin
 	{
 		public const string pluginGuid = "abbysssal.streetsofrogue.roguelibs.test";
 		public const string pluginName = "RogueLibs.Test";
-		public const string pluginVersion = "1.0";
+		public const string pluginVersion = "0.3";
 
 		public void Awake()
 		{
 			Sprite sprite = RogueUtilities.ConvertToSprite(new byte[0]);
-			CustomItem giantItem = RogueLibs.SetItem("GiantAbility", sprite,
+			CustomItem cItem = RogueLibs.SetItem("GiantAbility", sprite,
 				new CustomNameInfo("Giant"),
 				new CustomNameInfo("Gives you Giant status effect"),
 				item =>
@@ -28,7 +22,7 @@ namespace RogueLibsCore.Test
 					item.initCount = 0;
 					item.stackable = true;
 				});
-			CustomAbility giantAbility = RogueLibs.SetAbility(giantItem);
+			CustomAbility giantAbility = RogueLibs.SetAbility(cItem);
 
 			giantAbility.OnPressed = (item, agent) =>
 			{
@@ -44,7 +38,7 @@ namespace RogueLibsCore.Test
 				}
 			};
 
-			giantAbility.RechargePeriod = (item, agent)
+			giantAbility.RechargeInterval = (item, agent)
 				=> item.invItemCount > 0 ? new WaitForSeconds(0.13f) : null;
 
 			giantAbility.Recharge = (item, agent) =>
@@ -63,7 +57,7 @@ namespace RogueLibsCore.Test
 			};
 
 			Sprite sprite2 = RogueUtilities.ConvertToSprite(new byte[0]);
-			CustomItem cItem = RogueLibs.SetItem("RegenerationAbility", sprite2,
+			CustomItem cItem2 = RogueLibs.SetItem("RegenerationAbility", sprite2,
 				new CustomNameInfo("Regeneration"),
 				new CustomNameInfo("Use it to regenerate health"),
 				item =>
@@ -71,7 +65,7 @@ namespace RogueLibsCore.Test
 					item.initCount = 0;
 					item.stackable = true;
 				});
-			CustomAbility regeneration = RogueLibs.SetAbility(cItem);
+			CustomAbility regeneration = RogueLibs.SetAbility(cItem2);
 
 			regeneration.OnPressed = (item, agent)
 				=> item.invItemCount = 1;
@@ -97,5 +91,6 @@ namespace RogueLibsCore.Test
 			};
 		}
 	}
+	*/
 #pragma warning restore CS1591
 }

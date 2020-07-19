@@ -11,8 +11,11 @@
 9. [Mod Examples](./md/Examples.md)
 
 ## Links ##
-*  [Download RogueLibs](https://github.com/Abbysssal/RogueLibs/releases)
+*  [Download RogueLibs (latest stable version)](https://github.com/Abbysssal/RogueLibs/releases/latest)
 *  [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
+
+# RogueLibs v1.4 #
+This modding library allows you to easily add custom localization lines, mutators, items and abilities, plus it has some extra functions that you might need.
 
 ## Mods using RogueLibs ##
 You can find these mods in [the official Streets of Rogue Discord server](https://discord.com/invite/streetsofrogue) (channel #modding-gallery):
@@ -39,9 +42,6 @@ You can find these mods in [the official Streets of Rogue Discord server](https:
   * Rocket/Random/Random Effect Projectiles;
   * Explosion Damage x0.25/x0.5/x2/x4/x8;
   * Explosion Power x0.25/x0.5/x2/x4/x8;
-
-# RogueLibs v1.3.3 #
-This modding library allows you to easily add custom mutators, items and localization lines, plus it has some extra functions that you might need.
 
 ## How to use RogueLibs in your mods ##
 You can find instructions on how to do that here (9. Modding Libraries, RogueLibs):
