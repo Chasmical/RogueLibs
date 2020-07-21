@@ -212,7 +212,8 @@ namespace RogueLibsCore
 		{
 			foreach (CustomItem item in RogueLibs.Instance.Items)
 			{
-				__instance.itemDic.Add(item.Id, item.Sprite);
+				if(!__instance.itemDic.ContainsKey(item.Id))
+					__instance.itemDic.Add(item.Id, item.Sprite);
 				__instance.itemList.Add(item.Sprite);
 			}
 		}
