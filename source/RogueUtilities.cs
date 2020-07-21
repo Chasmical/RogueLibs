@@ -24,7 +24,7 @@ namespace RogueLibsCore
 			}
 			catch (Exception e)
 			{
-				RogueLibs.PluginInstance.LogErrorWith("Could not load Sprite from \"" + filePath + "\"!", e);
+				RogueLibs.PluginInstance.LogError("Could not load Sprite from \"" + filePath + "\"!", e);
 			}
 			return ConvertToSprite(data, 64);
 		}
@@ -40,7 +40,7 @@ namespace RogueLibsCore
 			}
 			catch (Exception e)
 			{
-				RogueLibs.PluginInstance.LogErrorWith("Could not load Sprite from \"" + filePath + "\"!", e);
+				RogueLibs.PluginInstance.LogError("Could not load Sprite from \"" + filePath + "\"!", e);
 			}
 			return ConvertToSprite(data, ppu);
 		}
@@ -62,7 +62,7 @@ namespace RogueLibsCore
 			}
 			catch (Exception e)
 			{
-				RogueLibs.PluginInstance.LogErrorWith("Could not load Sprite from an array of bytes!", e);
+				RogueLibs.PluginInstance.LogError("Could not load Sprite from an array of bytes!", e);
 			}
 			return sprite;
 		}
@@ -96,28 +96,9 @@ namespace RogueLibsCore
 			}
 			catch (Exception e)
 			{
-				RogueLibs.PluginInstance.LogErrorWith("Could not load AudioClip from \"" + path + "\"!", e);
+				RogueLibs.PluginInstance.LogError("Could not load AudioClip from \"" + path + "\"!", e);
 			}
 			return clip;
-		}
-
-		/// <summary>
-		///   <para>Cross conflicts all <paramref name="mutators"/>, so it will be possible to enable only one of them at a time.</para>
-		/// </summary>
-		public static void CrossConflict(params CustomMutator[] mutators)
-		{
-			foreach (CustomMutator mutator in mutators)
-				foreach (CustomMutator mutator2 in mutators)
-					if (mutator.Id != mutator2.Id)
-						mutator.AddConflicting(mutator2);
-		}
-		/// <summary>
-		///   <para>Conflicts all <paramref name="mutators"/> with all mutators in the <paramref name="conflicts"/> collection, so it won't be possible to enable any of the <see cref="CustomMutator"/>s with any mutator from the <paramref name="conflicts"/> collection.</para>
-		/// </summary>
-		public static void EachConflict(IEnumerable<string> conflicts, params CustomMutator[] mutators)
-		{
-			foreach (CustomMutator mutator in mutators)
-				mutator.AddConflicting(conflicts.ToArray());
 		}
 	}
 }

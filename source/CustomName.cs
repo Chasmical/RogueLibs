@@ -1,4 +1,5 @@
-﻿
+﻿using System;
+
 namespace RogueLibsCore
 {
 	/// <summary>
@@ -11,73 +12,59 @@ namespace RogueLibsCore
 		/// </summary>
 		public string Id { get; }
 		/// <summary>
-		///   <para>Type of this <see cref="CustomName"/>. Use <see langword="null"/>, if you don't know which one you need.</para>
-		///   <para>Default types are: Agent, Item, Object, StatusEffect, Interface, Dialogue, Description, Unlock.</para>
+		///   <para>Type of this <see cref="CustomName"/>.</para>
 		/// </summary>
 		public string Type { get; }
+
 		/// <summary>
-		///   <para>An array of translation strings for this <see cref="CustomName"/>.</para>
+		///   <para>Array of localization strings.</para>
 		/// </summary>
 		public string[] Translations { get; set; }
 
-		internal CustomName(string id, string type)
+		internal CustomName(string id, string type, string[] translations)
 		{
 			Id = id;
 			Type = type;
-			Translations = new string[8];
+			Translations = translations;
 		}
 
 		/// <summary>
-		///   <para>Uses the given <paramref name="customNameInfo"/> to get localization strings.</para>
+		///   <para>Gets/sets the English localization string.</para>
 		/// </summary>
-		public void SetTranslations(CustomNameInfo customNameInfo)
-		{
-			Translations[0] = customNameInfo.English;
-			Translations[1] = customNameInfo.SChinese;
-			Translations[2] = customNameInfo.German;
-			Translations[3] = customNameInfo.Spanish;
-			Translations[4] = customNameInfo.Brazilian;
-			Translations[5] = customNameInfo.Russian;
-			Translations[6] = customNameInfo.French;
-			Translations[7] = customNameInfo.KoreanA;
-		}
+		public string English { get => Translations[0]; set => Translations[0] = value; }
+		/// <summary>
+		///   <para>Gets/sets the Simplified Chinese localization string.</para>
+		/// </summary>
+		public string SChinese { get => Translations[1]; set => Translations[1] = value; }
+		/// <summary>
+		///   <para>Gets/sets the German localization string.</para>
+		/// </summary>
+		public string German { get => Translations[2]; set => Translations[2] = value; }
+		/// <summary>
+		///   <para>Gets/sets the Spanish localization string.</para>
+		/// </summary>
+		public string Spanish { get => Translations[3]; set => Translations[3] = value; }
+		/// <summary>
+		///   <para>Gets/sets the Brazilian localization string.</para>
+		/// </summary>
+		public string Brazilian { get => Translations[4]; set => Translations[4] = value; }
+		/// <summary>
+		///   <para>Gets/sets the Russian localization string.</para>
+		/// </summary>
+		public string Russian { get => Translations[5]; set => Translations[5] = value; }
+		/// <summary>
+		///   <para>Gets/sets the French localization string.</para>
+		/// </summary>
+		public string French { get => Translations[6]; set => Translations[6] = value; }
+		/// <summary>
+		///   <para>Gets/sets the Korean (A?) localization string.</para>
+		/// </summary>
+		public string KoreanA { get => Translations[7]; set => Translations[7] = value; }
 
-		/// <summary>
-		///   <para>Gets and sets the English string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
-		/// </summary>
-		public string English { get => Translations[0]; set => Translations[0] = value ?? Translations[0]; }
-		/// <summary>
-		///   <para>Gets and sets the Simplified Chinese string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
-		/// </summary>
-		public string SChinese { get => Translations[1]; set => Translations[1] = value ?? Translations[1]; }
-		/// <summary>
-		///   <para>Gets and sets the German string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
-		/// </summary>
-		public string German { get => Translations[2]; set => Translations[2] = value ?? Translations[2]; }
-		/// <summary>
-		///   <para>Gets and sets the Spanish string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
-		/// </summary>
-		public string Spanish { get => Translations[3]; set => Translations[3] = value ?? Translations[3]; }
-		/// <summary>
-		///   <para>Gets and sets the Brazilian string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
-		/// </summary>
-		public string Brazilian { get => Translations[4]; set => Translations[4] = value ?? Translations[4]; }
-		/// <summary>
-		///   <para>Gets and sets the Russian string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
-		/// </summary>
-		public string Russian { get => Translations[5]; set => Translations[5] = value ?? Translations[5]; }
-		/// <summary>
-		///   <para>Gets and sets the French string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
-		/// </summary>
-		public string French { get => Translations[6]; set => Translations[6] = value ?? Translations[6]; }
-		/// <summary>
-		///   <para>Gets and sets the Korean (A?) string. If the <see langword="value"/> is <see langword="null"/>, doesn't change it.</para>
-		/// </summary>
-		public string KoreanA { get => Translations[7]; set => Translations[7] = value ?? Translations[7]; }
 	}
 
 	/// <summary>
-	///   <para>Helper struct for creating <see cref="CustomName"/>.</para>
+	///   <para>Helper struct for creating <see cref="CustomName"/>s.</para>
 	/// </summary>
 	public struct CustomNameInfo
 	{
@@ -108,5 +95,11 @@ namespace RogueLibsCore
 			French = french;
 			KoreanA = koreana;
 		}
+
+		/// <summary>
+		///   <para>Returns an array of localization strings from this <see cref="CustomNameInfo"/>.</para>
+		/// </summary>
+		public string[] ToArray() => new string[8] { English, SChinese, German, Spanish, Brazilian, Russian, French, KoreanA };
+
 	}
 }
