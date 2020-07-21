@@ -1,3 +1,22 @@
+<div align="center">
+  <p>
+    <img src="https://cdn.discordapp.com/attachments/688640720273145915/735092552805515344/2020-07-21_181154.png" width=50% alt="RogueLibs"/>
+  </p>
+  <p>
+    <a href="https://github.com/Abbysssal/RogueLibs/releases/latest">
+      <img src="https://img.shields.io/github/v/release/Abbysssal/RogueLibs?label=Latest%20release&style=for-the-badge&logo=github" alt="Latest release"/>
+    </a>
+    <a href="https://github.com/Abbysssal/RogueLibs/subscription">
+      <img src="https://img.shields.io/github/watchers/Abbysssal/RogueLibs?color=green&label=Watchers&style=for-the-badge" alt="Watchers"/>
+    </a>
+    <a href="https://github.com/Abbysssal/RogueLibs/stargazers">
+      <img src="https://img.shields.io/github/stars/Abbysssal/RogueLibs?color=green&label=Stars&style=for-the-badge" alt="Stars"/>
+    </a>
+  </p>
+</div>
+
+This modding library allows you to easily add custom localization lines, mutators, items and abilities.
+
 ## Contents ##
 
 1. **Main page**
@@ -13,9 +32,6 @@
 ## Links ##
 *  [Download RogueLibs (latest stable version)](https://github.com/Abbysssal/RogueLibs/releases/latest)
 *  [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
-
-# RogueLibs v1.4 #
-This modding library allows you to easily add custom localization lines, mutators, items and abilities, plus it has some extra functions that you might need.
 
 ## Mods using RogueLibs ##
 You can find these mods in [the official Streets of Rogue Discord server](https://discord.com/invite/streetsofrogue) (channel #modding-gallery):
