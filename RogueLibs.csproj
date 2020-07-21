@@ -85,7 +85,6 @@
   <ItemGroup>
     <Compile Include="source\CustomAbility.cs" />
     <Compile Include="source\CustomItem.cs" />
-    <Compile Include="source\CustomTrait.cs" />
     <Compile Include="source\RogueChat.cs" />
     <Compile Include="source\RogueLibs.cs" />
     <Compile Include="source\RogueLibsPlugin.cs" />
