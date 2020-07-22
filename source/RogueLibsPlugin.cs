@@ -300,7 +300,7 @@ namespace RogueLibsCore
 			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
 			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
-			ability?.OnReleased?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent, ref __instance.agent.gc.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1]);
+			ability?.OnReleased?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
 		}
 
 		protected static void SpecialAbilityIndicator_ShowIndicator(SpecialAbilityIndicator __instance, string specialAbilityType)
