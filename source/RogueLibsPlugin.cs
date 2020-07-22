@@ -238,7 +238,6 @@ namespace RogueLibsCore
 
 		protected static void InvSlot_SetColor(InvSlot __instance, Text ___itemText)
 		{
-			__instance.toolbarNumTextGo.SetActive(false);
 			InvItem targetItem = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
 			if (targetItem == null) return;
 			InvItem thisItem = __instance.curItemList[__instance.slotNumber];
