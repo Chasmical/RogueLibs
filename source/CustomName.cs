@@ -21,11 +21,11 @@ namespace RogueLibsCore
 		/// </summary>
 		public string[] Translations { get; set; }
 
-		internal CustomName(string id, string type, string[] translations)
+		internal CustomName(string id, string type, CustomNameInfo info)
 		{
 			Id = id;
 			Type = type;
-			Translations = translations;
+			Translations = info.ToArray();
 		}
 
 		/// <summary>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RogueLibsCore
 {
@@ -16,11 +17,11 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Determines the position of this <see cref="CustomMutator"/> in the list.</para>
 		/// </summary>
-		public int SortingOrder { get; set; }
+		public int SortingOrder { get; set; } = -1;
 		/// <summary>
 		///   <para>Determines the position of this <see cref="CustomMutator"/> in the list, if its SortingOrder equals to another's SortingOrder.</para>
 		/// </summary>
-		public int SortingIndex { get; set; }
+		public int SortingIndex { get; set; } = 0;
 
 		int IComparable<CustomMutator>.CompareTo(CustomMutator other)
 		{
@@ -31,42 +32,20 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Localizable name of this <see cref="CustomMutator"/>.</para>
 		/// </summary>
-		public CustomName Name { get; }
+		public CustomName Name { get; private set; }
 		/// <summary>
 		///   <para>Localizable description of this <see cref="CustomMutator"/>.</para>
 		/// </summary>
-		public CustomName Description { get; }
+		public CustomName Description { get; private set; }
 
 		/// <summary>
-		///   <para>Array of mutator IDs that will be automatically disabled when this <see cref="CustomMutator"/> is enabled.</para>
+		///   <para>Determines whether this <see cref="CustomMutator"/> is unlocked.</para>
 		/// </summary>
-		public string[] ConflictingMutators { get; set; }
-
+		public bool Unlocked { get; set; } = true;
 		/// <summary>
-		///   <para>Adds <paramref name="conflicting"/> mutators.</para>
+		///   <para>Determines whether this <see cref="CustomMutator"/> will be displayed.</para>
 		/// </summary>
-		public void AddConflicting(params string[] conflicting)
-		{
-			int length = conflicting.Length;
-			int length2 = ConflictingMutators.Length;
-			string[] newArr = new string[length2 + length];
-			Array.Copy(ConflictingMutators, 0, newArr, 0, length2);
-			Array.Copy(conflicting, 0, newArr, length2, length);
-			ConflictingMutators = newArr;
-		}
-		/// <summary>
-		///   <para>Adds <paramref name="conflicting"/> mutators.</para>
-		/// </summary>
-		public void AddConflicting(params CustomMutator[] conflicting)
-		{
-			int length = conflicting.Length;
-			int length2 = ConflictingMutators.Length;
-			string[] newArr = new string[length2 + length];
-			Array.Copy(ConflictingMutators, 0, newArr, 0, length2);
-			for (int i = 0; i < length; i++)
-				newArr[length2 + i] = conflicting[i].Id;
-			ConflictingMutators = newArr;
-		}
+		public bool ShowInMenu { get; set; } = true;
 
 		internal CustomMutator(string id, CustomName name, CustomName description)
 		{
@@ -74,5 +53,40 @@ namespace RogueLibsCore
 			Name = name;
 			Description = description;
 		}
+
+		/// <summary>
+		///   <para>Array of mutator IDs that will be automatically disabled when this <see cref="CustomMutator"/> is enabled.</para>
+		/// </summary>
+		public List<string> Conflicting { get; set; } = new List<string>();
+
+		/// <summary>
+		///   <para>Adds <paramref name="conflicting"/> mutators.</para>
+		/// </summary>
+		public void AddConflicting(params string[] conflicting) => Conflicting.AddRange(conflicting);
+		/// <summary>
+		///   <para>Adds <paramref name="conflicting"/> mutators.</para>
+		/// </summary>
+		public void AddConflicting(params CustomMutator[] conflicting) => Conflicting.AddRange(conflicting.Select(m => m.Id));
+
+		/// <summary>
+		///   <para>Event that is called when this <see cref="CustomMutator"/> is enabled. Triggered only when the player turns it on in the Mutator Menu.</para>
+		/// </summary>
+		public event Action OnEnabled;
+		/// <summary>
+		///   <para>Event that is called when this <see cref="CustomMutator"/> is disabled. Triggered only when the player turns it off in the Mutator Menu.</para>
+		/// </summary>
+		public event Action OnDisabled;
+		/// <summary>
+		///   <para>Event that is called when this <see cref="CustomMutator"/> is enabled/disabled. Triggered only when the player turns it on/off in the Mutator Menu.</para>
+		/// </summary>
+		public event Action<bool> OnChangedState;
+
+		internal void TriggerStateChange(bool newState)
+		{
+			OnChangedState?.Invoke(newState);
+			if (newState) OnEnabled?.Invoke();
+			else OnDisabled?.Invoke();
+		}
+
 	}
 }
