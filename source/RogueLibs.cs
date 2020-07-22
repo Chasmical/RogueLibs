@@ -24,7 +24,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Do not use this constant in your BepInDependency attribute!</para>
 		/// </summary>
-		public const string pluginVersion = "1.4.0";
+		public const string pluginVersion = "1.4.1";
 
 		internal static RogueLibsPlugin PluginInstance { get; set; }
 		/// <summary>
