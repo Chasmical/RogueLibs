@@ -25,8 +25,8 @@ namespace RogueLibsCore
 			patcher.Postfix(typeof(NameDB), "GetName"); // CustomNames
 
 			patcher.Postfix(typeof(Unlocks), "LoadInitialUnlocks");
-			patcher.Postfix(typeof(ScrollingMenu), "SortUnlocks"); // insert CustomMutators in the menu
-			patcher.Prefix(typeof(ScrollingMenu), "PushedButton"); // disable conflicting mutators and triggering CustomMutator events
+			patcher.Postfix(typeof(ScrollingMenu), "SortUnlocks");
+			patcher.Prefix(typeof(ScrollingMenu), "PushedButton");
 
 
 
@@ -51,130 +51,89 @@ namespace RogueLibsCore
 				}
 		}
 
-		public void Validate(CustomUnlock customUnlock)
+		internal void EnsureOne(List<Unlock> list, Unlock unlock, bool add)
 		{
-			Unlock newUnlock = null;
+			list.RemoveAll(u => u.unlockName == unlock.unlockName);
+
+			if (add) list.Add(unlock);
+			else list.Remove(unlock);
+		}
+		internal void Setup(CustomUnlock customUnlock)
+		{
 			SessionDataBig big = GameController.gameController.sessionDataBig;
+			GameResources gr = GameController.gameController.gameResources;
+
+			customUnlock.unlock = big.unlocks.Find(u => u.unlockName == customUnlock.Id && u.unlockType == customUnlock.Type);
+			if (customUnlock.unlock == null)
+			{
+				Unlock newUnlock = new Unlock(customUnlock.Id, customUnlock.Type, customUnlock.Unlocked, customUnlock.UnlockCost ?? 0);
+				customUnlock.unlock = GameController.gameController.unlocks.AddUnlock(newUnlock);
+				EnsureOne(big.unlocks, customUnlock.unlock, true);
+			}
+
 			if (customUnlock is CustomMutator mutator)
 			{
-				Unlock generalUnlock = big.unlocks.Find(u => u.unlockName == mutator.Id && u.unlockType == "Challenge");
-				Unlock challengeUnlock = big.challengeUnlocks.Find(u => u.unlockName == mutator.Id && u.unlockType == "Challenge");
-
-				newUnlock = generalUnlock ?? challengeUnlock ?? new Unlock(mutator.Id, "Challenge", mutator.IsUnlocked);
-
-				if (generalUnlock == null) big.unlocks.Add(newUnlock);
-
-				if (mutator.Available && challengeUnlock == null) big.challengeUnlocks.Add(newUnlock);
-				else if (!mutator.Available && challengeUnlock != null) big.challengeUnlocks.Remove(challengeUnlock);
-				Unlock.challengeCount = big.challengeUnlocks.Count;
+				EnsureOne(big.challengeUnlocks, mutator.unlock, mutator.Available);
 			}
 			else if (customUnlock is CustomItem item)
 			{
-				Unlock generalUnlock = big.unlocks.Find(u => u.unlockName == item.Id && u.unlockType == "Item");
-				Unlock availableUnlock = big.itemUnlocks.Find(u => u.unlockName == item.Id && u.unlockType == "Item");
-				Unlock availableCCUnlock = big.itemUnlocks.Find(u => u.unlockName == item.Id && u.unlockType == "Item");
-				Unlock availableITUnlock = big.itemUnlocks.Find(u => u.unlockName == item.Id && u.unlockType == "Item");
-
-				newUnlock = generalUnlock ?? availableUnlock ?? availableCCUnlock ?? availableITUnlock ?? new Unlock(item.Id, "Item", item.IsUnlocked);
-
-				if (generalUnlock == null) big.unlocks.Add(newUnlock);
-
-				if (item.Available && availableUnlock == null) big.itemUnlocks.Add(newUnlock);
-				else if (!item.Available && availableUnlock != null) big.itemUnlocks.Remove(availableUnlock);
-				Unlock.itemCount = big.itemUnlocks.Count;
-
-				if (item.AvailableInCharacterCreation && availableCCUnlock == null) big.itemUnlocksCharacterCreation.Add(newUnlock);
-				else if (!item.AvailableInCharacterCreation && availableCCUnlock != null) big.itemUnlocksCharacterCreation.Remove(availableCCUnlock);
-				Unlock.itemCountCharacterCreation = big.itemUnlocksCharacterCreation.Count;
-
-				if (item.AvailableInItemTeleporter && availableITUnlock == null) big.freeItemUnlocks.Add(newUnlock);
-				else if (!item.AvailableInItemTeleporter && availableITUnlock != null) big.freeItemUnlocks.Remove(availableITUnlock);
-				Unlock.itemCountFree = big.freeItemUnlocks.Count;
-
-				newUnlock.freeItem = item.AvailableInItemTeleporter;
-				newUnlock.onlyInCharacterCreation = item.AvailableInCharacterCreation && !item.Available;
-				newUnlock.unavailable = !item.Available;
+				EnsureOne(big.itemUnlocks, item.unlock, item.Available);
+				EnsureOne(big.itemUnlocksCharacterCreation, item.unlock, item.AvailableInCharacterCreation);
+				EnsureOne(big.freeItemUnlocks, item.unlock, item.AvailableInItemTeleporter);
 			}
 			else if (customUnlock is CustomAbility ability)
 			{
-				Unlock generalUnlock = big.unlocks.Find(u => u.unlockName == ability.Id && u.unlockType == "Ability");
-				Unlock abilityUnlock = big.abilityUnlocks.Find(u => u.unlockName == ability.Id && u.unlockType == "Ability");
-
-				newUnlock = generalUnlock ?? abilityUnlock ?? new Unlock(ability.Id, "Ability", ability.IsUnlocked);
-
-				if (generalUnlock == null) big.unlocks.Add(newUnlock);
-
-				if (ability.Available && abilityUnlock == null) big.abilityUnlocks.Add(newUnlock);
-				else if (!ability.Available && abilityUnlock != null) big.abilityUnlocks.Remove(abilityUnlock);
-				Unlock.abilityCount = big.abilityUnlocks.Count;
+				EnsureOne(big.abilityUnlocks, ability.unlock, ability.Available);
 			}
-			if (newUnlock != null)
+
+			if (customUnlock.Sprite != null)
 			{
-				newUnlock.unlocked = customUnlock.IsUnlocked;
-				newUnlock.cost = customUnlock.UnlockCost;
-				newUnlock.cancellations = customUnlock.Conflicting;
+				if (gr.itemDic.ContainsKey(customUnlock.Id))
+					gr.itemDic[customUnlock.Id] = customUnlock.Sprite;
+				else gr.itemDic.Add(customUnlock.Id, customUnlock.Sprite);
+
+				if (!gr.itemList.Contains(customUnlock.Sprite))
+					gr.itemList.Add(customUnlock.Sprite);
 			}
-
-
 		}
 
-		protected static void Unlocks_LoadInitialUnlocks(Unlocks __instance)
+		protected static bool loadedInitialUnlocks = false;
+		protected static void Unlocks_LoadInitialUnlocks(Unlocks __instance, ref bool ___doResetCertainAbilities)
 		{
-			foreach (CustomMutator mutator in RogueLibs.CustomMutators)
-			{
-				Unlock unlock = __instance.AddUnlock(new Unlock(mutator.Id, "Challenge", mutator.IsUnlocked, mutator.UnlockCost, 0, 0));
-				GameController.gameController.sessionDataBig.unlocks.Add(unlock);
-				GameController.gameController.sessionDataBig.challengeUnlocks.Add(unlock);
-				Unlock.challengeCount++;
-			}
-			foreach (CustomItem item in RogueLibs.CustomItems)
-			{
-				Unlock unlock = __instance.AddUnlock(new Unlock(item.Id, "Item", item.IsUnlocked, item.UnlockCost, 0, 0));
-				GameController.gameController.sessionDataBig.unlocks.Add(unlock);
-				if (item.Available)
-				{
-					GameController.gameController.sessionDataBig.itemUnlocks.Add(unlock);
-					Unlock.itemCount++;
-				}
-				if (item.AvailableInCharacterCreation)
-				{
-					GameController.gameController.sessionDataBig.itemUnlocksCharacterCreation.Add(unlock);
-					Unlock.itemCountCharacterCreation++;
-				}
-				if (item.AvailableInItemTeleporter)
-				{
-					GameController.gameController.sessionDataBig.freeItemUnlocks.Add(unlock);
-					Unlock.itemCountFree++;
-				}
-				
-			}
-			foreach (CustomAbility ability in RogueLibs.CustomAbilities)
-			{
-				Unlock unlock = __instance.AddUnlock(new Unlock(ability.Id, "Ability", ability.IsUnlocked, ability.UnlockCost, 0, 0));
-				GameController.gameController.sessionDataBig.unlocks.Add(unlock);
-				GameController.gameController.sessionDataBig.abilityUnlocks.Add(unlock);
-				Unlock.abilityCount++;
-			}
+			bool prev = ___doResetCertainAbilities;
+			___doResetCertainAbilities = false;
+
+			if (loadedInitialUnlocks) return;
+			loadedInitialUnlocks = true;
+
+			foreach (CustomUnlock unlock in RogueLibs.EnumerateCustomUnlocks())
+				RogueLibs.PluginInstance.Setup(unlock);
+
+			___doResetCertainAbilities = prev;
 		}
 		protected static void ScrollingMenu_SortUnlocks(ScrollingMenu __instance, string unlockType, List<Unlock> ___listUnlocks)
 		{
-			List<Unlock> addToBeginning = new List<Unlock>();
-			List<Unlock> mixWithOriginal = new List<Unlock>();
-			List<Unlock> addToEnd = new List<Unlock>();
-
 			List<Unlock> extracted = new List<Unlock>();
-			foreach (Unlock unlock in ___listUnlocks)
-			{ // filter the custom ones
-				if (unlock.unlockType == "Challenge" && RogueLibs.CustomMutators.Exists(m => m.Id == unlock.unlockName))
-					extracted.Add(unlock);
-				else if (unlock.unlockType == "Item" && RogueLibs.CustomItems.Exists(i => i.Id == unlock.unlockName))
-					extracted.Add(unlock);
-				else if (unlock.unlockType == "Ability" && RogueLibs.CustomAbilities.Exists(a => a.Id == unlock.unlockName))
-					extracted.Add(unlock);
+			if (unlockType == "Challenge")
+			{
+				foreach (Unlock unlock in ___listUnlocks)
+					if (RogueLibs.CustomMutators.Exists(m => m.Id == unlock.unlockName))
+						extracted.Add(unlock);
+			}
+			else if (unlockType == "Item")
+			{
+				foreach (Unlock unlock in ___listUnlocks)
+					if (RogueLibs.CustomItems.Exists(i => i.Id == unlock.unlockName))
+						extracted.Add(unlock);
 			}
 
 			foreach (Unlock unlock in extracted)
 				___listUnlocks.Remove(unlock);
+			__instance.numButtons -= extracted.Count;
+
+			List<Unlock> addToBeginning = new List<Unlock>();
+			List<Unlock> mixWithOriginal = new List<Unlock>();
+			List<Unlock> addToEnd = new List<Unlock>();
 
 			if (unlockType == "Challenge")
 			{
@@ -183,7 +142,7 @@ namespace RogueLibsCore
 				foreach (Unlock unlock in extracted)
 				{
 					CustomMutator mutator = RogueLibs.GetCustomMutator(unlock.unlockName);
-					if (!mutator.ShowInMenu) continue;
+					if (!mutator.Available) continue;
 
 					if (mutator.SortingOrder < 0) addToBeginning.Add(unlock);
 					else if (mutator.SortingOrder == 0) mixWithOriginal.Add(unlock);
@@ -193,10 +152,17 @@ namespace RogueLibsCore
 			else if (unlockType == "Item")
 			{
 				RogueLibs.CustomItems.Sort();
-			}
 
-			addToBeginning.Sort();
-			addToEnd.Sort();
+				foreach (Unlock unlock in extracted)
+				{
+					CustomItem item = RogueLibs.GetCustomItem(unlock.unlockName);
+					if (!item.Available) continue;
+
+					if (item.SortingOrder < 0) addToBeginning.Add(unlock);
+					else if (item.SortingOrder == 0) mixWithOriginal.Add(unlock);
+					else addToEnd.Add(unlock);
+				}
+			}
 
 			___listUnlocks.AddRange(mixWithOriginal);
 			___listUnlocks.Sort(1, ___listUnlocks.Count - 1, null);
@@ -267,15 +233,14 @@ namespace RogueLibsCore
 					__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
 					__instance.gc.SetDailyRunText();
 					__instance.UpdateOtherVisibleMenus(__instance.menuType);
-					return false;
 				}
 				else if (custom != null)
 				{ // not unlocked and is a custom mutator
-					if (custom.UnlockCost != -1)
+					if (custom.UnlockCost != null)
 					{ // can be purchased
 						if (custom.UnlockCost <= __instance.gc.sessionDataBig.nuggets)
 						{ // the player can afford the purchase
-							__instance.gc.unlocks.SubtractNuggets(custom.UnlockCost);
+							__instance.gc.unlocks.SubtractNuggets(custom.UnlockCost.Value);
 							__instance.gc.unlocks.DoUnlock(custom.Id, "Challenge");
 							__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
 
@@ -288,13 +253,11 @@ namespace RogueLibsCore
 						else
 						{ // the player can not afford the purchase
 							__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
-							return false;
 						}
 					}
 					else
 					{ // can't be purchased
 						__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
-						return false;
 					}
 				}
 
@@ -309,7 +272,7 @@ namespace RogueLibsCore
 
 
 
-
+				return false;
 			}
 			else if (__instance.menuType == "Items")
 			{

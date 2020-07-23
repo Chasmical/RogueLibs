@@ -13,7 +13,41 @@ namespace RogueLibsCore
 
 		public override string Type => "Item";
 
-		public bool AvailableInItemTeleporter { get; set; } = true;
+		private bool available = true;
+		public override bool Available
+		{
+			get => available;
+			set
+			{
+				if (unlock != null)
+					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.itemUnlocks, unlock, value);
+				available = value;
+			}
+		}
+
+		private bool availableInCharacterCreation = true;
+		public bool AvailableInCharacterCreation
+		{
+			get => availableInCharacterCreation;
+			set
+			{
+				if (unlock != null)
+					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.itemUnlocksCharacterCreation, unlock, value);
+				availableInCharacterCreation = value;
+			}
+		}
+
+		private bool availableInItemTeleporter = true;
+		public bool AvailableInItemTeleporter
+		{
+			get => availableInItemTeleporter;
+			set
+			{
+				if (unlock != null)
+					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.freeItemUnlocks, unlock, value);
+				availableInItemTeleporter = value;
+			}
+		}
 
 		/// <summary>
 		///   <para>Method that will be invoked when setting up this custom item. See <see cref="InvItem.SetupDetails(bool)"/> for more details.</para>

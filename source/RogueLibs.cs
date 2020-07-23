@@ -33,6 +33,15 @@ namespace RogueLibsCore
 		public static RogueLibsPlugin PluginInstance;
 		internal static ManualLogSource Logger;
 
+		public static IEnumerable<CustomUnlock> EnumerateCustomUnlocks()
+		{
+			foreach (CustomMutator mutator in CustomMutators)
+				yield return mutator;
+			foreach (CustomItem item in CustomItems)
+				yield return item;
+			foreach (CustomAbility ability in CustomAbilities)
+				yield return ability;
+		}
 		/// <summary>
 		///   <para>List of initialized <see cref="CustomName"/>s.</para>
 		/// </summary>
@@ -93,11 +102,9 @@ namespace RogueLibsCore
 				CreateCustomName(id, "Unlock", name),
 				CreateCustomName("D_" + id, "Unlock", description)
 				));
-			customMutator.UnlockedInitially = unlockedFromStart;
+			customMutator.Unlocked = unlockedFromStart;
 
-			Unlock unlock = GameController.gameController.unlocks.AddUnlock(new Unlock(id, "Challenge", unlockedFromStart));
-			GameController.gameController.sessionDataBig.unlocks.Add(unlock);
-			GameController.gameController.sessionDataBig.challengeUnlocks.Add(unlock);
+			PluginInstance.Setup(customMutator);
 
 			Logger.LogDebug(string.Concat("A CustomMutator with Id \"", id, "\" was created."));
 
@@ -124,22 +131,41 @@ namespace RogueLibsCore
 				CreateCustomName(id, "Item", name),
 				CreateCustomName(id, "Description", description)
 				));
-			customItem.UnlockedInitially = unlockedFromStart;
+			customItem.Unlocked = unlockedFromStart;
 			customItem.Sprite = sprite;
 			customItem.SetupDetails = setupDetails;
 
-			Unlock unlock = GameController.gameController.unlocks.AddUnlock(new Unlock(id, "Item", unlockedFromStart));
-			GameController.gameController.sessionDataBig.unlocks.Add(unlock);
-			GameController.gameController.sessionDataBig.itemUnlocks.Add(unlock);
-			GameController.gameController.sessionDataBig.itemUnlocksCharacterCreation.Add(unlock);
-			GameController.gameController.sessionDataBig.freeItemUnlocks.Add(unlock);
+			PluginInstance.Setup(customItem);
 
 			Logger.LogDebug(string.Concat("A CustomItem with Id \"", id, "\" was created."));
 
 			return customItem;
 		}
 
+		public static CustomAbility GetCustomAbility(string id) => CustomAbilities.Find(a => a.Id == id);
+		public static CustomAbility CreateCustomAbility(string id, Sprite sprite, bool unlockedFromStart, CustomNameInfo name, CustomNameInfo description, Action<InvItem> setupDetails)
+		{
+			CustomAbility customAbility = GetCustomAbility(id);
+			if (customAbility != null)
+			{
+				string message = string.Concat("A CustomAbility with Id \"", id, "\" already exists!");
+				Logger.LogError(message);
+				throw new ArgumentException(message, nameof(id));
+			}
+			CustomAbilities.Add(customAbility = new CustomAbility(id,
+				CreateCustomName(id, "Item", name),
+				CreateCustomName(id, "Description", description)
+				));
+			customAbility.Unlocked = unlockedFromStart;
+			customAbility.Sprite = sprite;
+			customAbility.SetupDetails = setupDetails;
 
+			PluginInstance.Setup(customAbility);
+
+			Logger.LogDebug(string.Concat("A CustomAbility with Id \"", id, "\" was created."));
+
+			return customAbility;
+		}
 
 
 

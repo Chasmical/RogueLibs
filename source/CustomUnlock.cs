@@ -15,10 +15,10 @@ namespace RogueLibsCore
 			Description = description;
 		}
 
+		internal Unlock unlock;
+
 		public string Id { get; }
 		public abstract string Type { get; }
-
-		public bool OverrideOriginal { get; set; }
 
 		public CustomName Name { get; }
 		public CustomName Description { get; }
@@ -32,57 +32,29 @@ namespace RogueLibsCore
 			return res != 0 ? res : SortingIndex.CompareTo(other.SortingIndex);
 		}
 
-		private bool unlockedSave = false;
-		public bool UnlockedSave
+		private bool unlocked = false;
+		public bool Unlocked
 		{
-			get => unlockedSave;
+			get => unlock != null ? (unlocked = unlock.unlocked) : unlocked;
 			set
 			{
-				unlockedSave = value;
-				Unlock generalUnlock = GameController.gameController.sessionDataBig.unlocks.Find(u => u.unlockName == Id && u.unlockType == Type);
-				if (generalUnlock == null)
-					RogueLibs.PluginInstance.Validate(this);
-				else
-					generalUnlock.unlocked = IsUnlocked;
+				if (unlock != null) unlock.unlocked = value;
+				unlocked = value;
 			}
 		}
-		private bool unlockedInitially = true;
-		public bool UnlockedInitially
-		{
-			get => unlockedInitially;
-			set
-			{
-				unlockedInitially = value;
-				Unlock generalUnlock = GameController.gameController.sessionDataBig.unlocks.Find(u => u.unlockName == Id && u.unlockType == Type);
-				if (generalUnlock == null)
-					RogueLibs.PluginInstance.Validate(this);
-				else
-					generalUnlock.unlocked = IsUnlocked;
-			}
-		}
-		public bool IsUnlocked => UnlockedInitially || UnlockedSave;
 
-		private int unlockCost = 0;
-		public int UnlockCost
+		private int? unlockCost = null;
+		public int? UnlockCost
 		{
 			get => unlockCost;
 			set
 			{
-				Unlock generalUnlock = GameController.gameController.sessionDataBig.unlocks.Find(u => u.unlockName == Id && u.unlockType == Type);
-				if (generalUnlock == null)
-					RogueLibs.PluginInstance.Validate(this);
-				else
-					generalUnlock.cost = unlockCost = value;
+				if (unlock != null) unlock.cost = value ?? 0;
+				unlockCost = value;
 			}
 		}
 
-		public bool Available { get; set; } = true;
-		public bool AvailableInCharacterCreation { get; set; } = true;
-
-		public Action<ButtonData, Unlock> CustomSetupHandler;
-		public Action<ScrollingMenu, ButtonHelper> CustomPressHandler;
-
-		public bool ShowInMenu { get; set; } = true;
+		public abstract bool Available { get; set; }
 
 		public List<string> Conflicting { get; set; } = new List<string>();
 
@@ -92,14 +64,26 @@ namespace RogueLibsCore
 			get => sprite;
 			set
 			{
-				GameResources gr = GameController.gameController.gameResources;
+				GameResources gr = GameController.gameController?.gameResources;
+				if (gr != null)
+				{
+					if (value != null)
+					{
+						if (gr.itemDic.ContainsKey(Id))
+							gr.itemDic[Id] = value;
+						else gr.itemDic.Add(Id, value);
 
-				int index = gr.itemList.IndexOf(sprite);
-				if (index != -1) gr.itemList[index] = sprite = value;
-				else gr.itemList.Add(sprite = value);
-
-				if (gr.itemDic.ContainsKey(Id)) gr.itemDic[Id] = value;
-				else gr.itemDic.Add(Id, value);
+						int index = gr.itemList.IndexOf(sprite);
+						if (index != -1) gr.itemList[index] = value;
+						else gr.itemList.Add(value);
+					}
+					else
+					{
+						gr.itemDic.Remove(Id);
+						gr.itemList.Remove(sprite);
+					}
+				}
+				sprite = value;
 			}
 		}
 	}

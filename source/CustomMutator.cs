@@ -13,6 +13,17 @@ namespace RogueLibsCore
 
 		public override string Type => "Challenge";
 
+		private bool available = true;
+		public override bool Available
+		{
+			get => available;
+			set
+			{
+				if (unlock != null)
+					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.challengeUnlocks, unlock, value);
+				available = value;
+			}
+		}
 
 	}
 }

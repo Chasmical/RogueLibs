@@ -12,6 +12,21 @@ namespace RogueLibsCore
 
 		public override string Type => "Ability";
 
+		private bool available = true;
+		public override bool Available
+		{
+			get => available;
+			set
+			{
+				if (unlock != null)
+					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.abilityUnlocks, unlock, value);
+				available = value;
+			}
+		}
+
+		public bool AvailableInCharacterCreation { get; set; } = true;
+		// non-regular implementation (because there is no list for this kind of abilities)
+
 		/// <summary>
 		///   <para>Method that will be invoked when setting up this custom ability. See <see cref="InvItem.SetupDetails(bool)"/> for more details.</para>
 		///   <para><see cref="InvItem"/> obj is this custom ability.</para>
