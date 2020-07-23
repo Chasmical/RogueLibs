@@ -3,7 +3,7 @@
 namespace RogueLibsCore
 {
 	/// <summary>
-	///   <para>Represents a custom in-game string with localizations.</para>
+	///   <para>Represents a custom localizable in-game string.</para>
 	/// </summary>
 	public class CustomName
 	{
@@ -15,6 +15,8 @@ namespace RogueLibsCore
 		///   <para>Type of this <see cref="CustomName"/>.</para>
 		/// </summary>
 		public string Type { get; }
+
+		public bool OverrideOriginal { get; set; }
 
 		/// <summary>
 		///   <para>Array of localization strings.</para>

@@ -21,7 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Debug\RogueLibs.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -90,6 +91,7 @@
     <Compile Include="source\BaseUnityPluginExtensions.cs" />
     <Compile Include="source\CustomName.cs" />
     <Compile Include="source\CustomMutator.cs" />
+    <Compile Include="source\CustomUnlock.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="source\RoguePatcher.cs" />
     <Compile Include="source\RogueUtilities.cs" />

@@ -6,76 +6,17 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Represents a custom in-game ability.</para>
 	/// </summary>
-	public class CustomAbility : IComparable<CustomAbility>
+	public class CustomAbility : CustomUnlock
 	{
-		/// <summary>
-		///   <para>Id of this <see cref="CustomAbility"/>.</para>
-		/// </summary>
-		public string Id => Item.Id;
+		internal CustomAbility(string id, CustomName name, CustomName description) : base(id, name, description) { }
+
+		public override string Type => "Ability";
 
 		/// <summary>
-		///   <para>Determines the position of this <see cref="CustomAbility"/> in the list.</para>
+		///   <para>Method that will be invoked when setting up this custom ability. See <see cref="InvItem.SetupDetails(bool)"/> for more details.</para>
+		///   <para><see cref="InvItem"/> obj is this custom ability.</para>
 		/// </summary>
-		public int SortingOrder
-		{
-			get => Item.SortingOrder;
-			set => Item.SortingOrder = value;
-		}
-		/// <summary>
-		///   <para>Determines the position of this <see cref="CustomAbility"/> in the list, if its SortingOrder equals to another's SortingOrder.</para>
-		/// </summary>
-		public int SortingIndex
-		{
-			get => Item.SortingIndex;
-			set => Item.SortingIndex = value;
-		}
-
-		int IComparable<CustomAbility>.CompareTo(CustomAbility other)
-		{
-			int res = SortingOrder.CompareTo(other.SortingOrder);
-			return res != 0 ? res : SortingIndex.CompareTo(other.SortingIndex);
-		}
-
-		/// <summary>
-		///   <para>Localizable name of this <see cref="CustomAbility"/>.</para>
-		/// </summary>
-		public CustomName Name => Item.Name;
-		/// <summary>
-		///   <para>Localizable description of this <see cref="CustomAbility"/>.</para>
-		/// </summary>
-		public CustomName Description => Item.Description;
-
-		/// <summary>
-		///   <para>Determines whether this <see cref="CustomAbility"/> is unlocked.</para>
-		/// </summary>
-		public bool Unlocked
-		{
-			get => Item.Unlocked;
-			set => Item.Unlocked = value;
-		}
-		/// <summary>
-		///   <para>Determines whether this <see cref="CustomAbility"/> will be displayed.</para>
-		/// </summary>
-		public bool ShowInMenu
-		{
-			get => Item.ShowInMenu;
-			set => Item.ShowInMenu = value;
-		}
-
-		internal CustomAbility(CustomItem item) => Item = item;
-
-		/// <summary>
-		///   <para><see cref="UnityEngine.Sprite"/> that will be used for this <see cref="CustomAbility"/>.</para>
-		/// </summary>
-		public Sprite Sprite
-		{
-			get => Item.Sprite;
-			set => Item.Sprite = value;
-		}
-		/// <summary>
-		///   <para><see cref="CustomItem"/> of this <see cref="CustomAbility"/>.</para>
-		/// </summary>
-		public CustomItem Item { get; }
+		public Action<InvItem> SetupDetails { get; set; }
 
 		/// <summary>
 		///   <para>Method that will be used to determine an object that the special ability indicator should be displayed over. Return <see langword="null"/> to hide the indicator.</para>

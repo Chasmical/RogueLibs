@@ -7,72 +7,13 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Represents a custom in-game item.</para>
 	/// </summary>
-	public class CustomItem : IComparable<CustomItem>
+	public class CustomItem : CustomUnlock
 	{
-		/// <summary>
-		///   <para>Id of this <see cref="CustomItem"/>.</para>
-		/// </summary>
-		public string Id { get; }
+		internal CustomItem(string id, CustomName name, CustomName description) : base(id, name, description) { }
 
-		/// <summary>
-		///   <para>Determines the position of this <see cref="CustomItem"/> in the list.</para>
-		/// </summary>
-		public int SortingOrder { get; set; } = -1;
-		/// <summary>
-		///   <para>Determines the position of this <see cref="CustomItem"/> in the list, if its SortingOrder equals to another's SortingOrder.</para>
-		/// </summary>
-		public int SortingIndex { get; set; } = 0;
+		public override string Type => "Item";
 
-		int IComparable<CustomItem>.CompareTo(CustomItem other)
-		{
-			int res = SortingOrder.CompareTo(other.SortingOrder);
-			return res != 0 ? res : SortingIndex.CompareTo(other.SortingIndex);
-		}
-
-		/// <summary>
-		///   <para>Localizable name of this <see cref="CustomItem"/>.</para>
-		/// </summary>
-		public CustomName Name { get; }
-		/// <summary>
-		///   <para>Localizable description of this <see cref="CustomItem"/>.</para>
-		/// </summary>
-		public CustomName Description { get; }
-
-		/// <summary>
-		///   <para>Determines whether this <see cref="CustomItem"/> is unlocked.</para>
-		/// </summary>
-		public bool Unlocked { get; set; } = true;
-		/// <summary>
-		///   <para>Determines whether this <see cref="CustomItem"/> will be displayed.</para>
-		/// </summary>
-		public bool ShowInMenu { get; set; } = true;
-
-		internal CustomItem(string id, CustomName name, CustomName description)
-		{
-			Id = id;
-			Name = name;
-			Description = description;
-		}
-
-		private Sprite sprite;
-		/// <summary>
-		///   <para><see cref="UnityEngine.Sprite"/> that will be used for this <see cref="CustomItem"/>.</para>
-		/// </summary>
-		public Sprite Sprite
-		{
-			get => sprite;
-			set
-			{
-				GameResources gr = GameController.gameController.gameResources;
-
-				int index = gr.itemList.IndexOf(sprite);
-				if (index != -1) gr.itemList[index] = sprite = value;
-				else gr.itemList.Add(sprite = value);
-
-				if (gr.itemDic.ContainsKey(Id)) gr.itemDic[Id] = value;
-				else gr.itemDic.Add(Id, value);
-			}
-		}
+		public bool AvailableInItemTeleporter { get; set; } = true;
 
 		/// <summary>
 		///   <para>Method that will be invoked when setting up this custom item. See <see cref="InvItem.SetupDetails(bool)"/> for more details.</para>

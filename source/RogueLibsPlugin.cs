@@ -24,26 +24,9 @@ namespace RogueLibsCore
 
 			patcher.Postfix(typeof(NameDB), "GetName"); // CustomNames
 
+			patcher.Postfix(typeof(Unlocks), "LoadInitialUnlocks");
 			patcher.Postfix(typeof(ScrollingMenu), "SortUnlocks"); // insert CustomMutators in the menu
-			patcher.Postfix(typeof(ScrollingMenu), "PushedButton"); // disable conflicting mutators and triggering CustomMutator events
-
-			patcher.Postfix(typeof(InvItem), "SetupDetails"); // CustomItem's SetupDetails
-			patcher.Postfix(typeof(InvItem), "LoadItemSprite"); // CustomItem's Sprite
-			patcher.Postfix(typeof(ItemFunctions), "UseItem"); // CustomItem's UseItem
-			patcher.Postfix(typeof(ItemFunctions), "TargetObject"); // CustomItem's TargetFilter and TargetObject
-			patcher.Postfix(typeof(ItemFunctions), "CombineItems"); // CustomItem's CombineFilter and CombineItems
-			patcher.Postfix(typeof(InvSlot), "SetColor"); // CustomItem's CombineTooltip
-
-			patcher.Postfix(typeof(GameResources), "SetupDics"); // make sure that GameResources has CustomItems' sprites
-
-			patcher.Postfix(typeof(StatusEffects), "SpecialAbilityInterfaceCheck2"); // CustomAbility's IndicatorCheck
-			patcher.Postfix(typeof(StatusEffects), "RechargeSpecialAbility2"); // CustomAbility's RechargeInterval and Recharge
-			patcher.Postfix(typeof(StatusEffects), "GiveSpecialAbility"); // CustomAbility set up enumerators
-			patcher.Postfix(typeof(StatusEffects), "PressedSpecialAbility"); // CustomAbility's OnPressed
-			patcher.Postfix(typeof(StatusEffects), "HeldSpecialAbility"); // CustomAbility's OnHeld
-			patcher.Postfix(typeof(StatusEffects), "ReleasedSpecialAbility"); // CustomAbility's OnReleased
-
-			patcher.Postfix(typeof(SpecialAbilityIndicator), "ShowIndicator", new Type[] { typeof(PlayfieldObject), typeof(string), typeof(string) });
+			patcher.Prefix(typeof(ScrollingMenu), "PushedButton"); // disable conflicting mutators and triggering CustomMutator events
 
 
 
@@ -68,245 +51,288 @@ namespace RogueLibsCore
 				}
 		}
 
-		protected static void ScrollingMenu_SortUnlocks(ScrollingMenu __instance, string unlockType, List<Unlock> ___listUnlocks)
+		public void Validate(CustomUnlock customUnlock)
 		{
-			if (unlockType == "Challenge")
+			Unlock newUnlock = null;
+			SessionDataBig big = GameController.gameController.sessionDataBig;
+			if (customUnlock is CustomMutator mutator)
 			{
-				List<Unlock> addToBeginning = new List<Unlock>();
-				List<Unlock> mixWithOriginal = new List<Unlock>();
-				List<Unlock> addToEnd = new List<Unlock>();
+				Unlock generalUnlock = big.unlocks.Find(u => u.unlockName == mutator.Id && u.unlockType == "Challenge");
+				Unlock challengeUnlock = big.challengeUnlocks.Find(u => u.unlockName == mutator.Id && u.unlockType == "Challenge");
 
-				RogueLibs.CustomMutators.Sort();
+				newUnlock = generalUnlock ?? challengeUnlock ?? new Unlock(mutator.Id, "Challenge", mutator.IsUnlocked);
 
-				foreach (CustomMutator mutator in RogueLibs.CustomMutators)
-				{
-					if (!mutator.ShowInMenu) continue;
-					Unlock unlock = new Unlock(mutator.Id, "Challenge", mutator.Unlocked)
-					{
-						cancellations = mutator.Conflicting
-					};
-					if (mutator.SortingOrder > 0) addToEnd.Add(unlock);
-					else if (mutator.SortingOrder == 0) mixWithOriginal.Add(unlock);
-					else addToBeginning.Add(unlock);
-				}
-				___listUnlocks.AddRange(mixWithOriginal);
-				___listUnlocks.Sort(1, ___listUnlocks.Count - 1, null);
-				___listUnlocks.InsertRange(1, addToBeginning);
-				___listUnlocks.AddRange(addToEnd);
+				if (generalUnlock == null) big.unlocks.Add(newUnlock);
 
-				__instance.numButtons += addToBeginning.Count + mixWithOriginal.Count + addToEnd.Count;
+				if (mutator.Available && challengeUnlock == null) big.challengeUnlocks.Add(newUnlock);
+				else if (!mutator.Available && challengeUnlock != null) big.challengeUnlocks.Remove(challengeUnlock);
+				Unlock.challengeCount = big.challengeUnlocks.Count;
 			}
-		}
-		protected static void ScrollingMenu_PushedButton(ScrollingMenu __instance, ButtonHelper myButton)
-		{
-			if (__instance.menuType == "Challenges")
+			else if (customUnlock is CustomItem item)
 			{
-				if (!__instance.gc.serverPlayer || myButton.scrollingButtonType == "ClearAll" || myButton.scrollingButtonType == "CreateAMutator") return;
+				Unlock generalUnlock = big.unlocks.Find(u => u.unlockName == item.Id && u.unlockType == "Item");
+				Unlock availableUnlock = big.itemUnlocks.Find(u => u.unlockName == item.Id && u.unlockType == "Item");
+				Unlock availableCCUnlock = big.itemUnlocks.Find(u => u.unlockName == item.Id && u.unlockType == "Item");
+				Unlock availableITUnlock = big.itemUnlocks.Find(u => u.unlockName == item.Id && u.unlockType == "Item");
 
-				if (myButton.scrollingHighlighted)
-				{
-					foreach (CustomMutator mutator in RogueLibs.CustomMutators)
-						if (mutator.Conflicting.IndexOf(myButton.scrollingButtonType) != -1)
-						{
-							foreach (ButtonData buttonData in __instance.buttonsData)
-								if (buttonData.scrollingButtonType == mutator.Id)
-								{
-									buttonData.scrollingHighlighted = false;
-									buttonData.highlightedSprite = __instance.solidObjectButton;
-									__instance.gc.challenges.Remove(buttonData.scrollingButtonType);
-									__instance.gc.originalChallenges.Remove(buttonData.scrollingButtonType);
-									break;
-								}
-						}
-				}
-				CustomMutator mut = RogueLibs.CustomMutators.Find(m => m.Id == myButton.scrollingButtonType);
-				mut?.TriggerStateChange(myButton.scrollingHighlighted);
+				newUnlock = generalUnlock ?? availableUnlock ?? availableCCUnlock ?? availableITUnlock ?? new Unlock(item.Id, "Item", item.IsUnlocked);
 
-				__instance.gc.SetDailyRunText();
-				__instance.UpdateOtherVisibleMenus(__instance.menuType);
+				if (generalUnlock == null) big.unlocks.Add(newUnlock);
+
+				if (item.Available && availableUnlock == null) big.itemUnlocks.Add(newUnlock);
+				else if (!item.Available && availableUnlock != null) big.itemUnlocks.Remove(availableUnlock);
+				Unlock.itemCount = big.itemUnlocks.Count;
+
+				if (item.AvailableInCharacterCreation && availableCCUnlock == null) big.itemUnlocksCharacterCreation.Add(newUnlock);
+				else if (!item.AvailableInCharacterCreation && availableCCUnlock != null) big.itemUnlocksCharacterCreation.Remove(availableCCUnlock);
+				Unlock.itemCountCharacterCreation = big.itemUnlocksCharacterCreation.Count;
+
+				if (item.AvailableInItemTeleporter && availableITUnlock == null) big.freeItemUnlocks.Add(newUnlock);
+				else if (!item.AvailableInItemTeleporter && availableITUnlock != null) big.freeItemUnlocks.Remove(availableITUnlock);
+				Unlock.itemCountFree = big.freeItemUnlocks.Count;
+
+				newUnlock.freeItem = item.AvailableInItemTeleporter;
+				newUnlock.onlyInCharacterCreation = item.AvailableInCharacterCreation && !item.Available;
+				newUnlock.unavailable = !item.Available;
 			}
-		}
-
-		protected static void InvItem_SetupDetails(InvItem __instance)
-		{
-			CustomItem cItem = RogueLibs.CustomItems.Find(i => i.Id == __instance.invItemName);
-			if (cItem == null) return;
-			cItem.SetupDetails?.Invoke(__instance);
-			__instance.LoadItemSprite(cItem.Id);
-		}
-		protected static void InvItem_LoadItemSprite(InvItem __instance)
-		{
-			CustomItem cItem = RogueLibs.CustomItems.Find(i => i.Id == __instance.invItemName);
-			if (cItem == null) return;
-			__instance.itemIcon = cItem.Sprite;
-		}
-		protected static void ItemFunctions_UseItem(InvItem item, Agent agent)
-		{
-			CustomItem cItem = RogueLibs.CustomItems.Find(i => i.Id == item.invItemName);
-			if (cItem == null) return;
-
-			if (cItem.TargetObject != null)
-				item.invInterface.ShowOrHideTarget(item);
-			cItem.UseItem?.Invoke(item, agent);
-		}
-		protected static void ItemFunctions_TargetObject(InvItem item, Agent agent, PlayfieldObject otherObject, string combineType, ref bool __result)
-		{
-			CustomItem cItem = RogueLibs.CustomItems.Find(i => i.Id == item.invItemName);
-			if (cItem?.TargetObject == null) return;
-
-			if ((__result = cItem.TargetFilter == null || cItem.TargetFilter(item, agent, otherObject)) && combineType == "Combine")
+			else if (customUnlock is CustomAbility ability)
 			{
-				cItem.TargetObject(item, agent, otherObject);
-				if (item.invItemCount < 1)
-				{
-					agent.mainGUI.invInterface.HideDraggedItem();
-					agent.mainGUI.invInterface.HideTarget();
-				}
-			}
-		}
-		protected static void ItemFunctions_CombineItems(InvItem item, Agent agent, InvItem otherItem, string combineType, ref bool __result)
-		{
-			CustomItem citem = RogueLibs.CustomItems.Find(i => i.Id == item.invItemName);
-			if (citem?.CombineItems == null) return;
+				Unlock generalUnlock = big.unlocks.Find(u => u.unlockName == ability.Id && u.unlockType == "Ability");
+				Unlock abilityUnlock = big.abilityUnlocks.Find(u => u.unlockName == ability.Id && u.unlockType == "Ability");
 
-			if ((__result = citem.CombineFilter == null || citem.CombineFilter(item, agent, otherItem)) && combineType == "Combine")
+				newUnlock = generalUnlock ?? abilityUnlock ?? new Unlock(ability.Id, "Ability", ability.IsUnlocked);
+
+				if (generalUnlock == null) big.unlocks.Add(newUnlock);
+
+				if (ability.Available && abilityUnlock == null) big.abilityUnlocks.Add(newUnlock);
+				else if (!ability.Available && abilityUnlock != null) big.abilityUnlocks.Remove(abilityUnlock);
+				Unlock.abilityCount = big.abilityUnlocks.Count;
+			}
+			if (newUnlock != null)
 			{
-				citem.CombineItems(item, agent, otherItem);
-				if (item.invItemCount < 1)
-				{
-					agent.mainGUI.invInterface.HideDraggedItem();
-					agent.mainGUI.invInterface.HideTarget();
-				}
+				newUnlock.unlocked = customUnlock.IsUnlocked;
+				newUnlock.cost = customUnlock.UnlockCost;
+				newUnlock.cancellations = customUnlock.Conflicting;
 			}
+
+
 		}
-		protected static void InvSlot_SetColor(InvSlot __instance, Text ___itemText)
+
+		protected static void Unlocks_LoadInitialUnlocks(Unlocks __instance)
 		{
-			InvItem targetItem = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
-			if (targetItem == null) return;
-			InvItem thisItem = __instance.curItemList[__instance.slotNumber];
-
-			CustomItem cItem = RogueLibs.CustomItems.Find(i => i.Id == targetItem.invItemName);
-			if (cItem?.CombineTooltip == null) return;
-
-			if (targetItem != null && (__instance.slotType == "Player" || __instance.slotType == "Toolbar" || __instance.slotType == "Chest" || __instance.slotType == "NPCChest"))
+			foreach (CustomMutator mutator in RogueLibs.CustomMutators)
 			{
-				if (thisItem.invItemName != null && targetItem.itemType == "Combine")
-				{
-					if (targetItem.CombineItems(thisItem, __instance.slotNumber, string.Empty, __instance.agent) && __instance.slotType != "NPCChest")
-					{
-						__instance.myImage.color = new Color32(0, __instance.br, __instance.br, __instance.standardAlpha);
-						__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
-						__instance.myImage.sprite = __instance.invBoxCanUse;
-
-						if (__instance.slotType != "NPCChest" && __instance.slotType != "Chest")
-						{
-							string result = cItem.CombineTooltip(targetItem, targetItem.agent, thisItem) ?? string.Empty;
-							__instance.toolbarNumTextGo.SetActive(result != string.Empty);
-							__instance.toolbarNumText.text = result;
-						}
-					}
-					else if ((!(__instance.slotType == "Toolbar") || __instance.mainGUI.openedInventory) && __instance.slotType != "NPCChest")
-					{
-						__instance.myImage.color = new Color32(__instance.br, 0, __instance.br, __instance.standardAlpha);
-						__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, __instance.fadedItemAlpha);
-						__instance.myImage.sprite = __instance.invBoxNormal;
-						___itemText.color = __instance.whiteTransparent;
-						__instance.toolbarNumTextGo.SetActive(false);
-					}
-				}
-				else if (__instance.slotType != "NPCChest" && (thisItem.invItemName != null || targetItem.itemType != "Combine"))
-				{
-					__instance.myImage.color = __instance.overSlot
-						? (Color)new Color32(0, __instance.br, __instance.br, __instance.standardAlpha)
-						: (Color)new Color32(__instance.br, __instance.br, __instance.br, __instance.standardAlpha);
-
-					__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
-					__instance.myImage.sprite = __instance.invBoxNormal;
-					if (__instance.slotType == "Toolbar")
-						__instance.toolbarNumTextGo.SetActive(false);
-				}
-				if (__instance.mainGUI.curSelected == __instance.mySelectable && __instance.agent.controllerType != "Keyboard")
-					__instance.invInterface.OnSelectionBox(__instance.slotType, __instance.tr.position);
+				Unlock unlock = __instance.AddUnlock(new Unlock(mutator.Id, "Challenge", mutator.IsUnlocked, mutator.UnlockCost, 0, 0));
+				GameController.gameController.sessionDataBig.unlocks.Add(unlock);
+				GameController.gameController.sessionDataBig.challengeUnlocks.Add(unlock);
+				Unlock.challengeCount++;
 			}
-		}
-
-		protected static void GameResources_SetupDics(GameResources __instance)
-		{
 			foreach (CustomItem item in RogueLibs.CustomItems)
 			{
-				if (!__instance.itemDic.ContainsKey(item.Id))
-					__instance.itemDic.Add(item.Id, item.Sprite);
-				if (!__instance.itemList.Contains(item.Sprite))
-					__instance.itemList.Add(item.Sprite);
+				Unlock unlock = __instance.AddUnlock(new Unlock(item.Id, "Item", item.IsUnlocked, item.UnlockCost, 0, 0));
+				GameController.gameController.sessionDataBig.unlocks.Add(unlock);
+				if (item.Available)
+				{
+					GameController.gameController.sessionDataBig.itemUnlocks.Add(unlock);
+					Unlock.itemCount++;
+				}
+				if (item.AvailableInCharacterCreation)
+				{
+					GameController.gameController.sessionDataBig.itemUnlocksCharacterCreation.Add(unlock);
+					Unlock.itemCountCharacterCreation++;
+				}
+				if (item.AvailableInItemTeleporter)
+				{
+					GameController.gameController.sessionDataBig.freeItemUnlocks.Add(unlock);
+					Unlock.itemCountFree++;
+				}
+				
+			}
+			foreach (CustomAbility ability in RogueLibs.CustomAbilities)
+			{
+				Unlock unlock = __instance.AddUnlock(new Unlock(ability.Id, "Ability", ability.IsUnlocked, ability.UnlockCost, 0, 0));
+				GameController.gameController.sessionDataBig.unlocks.Add(unlock);
+				GameController.gameController.sessionDataBig.abilityUnlocks.Add(unlock);
+				Unlock.abilityCount++;
 			}
 		}
-
-		protected static IEnumerator StatusEffects_SpecialAbilityInterfaceCheck2(IEnumerator iEnumerator, StatusEffects __instance)
+		protected static void ScrollingMenu_SortUnlocks(ScrollingMenu __instance, string unlockType, List<Unlock> ___listUnlocks)
 		{
-			while (iEnumerator.MoveNext())
+			List<Unlock> addToBeginning = new List<Unlock>();
+			List<Unlock> mixWithOriginal = new List<Unlock>();
+			List<Unlock> addToEnd = new List<Unlock>();
+
+			List<Unlock> extracted = new List<Unlock>();
+			foreach (Unlock unlock in ___listUnlocks)
+			{ // filter the custom ones
+				if (unlock.unlockType == "Challenge" && RogueLibs.CustomMutators.Exists(m => m.Id == unlock.unlockName))
+					extracted.Add(unlock);
+				else if (unlock.unlockType == "Item" && RogueLibs.CustomItems.Exists(i => i.Id == unlock.unlockName))
+					extracted.Add(unlock);
+				else if (unlock.unlockType == "Ability" && RogueLibs.CustomAbilities.Exists(a => a.Id == unlock.unlockName))
+					extracted.Add(unlock);
+			}
+
+			foreach (Unlock unlock in extracted)
+				___listUnlocks.Remove(unlock);
+
+			if (unlockType == "Challenge")
 			{
-				CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
-				if (ability?.IndicatorCheck != null)
+				RogueLibs.CustomMutators.Sort();
+
+				foreach (Unlock unlock in extracted)
 				{
-					PlayfieldObject res = ability.IndicatorCheck.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
-					if (res == null)
-						__instance.agent.specialAbilityIndicator.Revert();
+					CustomMutator mutator = RogueLibs.GetCustomMutator(unlock.unlockName);
+					if (!mutator.ShowInMenu) continue;
+
+					if (mutator.SortingOrder < 0) addToBeginning.Add(unlock);
+					else if (mutator.SortingOrder == 0) mixWithOriginal.Add(unlock);
+					else addToEnd.Add(unlock);
+				}
+			}
+			else if (unlockType == "Item")
+			{
+				RogueLibs.CustomItems.Sort();
+			}
+
+			addToBeginning.Sort();
+			addToEnd.Sort();
+
+			___listUnlocks.AddRange(mixWithOriginal);
+			___listUnlocks.Sort(1, ___listUnlocks.Count - 1, null);
+			___listUnlocks.InsertRange(1, addToBeginning);
+			___listUnlocks.AddRange(addToEnd);
+
+			__instance.numButtons += addToBeginning.Count + mixWithOriginal.Count + addToEnd.Count;
+		}
+		protected static bool ScrollingMenu_PushedButton(ScrollingMenu __instance, ButtonHelper myButton, List<Unlock> ___listUnlocks)
+		{
+			Unlock u = myButton.scrollingButtonUnlock;
+			ButtonData data = __instance.buttonsData[myButton.scrollingButtonNum];
+
+			if (__instance.menuType == "Challenges")
+			{
+				if (!__instance.gc.serverPlayer)
+				{
+					__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+					return false;
+				}
+
+				CustomMutator custom = RogueLibs.GetCustomMutator(myButton.scrollingButtonType);
+
+				if (u.unlocked)
+				{ // if unlocked, then handle ClearAll OR toggle on/off
+
+					if (myButton.scrollingButtonType == "ClearAll")
+					{ // handling ClearAll button
+						__instance.gc.challenges.Clear();
+						__instance.gc.originalChallenges.Clear();
+						foreach (ButtonData buttonData in __instance.buttonsData)
+							if (buttonData.scrollingHighlighted)
+							{
+								buttonData.scrollingHighlighted = false;
+								buttonData.highlightedSprite = __instance.solidObjectButton;
+								if (buttonData.scrollingButtonUnlock.unlockName == "SuperSpecialCharacters")
+									__instance.gc.mainGUI.characterSelectScript.RefreshSuperSpecials();
+							}
+						if (__instance.gc.multiplayerMode)
+							__instance.agent.objectMult.SendChatAnnouncement("ClearedAllChallenges", string.Empty, string.Empty);
+					}
 					else
-						__instance.agent.specialAbilityIndicator.ShowIndicator(res, __instance.agent.specialAbility);
+					{ // normal handling
+						myButton.scrollingHighlighted = data.scrollingHighlighted = true;
+						SpriteState spriteState = default;
+						spriteState.highlightedSprite = myButton.scrollingHighlighted ? myButton.solidObjectButtonSelected : myButton.solidObjectButton;
+						myButton.button.spriteState = spriteState;
+						data.highlightedSprite = myButton.scrollingHighlighted ? __instance.solidObjectButtonSelected : __instance.solidObjectButton;
+
+						if (myButton.scrollingHighlighted)
+						{ // was toggled on
+							__instance.gc.challenges.Add(myButton.scrollingButtonType);
+							__instance.gc.originalChallenges.Add(myButton.scrollingButtonType);
+						}
+						else
+						{ // was toggled off
+							__instance.gc.challenges.Remove(myButton.scrollingButtonType);
+							__instance.gc.originalChallenges.Remove(myButton.scrollingButtonType);
+						}
+						if (myButton.scrollingButtonType == "SuperSpecialCharacters")
+							__instance.gc.mainGUI.characterSelectScript.RefreshSuperSpecials();
+						if (__instance.gc.multiplayerMode)
+							__instance.agent.objectMult.SendChatAnnouncement((myButton.scrollingHighlighted ? "Added" : "Removed") + "Challenge", myButton.scrollingButtonType, string.Empty);
+					}
+
+					__instance.gc.sessionDataBig.challenges = __instance.gc.challenges;
+					__instance.gc.sessionDataBig.originalChallenges = __instance.gc.originalChallenges;
+					__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
+					__instance.gc.SetDailyRunText();
+					__instance.UpdateOtherVisibleMenus(__instance.menuType);
+					return false;
 				}
-				yield return iEnumerator.Current;
+				else if (custom != null)
+				{ // not unlocked and is a custom mutator
+					if (custom.UnlockCost != -1)
+					{ // can be purchased
+						if (custom.UnlockCost <= __instance.gc.sessionDataBig.nuggets)
+						{ // the player can afford the purchase
+							__instance.gc.unlocks.SubtractNuggets(custom.UnlockCost);
+							__instance.gc.unlocks.DoUnlock(custom.Id, "Challenge");
+							__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
+
+							for (int i = 0; i < __instance.numButtons; i++)
+								__instance.SetupChallenges(__instance.buttonsData[i], ___listUnlocks[i]);
+
+							__instance.gc.SetDailyRunText();
+							__instance.UpdateOtherVisibleMenus(__instance.menuType);
+						}
+						else
+						{ // the player can not afford the purchase
+							__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+							return false;
+						}
+					}
+					else
+					{ // can't be purchased
+						__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+						return false;
+					}
+				}
+
+
+
+
+
+
+
+
+
+
+
+
+
 			}
-		}
-		protected static IEnumerator StatusEffects_RechargeSpecialAbility2(IEnumerator iEnumerator, StatusEffects __instance)
-		{
-			while (iEnumerator.MoveNext())
+			else if (__instance.menuType == "Items")
 			{
-				CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
-				if (ability == null)
-					yield return iEnumerator.Current;
-				else
-				{
-					yield return ability.RechargeInterval?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
-					ability.Recharge?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
-				}
+
+
+
+
+
+
+
+
+
+
+
+				return false;
 			}
-		}
-		protected static void StatusEffects_GiveSpecialAbility(StatusEffects __instance, string abilityName)
-		{
-			if (GameController.gameController.levelType == "HomeBase" && !__instance.agent.isDummy) return;
-			if (__instance.agent.name == "DummyAgent" || __instance.agent.name.Contains("BackupAgent")) return;
 
-			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.inventory.equippedSpecialAbility.invItemName);
 
-			if (ability?.IndicatorCheck != null) __instance.SpecialAbilityInterfaceCheck();
-			if (ability?.Recharge != null) __instance.RechargeSpecialAbility(abilityName);
-		}
-		protected static void StatusEffects_PressedSpecialAbility(StatusEffects __instance)
-		{
-			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
-			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
-			ability?.OnPressed?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
-		}
-		protected static void StatusEffects_HeldSpecialAbility(StatusEffects __instance)
-		{
-			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
-			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
-			ability?.OnHeld?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent, ref __instance.agent.gc.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1]);
-		}
-		protected static void StatusEffects_ReleasedSpecialAbility(StatusEffects __instance)
-		{
-			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
-			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
-			ability?.OnReleased?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
-		}
 
-		protected static void SpecialAbilityIndicator_ShowIndicator(SpecialAbilityIndicator __instance, string specialAbilityType)
-		{
-			CustomAbility ability = RogueLibs.GetCustomAbility(specialAbilityType);
-			__instance.image.sprite = ability.Sprite;
+			return true;
 		}
 
 

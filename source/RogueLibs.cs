@@ -80,7 +80,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Creates a new <see cref="CustomMutator"/> with the specified <paramref name="id"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
 		/// </summary>
-		public static CustomMutator CreateCustomMutator(string id, CustomNameInfo name, CustomNameInfo description)
+		public static CustomMutator CreateCustomMutator(string id, bool unlockedFromStart, CustomNameInfo name, CustomNameInfo description)
 		{
 			CustomMutator customMutator = GetCustomMutator(id);
 			if (customMutator != null)
@@ -93,6 +93,11 @@ namespace RogueLibsCore
 				CreateCustomName(id, "Unlock", name),
 				CreateCustomName("D_" + id, "Unlock", description)
 				));
+			customMutator.UnlockedInitially = unlockedFromStart;
+
+			Unlock unlock = GameController.gameController.unlocks.AddUnlock(new Unlock(id, "Challenge", unlockedFromStart));
+			GameController.gameController.sessionDataBig.unlocks.Add(unlock);
+			GameController.gameController.sessionDataBig.challengeUnlocks.Add(unlock);
 
 			Logger.LogDebug(string.Concat("A CustomMutator with Id \"", id, "\" was created."));
 
@@ -106,7 +111,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Creates a new <see cref="CustomItem"/> with the specified <paramref name="id"/>, <paramref name="sprite"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
 		/// </summary>
-		public static CustomItem CreateCustomItem(string id, Sprite sprite, CustomNameInfo name, CustomNameInfo description, Action<InvItem> setupDetails)
+		public static CustomItem CreateCustomItem(string id, Sprite sprite, bool unlockedFromStart, CustomNameInfo name, CustomNameInfo description, Action<InvItem> setupDetails)
 		{
 			CustomItem customItem = GetCustomItem(id);
 			if (customItem != null)
@@ -119,41 +124,22 @@ namespace RogueLibsCore
 				CreateCustomName(id, "Item", name),
 				CreateCustomName(id, "Description", description)
 				));
+			customItem.UnlockedInitially = unlockedFromStart;
 			customItem.Sprite = sprite;
 			customItem.SetupDetails = setupDetails;
+
+			Unlock unlock = GameController.gameController.unlocks.AddUnlock(new Unlock(id, "Item", unlockedFromStart));
+			GameController.gameController.sessionDataBig.unlocks.Add(unlock);
+			GameController.gameController.sessionDataBig.itemUnlocks.Add(unlock);
+			GameController.gameController.sessionDataBig.itemUnlocksCharacterCreation.Add(unlock);
+			GameController.gameController.sessionDataBig.freeItemUnlocks.Add(unlock);
 
 			Logger.LogDebug(string.Concat("A CustomItem with Id \"", id, "\" was created."));
 
 			return customItem;
 		}
 
-		/// <summary>
-		///   <para>Finds an existing <see cref="CustomAbility"/> by its <paramref name="id"/>.</para>
-		/// </summary>
-		public static CustomAbility GetCustomAbility(string id) => CustomAbilities.Find(a => a.Id == id);
-		/// <summary>
-		///   <para>Creates a new <see cref="CustomAbility"/> with the specified <paramref name="id"/>, <paramref name="sprite"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
-		/// </summary>
-		public static CustomAbility CreateCustomAbility(string id, Sprite sprite, CustomNameInfo name, CustomNameInfo description, Action<InvItem> setupDetails = null)
-			=> CreateCustomAbility(CreateCustomItem(id, sprite, name, description, setupDetails));
-		/// <summary>
-		///   <para>Creates a new <see cref="CustomAbility"/> based on the specified <paramref name="customItem"/>.</para>
-		/// </summary>
-		public static CustomAbility CreateCustomAbility(CustomItem customItem)
-		{
-			CustomAbility customAbility = GetCustomAbility(customItem.Id);
-			if (customAbility != null)
-			{
-				string message = string.Concat("A CustomAbility with Id \"", customItem.Id, "\" already exists!");
-				Logger.LogError(message);
-				throw new ArgumentException(message, nameof(customItem.Id));
-			}
-			CustomAbilities.Add(customAbility = new CustomAbility(customItem));
 
-			Logger.LogDebug(string.Concat("A CustomAbility with Id \"", customItem.Id, "\" was created."));
-
-			return customAbility;
-		}
 
 
 
