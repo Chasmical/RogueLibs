@@ -13,14 +13,35 @@ namespace RogueLibsCore
 
 		public override string Type => "Challenge";
 
-		private bool available = true;
-		public override bool Available
+		private bool isActive = true;
+		public bool IsActive
 		{
-			get => available;
+			get => unlock != null ? (isActive == GameController.gameController.challenges.Contains(Id)) : isActive;
 			set
 			{
 				if (unlock != null)
+				{
+					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.challenges, Id, value);
+					unlock.notActive = !value;
+				}
+				isActive = value;
+
+				GameController.gameController.SetDailyRunText();
+				GameController.gameController.mainGUI?.scrollingMenuScript?.UpdateOtherVisibleMenus(GameController.gameController.mainGUI.scrollingMenuScript.menuType);
+			}
+		}
+
+		private bool available = true;
+		public override bool Available
+		{
+			get => unlock != null ? (available = !unlock.unavailable) : available;
+			set
+			{
+				if (unlock != null)
+				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.challengeUnlocks, unlock, value);
+					unlock.unavailable = !value;
+				}
 				available = value;
 			}
 		}

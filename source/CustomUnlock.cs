@@ -56,7 +56,17 @@ namespace RogueLibsCore
 
 		public abstract bool Available { get; set; }
 
-		public List<string> Conflicting { get; set; } = new List<string>();
+		private List<string> conflicting = new List<string>();
+		public List<string> Conflicting
+		{
+			get => unlock != null ? (conflicting = unlock.cancellations) : conflicting;
+			set
+			{
+				if (unlock != null)
+					unlock.cancellations = value;
+				conflicting = value;
+			}
+		}
 
 		private Sprite sprite;
 		public Sprite Sprite

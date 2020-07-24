@@ -15,11 +15,14 @@ namespace RogueLibsCore
 		private bool available = true;
 		public override bool Available
 		{
-			get => available;
+			get => unlock != null ? (available = !unlock.unavailable) : available;
 			set
 			{
 				if (unlock != null)
+				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.abilityUnlocks, unlock, value);
+					unlock.unavailable = !value;
+				}
 				available = value;
 			}
 		}

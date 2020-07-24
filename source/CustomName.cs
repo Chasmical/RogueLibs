@@ -16,8 +16,6 @@ namespace RogueLibsCore
 		/// </summary>
 		public string Type { get; }
 
-		public bool OverrideOriginal { get; set; }
-
 		/// <summary>
 		///   <para>Array of localization strings.</para>
 		/// </summary>

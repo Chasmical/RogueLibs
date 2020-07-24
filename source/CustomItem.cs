@@ -13,14 +13,29 @@ namespace RogueLibsCore
 
 		public override string Type => "Item";
 
-		private bool available = true;
-		public override bool Available
+		private bool isActive = true;
+		public bool IsActive
 		{
-			get => available;
+			get => unlock != null ? (isActive = !unlock.notActive) : isActive;
 			set
 			{
 				if (unlock != null)
+					unlock.notActive = !value;
+				isActive = value;
+			}
+		}
+
+		private bool available = true;
+		public override bool Available
+		{
+			get => unlock != null ? (available = !unlock.unavailable) : available;
+			set
+			{
+				if (unlock != null)
+				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.itemUnlocks, unlock, value);
+					unlock.unavailable = !value;
+				}
 				available = value;
 			}
 		}
@@ -28,11 +43,14 @@ namespace RogueLibsCore
 		private bool availableInCharacterCreation = true;
 		public bool AvailableInCharacterCreation
 		{
-			get => availableInCharacterCreation;
+			get => unlock != null ? (availableInCharacterCreation = Available || unlock.onlyInCharacterCreation) : availableInCharacterCreation;
 			set
 			{
 				if (unlock != null)
+				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.itemUnlocksCharacterCreation, unlock, value);
+					unlock.onlyInCharacterCreation = !available && value;
+				}
 				availableInCharacterCreation = value;
 			}
 		}
@@ -40,11 +58,14 @@ namespace RogueLibsCore
 		private bool availableInItemTeleporter = true;
 		public bool AvailableInItemTeleporter
 		{
-			get => availableInItemTeleporter;
+			get => unlock != null ? (availableInItemTeleporter = unlock.freeItem) : availableInItemTeleporter;
 			set
 			{
 				if (unlock != null)
+				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.freeItemUnlocks, unlock, value);
+					unlock.freeItem = value;
+				}
 				availableInItemTeleporter = value;
 			}
 		}

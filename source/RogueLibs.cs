@@ -2,7 +2,6 @@
 using BepInEx.Logging;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Xml;
 using UnityEngine;
@@ -23,10 +22,10 @@ namespace RogueLibsCore
 		/// </summary>
 		public const string pluginName = "RogueLibs";
 		/// <summary>
-		///   <para>Do not use this constant in your BepInDependency attribute!</para>
+		///   <para>Do not use this constant in your <see cref="BepInDependency"/> attribute!</para>
 		/// </summary>
-		public const string pluginVersion = "1.4.0";
-
+		public const string pluginVersion = "2.0.0";
+		
 		/// <summary>
 		///   <para>Main <see cref="RogueLibsPlugin"/> instance.</para>
 		/// </summary>
