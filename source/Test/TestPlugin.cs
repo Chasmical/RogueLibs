@@ -1,19 +1,22 @@
-﻿namespace RogueLibsCore.Test
+﻿using UnityEngine;
+using BepInEx;
+
+namespace RogueLibsCore.Test
 {
 #pragma warning disable CS1591
-	/*
+	
 	[BepInPlugin(pluginGuid, pluginName, pluginVersion)]
-	[BepInDependency(RogueLibs.pluginGuid, "1.4.0")]
+	[BepInDependency(RogueLibs.pluginGuid, "2.0.0")]
 	public class TestPlugin : BaseUnityPlugin
 	{
 		public const string pluginGuid = "abbysssal.streetsofrogue.roguelibs.test";
 		public const string pluginName = "RogueLibs.Test";
-		public const string pluginVersion = "0.3";
+		public const string pluginVersion = "0.4";
 
 		public void Awake()
 		{
 			Sprite sprite = RogueUtilities.ConvertToSprite(new byte[0]);
-			CustomItem cItem = RogueLibs.SetItem("GiantAbility", sprite,
+			CustomAbility giantAbility = RogueLibs.CreateCustomAbility("GiantAbility", sprite, true,
 				new CustomNameInfo("Giant"),
 				new CustomNameInfo("Gives you Giant status effect"),
 				item =>
@@ -22,7 +25,6 @@
 					item.initCount = 0;
 					item.stackable = true;
 				});
-			CustomAbility giantAbility = RogueLibs.SetAbility(cItem);
 
 			giantAbility.OnPressed = (item, agent) =>
 			{
@@ -57,7 +59,7 @@
 			};
 
 			Sprite sprite2 = RogueUtilities.ConvertToSprite(new byte[0]);
-			CustomItem cItem2 = RogueLibs.SetItem("RegenerationAbility", sprite2,
+			CustomAbility regeneration = RogueLibs.CreateCustomAbility("RegenerationAbility", sprite2, true,
 				new CustomNameInfo("Regeneration"),
 				new CustomNameInfo("Use it to regenerate health"),
 				item =>
@@ -65,14 +67,13 @@
 					item.initCount = 0;
 					item.stackable = true;
 				});
-			CustomAbility regeneration = RogueLibs.SetAbility(cItem2);
 
 			regeneration.OnPressed = (item, agent)
 				=> item.invItemCount = 1;
 			    // see StatusEffects.PressedSpecialAbility() for more info
-			regeneration.OnHeld = (item, agent) =>
+			regeneration.OnHeld = (InvItem item, Agent agent, ref float time) =>
 			{
-				if (agent.gc.playerControl.pressedSpecialAbilityTime[agent.isPlayer - 1] * 2f > item.invItemCount)
+				if (time * 2f > item.invItemCount)
 				{
 					if (item.invItemCount < 10)
 						item.invItemCount++;
@@ -91,6 +92,6 @@
 			};
 		}
 	}
-	*/
+	
 #pragma warning restore CS1591
 }

@@ -13,7 +13,7 @@ namespace RogueLibsCore
 
 		public override string Type => "Challenge";
 
-		private bool isActive = true;
+		private bool isActive = false;
 		public bool IsActive
 		{
 			get => unlock != null ? (isActive == GameController.gameController.challenges.Contains(Id)) : isActive;
@@ -40,6 +40,8 @@ namespace RogueLibsCore
 				if (unlock != null)
 				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.challengeUnlocks, unlock, value);
+					if (available && !value) Unlock.challengeCount--;
+					else if (!available && value) Unlock.challengeCount++;
 					unlock.unavailable = !value;
 				}
 				available = value;

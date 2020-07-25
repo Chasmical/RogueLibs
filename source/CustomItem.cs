@@ -34,6 +34,8 @@ namespace RogueLibsCore
 				if (unlock != null)
 				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.itemUnlocks, unlock, value);
+					if (available && !value) Unlock.itemCount--;
+					else if (!available && value) Unlock.itemCount++;
 					unlock.unavailable = !value;
 				}
 				available = value;
@@ -49,6 +51,8 @@ namespace RogueLibsCore
 				if (unlock != null)
 				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.itemUnlocksCharacterCreation, unlock, value);
+					if (available && !value) Unlock.itemCountCharacterCreation--;
+					else if (!available && value) Unlock.itemCountCharacterCreation++;
 					unlock.onlyInCharacterCreation = !available && value;
 				}
 				availableInCharacterCreation = value;
@@ -64,6 +68,8 @@ namespace RogueLibsCore
 				if (unlock != null)
 				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.freeItemUnlocks, unlock, value);
+					if (available && !value) Unlock.itemCountFree--;
+					else if (!available && value) Unlock.itemCountFree++;
 					unlock.freeItem = value;
 				}
 				availableInItemTeleporter = value;

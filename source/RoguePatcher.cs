@@ -31,10 +31,10 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Patches an original method with a prefix-method called "<paramref name="type"/>_<paramref name="methodName"/>" in this <see cref="TypeWithPatches"/>.</para>
 		/// </summary>
-		public bool Prefix(Type type, string methodName, params Type[] types) => myPlugin.PatchPrefix(type, methodName, TypeWithPatches, type.Name + '_' + methodName, types);
+		public bool Prefix(Type type, string methodName, Type[] types = null) => myPlugin.PatchPrefix(type, methodName, TypeWithPatches, type.Name + '_' + methodName, types);
 		/// <summary>
 		///   <para>Patches an original method with a postfix-method called "<paramref name="type"/>_<paramref name="methodName"/>" in this <see cref="TypeWithPatches"/>.</para>
 		/// </summary>
-		public bool Postfix(Type type, string methodName, params Type[] types) => myPlugin.PatchPostfix(type, methodName, TypeWithPatches, type.Name + '_' + methodName, types);
+		public bool Postfix(Type type, string methodName, Type[] types = null) => myPlugin.PatchPostfix(type, methodName, TypeWithPatches, type.Name + '_' + methodName, types);
 	}
 }

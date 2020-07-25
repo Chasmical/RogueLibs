@@ -21,6 +21,8 @@ namespace RogueLibsCore
 				if (unlock != null)
 				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.sessionDataBig.abilityUnlocks, unlock, value);
+					if (available && !value) Unlock.abilityCount--;
+					else if (!available && value) Unlock.abilityCount++;
 					unlock.unavailable = !value;
 				}
 				available = value;

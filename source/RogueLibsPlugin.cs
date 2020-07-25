@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
 
 namespace RogueLibsCore
@@ -28,11 +29,21 @@ namespace RogueLibsCore
 			patcher.Postfix(typeof(ScrollingMenu), "SortUnlocks");
 			patcher.Prefix(typeof(ScrollingMenu), "PushedButton");
 
+			patcher.Postfix(typeof(InvItem), "SetupDetails");
+			patcher.Postfix(typeof(ItemFunctions), "UseItem");
+			patcher.Postfix(typeof(ItemFunctions), "TargetObject");
+			patcher.Postfix(typeof(ItemFunctions), "CombineItems");
 
+			patcher.Postfix(typeof(InvSlot), "SetColor");
 
+			patcher.Postfix(typeof(StatusEffects), "SpecialAbilityInterfaceCheck2");
+			patcher.Postfix(typeof(StatusEffects), "RechargeSpecialAbility2");
+			patcher.Postfix(typeof(StatusEffects), "GiveSpecialAbility");
+			patcher.Postfix(typeof(StatusEffects), "PressedSpecialAbility");
+			patcher.Postfix(typeof(StatusEffects), "HeldSpecialAbility");
+			patcher.Postfix(typeof(StatusEffects), "ReleasedSpecialAbility");
 
-
-
+			patcher.Postfix(typeof(SpecialAbilityIndicator), "ShowIndicator", new Type[] { typeof(PlayfieldObject), typeof(string), typeof(string) });
 
 
 		}
@@ -63,10 +74,15 @@ namespace RogueLibsCore
 		}
 		internal void Setup(CustomUnlock customUnlock)
 		{
-			SessionDataBig big = GameController.gameController.sessionDataBig;
-			GameResources gr = GameController.gameController.gameResources;
+			SessionDataBig big = GameController.gameController?.sessionDataBig;
+			if (big == null)
+			{
+				MyLogger.LogDebug(customUnlock.Id + " - too early! Wait for initial.");
+				return;
+			}
+			GameResources gr = GameController.gameController?.gameResources;
 
-			Unlock newUnlock = customUnlock.unlock ?? big.unlocks.Find(u => u.unlockName == customUnlock.Id && u.unlockType == customUnlock.Type);
+			Unlock newUnlock = big.unlocks.Find(u => u.unlockName == customUnlock.Id && u.unlockType == customUnlock.Type);
 			
 			customUnlock.unlock = null;
 			if (newUnlock == null)
@@ -83,16 +99,19 @@ namespace RogueLibsCore
 			if (customUnlock is CustomMutator mutator)
 			{
 				EnsureOne(big.challengeUnlocks, newUnlock, mutator.Available);
+				if (mutator.Available) Unlock.challengeCount++;
 
 				EnsureOne(GameController.gameController.challenges, mutator.Id, mutator.IsActive);
-
 				newUnlock.notActive = !mutator.IsActive;
 			}
 			else if (customUnlock is CustomItem item)
 			{
 				EnsureOne(big.itemUnlocks, newUnlock, item.Available);
+				if (item.Available) Unlock.itemCount++;
 				EnsureOne(big.itemUnlocksCharacterCreation, newUnlock, item.AvailableInCharacterCreation);
+				if (item.AvailableInCharacterCreation) Unlock.itemCountCharacterCreation++;
 				EnsureOne(big.freeItemUnlocks, newUnlock, item.AvailableInItemTeleporter);
+				if (item.AvailableInItemTeleporter) Unlock.itemCountFree++;
 
 				newUnlock.notActive = !item.IsActive;
 				newUnlock.onlyInCharacterCreation = !item.Available && item.AvailableInCharacterCreation;
@@ -101,6 +120,7 @@ namespace RogueLibsCore
 			else if (customUnlock is CustomAbility ability)
 			{
 				EnsureOne(big.abilityUnlocks, newUnlock, ability.Available);
+				if (ability.Available) Unlock.abilityCount++;
 			}
 
 			if (customUnlock.Sprite != null)
@@ -112,7 +132,7 @@ namespace RogueLibsCore
 				if (!gr.itemList.Contains(customUnlock.Sprite))
 					gr.itemList.Add(customUnlock.Sprite);
 			}
-
+			MyLogger.LogDebug("Unlock " + customUnlock.Id + " set up!");
 			customUnlock.unlock = newUnlock;
 		}
 
@@ -180,7 +200,7 @@ namespace RogueLibsCore
 			___listUnlocks.Sort(offset, ___listUnlocks.Count - offset, null);
 			___listUnlocks.InsertRange(offset, addToBeginning);
 			___listUnlocks.AddRange(addToEnd);
-
+			
 			__instance.numButtons += addToBeginning.Count + mixWithOriginal.Count + addToEnd.Count;
 		}
 		protected static bool ScrollingMenu_PushedButton(ScrollingMenu __instance, ButtonHelper myButton, List<Unlock> ___listUnlocks)
@@ -315,11 +335,172 @@ namespace RogueLibsCore
 			return true;
 		}
 
+		protected static void InvItem_SetupDetails(InvItem __instance)
+		{
+			CustomItem customItem = RogueLibs.CustomItems.Find(i => i.Id == __instance.invItemName);
+			if (customItem == null) return;
+			__instance.LoadItemSprite(__instance.invItemName);
+			customItem.SetupDetails?.Invoke(__instance);
+		}
+		protected static void ItemFunctions_UseItem(InvItem item, Agent agent)
+		{
+			CustomItem customItem = RogueLibs.CustomItems.Find(i => i.Id == item.invItemName);
+			if (customItem == null) return;
+			if (customItem.TargetObject != null)
+				item.invInterface.ShowOrHideTarget(item);
+			else
+				customItem.UseItem?.Invoke(item, agent);
+		}
+		protected static void ItemFunctions_TargetObject(InvItem item, Agent agent, PlayfieldObject otherObject, string combineType, ref bool __result)
+		{
+			CustomItem customItem = RogueLibs.CustomItems.Find(i => i.Id == item.invItemName);
+			if (customItem?.TargetObject == null) return;
 
+			if ((__result = customItem.TargetFilter == null || customItem.TargetFilter(item, agent, otherObject)) && combineType == "Combine")
+			{
+				customItem.TargetObject(item, agent, otherObject);
+				if (item.invItemCount < 1)
+				{
+					agent.mainGUI.invInterface.HideDraggedItem();
+					agent.mainGUI.invInterface.HideTarget();
+				}
+			}
+		}
+		protected static void ItemFunctions_CombineItems(InvItem item, Agent agent, InvItem otherItem, int slotNum, string combineType, ref bool __result)
+		{
+			CustomItem customItem = RogueLibs.CustomItems.Find(i => i.Id == item.invItemName);
+			if (customItem?.CombineItems == null) return;
 
+			if ((__result = customItem.CombineFilter == null || customItem.CombineFilter(item, agent, otherItem)) && combineType == "Combine")
+			{
+				customItem.CombineItems(item, agent, otherItem);
+				if (item.invItemCount < 1)
+				{
+					agent.mainGUI.invInterface.HideDraggedItem();
+					agent.mainGUI.invInterface.HideTarget();
+				}
+			}
+		}
 
+		protected static void InvSlot_SetColor(InvSlot __instance, Text ___itemText)
+		{
+			InvItem targetItem = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
+			if (targetItem == null) return;
+			InvItem thisItem = __instance.curItemList[__instance.slotNumber];
 
+			CustomItem cItem = RogueLibs.CustomItems.Find(i => i.Id == targetItem.invItemName);
+			if (cItem?.CombineTooltip == null) return;
 
+			if (__instance.slotType == "Player" || __instance.slotType == "Toolbar" || __instance.slotType == "Chest" || __instance.slotType == "NPCChest")
+			{
+				if (thisItem.invItemName != null && targetItem.itemType == "Combine")
+				{
+					if (targetItem.CombineItems(thisItem, __instance.slotNumber, string.Empty, __instance.agent) && __instance.slotType != "NPCChest")
+					{
+						__instance.myImage.color = new Color32(0, __instance.br, __instance.br, __instance.standardAlpha);
+						__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
+						__instance.myImage.sprite = __instance.invBoxCanUse;
+
+						if (__instance.slotType != "NPCChest" && __instance.slotType != "Chest")
+						{
+							string result = cItem.CombineTooltip(targetItem, targetItem.agent, thisItem) ?? string.Empty;
+							__instance.toolbarNumTextGo.SetActive(result != string.Empty);
+							__instance.toolbarNumText.text = result;
+						}
+					}
+					else if ((!(__instance.slotType == "Toolbar") || __instance.mainGUI.openedInventory) && __instance.slotType != "NPCChest")
+					{
+						__instance.myImage.color = new Color32(__instance.br, 0, __instance.br, __instance.standardAlpha);
+						__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, __instance.fadedItemAlpha);
+						__instance.myImage.sprite = __instance.invBoxNormal;
+						___itemText.color = __instance.whiteTransparent;
+						__instance.toolbarNumTextGo.SetActive(false);
+					}
+				}
+				else if (__instance.slotType != "NPCChest" && (thisItem.invItemName != null || targetItem.itemType != "Combine"))
+				{
+					__instance.myImage.color = __instance.overSlot
+						? (Color)new Color32(0, __instance.br, __instance.br, __instance.standardAlpha)
+						: (Color)new Color32(__instance.br, __instance.br, __instance.br, __instance.standardAlpha);
+
+					__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
+					__instance.myImage.sprite = __instance.invBoxNormal;
+					if (__instance.slotType == "Toolbar")
+						__instance.toolbarNumTextGo.SetActive(false);
+				}
+				if (__instance.mainGUI.curSelected == __instance.mySelectable && __instance.agent.controllerType != "Keyboard")
+					__instance.invInterface.OnSelectionBox(__instance.slotType, __instance.tr.position);
+			}
+		}
+
+		protected static IEnumerator StatusEffects_SpecialAbilityInterfaceCheck2(IEnumerator iEnumerator, StatusEffects __instance)
+		{
+			while (iEnumerator.MoveNext())
+			{
+				CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
+				if (ability?.IndicatorCheck != null)
+				{
+					PlayfieldObject res = ability.IndicatorCheck.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
+					if (res == null) __instance.agent.specialAbilityIndicator.Revert();
+					else __instance.agent.specialAbilityIndicator.ShowIndicator(res, __instance.agent.specialAbility);
+				}
+				yield return iEnumerator.Current;
+			}
+		}
+		protected static IEnumerator StatusEffects_RechargeSpecialAbility2(IEnumerator iEnumerator, StatusEffects __instance)
+		{
+			while (iEnumerator.MoveNext())
+			{
+				CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
+				if (ability == null)
+					yield return iEnumerator.Current;
+				else
+				{
+					yield return ability.RechargeInterval?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
+					ability.Recharge?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
+				}
+			}
+		}
+		protected static void StatusEffects_GiveSpecialAbility(StatusEffects __instance, string abilityName)
+		{
+			if (GameController.gameController.levelType == "HomeBase" && !__instance.agent.isDummy) return;
+			if (__instance.agent.name == "DummyAgent" || __instance.agent.name.Contains("BackupAgent")) return;
+
+			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
+
+			if (ability != null)
+			{
+				__instance.SpecialAbilityInterfaceCheck();
+				__instance.RechargeSpecialAbility(abilityName);
+			}
+		}
+		protected static void StatusEffects_PressedSpecialAbility(StatusEffects __instance)
+		{
+			if (__instance.agent.ghost || __instance.agent.teleporting) return;
+
+			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
+			ability?.OnPressed?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
+		}
+		protected static void StatusEffects_HeldSpecialAbility(StatusEffects __instance)
+		{
+			if (__instance.agent.ghost || __instance.agent.teleporting) return;
+
+			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
+			ability?.OnHeld?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent, ref __instance.agent.gc.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1]);
+		}
+		protected static void StatusEffects_ReleasedSpecialAbility(StatusEffects __instance)
+		{
+			if (__instance.agent.ghost || __instance.agent.teleporting) return;
+
+			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
+			ability?.OnReleased?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
+		}
+
+		protected static void SpecialAbilityIndicator_ShowIndicator(SpecialAbilityIndicator __instance, string specialAbilityType)
+		{
+			CustomAbility ability = RogueLibs.GetCustomAbility(specialAbilityType);
+			__instance.image.sprite = ability.Sprite;
+		}
 
 
 
