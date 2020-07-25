@@ -16,7 +16,7 @@ namespace RogueLibsCore.Test
 		public void Awake()
 		{
 			Sprite sprite = RogueUtilities.ConvertToSprite(new byte[0]);
-			CustomAbility giantAbility = RogueLibs.CreateCustomAbility("GiantAbility", sprite, true,
+			CustomAbility giantAbility = RogueLibs.CreateCustomAbility("GiantAbility", sprite, false,
 				new CustomNameInfo("Giant"),
 				new CustomNameInfo("Gives you Giant status effect"),
 				item =>
@@ -57,9 +57,10 @@ namespace RogueLibsCore.Test
 					}
 				}
 			};
+			giantAbility.UnlockCost = 5;
 
 			Sprite sprite2 = RogueUtilities.ConvertToSprite(new byte[0]);
-			CustomAbility regeneration = RogueLibs.CreateCustomAbility("RegenerationAbility", sprite2, true,
+			CustomAbility regeneration = RogueLibs.CreateCustomAbility("RegenerationAbility", sprite2, false,
 				new CustomNameInfo("Regeneration"),
 				new CustomNameInfo("Use it to regenerate health"),
 				item =>
@@ -84,12 +85,14 @@ namespace RogueLibsCore.Test
 			};
 			regeneration.OnReleased = (item, agent) =>
 			{
+				if (item.invItemCount < 2) return;
 				agent.statusEffects.ChangeHealth(item.invItemCount);
 				item.invItemCount = 0;
 				agent.gc.audioHandler.Play(agent, "Heal");
 
 				// see StatusEffects.ReleasedSpecialAbility() for more info
 			};
+			regeneration.UnlockCost = 3;
 		}
 	}
 	
