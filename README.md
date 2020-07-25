@@ -6,6 +6,13 @@
     <a href="https://github.com/Abbysssal/RogueLibs/releases/latest">
       <img src="https://img.shields.io/github/v/release/Abbysssal/RogueLibs?label=Latest%20release&style=for-the-badge&logo=github" alt="Latest release"/>
     </a>
+    <a href="https://github.com/Abbysssal/RogueLibs/releases">
+      <img src="https://img.shields.io/github/v/release/Abbysssal/RogueLibs?include_prereleases&label=Latest%20pre-release&style=for-the-badge&logo=github" alt="Latest pre-release"/>
+    </a>
+    <br/>
+    <a href="https://github.com/Abbysssal/RogueLibs/releases">
+      <img src="https://img.shields.io/github/downloads/Abbysssal/RogueLibs/total?label=Downloads&style=for-the-badge" alt="Downloads"/>
+    </a>
     <a href="https://github.com/Abbysssal/RogueLibs/subscription">
       <img src="https://img.shields.io/github/watchers/Abbysssal/RogueLibs?color=green&label=Watchers&style=for-the-badge" alt="Watchers"/>
     </a>
