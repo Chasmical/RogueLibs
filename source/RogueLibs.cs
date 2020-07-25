@@ -57,6 +57,10 @@ namespace RogueLibsCore
 		///   <para>List of initialized <see cref="CustomAbility"/>s.</para>
 		/// </summary>
 		public static List<CustomAbility> CustomAbilities { get; set; } = new List<CustomAbility>();
+		/// <summary>
+		///   <para>List of initialized <see cref="CustomTrait"/>s.</para>
+		/// </summary>
+		public static List<CustomTrait> CustomTraits { get; set; } = new List<CustomTrait>();
 
 		/// <summary>
 		///   <para>Finds an existing <see cref="CustomName"/> by its <paramref name="id"/> and <paramref name="type"/>.</para>
@@ -166,7 +170,28 @@ namespace RogueLibsCore
 			return customAbility;
 		}
 
+		public static CustomTrait GetCustomTrait(string id) => CustomTraits.Find(t => t.Id == id);
+		public static CustomTrait CreateCustomTrait(string id, bool unlockedFromStart, CustomNameInfo name, CustomNameInfo description)
+		{
+			CustomTrait customTrait = GetCustomTrait(id);
+			if (customTrait != null)
+			{
+				string message = string.Concat("A CustomTrait with Id \"", id, "\" already exists!");
+				Logger.LogError(message);
+				throw new ArgumentException(message, nameof(id));
+			}
+			CustomTraits.Add(customTrait = new CustomTrait(id,
+				CreateCustomName(id, "StatusEffect", name),
+				CreateCustomName(id, "Description", description)
+				));
+			customTrait.Unlocked = unlockedFromStart;
 
+			PluginInstance.Setup(customTrait);
+
+			Logger.LogDebug(string.Concat("A CustomTrait with Id \"", id, "\" was created."));
+
+			return customTrait;
+		}
 
 
 

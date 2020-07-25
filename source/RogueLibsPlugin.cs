@@ -91,7 +91,11 @@ namespace RogueLibsCore
 				newUnlock = new Unlock(customUnlock.Id, customUnlock.Type, customUnlock.Unlocked, customUnlock.UnlockCost ?? 0)
 				{
 					cancellations = customUnlock.Conflicting,
-					unavailable = !customUnlock.Available
+					unavailable = !customUnlock.Available,
+					prerequisites = customUnlock.Prerequisites,
+					recommendations = customUnlock.Recommendations,
+					specialAbilities = customUnlock.SpecialAbilities,
+					categories = customUnlock.Categories
 				};
 				newUnlock = GameController.gameController.unlocks.AddUnlock(newUnlock);
 				EnsureOne(big.unlocks, newUnlock, true);
@@ -122,6 +126,22 @@ namespace RogueLibsCore
 			{
 				EnsureOne(big.abilityUnlocks, newUnlock, ability.Available);
 				if (ability.Available) Unlock.abilityCount++;
+			}
+			else if (customUnlock is CustomTrait trait)
+			{
+				EnsureOne(big.traitUnlocks, newUnlock, trait.Available);
+				if (trait.Available) Unlock.traitCount++;
+				EnsureOne(big.traitUnlocksCharacterCreation, newUnlock, trait.AvailableInCharacterCreation);
+				if (trait.AvailableInCharacterCreation) Unlock.traitCountCharacterCreation++;
+
+				newUnlock.notActive = !trait.IsActive;
+				newUnlock.onlyInCharacterCreation = !trait.Available && trait.AvailableInCharacterCreation;
+				newUnlock.upgrade = trait.Upgrade;
+				newUnlock.cantLose = trait.CantLose;
+				newUnlock.cantSwap = trait.CantSwap;
+
+				CustomTrait.UpgradeCheck(trait.Id);
+				CustomTrait.UpgradeCheck(trait.Upgrade);
 			}
 
 			if (customUnlock.Sprite != null)
@@ -156,19 +176,24 @@ namespace RogueLibsCore
 		}
 		protected static void ScrollingMenu_SortUnlocks(ScrollingMenu __instance, string unlockType, List<Unlock> ___listUnlocks)
 		{
-			IEnumerable<CustomUnlock> list;
+			IEnumerable list;
 			int offset = 0;
 
 			if (unlockType == "Challenge") // Mutator Menu
 			{
 				RogueLibs.CustomMutators.Sort();
-				list = RogueLibs.CustomMutators as IEnumerable<CustomUnlock>;
+				list = RogueLibs.CustomMutators;
 				offset = 1; // Clear All Mutators button
 			}
-			else if (unlockType == "Item") // Item Unlocks / Rewards
+			else if (__instance.menuType == "Items") // Item Unlocks / Rewards
 			{
 				RogueLibs.CustomItems.Sort();
-				list = RogueLibs.CustomItems as IEnumerable<CustomUnlock>;
+				list = RogueLibs.CustomItems;
+			}
+			else if (__instance.menuType == "TraitUnlocks") // Trait Unlocks
+			{
+				RogueLibs.CustomTraits.Sort();
+				list = RogueLibs.CustomTraits;
 			}
 			else
 				return;
@@ -195,6 +220,7 @@ namespace RogueLibsCore
 			IEnumerable customUnlocks;
 			List<Unlock> listUnlocks;
 			int offset = 0;
+			bool abilityCheck = false;
 
 			if (unlockType == "Item")
 			{
@@ -208,6 +234,7 @@ namespace RogueLibsCore
 				RogueLibs.CustomItems.Sort();
 				customUnlocks = RogueLibs.CustomAbilities;
 				listUnlocks = __instance.listUnlocksAbilities;
+				abilityCheck = true;
 			}
 			else
 				return;
@@ -217,10 +244,16 @@ namespace RogueLibsCore
 
 			foreach (CustomUnlock customUnlock in customUnlocks)
 			{ // enumerate through sorted CustomUnlocks and put them in the lists (in sorted order)
-				if (customUnlock.SortingOrder == 0) continue;
-
 				int index = listUnlocks.FindIndex(u => u.unlockName == customUnlock.Id);
 
+				if (abilityCheck && !((CustomAbility)customUnlock).AvailableInCharacterCreation)
+				{ // non-regular implementation for abilities not available in character creation
+					listUnlocks.RemoveAt(index);
+					__instance.numButtonsAbilities--;
+					continue;
+				}
+
+				if (customUnlock.SortingOrder == 0) continue;
 				if (customUnlock.SortingOrder < 0) addToBeginning.Add(listUnlocks[index]);
 				else addToEnd.Add(listUnlocks[index]);
 				listUnlocks.RemoveAt(index);
@@ -329,7 +362,12 @@ namespace RogueLibsCore
 			else if (__instance.menuType == "Items")
 			{
 
-				return false;
+				return true;
+			}
+			else if (__instance.menuType == "TraitUnlocks")
+			{
+
+				return true;
 			}
 			else
 				return true;
@@ -427,6 +465,61 @@ namespace RogueLibsCore
 
 							for (int i = 0; i < __instance.numButtonsAbilities; i++)
 								__instance.SetupAbilities(__instance.buttonsDataAbilities[i], __instance.listUnlocksAbilities[i]);
+						}
+						else // the player can not afford the purchase
+							__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+					}
+					else // can't be purchased
+						__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+				}
+				else // is original ability and is not unlocked
+					__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+			}
+			else if (unlock.unlockType == "Trait")
+			{
+				CustomTrait custom = RogueLibs.GetCustomTrait(unlock.unlockName);
+				if (unlock.unlocked)
+				{ // if unlocked, then toggle on/off
+					if (myButton.scrollingButtonType == "ClearAllTraits")
+					{ // handling ClearAll button
+						foreach (ButtonData buttonData2 in __instance.buttonsDataTraits)
+							if (buttonData2.scrollingHighlighted)
+							{
+								buttonData2.scrollingHighlighted = false;
+								buttonData2.highlightedSprite = __instance.solidObjectButton;
+							}
+						__instance.traitsChosen.Clear();
+						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
+					}
+					else
+					{ // normal handling / toggle on/off
+						myButton.scrollingHighlighted = buttonData.scrollingHighlighted = !myButton.scrollingHighlighted;
+						SpriteState spriteState = default;
+						spriteState.highlightedSprite = myButton.scrollingHighlighted ? myButton.solidObjectButtonSelected : myButton.solidObjectButton;
+						myButton.button.spriteState = spriteState;
+						buttonData.highlightedSprite = myButton.scrollingHighlighted ? __instance.solidObjectButtonSelected : __instance.solidObjectButton;
+
+						if (myButton.scrollingHighlighted)
+							__instance.traitsChosen.Add(unlock);
+						else
+							__instance.traitsChosen.Remove(unlock);
+
+						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
+					}
+					__instance.scrollerControllerItems.myScroller.RefreshActiveCellViews();
+				}
+				else if (custom != null)
+				{  // not unlocked and is a custom trait
+					if (custom.UnlockCost != null)
+					{ // can be purchased
+						if (custom.UnlockCost <= __instance.gc.sessionDataBig.nuggets)
+						{ // the player can afford the purchase
+							__instance.gc.unlocks.SubtractNuggets(custom.UnlockCost.Value);
+							__instance.gc.unlocks.DoUnlock(custom.Id, "Trait");
+							__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
+
+							for (int i = 0; i < __instance.numButtonsTraits; i++)
+								__instance.SetupTraits(__instance.buttonsDataTraits[i], __instance.listUnlocksTraits[i]);
 						}
 						else // the player can not afford the purchase
 							__instance.gc.audioHandler.Play(__instance.agent, "CantDo");

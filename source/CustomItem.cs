@@ -45,7 +45,7 @@ namespace RogueLibsCore
 		private bool availableInCharacterCreation = true;
 		public bool AvailableInCharacterCreation
 		{
-			get => unlock != null ? (availableInCharacterCreation = Available || unlock.onlyInCharacterCreation) : availableInCharacterCreation;
+			get => unlock != null ? (availableInCharacterCreation = !unlock.unavailable || unlock.onlyInCharacterCreation) : availableInCharacterCreation;
 			set
 			{
 				if (unlock != null)

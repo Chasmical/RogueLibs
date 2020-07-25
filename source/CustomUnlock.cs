@@ -56,6 +56,18 @@ namespace RogueLibsCore
 
 		public abstract bool Available { get; set; }
 
+		private List<string> categories = new List<string>();
+		public List<string> Categories
+		{
+			get => unlock != null ? (categories = unlock.categories) : categories;
+			set
+			{
+				if (unlock != null)
+					unlock.categories = value;
+				categories = value;
+			}
+		}
+
 		private List<string> conflicting = new List<string>();
 		public List<string> Conflicting
 		{
@@ -65,6 +77,42 @@ namespace RogueLibsCore
 				if (unlock != null)
 					unlock.cancellations = value;
 				conflicting = value;
+			}
+		}
+
+		private List<string> prerequisites = new List<string>();
+		public List<string> Prerequisites
+		{
+			get => unlock != null ? (prerequisites = unlock.prerequisites) : prerequisites;
+			set
+			{
+				if (unlock != null)
+					unlock.prerequisites = value;
+				prerequisites = value;
+			}
+		}
+
+		private List<string> recommendations = new List<string>();
+		public List<string> Recommendations
+		{
+			get => unlock != null ? (recommendations = unlock.recommendations) : recommendations;
+			set
+			{
+				if (unlock != null)
+					unlock.recommendations = value;
+				recommendations = value;
+			}
+		}
+
+		private List<string> specialAbilities = new List<string>();
+		public List<string> SpecialAbilities
+		{
+			get => unlock != null ? (specialAbilities = unlock.specialAbilities) : specialAbilities;
+			set
+			{
+				if (unlock != null)
+					unlock.specialAbilities = value;
+				specialAbilities = value;
 			}
 		}
 
