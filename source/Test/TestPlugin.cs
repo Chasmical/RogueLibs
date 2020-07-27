@@ -1,10 +1,10 @@
-﻿using UnityEngine;
-using BepInEx;
+﻿using BepInEx;
+using UnityEngine;
 
 namespace RogueLibsCore.Test
 {
 #pragma warning disable CS1591
-	
+
 	[BepInPlugin(pluginGuid, pluginName, pluginVersion)]
 	[BepInDependency(RogueLibs.pluginGuid, "2.0.0")]
 	public class TestPlugin : BaseUnityPlugin
@@ -105,6 +105,6 @@ namespace RogueLibsCore.Test
 			#endregion
 		}
 	}
-	
+
 #pragma warning restore CS1591
 }

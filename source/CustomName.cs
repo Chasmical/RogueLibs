@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RogueLibsCore
+﻿namespace RogueLibsCore
 {
 	/// <summary>
 	///   <para>Represents a custom localizable in-game string.</para>

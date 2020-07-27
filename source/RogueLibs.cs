@@ -2,8 +2,6 @@
 using BepInEx.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Xml;
 using UnityEngine;
 
 namespace RogueLibsCore
@@ -25,13 +23,21 @@ namespace RogueLibsCore
 		///   <para>Do not use this constant in your <see cref="BepInDependency"/> attribute!</para>
 		/// </summary>
 		public const string pluginVersion = "2.0.0";
-		
+
 		/// <summary>
 		///   <para>Main <see cref="RogueLibsPlugin"/> instance.</para>
 		/// </summary>
 		public static RogueLibsPlugin PluginInstance;
 		internal static ManualLogSource Logger;
 
+		/// <summary>
+		///   <para>List of initialized <see cref="CustomName"/>s.</para>
+		/// </summary>
+		public static List<CustomName> CustomNames { get; set; } = new List<CustomName>();
+
+		/// <summary>
+		///   <para>Enumerates through all initialized <see cref="CustomUnlock"/>s.</para>
+		/// </summary>
 		public static IEnumerable<CustomUnlock> EnumerateCustomUnlocks()
 		{
 			foreach (CustomMutator mutator in CustomMutators)
@@ -43,10 +49,7 @@ namespace RogueLibsCore
 			foreach (CustomTrait trait in CustomTraits)
 				yield return trait;
 		}
-		/// <summary>
-		///   <para>List of initialized <see cref="CustomName"/>s.</para>
-		/// </summary>
-		public static List<CustomName> CustomNames { get; set; } = new List<CustomName>();
+
 		/// <summary>
 		///   <para>List of initialized <see cref="CustomMutator"/>s.</para>
 		/// </summary>
@@ -147,7 +150,13 @@ namespace RogueLibsCore
 			return customItem;
 		}
 
+		/// <summary>
+		///   <para>Finds an existing <see cref="CustomAbility"/> by its <paramref name="id"/>.</para>
+		/// </summary>
 		public static CustomAbility GetCustomAbility(string id) => CustomAbilities.Find(a => a.Id == id);
+		/// <summary>
+		///   <para>Creates a new <see cref="CustomAbility"/> with the specified <paramref name="id"/>, <paramref name="sprite"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
+		/// </summary>
 		public static CustomAbility CreateCustomAbility(string id, Sprite sprite, bool unlockedFromStart, CustomNameInfo name, CustomNameInfo description, Action<InvItem> setupDetails)
 		{
 			CustomAbility customAbility = GetCustomAbility(id);
@@ -172,7 +181,13 @@ namespace RogueLibsCore
 			return customAbility;
 		}
 
+		/// <summary>
+		///   <para>Finds an existing <see cref="CustomTrait"/> by its <paramref name="id"/>.</para>
+		/// </summary>
 		public static CustomTrait GetCustomTrait(string id) => CustomTraits.Find(t => t.Id == id);
+		/// <summary>
+		///   <para>Creates a new <see cref="CustomTrait"/> with the specified <paramref name="id"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
+		/// </summary>
 		public static CustomTrait CreateCustomTrait(string id, bool unlockedFromStart, CustomNameInfo name, CustomNameInfo description)
 		{
 			CustomTrait customTrait = GetCustomTrait(id);
@@ -194,9 +209,6 @@ namespace RogueLibsCore
 
 			return customTrait;
 		}
-
-
-
 
 	}
 }

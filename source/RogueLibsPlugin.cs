@@ -3,9 +3,7 @@ using BepInEx.Logging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
 using UnityEngine.UI;
 
 namespace RogueLibsCore
@@ -45,6 +43,7 @@ namespace RogueLibsCore
 		}
 
 		protected static string[] languages = new string[8] { "english", "schinese", "german", "spanish", "brazilian", "russian", "french", "koreana" };
+		protected static string[] nameTypes = new string[8] { "Agent", "Item", "Object", "StatusEffect", "Interface", "Dialogue", "Description", "Unlock" };
 		protected static void NameDB_GetName(NameDB __instance, string myName, string type, ref string __result)
 		{
 			if (!__result.StartsWith("E_")) return;
@@ -61,9 +60,20 @@ namespace RogueLibsCore
 		protected static void InvItem_SetupDetails(InvItem __instance)
 		{
 			CustomItem customItem = RogueLibs.CustomItems.Find(i => i.Id == __instance.invItemName);
-			if (customItem == null) return;
-			__instance.LoadItemSprite(__instance.invItemName);
-			customItem.SetupDetails?.Invoke(__instance);
+			if (customItem != null)
+			{
+				__instance.LoadItemSprite(__instance.invItemName);
+				customItem.SetupDetails?.Invoke(__instance);
+			}
+			else
+			{
+				CustomAbility customAbility = RogueLibs.CustomAbilities.Find(a => a.Id == __instance.invItemName);
+				if (customAbility != null)
+				{
+					__instance.LoadItemSprite(__instance.invItemName);
+					customAbility.SetupDetails?.Invoke(__instance);
+				}
+			}
 		}
 		protected static void ItemFunctions_UseItem(InvItem item, Agent agent)
 		{
@@ -89,7 +99,7 @@ namespace RogueLibsCore
 				}
 			}
 		}
-		protected static void ItemFunctions_CombineItems(InvItem item, Agent agent, InvItem otherItem, int slotNum, string combineType, ref bool __result)
+		protected static void ItemFunctions_CombineItems(InvItem item, Agent agent, InvItem otherItem, string combineType, ref bool __result)
 		{
 			CustomItem customItem = RogueLibs.CustomItems.Find(i => i.Id == item.invItemName);
 			if (customItem?.CombineItems == null) return;
@@ -251,6 +261,8 @@ namespace RogueLibsCore
 			patcher.Prefix(typeof(CharacterCreation), "DoCancellations"); // more thorough cancellation
 			patcher.Prefix(typeof(CharacterCreation), "PushedButton"); // toggling and purchasing Abilities, Items and Traits in CC
 
+			patcher.Postfix(typeof(Unlocks), "DoUnlock"); // CustomUnlock's OnUnlocked event
+
 
 		}
 
@@ -285,7 +297,6 @@ namespace RogueLibsCore
 					unavailable = !customUnlock.Available,
 					prerequisites = customUnlock.Prerequisites,
 					recommendations = customUnlock.Recommendations,
-					specialAbilities = customUnlock.SpecialAbilities,
 					categories = customUnlock.Categories
 				};
 				newUnlock = GameController.gameController.unlocks.AddUnlock(newUnlock);
@@ -333,8 +344,9 @@ namespace RogueLibsCore
 				newUnlock.notActive = !trait.IsActive;
 				newUnlock.onlyInCharacterCreation = !trait.Available && trait.AvailableInCharacterCreation;
 				newUnlock.upgrade = trait.Upgrade;
-				newUnlock.cantLose = trait.CantLose;
-				newUnlock.cantSwap = trait.CantSwap;
+				newUnlock.cantLose = !trait.CanRemove;
+				newUnlock.cantSwap = !trait.CanSwap;
+				newUnlock.specialAbilities = trait.SpecialAbilities;
 
 				newUnlock.cost3 = trait.CostInCharacterCreation;
 
@@ -358,20 +370,17 @@ namespace RogueLibsCore
 		{
 			if (!unlock.nowAvailable)
 			{
-				bool canBeUnlocked = true;
 				foreach (string name in unlock.prerequisites)
-					if (!GameController.gameController.unlocks.IsUnlocked(name, unlock.unlockType))
-					{ canBeUnlocked = false; break; }
-				unlock.nowAvailable = canBeUnlocked;
+					foreach (Unlock u in GameController.gameController.sessionDataBig.unlocks)
+						if (!u.unlocked && u.unlockName == name)
+						{ unlock.nowAvailable = false; return; }
+				unlock.nowAvailable = true;
 			}
 		}
 
 		protected static bool loadedInitialUnlocks = false;
-		protected static void Unlocks_LoadInitialUnlocks(Unlocks __instance, ref bool ___doResetCertainAbilities)
+		protected static void Unlocks_LoadInitialUnlocks()
 		{
-			bool prev = ___doResetCertainAbilities;
-			___doResetCertainAbilities = false;
-
 			if (loadedInitialUnlocks) return;
 			loadedInitialUnlocks = true;
 
@@ -380,8 +389,6 @@ namespace RogueLibsCore
 
 			GameController.gameController.SetDailyRunText();
 			GameController.gameController.mainGUI?.scrollingMenuScript?.UpdateOtherVisibleMenus(GameController.gameController.mainGUI.scrollingMenuScript.menuType);
-
-			___doResetCertainAbilities = prev;
 		}
 
 		protected static void ScrollingMenu_SortUnlocks(ScrollingMenu __instance, string unlockType, List<Unlock> ___listUnlocks)
@@ -434,6 +441,9 @@ namespace RogueLibsCore
 			CheckPrerequisites(myUnlock);
 
 			myButtonData.scrollingButtonType = myUnlock.unlockName;
+			myButtonData.interactable = true;
+			myButtonData.scrollingButtonUnlock = myUnlock;
+
 			myButtonData.buttonText = myUnlock.unlockType == "Challenge"
 				? __instance.gc.unlocks.GetChallengeName(myUnlock.unlockName)
 				: __instance.gc.nameDB.GetName(myUnlock.unlockName, myUnlock.unlockNameType);
@@ -469,11 +479,9 @@ namespace RogueLibsCore
 			}
 			if (myUnlock.unlockType == "Challenge")
 				myButtonData.scrollingHighlighted = __instance.gc.challenges.Contains(myUnlock.unlockName);
-			myButtonData.interactable = true;
-			myButtonData.scrollingButtonUnlock = myUnlock;
 			return false;
 		}
-		
+
 		protected static bool ScrollingMenu_PushedButton(ScrollingMenu __instance, ButtonHelper myButton, List<Unlock> ___listUnlocks)
 		{
 			Unlock u = myButton.scrollingButtonUnlock;
@@ -482,192 +490,217 @@ namespace RogueLibsCore
 			if (__instance.menuType == "Challenges")
 			{
 				#region Challenges / Mutator Menu
-				if (!__instance.gc.serverPlayer) { __instance.gc.audioHandler.Play(__instance.agent, "CantDo"); return false; }
-
 				CustomMutator custom = RogueLibs.GetCustomMutator(u.unlockName);
-				if (u.unlocked)
-				{ // if unlocked, then handle ClearAll OR toggle on/off
-					if (myButton.scrollingButtonType == "ClearAll")
-					{ // handling ClearAll button
-						__instance.gc.challenges.Clear();
-						__instance.gc.originalChallenges.Clear();
-						foreach (ButtonData buttonData in __instance.buttonsData)
-							if (buttonData.scrollingHighlighted)
-							{
-								buttonData.scrollingHighlighted = false;
-								buttonData.highlightedSprite = __instance.solidObjectButton;
-								if (buttonData.scrollingButtonUnlock.unlockName == "SuperSpecialCharacters")
-									__instance.gc.mainGUI.characterSelectScript.RefreshSuperSpecials();
-							}
-						if (__instance.gc.multiplayerMode)
-							__instance.agent.objectMult.SendChatAnnouncement("ClearedAllChallenges", string.Empty, string.Empty);
-					}
-					else if (myButton.scrollingButtonType != "CreateAMutator")
-					{ // toggle on/off
-						myButton.scrollingHighlighted = data.scrollingHighlighted = !myButton.scrollingHighlighted;
-						SpriteState spriteState = default;
-						spriteState.highlightedSprite = myButton.scrollingHighlighted ? myButton.solidObjectButtonSelected : myButton.solidObjectButton;
-						myButton.button.spriteState = spriteState;
-						data.highlightedSprite = myButton.scrollingHighlighted ? __instance.solidObjectButtonSelected : __instance.solidObjectButton;
 
-						if (myButton.scrollingHighlighted)
-						{ // was toggled on
-							foreach (ButtonData buttonData in __instance.buttonsData) // handle cancellations
-								if (__instance.gc.challenges.Contains(buttonData.scrollingButtonType) && (u.cancellations.Contains(buttonData.scrollingButtonType) || buttonData.scrollingButtonUnlock.cancellations.Contains(u.unlockName)))
+				bool doDefaultHandling = custom?.ScrollingMenu_PushedButton?.Invoke(__instance, myButton) ?? true;
+				if (doDefaultHandling)
+					if (!__instance.gc.serverPlayer) { __instance.gc.audioHandler.Play(__instance.agent, "CantDo"); return false; }
+					else if (u.unlocked)
+					{ // if unlocked, then handle ClearAll OR toggle on/off
+						if (myButton.scrollingButtonType == "ClearAll")
+						{ // handling ClearAll button
+							__instance.gc.challenges.Clear();
+							__instance.gc.originalChallenges.Clear();
+							foreach (ButtonData buttonData in __instance.buttonsData)
+								if (buttonData.scrollingHighlighted)
 								{
 									buttonData.scrollingHighlighted = false;
 									buttonData.highlightedSprite = __instance.solidObjectButton;
-									__instance.gc.challenges.Remove(buttonData.scrollingButtonType);
-									__instance.gc.originalChallenges.Remove(buttonData.scrollingButtonType);
 									if (buttonData.scrollingButtonUnlock.unlockName == "SuperSpecialCharacters")
 										__instance.gc.mainGUI.characterSelectScript.RefreshSuperSpecials();
 								}
-
-							__instance.gc.challenges.Add(myButton.scrollingButtonType);
-							__instance.gc.originalChallenges.Add(myButton.scrollingButtonType);
+							if (__instance.gc.multiplayerMode)
+								__instance.agent.objectMult.SendChatAnnouncement("ClearedAllChallenges", string.Empty, string.Empty);
 						}
-						else
-						{ // was toggled off
-							__instance.gc.challenges.Remove(myButton.scrollingButtonType);
-							__instance.gc.originalChallenges.Remove(myButton.scrollingButtonType);
-						}
+						else if (myButton.scrollingButtonType != "CreateAMutator")
+						{ // toggle on/off
+							myButton.scrollingHighlighted = data.scrollingHighlighted = !myButton.scrollingHighlighted;
+							SpriteState spriteState = default;
+							spriteState.highlightedSprite = myButton.scrollingHighlighted ? myButton.solidObjectButtonSelected : myButton.solidObjectButton;
+							myButton.button.spriteState = spriteState;
+							data.highlightedSprite = myButton.scrollingHighlighted ? __instance.solidObjectButtonSelected : __instance.solidObjectButton;
 
-						if (myButton.scrollingButtonType == "SuperSpecialCharacters")
-							__instance.gc.mainGUI.characterSelectScript.RefreshSuperSpecials();
-						if (__instance.gc.multiplayerMode)
-							__instance.agent.objectMult.SendChatAnnouncement((myButton.scrollingHighlighted ? "Added" : "Removed") + "Challenge", myButton.scrollingButtonType, string.Empty);
+							if (myButton.scrollingHighlighted)
+							{ // was toggled on
+								foreach (ButtonData buttonData in __instance.buttonsData) // handle cancellations
+									if (__instance.gc.challenges.Contains(buttonData.scrollingButtonType) && (u.cancellations.Contains(buttonData.scrollingButtonType) || buttonData.scrollingButtonUnlock.cancellations.Contains(u.unlockName)))
+									{
+										buttonData.scrollingHighlighted = false;
+										buttonData.highlightedSprite = __instance.solidObjectButton;
+										__instance.gc.challenges.Remove(buttonData.scrollingButtonType);
+										__instance.gc.originalChallenges.Remove(buttonData.scrollingButtonType);
+										if (buttonData.scrollingButtonUnlock.unlockName == "SuperSpecialCharacters")
+											__instance.gc.mainGUI.characterSelectScript.RefreshSuperSpecials();
+									}
+
+								__instance.gc.challenges.Add(myButton.scrollingButtonType);
+								__instance.gc.originalChallenges.Add(myButton.scrollingButtonType);
+							}
+							else
+							{ // was toggled off
+								__instance.gc.challenges.Remove(myButton.scrollingButtonType);
+								__instance.gc.originalChallenges.Remove(myButton.scrollingButtonType);
+							}
+							custom?.InvokeOnToggledEvent(__instance, myButton, myButton.scrollingHighlighted);
+
+							if (myButton.scrollingButtonType == "SuperSpecialCharacters")
+								__instance.gc.mainGUI.characterSelectScript.RefreshSuperSpecials();
+							if (__instance.gc.multiplayerMode)
+								__instance.agent.objectMult.SendChatAnnouncement((myButton.scrollingHighlighted ? "Added" : "Removed") + "Challenge", myButton.scrollingButtonType, string.Empty);
+						}
+						__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
+						__instance.gc.sessionDataBig.challenges = __instance.gc.challenges;
+						__instance.gc.sessionDataBig.originalChallenges = __instance.gc.originalChallenges;
+						__instance.gc.SetDailyRunText();
+						__instance.UpdateOtherVisibleMenus(__instance.menuType);
 					}
-					__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
-					__instance.gc.sessionDataBig.challenges = __instance.gc.challenges;
-					__instance.gc.sessionDataBig.originalChallenges = __instance.gc.originalChallenges;
-					__instance.gc.SetDailyRunText();
-					__instance.UpdateOtherVisibleMenus(__instance.menuType);
-				}
-				else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
-				{ // not unlocked, is a custom mutator, can be purchased and affordable
-					__instance.gc.unlocks.SubtractNuggets(u.cost);
-					__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
-					__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
+					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					{ // not unlocked, is a custom mutator, can be purchased and affordable
+						__instance.gc.unlocks.SubtractNuggets(u.cost);
+						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
+						__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
 
-					for (int i = 0; i < __instance.numButtons; i++)
-						__instance.SetupChallenges(__instance.buttonsData[i], ___listUnlocks[i]);
+						custom?.InvokeOnUnlockedEvent(__instance, myButton);
 
-					__instance.gc.SetDailyRunText();
-					__instance.UpdateOtherVisibleMenus(__instance.menuType);
-				}
-				else // can't purchase
-					__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+						for (int i = 0; i < __instance.numButtons; i++)
+							__instance.SetupChallenges(__instance.buttonsData[i], ___listUnlocks[i]);
+
+						__instance.gc.SetDailyRunText();
+						__instance.UpdateOtherVisibleMenus(__instance.menuType);
+					}
+					else // can't purchase
+						__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
 				#endregion
 			}
 			else if (__instance.menuType == "Items")
 			{
 				#region Item Unlocks / Rewards Menu
 				CustomItem custom = RogueLibs.GetCustomItem(u.unlockName);
-				if (u.unlocked)
-				{ // if unlocked, then check reward count OR toggle on/off
-					if (!u.notActive && __instance.activeRewardCount <= __instance.minRewards)
-					{ // check reward count
-						__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
-						__instance.ActiveCountFlash();
+
+				bool doDefaultHandling = custom?.ScrollingMenu_PushedButton?.Invoke(__instance, myButton) ?? true;
+				if (doDefaultHandling)
+					if (u.unlocked)
+					{ // if unlocked, then check reward count OR toggle on/off
+						if (!u.notActive && __instance.activeRewardCount <= __instance.minRewards)
+						{ // check reward count
+							__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+							__instance.ActiveCountFlash();
+						}
+						else
+						{ // toggle on/off
+							u.notActive = !u.notActive;
+
+							custom?.InvokeOnToggledEvent(__instance, myButton, !u.notActive);
+
+							__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
+
+							__instance.UpdateActiveCount();
+							__instance.UpdateOtherVisibleMenus(__instance.menuType);
+							__instance.gc.unlocks.SaveUnlockData(true);
+						}
 					}
-					else
-					{ // toggle on/off
-						u.notActive = !u.notActive;
-						__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
+					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					{ // not unlocked, can be purchased and affordable
+						__instance.gc.unlocks.SubtractNuggets(u.cost);
+						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
+						__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
+
+						custom?.InvokeOnUnlockedEvent(__instance, myButton);
+
+						for (int i = 0; i < __instance.numButtons; i++)
+							__instance.SetupItemUnlocks(__instance.buttonsData[i], ___listUnlocks[i]);
 
 						__instance.UpdateActiveCount();
 						__instance.UpdateOtherVisibleMenus(__instance.menuType);
-						__instance.gc.unlocks.SaveUnlockData(true);
 					}
-				}
-				else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
-				{ // not unlocked, can be purchased and affordable
-					__instance.gc.unlocks.SubtractNuggets(u.cost);
-					__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
-					__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
-
-					for (int i = 0; i < __instance.numButtons; i++)
-						__instance.SetupItemUnlocks(__instance.buttonsData[i], ___listUnlocks[i]);
-
-					__instance.UpdateActiveCount();
-					__instance.UpdateOtherVisibleMenus(__instance.menuType);
-				}
-				else // can't purchase
-					__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+					else // can't purchase
+						__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
 				#endregion
 			}
 			else if (__instance.menuType == "TraitUnlocks")
 			{
 				#region Trait Unlocks
 				CustomTrait custom = RogueLibs.GetCustomTrait(u.unlockName);
-				if (u.unlocked)
-				{ // if unlocked, then check trait count OR toggle on/off
-					if (!u.notActive && __instance.activeTraitCount <= __instance.minTraits)
-					{ // check trait count
-						__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
-						__instance.ActiveCountFlash();
+
+				bool doDefaultHandling = custom?.ScrollingMenu_PushedButton?.Invoke(__instance, myButton) ?? true;
+				if (doDefaultHandling)
+					if (u.unlocked)
+					{ // if unlocked, then check trait count OR toggle on/off
+						if (!u.notActive && __instance.activeTraitCount <= __instance.minTraits)
+						{ // check trait count
+							__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+							__instance.ActiveCountFlash();
+						}
+						else
+						{ // toggle on/off
+							u.notActive = !u.notActive;
+
+							custom?.InvokeOnToggledEvent(__instance, myButton, !u.notActive);
+
+							__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
+
+							__instance.UpdateActiveCount();
+							__instance.UpdateOtherVisibleMenus(__instance.menuType);
+							__instance.gc.unlocks.SaveUnlockData(true);
+						}
 					}
-					else
-					{ // toggle on/off
-						u.notActive = !u.notActive;
-						__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
+					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					{ // not unlocked, can be purchased and affordable
+						__instance.gc.unlocks.SubtractNuggets(u.cost);
+						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
+						__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
+
+						custom?.InvokeOnUnlockedEvent(__instance, myButton);
+
+						for (int i = 0; i < __instance.numButtons; i++)
+							__instance.SetupTraitUnlocks(__instance.buttonsData[i], ___listUnlocks[i]);
 
 						__instance.UpdateActiveCount();
 						__instance.UpdateOtherVisibleMenus(__instance.menuType);
-						__instance.gc.unlocks.SaveUnlockData(true);
 					}
-				}
-				else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
-				{ // not unlocked, can be purchased and affordable
-					__instance.gc.unlocks.SubtractNuggets(u.cost);
-					__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
-					__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
-
-					for (int i = 0; i < __instance.numButtons; i++)
-						__instance.SetupTraitUnlocks(__instance.buttonsData[i], ___listUnlocks[i]);
-
-					__instance.UpdateActiveCount();
-					__instance.UpdateOtherVisibleMenus(__instance.menuType);
-				}
-				else // can't purchase
-					__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+					else // can't purchase
+						__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
 				#endregion
 			}
 			else if (__instance.menuType == "FreeItems")
 			{
 				#region Free Items / Item Teleporter
 				CustomItem custom = RogueLibs.GetCustomItem(u.unlockName);
-				if (u.unlocked)
-				{ // if unlocked, then give the item to the player
-					InvItem invItem = new InvItem { invItemName = u.unlockName };
-					invItem.SetupDetails(false);
-					invItem.invItemCount = invItem.initCount;
-					__instance.gc.audioHandler.Play(__instance.agent, "UseItemTeleporter");
-					__instance.agent.inventory.DontPlayPickupSounds(true);
-					__instance.agent.agentInvDatabase.AddItemOrDrop(invItem);
-					if (invItem.invItemName == "BombMaker" && !__instance.agent.agentInvDatabase.HasItem("BombTrigger"))
-					{
-						invItem = new InvItem { invItemName = "BombTrigger" };
+
+				bool doDefaultHandling = custom?.ScrollingMenu_PushedButton?.Invoke(__instance, myButton) ?? true;
+				if (doDefaultHandling)
+					if (u.unlocked)
+					{ // if unlocked, then give the item to the player
+						InvItem invItem = new InvItem { invItemName = u.unlockName };
 						invItem.SetupDetails(false);
 						invItem.invItemCount = invItem.initCount;
+						__instance.gc.audioHandler.Play(__instance.agent, "UseItemTeleporter");
+						__instance.agent.inventory.DontPlayPickupSounds(true);
 						__instance.agent.agentInvDatabase.AddItemOrDrop(invItem);
+						if (invItem.invItemName == "BombMaker" && !__instance.agent.agentInvDatabase.HasItem("BombTrigger"))
+						{
+							invItem = new InvItem { invItemName = "BombTrigger" };
+							invItem.SetupDetails(false);
+							invItem.invItemCount = invItem.initCount;
+							__instance.agent.agentInvDatabase.AddItemOrDrop(invItem);
+						}
+						__instance.agent.inventory.DontPlayPickupSounds(false);
 					}
-					__instance.agent.inventory.DontPlayPickupSounds(false);
-				}
-				else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
-				{ // not unlocked, can be purchased and affordable
-					__instance.gc.unlocks.SubtractNuggets(u.cost);
-					__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
-					__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
+					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					{ // not unlocked, can be purchased and affordable
+						__instance.gc.unlocks.SubtractNuggets(u.cost);
+						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
+						__instance.gc.audioHandler.Play(__instance.agent, "BuyUnlock");
 
-					for (int i = 0; i < __instance.numButtons; i++)
-						__instance.SetupFreeItems(__instance.buttonsData[i], ___listUnlocks[i]);
+						custom?.InvokeOnUnlockedEvent(__instance, myButton);
 
-					__instance.UpdateOtherVisibleMenus(__instance.menuType);
-				}
-				else // can't purchase
-					__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
+						for (int i = 0; i < __instance.numButtons; i++)
+							__instance.SetupFreeItems(__instance.buttonsData[i], ___listUnlocks[i]);
 
+						__instance.UpdateOtherVisibleMenus(__instance.menuType);
+					}
+					else // can't purchase
+						__instance.gc.audioHandler.Play(__instance.agent, "CantDo");
 				#endregion
 			}
 			else
@@ -737,11 +770,14 @@ namespace RogueLibsCore
 			CheckPrerequisites(myUnlock);
 
 			myButtonData.scrollingButtonType = myUnlock.unlockName;
+			myButtonData.interactable = true;
+			myButtonData.scrollingButtonUnlock = myUnlock;
+
 			if (!myUnlock.nowAvailable) // not all prerequisites are unlocked
 			{
 				myButtonData.buttonText = __instance.gc.nameDB.GetName(myUnlock.unlockName, myUnlock.unlockNameType);
 				myButtonData.scrollingHighlighted2 = false;
-				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight?
+				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButtonRed;
 			}
@@ -781,7 +817,7 @@ namespace RogueLibsCore
 			else if (custom == null || custom.UnlockCost != null) // not unlocked, original mutator OR custom and can be purchased
 			{
 				myButtonData.buttonText = __instance.gc.nameDB.GetName(myUnlock.unlockName, myUnlock.unlockNameType) + " - $" + myUnlock.cost;
-				myButtonData.scrollingHighlighted2 = true; // some 'purchasable' highlight?
+				myButtonData.scrollingHighlighted2 = true; // blue 'purchasable' highlight
 				myButtonData.scrollingHighlighted3 = false;
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButtonLocked;
@@ -790,7 +826,7 @@ namespace RogueLibsCore
 			{
 				myButtonData.buttonText = __instance.gc.nameDB.GetName(myUnlock.unlockName, myUnlock.unlockNameType);
 				myButtonData.scrollingHighlighted2 = false;
-				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight?
+				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButtonRed;
 			}
@@ -802,9 +838,6 @@ namespace RogueLibsCore
 			else if (myUnlock.unlockType == "Ability")
 				myButtonData.scrollingHighlighted = __instance.abilityChosen == myUnlock.unlockName;
 
-			myButtonData.highlightedSprite = myButtonData.scrollingHighlighted ? __instance.solidObjectButtonSelected : __instance.solidObjectButton;
-			myButtonData.interactable = true;
-			myButtonData.scrollingButtonUnlock = myUnlock;
 			return false;
 		}
 
@@ -854,48 +887,55 @@ namespace RogueLibsCore
 				#region Items Screen
 				ButtonData buttonData = __instance.buttonsDataItems[myButton.scrollingButtonNum];
 				CustomItem custom = RogueLibs.GetCustomItem(u.unlockName);
-				if (u.unlocked)
-				{ // if unlocked, then handle ClearAll OR toggle on/off
-					if (myButton.scrollingButtonType == "ClearAllItems")
-					{ // handling ClearAllItems button
-						foreach (ButtonData buttonData2 in __instance.buttonsDataItems)
-							if (buttonData2.scrollingHighlighted)
-							{
-								buttonData2.scrollingHighlighted = false;
-								buttonData2.highlightedSprite = __instance.solidObjectButton;
-							}
-						__instance.itemsChosen.Clear();
-						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
-					}
-					else
-					{ // toggle on/off
-						myButton.scrollingHighlighted = buttonData.scrollingHighlighted = !myButton.scrollingHighlighted;
-						SpriteState spriteState = default;
-						spriteState.highlightedSprite = myButton.scrollingHighlighted ? myButton.solidObjectButtonSelected : myButton.solidObjectButton;
-						myButton.button.spriteState = spriteState;
-						buttonData.highlightedSprite = myButton.scrollingHighlighted ? __instance.solidObjectButtonSelected : __instance.solidObjectButton;
 
-						if (myButton.scrollingHighlighted)
-						{
-							__instance.itemsChosen.Add(u);
-							__instance.DoCancellations(myButton);
+				bool doDefaultHandling = custom?.CharacterCreation_PushedButton?.Invoke(__instance, myButton) ?? true;
+				if (doDefaultHandling)
+					if (u.unlocked)
+					{ // if unlocked, then handle ClearAll OR toggle on/off
+						if (myButton.scrollingButtonType == "ClearAllItems")
+						{ // handling ClearAllItems button
+							foreach (ButtonData buttonData2 in __instance.buttonsDataItems)
+								if (buttonData2.scrollingHighlighted)
+								{
+									buttonData2.scrollingHighlighted = false;
+									buttonData2.highlightedSprite = __instance.solidObjectButton;
+								}
+							__instance.itemsChosen.Clear();
+							__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
 						}
-						else __instance.itemsChosen.Remove(u);
+						else
+						{ // toggle on/off
+							myButton.scrollingHighlighted = buttonData.scrollingHighlighted = !myButton.scrollingHighlighted;
+							SpriteState spriteState = default;
+							spriteState.highlightedSprite = myButton.scrollingHighlighted ? myButton.solidObjectButtonSelected : myButton.solidObjectButton;
+							myButton.button.spriteState = spriteState;
+							buttonData.highlightedSprite = myButton.scrollingHighlighted ? __instance.solidObjectButtonSelected : __instance.solidObjectButton;
 
-						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
+							if (myButton.scrollingHighlighted)
+							{
+								__instance.itemsChosen.Add(u);
+								__instance.DoCancellations(myButton);
+							}
+							else __instance.itemsChosen.Remove(u);
+
+							custom?.InvokeOnToggledEvent(__instance, myButton, myButton.scrollingHighlighted);
+
+							__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
+						}
 					}
-				}
-				else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
-				{ // not unlocked, can be purchased and affordable
-					__instance.gc.unlocks.SubtractNuggets(u.cost);
-					__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
-					__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "BuyUnlock");
+					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					{ // not unlocked, can be purchased and affordable
+						__instance.gc.unlocks.SubtractNuggets(u.cost);
+						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
+						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "BuyUnlock");
 
-					for (int i = 0; i < __instance.numButtonsItems; i++)
-						__instance.SetupItems(__instance.buttonsDataItems[i], __instance.listUnlocksItems[i]);
-				}
-				else // can't purchase
-					__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "CantDo");
+						custom?.InvokeOnUnlockedEvent(__instance, myButton);
+
+						for (int i = 0; i < __instance.numButtonsItems; i++)
+							__instance.SetupItems(__instance.buttonsDataItems[i], __instance.listUnlocksItems[i]);
+					}
+					else // can't purchase
+						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "CantDo");
 				__instance.scrollerControllerItems.myScroller.RefreshActiveCellViews();
 				#endregion
 			}
@@ -904,69 +944,19 @@ namespace RogueLibsCore
 				#region Special Ability Screen
 				ButtonData data = __instance.buttonsDataAbilities[myButton.scrollingButtonNum];
 				CustomAbility custom = RogueLibs.GetCustomAbility(u.unlockName);
-				if (u.unlocked)
-				{ // if unlocked, then toggle on/off
-					if (!myButton.scrollingHighlighted) // if was off, but now on, disable all other
-						foreach (ButtonData buttonData in __instance.buttonsDataAbilities)
-							if (buttonData.scrollingHighlighted)
-							{
-								buttonData.scrollingHighlighted = false;
-								buttonData.highlightedSprite = __instance.solidObjectButton;
-							}
 
-					myButton.scrollingHighlighted = data.scrollingHighlighted = !myButton.scrollingHighlighted;
-					SpriteState spriteState = default;
-					spriteState.highlightedSprite = myButton.scrollingHighlighted ? myButton.solidObjectButtonSelected : myButton.solidObjectButton;
-					myButton.button.spriteState = spriteState;
-					data.highlightedSprite = myButton.scrollingHighlighted ? __instance.solidObjectButtonSelected : __instance.solidObjectButton;
+				bool doDefaultHandling = custom?.CharacterCreation_PushedButton?.Invoke(__instance, myButton) ?? true;
+				if (doDefaultHandling)
+					if (u.unlocked)
+					{ // if unlocked, then toggle on/off
+						if (!myButton.scrollingHighlighted) // if was off, but now on, disable all other
+							foreach (ButtonData buttonData in __instance.buttonsDataAbilities)
+								if (buttonData.scrollingHighlighted)
+								{
+									buttonData.scrollingHighlighted = false;
+									buttonData.highlightedSprite = __instance.solidObjectButton;
+								}
 
-					if (myButton.scrollingHighlighted)
-					{
-						__instance.abilityChosen = u.unlockName;
-						__instance.DoCancellations(myButton);
-					}
-					else
-					{
-						__instance.abilityChosen = string.Empty;
-						try { myButton.RefreshContent(data); } catch { }
-					}
-
-					__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
-				}
-				else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
-				{ // not unlocked, can be purchased and affordable
-					__instance.gc.unlocks.SubtractNuggets(u.cost);
-					__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
-					__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "BuyUnlock");
-
-					for (int i = 0; i < __instance.numButtonsAbilities; i++)
-						__instance.SetupAbilities(__instance.buttonsDataAbilities[i], __instance.listUnlocksAbilities[i]);
-				}
-				else // can't purchase
-					__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "CantDo");
-				__instance.scrollerControllerAbilities.myScroller.RefreshActiveCellViews();
-				#endregion
-			}
-			else if (u.unlockType == "Trait")
-			{
-				#region Traits Screen
-				ButtonData data = __instance.buttonsDataTraits[myButton.scrollingButtonNum];
-				CustomTrait custom = RogueLibs.GetCustomTrait(u.unlockName);
-				if (u.unlocked)
-				{ // if unlocked, then handle ClearAllTraits OR toggle on/off
-					if (myButton.scrollingButtonType == "ClearAllTraits")
-					{ // handling ClearAllTraits button
-						foreach (ButtonData buttonData2 in __instance.buttonsDataTraits)
-							if (buttonData2.scrollingHighlighted)
-							{
-								buttonData2.scrollingHighlighted = false;
-								buttonData2.highlightedSprite = __instance.solidObjectButton;
-							}
-						__instance.traitsChosen.Clear();
-						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
-					}
-					else
-					{ // toggle on/off
 						myButton.scrollingHighlighted = data.scrollingHighlighted = !myButton.scrollingHighlighted;
 						SpriteState spriteState = default;
 						spriteState.highlightedSprite = myButton.scrollingHighlighted ? myButton.solidObjectButtonSelected : myButton.solidObjectButton;
@@ -975,26 +965,89 @@ namespace RogueLibsCore
 
 						if (myButton.scrollingHighlighted)
 						{
-							__instance.traitsChosen.Add(u);
+							__instance.abilityChosen = u.unlockName;
 							__instance.DoCancellations(myButton);
 						}
 						else
-							__instance.traitsChosen.Remove(u);
+						{
+							__instance.abilityChosen = string.Empty;
+							try { myButton.RefreshContent(data); } catch { }
+						}
+						custom?.InvokeOnToggledEvent(__instance, myButton, myButton.scrollingHighlighted);
 
 						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
 					}
-				}
-				else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
-				{  // not unlocked, can be purchased and affordable
-					__instance.gc.unlocks.SubtractNuggets(u.cost);
-					__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
-					__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "BuyUnlock");
+					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					{ // not unlocked, can be purchased and affordable
+						__instance.gc.unlocks.SubtractNuggets(u.cost);
+						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
+						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "BuyUnlock");
 
-					for (int i = 0; i < __instance.numButtonsTraits; i++)
-						__instance.SetupTraits(__instance.buttonsDataTraits[i], __instance.listUnlocksTraits[i]);
-				}
-				else // can't purchase
-					__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "CantDo");
+						custom?.InvokeOnUnlockedEvent(__instance, myButton);
+
+						for (int i = 0; i < __instance.numButtonsAbilities; i++)
+							__instance.SetupAbilities(__instance.buttonsDataAbilities[i], __instance.listUnlocksAbilities[i]);
+					}
+					else // can't purchase
+						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "CantDo");
+				__instance.scrollerControllerAbilities.myScroller.RefreshActiveCellViews();
+				#endregion
+			}
+			else if (u.unlockType == "Trait")
+			{
+				#region Traits Screen
+				ButtonData data = __instance.buttonsDataTraits[myButton.scrollingButtonNum];
+				CustomTrait custom = RogueLibs.GetCustomTrait(u.unlockName);
+
+				bool doDefaultHandling = custom?.CharacterCreation_PushedButton?.Invoke(__instance, myButton) ?? true;
+				if (doDefaultHandling)
+					if (u.unlocked)
+					{ // if unlocked, then handle ClearAllTraits OR toggle on/off
+						if (myButton.scrollingButtonType == "ClearAllTraits")
+						{ // handling ClearAllTraits button
+							foreach (ButtonData buttonData2 in __instance.buttonsDataTraits)
+								if (buttonData2.scrollingHighlighted)
+								{
+									buttonData2.scrollingHighlighted = false;
+									buttonData2.highlightedSprite = __instance.solidObjectButton;
+								}
+							__instance.traitsChosen.Clear();
+							__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
+						}
+						else
+						{ // toggle on/off
+							myButton.scrollingHighlighted = data.scrollingHighlighted = !myButton.scrollingHighlighted;
+							SpriteState spriteState = default;
+							spriteState.highlightedSprite = myButton.scrollingHighlighted ? myButton.solidObjectButtonSelected : myButton.solidObjectButton;
+							myButton.button.spriteState = spriteState;
+							data.highlightedSprite = myButton.scrollingHighlighted ? __instance.solidObjectButtonSelected : __instance.solidObjectButton;
+
+							if (myButton.scrollingHighlighted)
+							{
+								__instance.traitsChosen.Add(u);
+								__instance.DoCancellations(myButton);
+							}
+							else
+								__instance.traitsChosen.Remove(u);
+
+							custom?.InvokeOnToggledEvent(__instance, myButton, myButton.scrollingHighlighted);
+
+							__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
+						}
+					}
+					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					{  // not unlocked, can be purchased and affordable
+						__instance.gc.unlocks.SubtractNuggets(u.cost);
+						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
+						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "BuyUnlock");
+
+						custom?.InvokeOnUnlockedEvent(__instance, myButton);
+
+						for (int i = 0; i < __instance.numButtonsTraits; i++)
+							__instance.SetupTraits(__instance.buttonsDataTraits[i], __instance.listUnlocksTraits[i]);
+					}
+					else // can't purchase
+						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "CantDo");
 				__instance.scrollerControllerTraits.myScroller.RefreshActiveCellViews();
 				#endregion
 			}
@@ -1005,9 +1058,21 @@ namespace RogueLibsCore
 			return false;
 		}
 
+		protected static void Unlocks_DoUnlock(Unlocks __instance, string unlockName, string unlockType)
+		{
+			if (!__instance.CanDoUnlocks()) return;
+			CustomUnlock custom = null;
+			if (unlockType == "Challenge")
+				custom = RogueLibs.GetCustomMutator(unlockName);
+			else if (unlockType == "Item")
+				custom = RogueLibs.GetCustomItem(unlockName);
+			else if (unlockType == "Ability")
+				custom = RogueLibs.GetCustomAbility(unlockName);
+			else if (unlockType == "Trait")
+				custom = RogueLibs.GetCustomTrait(unlockName);
 
-
-
+			custom?.InvokeOnUnlockedEvent();
+		}
 	}
 #pragma warning restore CS1591
 }

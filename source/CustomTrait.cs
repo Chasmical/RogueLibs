@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace RogueLibsCore
 {
@@ -12,11 +10,20 @@ namespace RogueLibsCore
 	{
 		internal CustomTrait(string id, CustomName name, CustomName description) : base(id, name, description) { }
 
-		public int CompareTo(CustomTrait other) => base.CompareTo(other);
+		/// <summary>
+		///   <para>Compares this <see cref="CustomTrait"/> with <paramref name="another"/>.</para>
+		/// </summary>
+		public int CompareTo(CustomTrait another) => base.CompareTo(another);
 
+		/// <summary>
+		///   <para>Type of this <see cref="CustomUnlock"/> - "Trait".</para>
+		/// </summary>
 		public override string Type => "Trait";
 
 		private bool isActive = true;
+		/// <summary>
+		///   <para>Determines whether this <see cref="CustomTrait"/> is active and will be obtainable in-game. (Default: <see langword="true"/>)</para>
+		/// </summary>
 		public bool IsActive
 		{
 			get => unlock != null ? (isActive = !unlock.notActive) : isActive;
@@ -29,6 +36,9 @@ namespace RogueLibsCore
 		}
 
 		private bool available = true;
+		/// <summary>
+		///   <para>Determines whether this <see cref="CustomTrait"/> will be accessible in the Traits Menu and in-game. (Default: <see langword="true"/>)</para>
+		/// </summary>
 		public override bool Available
 		{
 			get => unlock != null ? (available = !unlock.unavailable) : available;
@@ -46,6 +56,9 @@ namespace RogueLibsCore
 		}
 
 		private bool availableInCharacterCreation = true;
+		/// <summary>
+		///   <para>Determines whether this <see cref="CustomTrait"/> will be accessible in the Character Creation menu. (Default: <see langword="true"/>)</para>
+		/// </summary>
 		public bool AvailableInCharacterCreation
 		{
 			get => unlock != null ? (availableInCharacterCreation = !unlock.unavailable || unlock.onlyInCharacterCreation) : availableInCharacterCreation;
@@ -63,6 +76,9 @@ namespace RogueLibsCore
 		}
 
 		private int costInCharacterCreation = 1;
+		/// <summary>
+		///   <para>Determines the cost of this <see cref="CustomTrait"/> in the Character Creation menu, in points. (Default: 1)</para>
+		/// </summary>
 		public int CostInCharacterCreation
 		{
 			get => unlock != null ? (costInCharacterCreation = unlock.cost3) : costInCharacterCreation;
@@ -74,30 +90,39 @@ namespace RogueLibsCore
 			}
 		}
 
-		private bool cantLose = false;
-		public bool CantLose
+		private bool canRemove = true;
+		/// <summary>
+		///   <para>Determines whether this <see cref="CustomTrait"/> can be removed in the Augmentation Booth.</para>
+		/// </summary>
+		public bool CanRemove
 		{
-			get => unlock != null ? (cantLose = unlock.cantLose) : cantLose;
+			get => unlock != null ? (canRemove = !unlock.cantLose) : canRemove;
 			set
 			{
 				if (unlock != null)
-					unlock.cantLose = value;
-				cantLose = value;
+					unlock.cantLose = !value;
+				canRemove = value;
 			}
 		}
-		private bool cantSwap = false;
-		public bool CantSwap
+		private bool canSwap = true;
+		/// <summary>
+		///   <para>Determines whether this <see cref="CustomTrait"/> can be swapped in the Augmentation Booth.</para>
+		/// </summary>
+		public bool CanSwap
 		{
-			get => unlock != null ? (cantSwap = unlock.cantSwap) : cantSwap;
+			get => unlock != null ? (canSwap = !unlock.cantSwap) : canSwap;
 			set
 			{
 				if (unlock != null)
-					unlock.cantSwap = value;
-				cantSwap = value;
+					unlock.cantSwap = !value;
+				canSwap = value;
 			}
 		}
 
 		private string upgrade = null;
+		/// <summary>
+		///   <para>Determines the upgraded version of this <see cref="CustomTrait"/>. Set to <see langword="null"/> if it's not upgradeable. (Default: <see langword="null"/>)</para>
+		/// </summary>
 		public string Upgrade
 		{
 			get => unlock != null ? (upgrade = unlock.upgrade) : upgrade;
@@ -115,8 +140,26 @@ namespace RogueLibsCore
 		}
 
 		internal bool isUpgrade = false;
+		/// <summary>
+		///   <para>Determines whether this <see cref="CustomTrait"/> is an upgrade.</para>
+		/// </summary>
 		public bool IsUpgrade => unlock != null ? (isUpgrade = unlock.isUpgrade) : isUpgrade;
-		
+
+		private List<string> specialAbilities = new List<string>();
+		/// <summary>
+		///   <para>Determines the special abilities that this <see cref="CustomTrait"/> can be obtained with.</para>
+		/// </summary>
+		public List<string> SpecialAbilities
+		{
+			get => unlock != null ? (specialAbilities = unlock.specialAbilities) : specialAbilities;
+			set
+			{
+				if (unlock != null)
+					unlock.specialAbilities = value;
+				specialAbilities = value;
+			}
+		}
+
 		internal static void UpgradeCheck(string trait)
 		{
 			if (string.IsNullOrEmpty(trait)) return;
@@ -132,5 +175,44 @@ namespace RogueLibsCore
 					thisTrait.isUpgrade = true;
 			}
 		}
+
+		/// <summary>
+		///   <para>Method that will be used in the <see cref="ScrollingMenu.PushedButton(ButtonHelper)"/> patch.</para>
+		///   <para><see cref="ScrollingMenu"/> arg1 is the current instance of <see cref="ScrollingMenu"/>;<br/><see cref="ButtonHelper"/> arg2 is this trait's <see cref="ButtonHelper"/>;<br/><see cref="bool"/> result determines whether the original RogueLibs patch should be executed.</para>
+		/// </summary>
+		public Func<ScrollingMenu, ButtonHelper, bool> ScrollingMenu_PushedButton { get; set; }
+		/// <summary>
+		///   <para>Method that will be used in the <see cref="CharacterCreation.PushedButton(ButtonHelper)"/> patch.</para>
+		///   <para><see cref="CharacterCreation"/> arg1 is the current instance of <see cref="CharacterCreation"/>;<br/><see cref="ButtonHelper"/> arg2 is this trait's <see cref="ButtonHelper"/>;<br/><see cref="bool"/> result determines whether the original RogueLibs patch should be executed.</para>
+		/// </summary>
+		public Func<CharacterCreation, ButtonHelper, bool> CharacterCreation_PushedButton { get; set; }
+
+		/// <summary>
+		///   <para>Event that is invoked when this trait is toggled on/off in the Traits Menu.</para>
+		///   <para><see cref="ScrollingMenu"/> arg1 is the current instance of <see cref="ScrollingMenu"/>;<br/><see cref="ButtonHelper"/> arg2 is this trait's <see cref="ButtonHelper"/>;<br/><see cref="bool"/> arg3 is the new state.</para>
+		/// </summary>
+		public event Action<ScrollingMenu, ButtonHelper, bool> OnToggledInTraitsMenu;
+		/// <summary>
+		///   <para>Event that is invoked when this trait is unlocked in the Traits Menu.</para>
+		///   <para><see cref="ScrollingMenu"/> arg1 is the current instance of <see cref="ScrollingMenu"/>;<br/><see cref="ButtonHelper"/> arg2 is this trait's <see cref="ButtonHelper"/>.</para>
+		/// </summary>
+		public event Action<ScrollingMenu, ButtonHelper> OnUnlockedInTraitsMenu;
+
+		internal void InvokeOnToggledEvent(ScrollingMenu sm, ButtonHelper bh, bool newState) => OnToggledInTraitsMenu?.Invoke(sm, bh, newState);
+		internal void InvokeOnUnlockedEvent(ScrollingMenu sm, ButtonHelper bh) => OnUnlockedInTraitsMenu?.Invoke(sm, bh);
+
+		/// <summary>
+		///   <para>Event that is invoked when this trait is added/removed in the Character Creation menu.</para>
+		///   <para><see cref="CharacterCreation"/> arg1 is the current instance of <see cref="CharacterCreation"/>;<br/><see cref="ButtonHelper"/> arg2 is this trait's <see cref="ButtonHelper"/>;<br/><see cref="bool"/> arg3 is the new state.</para>
+		/// </summary>
+		public event Action<CharacterCreation, ButtonHelper, bool> OnToggledInCharacterCreation;
+		/// <summary>
+		///   <para>Event that is invoked when this trait is unlocked in the Character Creation menu.</para>
+		///   <para><see cref="CharacterCreation"/> arg1 is the current instance of <see cref="CharacterCreation"/>;<br/><see cref="ButtonHelper"/> arg2 is this trait's <see cref="ButtonHelper"/>.</para>
+		/// </summary>
+		public event Action<CharacterCreation, ButtonHelper> OnUnlockedInCharacterCreation;
+
+		internal void InvokeOnToggledEvent(CharacterCreation cc, ButtonHelper bh, bool newState) => OnToggledInCharacterCreation?.Invoke(cc, bh, newState);
+		internal void InvokeOnUnlockedEvent(CharacterCreation cc, ButtonHelper bh) => OnUnlockedInCharacterCreation?.Invoke(cc, bh);
 	}
 }
