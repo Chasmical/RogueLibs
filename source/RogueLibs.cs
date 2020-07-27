@@ -40,6 +40,8 @@ namespace RogueLibsCore
 				yield return item;
 			foreach (CustomAbility ability in CustomAbilities)
 				yield return ability;
+			foreach (CustomTrait trait in CustomTraits)
+				yield return trait;
 		}
 		/// <summary>
 		///   <para>List of initialized <see cref="CustomName"/>s.</para>

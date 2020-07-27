@@ -7,9 +7,11 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Represents a custom in-game item.</para>
 	/// </summary>
-	public class CustomItem : CustomUnlock
+	public class CustomItem : CustomUnlock, IComparable<CustomItem>
 	{
 		internal CustomItem(string id, CustomName name, CustomName description) : base(id, name, description) { }
+
+		public int CompareTo(CustomItem other) => base.CompareTo(other);
 
 		public override string Type => "Item";
 
@@ -73,6 +75,30 @@ namespace RogueLibsCore
 					unlock.freeItem = value;
 				}
 				availableInItemTeleporter = value;
+			}
+		}
+
+		private int costInCharacterCreation = 1;
+		public int CostInCharacterCreation
+		{
+			get => unlock != null ? (costInCharacterCreation = unlock.cost3) : costInCharacterCreation;
+			set
+			{
+				if (unlock != null)
+					unlock.cost3 = value;
+				costInCharacterCreation = value;
+			}
+		}
+
+		private int costInLoadout = 1;
+		public int CostInLoadout
+		{
+			get => unlock != null ? (costInLoadout = unlock.cost2) : costInLoadout;
+			set
+			{
+				if (unlock != null)
+					unlock.cost2 = value;
+				costInLoadout = value;
 			}
 		}
 

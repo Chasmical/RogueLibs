@@ -6,9 +6,11 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Represents a custom in-game ability.</para>
 	/// </summary>
-	public class CustomAbility : CustomUnlock
+	public class CustomAbility : CustomUnlock, IComparable<CustomAbility>
 	{
 		internal CustomAbility(string id, CustomName name, CustomName description) : base(id, name, description) { }
+
+		public int CompareTo(CustomAbility other) => base.CompareTo(other);
 
 		public override string Type => "Ability";
 
@@ -31,6 +33,18 @@ namespace RogueLibsCore
 
 		public bool AvailableInCharacterCreation { get; set; } = true;
 		// non-regular implementation (because there is no list for this kind of abilities)
+
+		private int costInCharacterCreation = 1;
+		public int CostInCharacterCreation
+		{
+			get => unlock != null ? (costInCharacterCreation = unlock.cost3) : costInCharacterCreation;
+			set
+			{
+				if (unlock != null)
+					unlock.cost3 = value;
+				costInCharacterCreation = value;
+			}
+		}
 
 		/// <summary>
 		///   <para>Method that will be invoked when setting up this custom ability. See <see cref="InvItem.SetupDetails(bool)"/> for more details.</para>

@@ -14,7 +14,6 @@ D:\repos\RogueLibs\bin\Debug\UnityEngine.UnityWebRequestModule.dll
 D:\repos\RogueLibs\bin\Debug\UnityEngine.UnityWebRequestWWWModule.dll
 D:\repos\RogueLibs\bin\Debug\UnityEngine.Physics2DModule.dll
 D:\repos\RogueLibs\bin\Debug\UnityEngine.AnimationModule.dll
-D:\repos\RogueLibs\obj\Debug\RogueLibs.csprojAssemblyReference.cache
 D:\repos\RogueLibs\obj\Debug\RogueLibs.csproj.CoreCompileInputs.cache
 D:\repos\RogueLibs\obj\Debug\RogueLibs.csproj.CopyComplete
 D:\repos\RogueLibs\obj\Debug\RogueLibs.dll

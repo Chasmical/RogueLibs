@@ -7,9 +7,11 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Represents a custom in-game mutator (also known as challenge).</para>
 	/// </summary>
-	public class CustomMutator : CustomUnlock
+	public class CustomMutator : CustomUnlock, IComparable<CustomMutator>
 	{
 		internal CustomMutator(string id, CustomName name, CustomName description) : base(id, name, description) { }
+
+		public int CompareTo(CustomMutator other) => base.CompareTo(other);
 
 		public override string Type => "Challenge";
 

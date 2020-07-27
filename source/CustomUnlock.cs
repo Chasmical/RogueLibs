@@ -26,7 +26,7 @@ namespace RogueLibsCore
 		public int SortingOrder { get; set; } = -1;
 		public int SortingIndex { get; set; } = 0;
 
-		int IComparable<CustomUnlock>.CompareTo(CustomUnlock other)
+		public int CompareTo(CustomUnlock other)
 		{
 			int res = SortingOrder.CompareTo(other.SortingOrder);
 			return res != 0 ? res : SortingIndex.CompareTo(other.SortingIndex);

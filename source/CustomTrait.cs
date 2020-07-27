@@ -8,9 +8,11 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Represents a custom in-game trait.</para>
 	/// </summary>
-	public class CustomTrait : CustomUnlock
+	public class CustomTrait : CustomUnlock, IComparable<CustomTrait>
 	{
 		internal CustomTrait(string id, CustomName name, CustomName description) : base(id, name, description) { }
+
+		public int CompareTo(CustomTrait other) => base.CompareTo(other);
 
 		public override string Type => "Trait";
 
@@ -60,6 +62,18 @@ namespace RogueLibsCore
 			}
 		}
 
+		private int costInCharacterCreation = 1;
+		public int CostInCharacterCreation
+		{
+			get => unlock != null ? (costInCharacterCreation = unlock.cost3) : costInCharacterCreation;
+			set
+			{
+				if (unlock != null)
+					unlock.cost3 = value;
+				costInCharacterCreation = value;
+			}
+		}
+
 		private bool cantLose = false;
 		public bool CantLose
 		{
@@ -102,9 +116,10 @@ namespace RogueLibsCore
 
 		internal bool isUpgrade = false;
 		public bool IsUpgrade => unlock != null ? (isUpgrade = unlock.isUpgrade) : isUpgrade;
-
+		
 		internal static void UpgradeCheck(string trait)
 		{
+			if (string.IsNullOrEmpty(trait)) return;
 			List<Unlock> unlocks = GameController.gameController.sessionDataBig.unlocks;
 			Unlock thisTrait = unlocks.Find(u => u.unlockName == trait);
 			if (thisTrait == null) return;
