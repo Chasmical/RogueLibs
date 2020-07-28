@@ -694,6 +694,11 @@
               <para>Determines the recommended unlocks for this <see cref="T:RogueLibsCore.CustomUnlock"/>. They are displayed in the Character Creation menu.</para>
             </summary>
         </member>
+        <member name="P:RogueLibsCore.CustomUnlock.GetSpecialUnlockInfo">
+            <summary>
+              <para>Determines the special unlock information. See <see cref="M:Unlocks.GetSpecialUnlockInfo(System.String,Unlock)"/> for more info.</para>
+            </summary>
+        </member>
         <member name="P:RogueLibsCore.CustomUnlock.Sprite">
             <summary>
               <para>Determines the <see cref="T:UnityEngine.Sprite"/> that will be used for this <see cref="T:RogueLibsCore.CustomUnlock"/>.</para>

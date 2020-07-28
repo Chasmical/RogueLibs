@@ -67,6 +67,15 @@ namespace RogueLibsCore
 		/// </summary>
 		public static List<CustomTrait> CustomTraits { get; set; } = new List<CustomTrait>();
 
+		public static CustomUnlock GetCustomUnlock(string id, string type)
+		{
+			if (type == "Challenge") return GetCustomMutator(id);
+			else if (type == "Item") return GetCustomItem(id);
+			else if (type == "Ability") return GetCustomAbility(id);
+			else if (type == "Trait") return GetCustomTrait(id);
+			else return null;
+		}
+
 		/// <summary>
 		///   <para>Finds an existing <see cref="CustomName"/> by its <paramref name="id"/> and <paramref name="type"/>.</para>
 		/// </summary>

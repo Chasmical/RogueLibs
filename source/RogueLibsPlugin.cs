@@ -251,6 +251,8 @@ namespace RogueLibsCore
 
 			patcher.Prefix(typeof(ScrollingMenu), "PushedButton"); // toggling and purchasing Challenges, Item and Trait Unlocks
 
+			patcher.Postfix(typeof(ScrollingMenu), "ShowDetails");
+
 			patcher.Postfix(typeof(CharacterCreation), "SortUnlocks"); // sorting/filtering Abilities, Items and Traits in CC
 			patcher.Postfix(typeof(CharacterCreation), "OpenCharacterCreation", new Type[] { typeof(bool) }); // enable nugget slot for purchases
 
@@ -260,6 +262,8 @@ namespace RogueLibsCore
 
 			patcher.Prefix(typeof(CharacterCreation), "DoCancellations"); // more thorough cancellation
 			patcher.Prefix(typeof(CharacterCreation), "PushedButton"); // toggling and purchasing Abilities, Items and Traits in CC
+
+			patcher.Postfix(typeof(CharacterCreation), "ShowDetails");
 
 			patcher.Postfix(typeof(Unlocks), "DoUnlock"); // CustomUnlock's OnUnlocked event
 
@@ -291,15 +295,13 @@ namespace RogueLibsCore
 			customUnlock.unlock = null;
 			if (newUnlock == null)
 			{
-				newUnlock = new Unlock(customUnlock.Id, customUnlock.Type, customUnlock.Unlocked, customUnlock.UnlockCost ?? 0)
-				{
-					cancellations = customUnlock.Conflicting,
-					unavailable = !customUnlock.Available,
-					prerequisites = customUnlock.Prerequisites,
-					recommendations = customUnlock.Recommendations,
-					categories = customUnlock.Categories
-				};
+				newUnlock = new Unlock(customUnlock.Id, customUnlock.Type, customUnlock.Unlocked, customUnlock.UnlockCost ?? 0);
 				newUnlock = GameController.gameController.unlocks.AddUnlock(newUnlock);
+				newUnlock.cancellations = customUnlock.Conflicting;
+				newUnlock.unavailable = !customUnlock.Available;
+				newUnlock.prerequisites = customUnlock.Prerequisites;
+				newUnlock.recommendations = customUnlock.Recommendations;
+				newUnlock.categories = customUnlock.Categories;
 				EnsureOne(big.unlocks, newUnlock, true);
 			}
 
@@ -448,34 +450,38 @@ namespace RogueLibsCore
 				? __instance.gc.unlocks.GetChallengeName(myUnlock.unlockName)
 				: __instance.gc.nameDB.GetName(myUnlock.unlockName, myUnlock.unlockNameType);
 
-			if (!myUnlock.nowAvailable) // not all prerequisites are unlocked
-			{
+			if (!myUnlock.nowAvailable)
+			{ // not all prerequisites are unlocked
 				myButtonData.scrollingHighlighted2 = false;
-				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight?
+				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButtonRed;
+
+				myButtonData.buttonText = "?????";
 			}
-			else if (myUnlock.unlocked) // is unlocked
-			{
+			else if (myUnlock.unlocked)
+			{ // is unlocked
 				myButtonData.scrollingHighlighted2 = false;
 				myButtonData.scrollingHighlighted3 = false;
-				myButtonData.scrollingHighlighted4 = (__instance.menuType == "Items" || __instance.menuType == "TraitUnlocks") && myUnlock.notActive; // gray 'not active' highlight?
+				myButtonData.scrollingHighlighted4 = (__instance.menuType == "Items" || __instance.menuType == "TraitUnlocks") && myUnlock.notActive; // gray 'not active' highlight
 				myButtonData.highlightedSprite = __instance.solidObjectButton;
 			}
-			else if (custom == null || custom.UnlockCost != null) // not unlocked, original mutator OR custom and can be purchased
-			{
+			else if (custom == null || custom.UnlockCost != null)
+			{ // not unlocked, original mutator OR custom and can be purchased
 				myButtonData.buttonText += " - $" + myUnlock.cost;
-				myButtonData.scrollingHighlighted2 = true; // some 'purchasable' highlight?
+				myButtonData.scrollingHighlighted2 = true; // blue 'purchasable' highlight
 				myButtonData.scrollingHighlighted3 = false;
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButtonLocked;
 			}
-			else // not unlocked, can't be bought
-			{
+			else
+			{ // not unlocked, can't be bought
 				myButtonData.scrollingHighlighted2 = false;
-				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight?
+				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButtonRed;
+
+				myButtonData.buttonText = "?????";
 			}
 			if (myUnlock.unlockType == "Challenge")
 				myButtonData.scrollingHighlighted = __instance.gc.challenges.Contains(myUnlock.unlockName);
@@ -589,13 +595,14 @@ namespace RogueLibsCore
 						else
 						{ // toggle on/off
 							u.notActive = !u.notActive;
+							myButton.scrollingHighlighted4 = data.scrollingHighlighted4 = u.notActive;
 
 							custom?.InvokeOnToggledEvent(__instance, myButton, !u.notActive);
 
 							__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
 
-							__instance.UpdateActiveCount();
 							__instance.UpdateOtherVisibleMenus(__instance.menuType);
+							__instance.UpdateActiveCount();
 							__instance.gc.unlocks.SaveUnlockData(true);
 						}
 					}
@@ -634,13 +641,14 @@ namespace RogueLibsCore
 						else
 						{ // toggle on/off
 							u.notActive = !u.notActive;
+							myButton.scrollingHighlighted4 = data.scrollingHighlighted4 = u.notActive;
 
 							custom?.InvokeOnToggledEvent(__instance, myButton, !u.notActive);
 
 							__instance.gc.audioHandler.Play(__instance.gc.playerAgent, "ClickButton");
 
-							__instance.UpdateActiveCount();
 							__instance.UpdateOtherVisibleMenus(__instance.menuType);
+							__instance.UpdateActiveCount();
 							__instance.gc.unlocks.SaveUnlockData(true);
 						}
 					}
@@ -708,6 +716,43 @@ namespace RogueLibsCore
 
 			try { __instance.scrollerController.myScroller.RefreshActiveCellViews(); } catch { }
 			return false;
+		}
+
+		protected static void ScrollingMenu_ShowDetails(ScrollingMenu __instance, ButtonHelper myButton)
+		{
+			if (__instance.menuType != "Items" && __instance.menuType != "TraitUnlocks" && __instance.menuType != "Challenges") return;
+			Unlock u = myButton.scrollingButtonUnlock;
+			CustomUnlock custom = RogueLibs.GetCustomUnlock(u.unlockName, u.unlockType);
+			CheckPrerequisites(u);
+
+			if (u.unlocked || u.nowAvailable)
+			{ // unlocked or available
+				if (custom?.Sprite != null)
+				{
+					__instance.detailsImage.gameObject.SetActive(true);
+					__instance.detailsImage.sprite = custom.Sprite;
+				}
+			}
+			else if (u.prerequisites.Count > 0)
+			{ // has prerequisites and at least one prerequisite is locked
+				__instance.detailsImage.gameObject.SetActive(false);
+
+				__instance.detailsTitle.text = "?????";
+				__instance.detailsText.text = "<color=cyan>" + __instance.gc.nameDB.GetName("Prerequisites", "Unlock") + "</color>\n";
+
+				string special = custom?.GetSpecialUnlockInfo?.Invoke(u) ?? __instance.gc.unlocks.GetSpecialUnlockInfo(u.unlockName, u);
+				if (special != string.Empty)
+					__instance.detailsText.text += special + "\n";
+
+				foreach (string pre in u.prerequisites)
+					foreach (Unlock unl in __instance.gc.sessionDataBig.unlocks)
+						if (unl.unlockName == pre)
+						{
+							if (!unl.unlocked)
+								__instance.detailsText.text += (unl.nowAvailable ? __instance.gc.nameDB.GetName(unl.unlockName, unl.unlockNameType) : "?????") + "\n";
+							break;
+						}
+			}
 		}
 
 		protected static void CharacterCreation_SortUnlocks(CharacterCreation __instance, string unlockType)
@@ -780,6 +825,8 @@ namespace RogueLibsCore
 				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButtonRed;
+
+				myButtonData.buttonText = "?????";
 			}
 			else if (myUnlock.unlocked) // is unlocked
 			{
@@ -829,6 +876,8 @@ namespace RogueLibsCore
 				myButtonData.scrollingHighlighted3 = true; // red 'unavailable' highlight
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButtonRed;
+
+				myButtonData.buttonText = "?????";
 			}
 
 			if (myUnlock.unlockType == "Item")
@@ -1056,6 +1105,88 @@ namespace RogueLibsCore
 
 			__instance.CreatePointTallyText();
 			return false;
+		}
+
+		protected static void CharacterCreation_ShowDetails(CharacterCreation __instance, ButtonHelper myButton)
+		{
+			Unlock u = myButton.scrollingButtonUnlock;
+			if (u == null) return;
+			CustomUnlock custom = RogueLibs.GetCustomUnlock(u.unlockName, u.unlockType);
+
+			Image detailsImage = null; Text detailsTitle = null; Text detailsText = null;
+			if (u.unlockType == "Item")
+			{ detailsImage = __instance.detailsImageItems; detailsTitle = __instance.detailsTitleItems; detailsText = __instance.detailsTextItems; }
+			else if (u.unlockType == "Ability")
+			{ detailsImage = __instance.detailsImageAbilities; detailsTitle = __instance.detailsTitleAbilities; detailsText = __instance.detailsTextAbilities; }
+			else if (u.unlockType == "Trait")
+			{ detailsImage = __instance.detailsImageTraits; detailsTitle = __instance.detailsTitleTraits; detailsText = __instance.detailsTextTraits; }
+			else if (u.unlockType == "BigQuest")
+			{ detailsImage = __instance.detailsImageBigQuests; detailsTitle = __instance.detailsTitleBigQuests; detailsText = __instance.detailsTextBigQuests; }
+			else return;
+
+			if (u.unlocked || u.nowAvailable)
+			{ // unlocked or available
+				if (detailsImage != null && custom?.Sprite != null)
+				{
+					detailsImage.gameObject.SetActive(true);
+					detailsImage.sprite = custom.Sprite;
+				}
+
+				detailsTitle.text = __instance.gc.nameDB.GetName(u.unlockName, u.unlockNameType);
+				detailsText.text = __instance.gc.nameDB.GetName(u.unlockName, u.unlockDescriptionType);
+
+				if (u.cancellations.Count > 0)
+				{
+					detailsText.text += "\n<color=orange>" + __instance.gc.nameDB.GetName("Cancels", "Interface") + ": </color>";
+					for (int i = 0; i < u.cancellations.Count; i++)
+						foreach (Unlock unl in __instance.gc.sessionDataBig.unlocks)
+							if (unl.unlockName == u.cancellations[i])
+							{
+								if (i != 0) detailsText.text += ", ";
+								detailsText.text += unl.unlocked || unl.nowAvailable ? __instance.gc.nameDB.GetName(unl.unlockName, unl.unlockNameType) : "?????";
+								break;
+							}
+				}
+				if (u.recommendations.Count > 0)
+				{
+					detailsText.text += "\n<color=cyan>" + __instance.gc.nameDB.GetName("Recommends", "Interface") + ": </color>";
+					for (int i = 0; i < u.recommendations.Count; i++)
+						foreach (Unlock unl in __instance.gc.sessionDataBig.unlocks)
+							if (unl.unlockName == u.recommendations[i])
+							{
+								if (i != 0) detailsText.text += ", ";
+								detailsText.text += unl.unlocked || unl.nowAvailable ? __instance.gc.nameDB.GetName(unl.unlockName, unl.unlockNameType) : "?????";
+								break;
+							}
+				}
+
+			}
+			else
+			{ // has prerequisites and at least one prerequisite is locked
+				detailsImage.gameObject.SetActive(false);
+
+				detailsTitle.text = "?????";
+				detailsText.text = string.Empty;
+
+				string special = custom?.GetSpecialUnlockInfo?.Invoke(u) ?? __instance.gc.unlocks.GetSpecialUnlockInfo(u.unlockName, u);
+				if (u.prerequisites.Count > 0 || special != string.Empty)
+				{
+					detailsText.text = "<color=cyan>" + __instance.gc.nameDB.GetName("Prerequisites", "Unlock") + "</color>\n";
+
+					if (special != string.Empty)
+						detailsText.text += special + "\n";
+
+					foreach (string pre in u.prerequisites)
+						foreach (Unlock unl in __instance.gc.sessionDataBig.unlocks)
+							if (unl.unlockName == pre)
+							{
+								if (!unl.unlocked)
+									detailsText.text += (unl.nowAvailable ? __instance.gc.nameDB.GetName(unl.unlockName, unl.unlockNameType) : "?????") + "\n";
+								break;
+							}
+				}
+
+			}
 		}
 
 		protected static void Unlocks_DoUnlock(Unlocks __instance, string unlockName, string unlockType)

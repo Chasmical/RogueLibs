@@ -149,6 +149,11 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <summary>
+		///   <para>Determines the special unlock information. See <see cref="Unlocks.GetSpecialUnlockInfo(string, Unlock)"/> for more info.</para>
+		/// </summary>
+		public Func<Unlock, string> GetSpecialUnlockInfo { get; set; }
+
 		private Sprite sprite;
 		/// <summary>
 		///   <para>Determines the <see cref="UnityEngine.Sprite"/> that will be used for this <see cref="CustomUnlock"/>.</para>
