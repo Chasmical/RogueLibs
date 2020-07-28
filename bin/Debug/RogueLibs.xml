@@ -335,7 +335,7 @@
         </member>
         <member name="F:RogueLibsCore.RogueLibs.pluginGuid">
             <summary>
-              <para><see cref="T:RogueLibsCore.RogueLibs"/>' GUID. Use it in your <see cref="T:BepInEx.BepInDependency"/> attribute.</para>
+              <para><see cref="T:RogueLibsCore.RogueLibs"/>' GUID.</para>
             </summary>
         </member>
         <member name="F:RogueLibsCore.RogueLibs.pluginName">
@@ -345,7 +345,7 @@
         </member>
         <member name="F:RogueLibsCore.RogueLibs.pluginVersion">
             <summary>
-              <para>Do not use this constant in your <see cref="T:BepInEx.BepInDependency"/> attribute!</para>
+              <para><see cref="T:RogueLibsCore.RogueLibs"/>' version. Do not use this value in your <see cref="T:BepInEx.BepInDependency"/> attribute!</para>
             </summary>
         </member>
         <member name="F:RogueLibsCore.RogueLibs.PluginInstance">
@@ -381,6 +381,16 @@
         <member name="P:RogueLibsCore.RogueLibs.CustomTraits">
             <summary>
               <para>List of initialized <see cref="T:RogueLibsCore.CustomTrait"/>s.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetCustomUnlock(System.String,System.String)">
+            <summary>
+              <para>Finds an existing <see cref="T:RogueLibsCore.CustomUnlock"/> by its <paramref name="id"/> and <paramref name="type"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetUnlock(System.String,System.String)">
+            <summary>
+              <para>Finds an existing <see cref="T:Unlock"/> by its <paramref name="name"/> and <paramref name="type"/>.</para>
             </summary>
         </member>
         <member name="M:RogueLibsCore.RogueLibs.GetCustomName(System.String,System.String)">
@@ -681,12 +691,33 @@
         </member>
         <member name="P:RogueLibsCore.CustomUnlock.Conflicting">
             <summary>
-              <para>Determines the conflicting unlocks of this <see cref="T:RogueLibsCore.CustomUnlock"/>. They will be automatically disabled when this one is enabled.</para>
+              <para>Determines the conflicting unlocks (also known as cancellations) of this <see cref="T:RogueLibsCore.CustomUnlock"/>.</para>
+              <para>Don't edit the list yourself! Use methods: <see cref="M:RogueLibsCore.CustomUnlock.AddConflicting(System.String[])"/> and <see cref="M:RogueLibsCore.CustomUnlock.RemoveConflicting(System.String[])"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomUnlock.AddConflicting(RogueLibsCore.CustomUnlock[])">
+            <summary>
+              <para>Adds the specified <paramref name="customUnlocks"/> to the conflicting list.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomUnlock.RemoveConflicting(RogueLibsCore.CustomUnlock[])">
+            <summary>
+              <para>Removes the specified <paramref name="customUnlocks"/> from the conflicting list.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomUnlock.AddConflicting(System.String[])">
+            <summary>
+              <para>Adds the specified <paramref name="unlockIds"/> to the conflicting list.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.CustomUnlock.RemoveConflicting(System.String[])">
+            <summary>
+              <para>Removes the specified <paramref name="unlockIds"/> from the conflicting list.</para>
             </summary>
         </member>
         <member name="P:RogueLibsCore.CustomUnlock.Prerequisites">
             <summary>
-              <para>Determines the prerequisite unlocks for this <see cref="T:RogueLibsCore.CustomUnlock"/>. Without all of them, the <see cref="T:RogueLibsCore.CustomUnlock"/> will be non-purchasable.</para>
+              <para>Determines the prerequisite unlocks for this <see cref="T:RogueLibsCore.CustomUnlock"/>. Without all of them, the <see cref="T:RogueLibsCore.CustomUnlock"/> will be unavailable.</para>
             </summary>
         </member>
         <member name="P:RogueLibsCore.CustomUnlock.Recommendations">
@@ -773,6 +804,21 @@
         <member name="M:RogueLibsCore.RogueUtilities.ConvertToAudioClip(System.String)">
             <summary>
               <para>Converts a .mp3, .ogg, .wav or .aiff (it is recommended to use .ogg, since other formats might not load properly) file into an <see cref="T:UnityEngine.AudioClip"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.CrossConflict(RogueLibsCore.CustomUnlock[])">
+            <summary>
+              <para>Conflicts all <see cref="T:RogueLibsCore.CustomUnlock"/>s in the <paramref name="customUnlocks"/> with each other.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.EachConflict(System.Collections.Generic.IEnumerable{System.String},RogueLibsCore.CustomUnlock[])">
+            <summary>
+              <para>Conflicts each <see cref="T:RogueLibsCore.CustomUnlock"/> in the <paramref name="customUnlocks"/> with each <see cref="T:Unlock"/> in the <paramref name="unlocks"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueUtilities.EachConflict(System.Collections.Generic.IEnumerable{RogueLibsCore.CustomUnlock},System.String[])">
+            <summary>
+              <para>Conflicts each <see cref="T:RogueLibsCore.CustomUnlock"/> in the <paramref name="customUnlocks"/> with each <see cref="T:Unlock"/> in the <paramref name="unlocks"/>.</para>
             </summary>
         </member>
     </members>

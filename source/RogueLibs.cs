@@ -12,7 +12,7 @@ namespace RogueLibsCore
 	public static class RogueLibs
 	{
 		/// <summary>
-		///   <para><see cref="RogueLibs"/>' GUID. Use it in your <see cref="BepInDependency"/> attribute.</para>
+		///   <para><see cref="RogueLibs"/>' GUID.</para>
 		/// </summary>
 		public const string pluginGuid = "abbysssal.streetsofrogue.roguelibs";
 		/// <summary>
@@ -20,7 +20,7 @@ namespace RogueLibsCore
 		/// </summary>
 		public const string pluginName = "RogueLibs";
 		/// <summary>
-		///   <para>Do not use this constant in your <see cref="BepInDependency"/> attribute!</para>
+		///   <para><see cref="RogueLibs"/>' version. Do not use this value in your <see cref="BepInDependency"/> attribute!</para>
 		/// </summary>
 		public const string pluginVersion = "2.0.0";
 
@@ -33,7 +33,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>List of initialized <see cref="CustomName"/>s.</para>
 		/// </summary>
-		public static List<CustomName> CustomNames { get; set; } = new List<CustomName>();
+		public static List<CustomName> CustomNames { get; } = new List<CustomName>();
 
 		/// <summary>
 		///   <para>Enumerates through all initialized <see cref="CustomUnlock"/>s.</para>
@@ -53,20 +53,23 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>List of initialized <see cref="CustomMutator"/>s.</para>
 		/// </summary>
-		public static List<CustomMutator> CustomMutators { get; set; } = new List<CustomMutator>();
+		public static List<CustomMutator> CustomMutators { get; } = new List<CustomMutator>();
 		/// <summary>
 		///   <para>List of initialized <see cref="CustomItem"/>s.</para>
 		/// </summary>
-		public static List<CustomItem> CustomItems { get; set; } = new List<CustomItem>();
+		public static List<CustomItem> CustomItems { get; } = new List<CustomItem>();
 		/// <summary>
 		///   <para>List of initialized <see cref="CustomAbility"/>s.</para>
 		/// </summary>
-		public static List<CustomAbility> CustomAbilities { get; set; } = new List<CustomAbility>();
+		public static List<CustomAbility> CustomAbilities { get; } = new List<CustomAbility>();
 		/// <summary>
 		///   <para>List of initialized <see cref="CustomTrait"/>s.</para>
 		/// </summary>
-		public static List<CustomTrait> CustomTraits { get; set; } = new List<CustomTrait>();
+		public static List<CustomTrait> CustomTraits { get; } = new List<CustomTrait>();
 
+		/// <summary>
+		///   <para>Finds an existing <see cref="CustomUnlock"/> by its <paramref name="id"/> and <paramref name="type"/>.</para>
+		/// </summary>
 		public static CustomUnlock GetCustomUnlock(string id, string type)
 		{
 			if (type == "Challenge") return GetCustomMutator(id);
@@ -74,6 +77,18 @@ namespace RogueLibsCore
 			else if (type == "Ability") return GetCustomAbility(id);
 			else if (type == "Trait") return GetCustomTrait(id);
 			else return null;
+		}
+		/// <summary>
+		///   <para>Finds an existing <see cref="Unlock"/> by its <paramref name="name"/> and <paramref name="type"/>.</para>
+		/// </summary>
+		public static Unlock GetUnlock(string name, string type)
+		{
+			List<Unlock> list = GameController.gameController?.sessionDataBig?.unlocks;
+			if (list != null)
+				foreach (Unlock unlock in list)
+					if (unlock.unlockName == name && unlock.unlockType == type)
+						return unlock;
+			return null;
 		}
 
 		/// <summary>

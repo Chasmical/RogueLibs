@@ -11,13 +11,14 @@ namespace RogueLibsCore.Test
 	{
 		public const string pluginGuid = "abbysssal.streetsofrogue.roguelibs.test";
 		public const string pluginName = "RogueLibs.Test";
-		public const string pluginVersion = "0.4.1";
+		public const string pluginVersion = "0.5.0";
 
 		public void Awake()
 		{
+			Sprite noSprite = RogueUtilities.ConvertToSprite(new byte[0]);
+
 			#region Giant Ability
-			Sprite sprite = RogueUtilities.ConvertToSprite(new byte[0]);
-			CustomAbility giantAbility = RogueLibs.CreateCustomAbility("GiantAbility_u", sprite, false,
+			CustomAbility giantAbility = RogueLibs.CreateCustomAbility("GiantAbility_u", noSprite, false,
 				new CustomNameInfo("Giant"),
 				new CustomNameInfo("Gives you Giant status effect"),
 				item =>
@@ -61,8 +62,7 @@ namespace RogueLibsCore.Test
 			#endregion
 
 			#region Regeneration Ability
-			Sprite sprite2 = RogueUtilities.ConvertToSprite(new byte[0]);
-			CustomAbility regeneration = RogueLibs.CreateCustomAbility("RegenerationAbility_u", sprite2, false,
+			CustomAbility regeneration = RogueLibs.CreateCustomAbility("RegenerationAbility_u", noSprite, false,
 				new CustomNameInfo("Regeneration"),
 				new CustomNameInfo("Use it to regenerate health"),
 				item =>
@@ -94,6 +94,7 @@ namespace RogueLibsCore.Test
 			someCoolTrait.UnlockCost = 2;
 			someCoolTrait.CostInCharacterCreation = 5;
 			#endregion
+
 			#region Cool Trait +
 			CustomTrait someCoolTrait2 = RogueLibs.CreateCustomTrait("SomeCoolTrait2_u3", false,
 				new CustomNameInfo("<color=purple>Cool Trait +</color>"),
@@ -108,8 +109,7 @@ namespace RogueLibsCore.Test
 			#endregion
 
 			#region Wild Bypasser
-			Sprite sprite3 = RogueUtilities.ConvertToSprite(new byte[0]);
-			CustomItem wildBypasser = RogueLibs.CreateCustomItem("WildBypasser_u3", sprite3, false,
+			CustomItem wildBypasser = RogueLibs.CreateCustomItem("WildBypasser_u3", noSprite, false,
 				new CustomNameInfo("Wild Bypasser",
 					null, null, null, null,
 					"Универсальный проход сквозь стены",

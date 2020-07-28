@@ -119,6 +119,7 @@ namespace RogueLibsCore
 
 		internal void InvokeOnToggledEvent(CharacterCreation cc, ButtonHelper bh, bool newState) => OnToggledInCharacterCreation?.Invoke(cc, bh, newState);
 		internal void InvokeOnUnlockedEvent(CharacterCreation cc, ButtonHelper bh) => OnUnlockedInCharacterCreation?.Invoke(cc, bh);
+
 	}
 
 	/// <summary>

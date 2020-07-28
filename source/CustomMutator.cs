@@ -79,5 +79,6 @@ namespace RogueLibsCore
 
 		internal void InvokeOnToggledEvent(ScrollingMenu sm, ButtonHelper bh, bool newState) => OnToggledInMutatorMenu?.Invoke(sm, bh, newState);
 		internal void InvokeOnUnlockedEvent(ScrollingMenu sm, ButtonHelper bh) => OnUnlockedInMutatorMenu?.Invoke(sm, bh);
+
 	}
 }

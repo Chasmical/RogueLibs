@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -98,5 +100,32 @@ namespace RogueLibsCore
 			}
 			return clip;
 		}
+
+		/// <summary>
+		///   <para>Conflicts all <see cref="CustomUnlock"/>s in the <paramref name="customUnlocks"/> with each other.</para>
+		/// </summary>
+		public static void CrossConflict(params CustomUnlock[] customUnlocks)
+		{
+			foreach (CustomUnlock unlock in customUnlocks)
+				unlock.AddConflicting(customUnlocks);
+		}
+		/// <summary>
+		///   <para>Conflicts each <see cref="CustomUnlock"/> in the <paramref name="customUnlocks"/> with each <see cref="Unlock"/> in the <paramref name="unlocks"/>.</para>
+		/// </summary>
+		public static void EachConflict(IEnumerable<string> unlocks, params CustomUnlock[] customUnlocks)
+		{
+			string[] list2 = unlocks.ToArray();
+			foreach (CustomUnlock unlock in customUnlocks)
+				unlock.AddConflicting(list2);
+		}
+		/// <summary>
+		///   <para>Conflicts each <see cref="CustomUnlock"/> in the <paramref name="customUnlocks"/> with each <see cref="Unlock"/> in the <paramref name="unlocks"/>.</para>
+		/// </summary>
+		public static void EachConflict(IEnumerable<CustomUnlock> customUnlocks, params string[] unlocks)
+		{
+			foreach (CustomUnlock unlock in customUnlocks)
+				unlock.AddConflicting(unlocks);
+		}
+
 	}
 }

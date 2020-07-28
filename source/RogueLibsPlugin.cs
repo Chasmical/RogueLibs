@@ -251,7 +251,7 @@ namespace RogueLibsCore
 
 			patcher.Prefix(typeof(ScrollingMenu), "PushedButton"); // toggling and purchasing Challenges, Item and Trait Unlocks
 
-			patcher.Postfix(typeof(ScrollingMenu), "ShowDetails");
+			patcher.Postfix(typeof(ScrollingMenu), "ShowDetails"); // displaying details
 
 			patcher.Postfix(typeof(CharacterCreation), "SortUnlocks"); // sorting/filtering Abilities, Items and Traits in CC
 			patcher.Postfix(typeof(CharacterCreation), "OpenCharacterCreation", new Type[] { typeof(bool) }); // enable nugget slot for purchases
@@ -263,7 +263,7 @@ namespace RogueLibsCore
 			patcher.Prefix(typeof(CharacterCreation), "DoCancellations"); // more thorough cancellation
 			patcher.Prefix(typeof(CharacterCreation), "PushedButton"); // toggling and purchasing Abilities, Items and Traits in CC
 
-			patcher.Postfix(typeof(CharacterCreation), "ShowDetails");
+			patcher.Postfix(typeof(CharacterCreation), "ShowDetails"); // displaying details
 
 			patcher.Postfix(typeof(Unlocks), "DoUnlock"); // CustomUnlock's OnUnlocked event
 
@@ -298,6 +298,12 @@ namespace RogueLibsCore
 				newUnlock = new Unlock(customUnlock.Id, customUnlock.Type, customUnlock.Unlocked, customUnlock.UnlockCost ?? 0);
 				newUnlock = GameController.gameController.unlocks.AddUnlock(newUnlock);
 				newUnlock.cancellations = customUnlock.Conflicting;
+
+				foreach (string canc in newUnlock.cancellations)
+					foreach (Unlock u in big.unlocks)
+						if (u.unlockName == canc && !u.cancellations.Contains(newUnlock.unlockName))
+							u.cancellations.Add(newUnlock.unlockName);
+
 				newUnlock.unavailable = !customUnlock.Available;
 				newUnlock.prerequisites = customUnlock.Prerequisites;
 				newUnlock.recommendations = customUnlock.Recommendations;
@@ -370,14 +376,11 @@ namespace RogueLibsCore
 		}
 		protected static void CheckPrerequisites(Unlock unlock)
 		{
-			if (!unlock.nowAvailable)
-			{
-				foreach (string name in unlock.prerequisites)
-					foreach (Unlock u in GameController.gameController.sessionDataBig.unlocks)
-						if (!u.unlocked && u.unlockName == name)
-						{ unlock.nowAvailable = false; return; }
-				unlock.nowAvailable = true;
-			}
+			foreach (string name in unlock.prerequisites)
+				foreach (Unlock u in GameController.gameController.sessionDataBig.unlocks)
+					if (!u.unlocked && u.unlockName == name)
+					{ unlock.nowAvailable = false; return; }
+			unlock.nowAvailable = true;
 		}
 
 		protected static bool loadedInitialUnlocks = false;
@@ -1204,6 +1207,7 @@ namespace RogueLibsCore
 
 			custom?.InvokeOnUnlockedEvent();
 		}
+
 	}
 #pragma warning restore CS1591
 }

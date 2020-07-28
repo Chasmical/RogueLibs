@@ -106,7 +106,8 @@ namespace RogueLibsCore
 
 		private List<string> conflicting = new List<string>();
 		/// <summary>
-		///   <para>Determines the conflicting unlocks of this <see cref="CustomUnlock"/>. They will be automatically disabled when this one is enabled.</para>
+		///   <para>Determines the conflicting unlocks (also known as cancellations) of this <see cref="CustomUnlock"/>.</para>
+		///   <para>Don't edit the list yourself! Use methods: <see cref="AddConflicting(string[])"/> and <see cref="RemoveConflicting(string[])"/>.</para>
 		/// </summary>
 		public List<string> Conflicting
 		{
@@ -119,9 +120,67 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <summary>
+		///   <para>Adds the specified <paramref name="customUnlocks"/> to the conflicting list.</para>
+		/// </summary>
+		public void AddConflicting(params CustomUnlock[] customUnlocks)
+		{
+			foreach (CustomUnlock u in customUnlocks)
+			{
+				if (u.Id == Id) continue;
+				if (!Conflicting.Contains(u.Id))
+					Conflicting.Add(u.Id);
+				if (!u.Conflicting.Contains(Id))
+					u.Conflicting.Add(Id);
+			}
+		}
+		/// <summary>
+		///   <para>Removes the specified <paramref name="customUnlocks"/> from the conflicting list.</para>
+		/// </summary>
+		public void RemoveConflicting(params CustomUnlock[] customUnlocks)
+		{
+			foreach (CustomUnlock u in customUnlocks)
+			{
+				Conflicting.Remove(u.Id);
+				u.Conflicting.Remove(Id);
+			}
+		}
+
+		/// <summary>
+		///   <para>Adds the specified <paramref name="unlockIds"/> to the conflicting list.</para>
+		/// </summary>
+		public void AddConflicting(params string[] unlockIds)
+		{
+			bool flag = unlock != null;
+			foreach (string id in unlockIds)
+			{
+				if (id == Id) continue;
+				if (!Conflicting.Contains(id))
+					Conflicting.Add(id);
+				if (unlock != null)
+					foreach (Unlock u in GameController.gameController.sessionDataBig.unlocks)
+						if (u.unlockName == id && !u.cancellations.Contains(Id))
+							u.cancellations.Add(Id);
+			}
+		}
+		/// <summary>
+		///   <para>Removes the specified <paramref name="unlockIds"/> from the conflicting list.</para>
+		/// </summary>
+		public void RemoveConflicting(params string[] unlockIds)
+		{
+			foreach (string id in unlockIds)
+			{
+				Conflicting.Remove(id);
+				if (unlock != null)
+					foreach (Unlock u in GameController.gameController.sessionDataBig.unlocks)
+						if (u.unlockName == id)
+							u.cancellations.Remove(Id);
+			}
+		}
+
 		private List<string> prerequisites = new List<string>();
 		/// <summary>
-		///   <para>Determines the prerequisite unlocks for this <see cref="CustomUnlock"/>. Without all of them, the <see cref="CustomUnlock"/> will be non-purchasable.</para>
+		///   <para>Determines the prerequisite unlocks for this <see cref="CustomUnlock"/>. Without all of them, the <see cref="CustomUnlock"/> will be unavailable.</para>
 		/// </summary>
 		public List<string> Prerequisites
 		{
@@ -272,5 +331,6 @@ namespace RogueLibsCore
 					cc.scrollerControllerItems.myScroller.RefreshActiveCellViews();
 				}
 		}
+
 	}
 }
