@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RogueLibs", "RogueLibs/RogueLibs.csproj", "{A1764685-F31F-4864-AAB6-99870B10C239}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RogueLibs", "RogueLibs\RogueLibs.csproj", "{A1764685-F31F-4864-AAB6-99870B10C239}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RogueLibs.Test", "RogueLibs.Test\RogueLibs.Test.csproj", "{D4A59C1A-DCDA-4DE8-80DF-7B802707000F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A1764685-F31F-4864-AAB6-99870B10C239}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A1764685-F31F-4864-AAB6-99870B10C239}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A1764685-F31F-4864-AAB6-99870B10C239}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4A59C1A-DCDA-4DE8-80DF-7B802707000F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4A59C1A-DCDA-4DE8-80DF-7B802707000F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4A59C1A-DCDA-4DE8-80DF-7B802707000F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4A59C1A-DCDA-4DE8-80DF-7B802707000F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

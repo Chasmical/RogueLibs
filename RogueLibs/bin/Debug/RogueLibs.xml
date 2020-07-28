@@ -4,6 +4,28 @@
         <name>RogueLibs</name>
     </assembly>
     <members>
+        <member name="T:RogueLibsCore.BaseUnityPluginExtensions">
+            <summary>
+              <para>Collection of RogueLibs extension methods.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.BaseUnityPluginExtensions.LogError(BepInEx.BaseUnityPlugin,System.String,System.Exception)">
+            <summary>
+              <para>It's just a shortcut for: <c>Logger.LogError(<paramref name="message"/>); Logger.LogError(<paramref name="e"/>);</c>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.BaseUnityPluginExtensions.PatchPrefix(BepInEx.BaseUnityPlugin,System.Type,System.String,System.Type,System.String,System.Type[])">
+            <summary>
+              <para>Patches an original method so that the given patch method will be called right before the original.</para>
+              <para>Automatically catches and logs all errors. Returns true if the patch was successful, returns false if an error occured.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.BaseUnityPluginExtensions.PatchPostfix(BepInEx.BaseUnityPlugin,System.Type,System.String,System.Type,System.String,System.Type[])">
+            <summary>
+              <para>Patches an original method so that the given patch method will be called right after the original.</para>
+              <para>Automatically catches and logs all errors. Returns true if the patch was successful, returns false if an error occured.</para>
+            </summary>
+        </member>
         <member name="T:RogueLibsCore.CustomAbility">
             <summary>
               <para>Represents a custom in-game ability.</para>
@@ -232,237 +254,47 @@
               <para><see cref="T:CharacterCreation"/> arg1 is the current instance of <see cref="T:CharacterCreation"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this item's <see cref="T:ButtonHelper"/>.</para>
             </summary>
         </member>
-        <member name="T:RogueLibsCore.CustomTrait">
+        <member name="T:RogueLibsCore.CustomMutator">
             <summary>
-              <para>Represents a custom in-game trait.</para>
+              <para>Represents a custom in-game mutator (also known as challenge).</para>
             </summary>
         </member>
-        <member name="M:RogueLibsCore.CustomTrait.CompareTo(RogueLibsCore.CustomTrait)">
+        <member name="M:RogueLibsCore.CustomMutator.CompareTo(RogueLibsCore.CustomMutator)">
             <summary>
-              <para>Compares this <see cref="T:RogueLibsCore.CustomTrait"/> with <paramref name="another"/>.</para>
+              <para>Compares this <see cref="T:RogueLibsCore.CustomMutator"/> with <paramref name="another"/>.</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomTrait.Type">
+        <member name="P:RogueLibsCore.CustomMutator.Type">
             <summary>
-              <para>Type of this <see cref="T:RogueLibsCore.CustomUnlock"/> - "Trait".</para>
+              <para>Type of this <see cref="T:RogueLibsCore.CustomUnlock"/> - "Challenge".</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomTrait.IsActive">
+        <member name="P:RogueLibsCore.CustomMutator.IsActive">
             <summary>
-              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> is active and will be obtainable in-game. (Default: <see langword="true"/>)</para>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomMutator"/> is active.</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomTrait.Available">
+        <member name="P:RogueLibsCore.CustomMutator.Available">
             <summary>
-              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> will be accessible in the Traits Menu and in-game. (Default: <see langword="true"/>)</para>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomMutator"/> will be accessible in the Mutators Menu. (Default: <see langword="true"/>)</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomTrait.AvailableInCharacterCreation">
-            <summary>
-              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> will be accessible in the Character Creation menu. (Default: <see langword="true"/>)</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.CustomTrait.CostInCharacterCreation">
-            <summary>
-              <para>Determines the cost of this <see cref="T:RogueLibsCore.CustomTrait"/> in the Character Creation menu, in points. (Default: 1)</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.CustomTrait.CanRemove">
-            <summary>
-              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> can be removed in the Augmentation Booth.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.CustomTrait.CanSwap">
-            <summary>
-              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> can be swapped in the Augmentation Booth.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.CustomTrait.Upgrade">
-            <summary>
-              <para>Determines the upgraded version of this <see cref="T:RogueLibsCore.CustomTrait"/>. Set to <see langword="null"/> if it's not upgradeable. (Default: <see langword="null"/>)</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.CustomTrait.IsUpgrade">
-            <summary>
-              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> is an upgrade.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.CustomTrait.SpecialAbilities">
-            <summary>
-              <para>Determines the special abilities that this <see cref="T:RogueLibsCore.CustomTrait"/> can be obtained with.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.CustomTrait.ScrollingMenu_PushedButton">
+        <member name="P:RogueLibsCore.CustomMutator.ScrollingMenu_PushedButton">
             <summary>
               <para>Method that will be used in the <see cref="M:ScrollingMenu.PushedButton(ButtonHelper)"/> patch.</para>
-              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> result determines whether the original RogueLibs patch should be executed.</para>
+              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this mutator's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> result determines whether the original RogueLibs patch should be executed.</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomTrait.CharacterCreation_PushedButton">
+        <member name="E:RogueLibsCore.CustomMutator.OnToggledInMutatorMenu">
             <summary>
-              <para>Method that will be used in the <see cref="M:CharacterCreation.PushedButton(ButtonHelper)"/> patch.</para>
-              <para><see cref="T:CharacterCreation"/> arg1 is the current instance of <see cref="T:CharacterCreation"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> result determines whether the original RogueLibs patch should be executed.</para>
+              <para>Event that is invoked when this mutator is toggled on/off in the Mutators Menu.</para>
+              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this mutator's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> arg3 is the new state.</para>
             </summary>
         </member>
-        <member name="E:RogueLibsCore.CustomTrait.OnToggledInTraitsMenu">
+        <member name="E:RogueLibsCore.CustomMutator.OnUnlockedInMutatorMenu">
             <summary>
-              <para>Event that is invoked when this trait is toggled on/off in the Traits Menu.</para>
-              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> arg3 is the new state.</para>
-            </summary>
-        </member>
-        <member name="E:RogueLibsCore.CustomTrait.OnUnlockedInTraitsMenu">
-            <summary>
-              <para>Event that is invoked when this trait is unlocked in the Traits Menu.</para>
-              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>.</para>
-            </summary>
-        </member>
-        <member name="E:RogueLibsCore.CustomTrait.OnToggledInCharacterCreation">
-            <summary>
-              <para>Event that is invoked when this trait is added/removed in the Character Creation menu.</para>
-              <para><see cref="T:CharacterCreation"/> arg1 is the current instance of <see cref="T:CharacterCreation"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> arg3 is the new state.</para>
-            </summary>
-        </member>
-        <member name="E:RogueLibsCore.CustomTrait.OnUnlockedInCharacterCreation">
-            <summary>
-              <para>Event that is invoked when this trait is unlocked in the Character Creation menu.</para>
-              <para><see cref="T:CharacterCreation"/> arg1 is the current instance of <see cref="T:CharacterCreation"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>.</para>
-            </summary>
-        </member>
-        <member name="T:RogueLibsCore.RogueLibs">
-            <summary>
-              <para>A collection of useful functions for modding Streets of Rogue.</para>
-            </summary>
-        </member>
-        <member name="F:RogueLibsCore.RogueLibs.pluginGuid">
-            <summary>
-              <para><see cref="T:RogueLibsCore.RogueLibs"/>' GUID.</para>
-            </summary>
-        </member>
-        <member name="F:RogueLibsCore.RogueLibs.pluginName">
-            <summary>
-              <para><see cref="T:RogueLibsCore.RogueLibs"/>' display name.</para>
-            </summary>
-        </member>
-        <member name="F:RogueLibsCore.RogueLibs.pluginVersion">
-            <summary>
-              <para><see cref="T:RogueLibsCore.RogueLibs"/>' version. Do not use this value in your <see cref="T:BepInEx.BepInDependency"/> attribute!</para>
-            </summary>
-        </member>
-        <member name="F:RogueLibsCore.RogueLibs.PluginInstance">
-            <summary>
-              <para>Main <see cref="T:RogueLibsCore.RogueLibsPlugin"/> instance.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.RogueLibs.CustomNames">
-            <summary>
-              <para>List of initialized <see cref="T:RogueLibsCore.CustomName"/>s.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.EnumerateCustomUnlocks">
-            <summary>
-              <para>Enumerates through all initialized <see cref="T:RogueLibsCore.CustomUnlock"/>s.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.RogueLibs.CustomMutators">
-            <summary>
-              <para>List of initialized <see cref="T:RogueLibsCore.CustomMutator"/>s.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.RogueLibs.CustomItems">
-            <summary>
-              <para>List of initialized <see cref="T:RogueLibsCore.CustomItem"/>s.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.RogueLibs.CustomAbilities">
-            <summary>
-              <para>List of initialized <see cref="T:RogueLibsCore.CustomAbility"/>s.</para>
-            </summary>
-        </member>
-        <member name="P:RogueLibsCore.RogueLibs.CustomTraits">
-            <summary>
-              <para>List of initialized <see cref="T:RogueLibsCore.CustomTrait"/>s.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.GetCustomUnlock(System.String,System.String)">
-            <summary>
-              <para>Finds an existing <see cref="T:RogueLibsCore.CustomUnlock"/> by its <paramref name="id"/> and <paramref name="type"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.GetUnlock(System.String,System.String)">
-            <summary>
-              <para>Finds an existing <see cref="T:Unlock"/> by its <paramref name="name"/> and <paramref name="type"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.GetCustomName(System.String,System.String)">
-            <summary>
-              <para>Finds an existing <see cref="T:RogueLibsCore.CustomName"/> by its <paramref name="id"/> and <paramref name="type"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.CreateCustomName(System.String,System.String,RogueLibsCore.CustomNameInfo)">
-            <summary>
-              <para>Creates a new <see cref="T:RogueLibsCore.CustomName"/> with the specified <paramref name="id"/>, <paramref name="type"/> and <paramref name="info"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.GetCustomMutator(System.String)">
-            <summary>
-              <para>Finds an existing <see cref="T:RogueLibsCore.CustomMutator"/> by its <paramref name="id"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.CreateCustomMutator(System.String,System.Boolean,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo)">
-            <summary>
-              <para>Creates a new <see cref="T:RogueLibsCore.CustomMutator"/> with the specified <paramref name="id"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.GetCustomItem(System.String)">
-            <summary>
-              <para>Finds an existing <see cref="T:RogueLibsCore.CustomItem"/> by its <paramref name="id"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.CreateCustomItem(System.String,UnityEngine.Sprite,System.Boolean,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo,System.Action{InvItem})">
-            <summary>
-              <para>Creates a new <see cref="T:RogueLibsCore.CustomItem"/> with the specified <paramref name="id"/>, <paramref name="sprite"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.GetCustomAbility(System.String)">
-            <summary>
-              <para>Finds an existing <see cref="T:RogueLibsCore.CustomAbility"/> by its <paramref name="id"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.CreateCustomAbility(System.String,UnityEngine.Sprite,System.Boolean,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo,System.Action{InvItem})">
-            <summary>
-              <para>Creates a new <see cref="T:RogueLibsCore.CustomAbility"/> with the specified <paramref name="id"/>, <paramref name="sprite"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.GetCustomTrait(System.String)">
-            <summary>
-              <para>Finds an existing <see cref="T:RogueLibsCore.CustomTrait"/> by its <paramref name="id"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueLibs.CreateCustomTrait(System.String,System.Boolean,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo)">
-            <summary>
-              <para>Creates a new <see cref="T:RogueLibsCore.CustomTrait"/> with the specified <paramref name="id"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
-            </summary>
-        </member>
-        <member name="T:RogueLibsCore.BaseUnityPluginExtensions">
-            <summary>
-              <para>Collection of RogueLibs extension methods.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.BaseUnityPluginExtensions.LogError(BepInEx.BaseUnityPlugin,System.String,System.Exception)">
-            <summary>
-              <para>It's just a shortcut for: <c>Logger.LogError(<paramref name="message"/>); Logger.LogError(<paramref name="e"/>);</c>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.BaseUnityPluginExtensions.PatchPrefix(BepInEx.BaseUnityPlugin,System.Type,System.String,System.Type,System.String,System.Type[])">
-            <summary>
-              <para>Patches an original method so that the given patch method will be called right before the original.</para>
-              <para>Automatically catches and logs all errors. Returns true if the patch was successful, returns false if an error occured.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.BaseUnityPluginExtensions.PatchPostfix(BepInEx.BaseUnityPlugin,System.Type,System.String,System.Type,System.String,System.Type[])">
-            <summary>
-              <para>Patches an original method so that the given patch method will be called right after the original.</para>
-              <para>Automatically catches and logs all errors. Returns true if the patch was successful, returns false if an error occured.</para>
+              <para>Event that is invoked when this mutator is unlocked in the Mutators Menu.</para>
+              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this mutator's <see cref="T:ButtonHelper"/>.</para>
             </summary>
         </member>
         <member name="T:RogueLibsCore.CustomName">
@@ -585,47 +417,100 @@
               <para>Returns an array of localization strings from this <see cref="T:RogueLibsCore.CustomNameInfo"/>.</para>
             </summary>
         </member>
-        <member name="T:RogueLibsCore.CustomMutator">
+        <member name="T:RogueLibsCore.CustomTrait">
             <summary>
-              <para>Represents a custom in-game mutator (also known as challenge).</para>
+              <para>Represents a custom in-game trait.</para>
             </summary>
         </member>
-        <member name="M:RogueLibsCore.CustomMutator.CompareTo(RogueLibsCore.CustomMutator)">
+        <member name="M:RogueLibsCore.CustomTrait.CompareTo(RogueLibsCore.CustomTrait)">
             <summary>
-              <para>Compares this <see cref="T:RogueLibsCore.CustomMutator"/> with <paramref name="another"/>.</para>
+              <para>Compares this <see cref="T:RogueLibsCore.CustomTrait"/> with <paramref name="another"/>.</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomMutator.Type">
+        <member name="P:RogueLibsCore.CustomTrait.Type">
             <summary>
-              <para>Type of this <see cref="T:RogueLibsCore.CustomUnlock"/> - "Challenge".</para>
+              <para>Type of this <see cref="T:RogueLibsCore.CustomUnlock"/> - "Trait".</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomMutator.IsActive">
+        <member name="P:RogueLibsCore.CustomTrait.IsActive">
             <summary>
-              <para>Determines whether this <see cref="T:RogueLibsCore.CustomMutator"/> is active.</para>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> is active and will be obtainable in-game. (Default: <see langword="true"/>)</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomMutator.Available">
+        <member name="P:RogueLibsCore.CustomTrait.Available">
             <summary>
-              <para>Determines whether this <see cref="T:RogueLibsCore.CustomMutator"/> will be accessible in the Mutators Menu. (Default: <see langword="true"/>)</para>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> will be accessible in the Traits Menu and in-game. (Default: <see langword="true"/>)</para>
             </summary>
         </member>
-        <member name="P:RogueLibsCore.CustomMutator.ScrollingMenu_PushedButton">
+        <member name="P:RogueLibsCore.CustomTrait.AvailableInCharacterCreation">
+            <summary>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> will be accessible in the Character Creation menu. (Default: <see langword="true"/>)</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomTrait.CostInCharacterCreation">
+            <summary>
+              <para>Determines the cost of this <see cref="T:RogueLibsCore.CustomTrait"/> in the Character Creation menu, in points. (Default: 1)</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomTrait.CanRemove">
+            <summary>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> can be removed in the Augmentation Booth.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomTrait.CanSwap">
+            <summary>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> can be swapped in the Augmentation Booth.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomTrait.Upgrade">
+            <summary>
+              <para>Determines the upgraded version of this <see cref="T:RogueLibsCore.CustomTrait"/>. Set to <see langword="null"/> if it's not upgradeable. (Default: <see langword="null"/>)</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomTrait.IsUpgrade">
+            <summary>
+              <para>Determines whether this <see cref="T:RogueLibsCore.CustomTrait"/> is an upgrade.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomTrait.SpecialAbilities">
+            <summary>
+              <para>Determines the special abilities that this <see cref="T:RogueLibsCore.CustomTrait"/> can be obtained with.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.CustomTrait.ScrollingMenu_PushedButton">
             <summary>
               <para>Method that will be used in the <see cref="M:ScrollingMenu.PushedButton(ButtonHelper)"/> patch.</para>
-              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this mutator's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> result determines whether the original RogueLibs patch should be executed.</para>
+              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> result determines whether the original RogueLibs patch should be executed.</para>
             </summary>
         </member>
-        <member name="E:RogueLibsCore.CustomMutator.OnToggledInMutatorMenu">
+        <member name="P:RogueLibsCore.CustomTrait.CharacterCreation_PushedButton">
             <summary>
-              <para>Event that is invoked when this mutator is toggled on/off in the Mutators Menu.</para>
-              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this mutator's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> arg3 is the new state.</para>
+              <para>Method that will be used in the <see cref="M:CharacterCreation.PushedButton(ButtonHelper)"/> patch.</para>
+              <para><see cref="T:CharacterCreation"/> arg1 is the current instance of <see cref="T:CharacterCreation"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> result determines whether the original RogueLibs patch should be executed.</para>
             </summary>
         </member>
-        <member name="E:RogueLibsCore.CustomMutator.OnUnlockedInMutatorMenu">
+        <member name="E:RogueLibsCore.CustomTrait.OnToggledInTraitsMenu">
             <summary>
-              <para>Event that is invoked when this mutator is unlocked in the Mutators Menu.</para>
-              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this mutator's <see cref="T:ButtonHelper"/>.</para>
+              <para>Event that is invoked when this trait is toggled on/off in the Traits Menu.</para>
+              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> arg3 is the new state.</para>
+            </summary>
+        </member>
+        <member name="E:RogueLibsCore.CustomTrait.OnUnlockedInTraitsMenu">
+            <summary>
+              <para>Event that is invoked when this trait is unlocked in the Traits Menu.</para>
+              <para><see cref="T:ScrollingMenu"/> arg1 is the current instance of <see cref="T:ScrollingMenu"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>.</para>
+            </summary>
+        </member>
+        <member name="E:RogueLibsCore.CustomTrait.OnToggledInCharacterCreation">
+            <summary>
+              <para>Event that is invoked when this trait is added/removed in the Character Creation menu.</para>
+              <para><see cref="T:CharacterCreation"/> arg1 is the current instance of <see cref="T:CharacterCreation"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>;<br/><see cref="T:System.Boolean"/> arg3 is the new state.</para>
+            </summary>
+        </member>
+        <member name="E:RogueLibsCore.CustomTrait.OnUnlockedInCharacterCreation">
+            <summary>
+              <para>Event that is invoked when this trait is unlocked in the Character Creation menu.</para>
+              <para><see cref="T:CharacterCreation"/> arg1 is the current instance of <see cref="T:CharacterCreation"/>;<br/><see cref="T:ButtonHelper"/> arg2 is this trait's <see cref="T:ButtonHelper"/>.</para>
             </summary>
         </member>
         <member name="T:RogueLibsCore.CustomUnlock">
@@ -745,6 +630,121 @@
               <para>Unlocks this <see cref="T:RogueLibsCore.CustomUnlock"/> using <see cref="M:Unlocks.DoUnlock(System.String,System.String)"/> and updates all menus.</para>
             </summary>
             <param name="playSound">Determines whether the "BuyUnlock" sound effect should be played.</param>
+        </member>
+        <member name="T:RogueLibsCore.RogueLibs">
+            <summary>
+              <para>A collection of useful functions for modding Streets of Rogue.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.RogueLibs.pluginGuid">
+            <summary>
+              <para><see cref="T:RogueLibsCore.RogueLibs"/>' GUID.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.RogueLibs.pluginName">
+            <summary>
+              <para><see cref="T:RogueLibsCore.RogueLibs"/>' display name.</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.RogueLibs.pluginVersion">
+            <summary>
+              <para><see cref="T:RogueLibsCore.RogueLibs"/>' version. Do not use this value in your <see cref="T:BepInEx.BepInDependency"/> attribute!</para>
+            </summary>
+        </member>
+        <member name="F:RogueLibsCore.RogueLibs.PluginInstance">
+            <summary>
+              <para>Main <see cref="T:RogueLibsCore.RogueLibsPlugin"/> instance.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.CustomNames">
+            <summary>
+              <para>List of initialized <see cref="T:RogueLibsCore.CustomName"/>s.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.EnumerateCustomUnlocks">
+            <summary>
+              <para>Enumerates through all initialized <see cref="T:RogueLibsCore.CustomUnlock"/>s.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.CustomMutators">
+            <summary>
+              <para>List of initialized <see cref="T:RogueLibsCore.CustomMutator"/>s.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.CustomItems">
+            <summary>
+              <para>List of initialized <see cref="T:RogueLibsCore.CustomItem"/>s.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.CustomAbilities">
+            <summary>
+              <para>List of initialized <see cref="T:RogueLibsCore.CustomAbility"/>s.</para>
+            </summary>
+        </member>
+        <member name="P:RogueLibsCore.RogueLibs.CustomTraits">
+            <summary>
+              <para>List of initialized <see cref="T:RogueLibsCore.CustomTrait"/>s.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetCustomUnlock(System.String,System.String)">
+            <summary>
+              <para>Finds an existing <see cref="T:RogueLibsCore.CustomUnlock"/> by its <paramref name="id"/> and <paramref name="type"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetUnlock(System.String,System.String)">
+            <summary>
+              <para>Finds an existing <see cref="T:Unlock"/> by its <paramref name="name"/> and <paramref name="type"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetCustomName(System.String,System.String)">
+            <summary>
+              <para>Finds an existing <see cref="T:RogueLibsCore.CustomName"/> by its <paramref name="id"/> and <paramref name="type"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.CreateCustomName(System.String,System.String,RogueLibsCore.CustomNameInfo)">
+            <summary>
+              <para>Creates a new <see cref="T:RogueLibsCore.CustomName"/> with the specified <paramref name="id"/>, <paramref name="type"/> and <paramref name="info"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetCustomMutator(System.String)">
+            <summary>
+              <para>Finds an existing <see cref="T:RogueLibsCore.CustomMutator"/> by its <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.CreateCustomMutator(System.String,System.Boolean,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo)">
+            <summary>
+              <para>Creates a new <see cref="T:RogueLibsCore.CustomMutator"/> with the specified <paramref name="id"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetCustomItem(System.String)">
+            <summary>
+              <para>Finds an existing <see cref="T:RogueLibsCore.CustomItem"/> by its <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.CreateCustomItem(System.String,UnityEngine.Sprite,System.Boolean,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo,System.Action{InvItem})">
+            <summary>
+              <para>Creates a new <see cref="T:RogueLibsCore.CustomItem"/> with the specified <paramref name="id"/>, <paramref name="sprite"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetCustomAbility(System.String)">
+            <summary>
+              <para>Finds an existing <see cref="T:RogueLibsCore.CustomAbility"/> by its <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.CreateCustomAbility(System.String,UnityEngine.Sprite,System.Boolean,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo,System.Action{InvItem})">
+            <summary>
+              <para>Creates a new <see cref="T:RogueLibsCore.CustomAbility"/> with the specified <paramref name="id"/>, <paramref name="sprite"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.GetCustomTrait(System.String)">
+            <summary>
+              <para>Finds an existing <see cref="T:RogueLibsCore.CustomTrait"/> by its <paramref name="id"/>.</para>
+            </summary>
+        </member>
+        <member name="M:RogueLibsCore.RogueLibs.CreateCustomTrait(System.String,System.Boolean,RogueLibsCore.CustomNameInfo,RogueLibsCore.CustomNameInfo)">
+            <summary>
+              <para>Creates a new <see cref="T:RogueLibsCore.CustomTrait"/> with the specified <paramref name="id"/>, <paramref name="name"/> and <paramref name="description"/>.</para>
+            </summary>
         </member>
         <member name="T:RogueLibsCore.RoguePatcher">
             <summary>

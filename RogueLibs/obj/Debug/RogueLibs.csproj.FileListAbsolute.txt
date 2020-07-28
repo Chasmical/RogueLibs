@@ -20,3 +20,12 @@ D:\repos\RogueLibs\obj\Debug\RogueLibs.dll
 D:\repos\RogueLibs\obj\Debug\RogueLibs.pdb
 D:\repos\RogueLibs\bin\Debug\RogueLibs.xml
 D:\repos\RogueLibs\obj\Debug\RogueLibs.csprojAssemblyReference.cache
+D:\repos\RogueLibs\RogueLibs\bin\Debug\RogueLibs.xml
+D:\repos\RogueLibs\RogueLibs\bin\Debug\RogueLibs.dll
+D:\repos\RogueLibs\RogueLibs\bin\Debug\RogueLibs.pdb
+D:\repos\RogueLibs\RogueLibs\bin\Debug\UnityEngine.AnimationModule.dll
+D:\repos\RogueLibs\RogueLibs\obj\Debug\RogueLibs.csprojAssemblyReference.cache
+D:\repos\RogueLibs\RogueLibs\obj\Debug\RogueLibs.csproj.CoreCompileInputs.cache
+D:\repos\RogueLibs\RogueLibs\obj\Debug\RogueLibs.csproj.CopyComplete
+D:\repos\RogueLibs\RogueLibs\obj\Debug\RogueLibs.dll
+D:\repos\RogueLibs\RogueLibs\obj\Debug\RogueLibs.pdb
