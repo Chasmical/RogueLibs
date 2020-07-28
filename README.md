@@ -30,10 +30,11 @@ This modding library allows you to easily add custom localization lines, mutator
 - [1. Getting started](./md/1.%20Getting%20Started.md)
 - 2\. Adding custom content
   - [2.1. Custom Names](./md/2.1.%20Custom%20Names.md)
-  - [2.2. Custom Mutators](./md/2.2.%20Custom%20Mutators.md)
-  - [2.3. Custom Items](./md/2.3.%20Custom%20Items.md)
-  - [2.4. Custom Abilities](./md/2.4.%20Custom%20Abilities.md)
-  - [2.5. Custom Traits](./md/2.5.%20Custom%20Traits.md)
+  - [2.2. Custom Unlocks](./md/2.2.%20Custom%20Unlocks.md)
+  - [2.3. Custom Mutators](./md/2.3.%20Custom%20Mutators.md)
+  - [2.4. Custom Items](./md/2.4.%20Custom%20Items.md)
+  - [2.5. Custom Abilities](./md/2.5.%20Custom%20Abilities.md)
+  - [2.6. Custom Traits](./md/2.6.%20Custom%20Traits.md)
 - 3\. Additional tools
   - [3.1. RoguePatcher](./md/3.1.%20RoguePatcher.md)
   - [3.2. RogueUtilities](./md/3.2.%20RogueUtilities.md)
