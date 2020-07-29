@@ -577,27 +577,6 @@
         <member name="P:RogueLibsCore.CustomUnlock.Conflicting">
             <summary>
               <para>Determines the conflicting unlocks (also known as cancellations) of this <see cref="T:RogueLibsCore.CustomUnlock"/>.</para>
-              <para>Don't edit the list yourself! Use methods: <see cref="M:RogueLibsCore.CustomUnlock.AddConflicting(System.String[])"/> and <see cref="M:RogueLibsCore.CustomUnlock.RemoveConflicting(System.String[])"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.CustomUnlock.AddConflicting(RogueLibsCore.CustomUnlock[])">
-            <summary>
-              <para>Adds the specified <paramref name="customUnlocks"/> to the conflicting list.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.CustomUnlock.RemoveConflicting(RogueLibsCore.CustomUnlock[])">
-            <summary>
-              <para>Removes the specified <paramref name="customUnlocks"/> from the conflicting list.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.CustomUnlock.AddConflicting(System.String[])">
-            <summary>
-              <para>Adds the specified <paramref name="unlockIds"/> to the conflicting list.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.CustomUnlock.RemoveConflicting(System.String[])">
-            <summary>
-              <para>Removes the specified <paramref name="unlockIds"/> from the conflicting list.</para>
             </summary>
         </member>
         <member name="P:RogueLibsCore.CustomUnlock.Prerequisites">
@@ -781,19 +760,9 @@
               <para>Collection of some useful functions, that you might need.</para>
             </summary>
         </member>
-        <member name="M:RogueLibsCore.RogueUtilities.ConvertToSprite(System.String)">
-            <summary>
-              <para>Converts a .png or .jpg file into a <see cref="T:UnityEngine.Sprite"/>.</para>
-            </summary>
-        </member>
         <member name="M:RogueLibsCore.RogueUtilities.ConvertToSprite(System.String,System.Int32)">
             <summary>
               <para>Converts a .png or .jpg file into a <see cref="T:UnityEngine.Sprite"/> with the specified pixel-per-unit value (default - 64).</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueUtilities.ConvertToSprite(System.Byte[])">
-            <summary>
-              <para>Converts a .png or .jpg byte array into a <see cref="T:UnityEngine.Sprite"/>.</para>
             </summary>
         </member>
         <member name="M:RogueLibsCore.RogueUtilities.ConvertToSprite(System.Byte[],System.Int32)">
@@ -804,21 +773,6 @@
         <member name="M:RogueLibsCore.RogueUtilities.ConvertToAudioClip(System.String)">
             <summary>
               <para>Converts a .mp3, .ogg, .wav or .aiff (it is recommended to use .ogg, since other formats might not load properly) file into an <see cref="T:UnityEngine.AudioClip"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueUtilities.CrossConflict(RogueLibsCore.CustomUnlock[])">
-            <summary>
-              <para>Conflicts all <see cref="T:RogueLibsCore.CustomUnlock"/>s in the <paramref name="customUnlocks"/> with each other.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueUtilities.EachConflict(System.Collections.Generic.IEnumerable{System.String},RogueLibsCore.CustomUnlock[])">
-            <summary>
-              <para>Conflicts each <see cref="T:RogueLibsCore.CustomUnlock"/> in the <paramref name="customUnlocks"/> with each <see cref="T:Unlock"/> in the <paramref name="unlocks"/>.</para>
-            </summary>
-        </member>
-        <member name="M:RogueLibsCore.RogueUtilities.EachConflict(System.Collections.Generic.IEnumerable{RogueLibsCore.CustomUnlock},System.String[])">
-            <summary>
-              <para>Conflicts each <see cref="T:RogueLibsCore.CustomUnlock"/> in the <paramref name="customUnlocks"/> with each <see cref="T:Unlock"/> in the <paramref name="unlocks"/>.</para>
             </summary>
         </member>
     </members>

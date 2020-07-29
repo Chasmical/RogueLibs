@@ -298,12 +298,6 @@ namespace RogueLibsCore
 				newUnlock = new Unlock(customUnlock.Id, customUnlock.Type, customUnlock.Unlocked, customUnlock.UnlockCost ?? 0);
 				newUnlock = GameController.gameController.unlocks.AddUnlock(newUnlock);
 				newUnlock.cancellations = customUnlock.Conflicting;
-
-				foreach (string canc in newUnlock.cancellations)
-					foreach (Unlock u in big.unlocks)
-						if (u.unlockName == canc && !u.cancellations.Contains(newUnlock.unlockName))
-							u.cancellations.Add(newUnlock.unlockName);
-
 				newUnlock.unavailable = !customUnlock.Available;
 				newUnlock.prerequisites = customUnlock.Prerequisites;
 				newUnlock.recommendations = customUnlock.Recommendations;

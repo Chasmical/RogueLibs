@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace RogueLibsCore
 {
@@ -12,25 +13,9 @@ namespace RogueLibsCore
 	public static class RogueUtilities
 	{
 		/// <summary>
-		///   <para>Converts a .png or .jpg file into a <see cref="Sprite"/>.</para>
-		/// </summary>
-		public static Sprite ConvertToSprite(string filePath)
-		{
-			byte[] data = null;
-			try
-			{
-				data = File.ReadAllBytes(Path.GetFullPath(filePath));
-			}
-			catch (Exception e)
-			{
-				RogueLibs.PluginInstance.LogError("Could not load Sprite from \"" + filePath + "\"!", e);
-			}
-			return ConvertToSprite(data, 64);
-		}
-		/// <summary>
 		///   <para>Converts a .png or .jpg file into a <see cref="Sprite"/> with the specified pixel-per-unit value (default - 64).</para>
 		/// </summary>
-		public static Sprite ConvertToSprite(string filePath, int ppu)
+		public static Sprite ConvertToSprite(string filePath, int ppu = 64)
 		{
 			byte[] data = null;
 			try
@@ -44,13 +29,9 @@ namespace RogueLibsCore
 			return ConvertToSprite(data, ppu);
 		}
 		/// <summary>
-		///   <para>Converts a .png or .jpg byte array into a <see cref="Sprite"/>.</para>
-		/// </summary>
-		public static Sprite ConvertToSprite(byte[] data) => ConvertToSprite(data, 64);
-		/// <summary>
 		///   <para>Converts a .png or .jpg byte array into a <see cref="Sprite"/> with the specified pixel-per-unit value (default - 64).</para>
 		/// </summary>
-		public static Sprite ConvertToSprite(byte[] data, int ppu)
+		public static Sprite ConvertToSprite(byte[] data, int ppu = 64)
 		{
 			Sprite sprite = null;
 			try
@@ -98,32 +79,6 @@ namespace RogueLibsCore
 				RogueLibs.PluginInstance.LogError("Could not load AudioClip from \"" + path + "\"!", e);
 			}
 			return clip;
-		}
-
-		/// <summary>
-		///   <para>Conflicts all <see cref="CustomUnlock"/>s in the <paramref name="customUnlocks"/> with each other.</para>
-		/// </summary>
-		public static void CrossConflict(params CustomUnlock[] customUnlocks)
-		{
-			foreach (CustomUnlock unlock in customUnlocks)
-				unlock.AddConflicting(customUnlocks);
-		}
-		/// <summary>
-		///   <para>Conflicts each <see cref="CustomUnlock"/> in the <paramref name="customUnlocks"/> with each <see cref="Unlock"/> in the <paramref name="unlocks"/>.</para>
-		/// </summary>
-		public static void EachConflict(IEnumerable<string> unlocks, params CustomUnlock[] customUnlocks)
-		{
-			string[] list2 = unlocks.ToArray();
-			foreach (CustomUnlock unlock in customUnlocks)
-				unlock.AddConflicting(list2);
-		}
-		/// <summary>
-		///   <para>Conflicts each <see cref="CustomUnlock"/> in the <paramref name="customUnlocks"/> with each <see cref="Unlock"/> in the <paramref name="unlocks"/>.</para>
-		/// </summary>
-		public static void EachConflict(IEnumerable<CustomUnlock> customUnlocks, params string[] unlocks)
-		{
-			foreach (CustomUnlock unlock in customUnlocks)
-				unlock.AddConflicting(unlocks);
 		}
 
 	}
