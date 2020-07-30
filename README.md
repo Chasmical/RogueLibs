@@ -28,10 +28,10 @@ If you have any suggestions or find any bugs, you can open a new issue here on G
 
 <div>
   <a href="https://github.com/Abbysssal/RogueLibs/issues/new/choose">
-    <img src="https://img.shields.io/github/issues/Abbysssal/RogueLibs?color=green&label=Issues&logo=github&style=for-the-badge"/>
+    <img src="https://img.shields.io/github/issues/Abbysssal/RogueLibs?color=green&label=Issues&logo=github&style=for-the-badge" alt="Open a new issue"/>
   </a>
   <a href="https://github.com/Abbysssal/RogueLibs/compare">
-    <img src="https://img.shields.io/github/issues-pr/Abbysssal/RogueLibs?color=green&logo=github&style=for-the-badge"/>
+    <img src="https://img.shields.io/github/issues-pr/Abbysssal/RogueLibs?color=green&logo=github&style=for-the-badge" alt="Create a pull request"/>
   </a>
 </div>
 
