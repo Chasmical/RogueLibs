@@ -22,12 +22,23 @@
   </p>
 </div>
 
-This modding library allows you to easily add custom localization lines, mutators, items and abilities.
+This modding library does nothing on its own, but it provides methods for other mods to easily create new custom mutators, items, abilities and traits.
+
+If you have any suggestions or find any bugs, you can open a new issue here on GitHub, or create a pull request if you know how to fix that:
+
+<div>
+  <a href="https://github.com/Abbysssal/RogueLibs/issues/new/choose">
+    <img src="https://img.shields.io/github/issues/Abbysssal/RogueLibs?color=green&label=Issues&logo=github&style=for-the-badge"/>
+  </a>
+  <a href="https://github.com/Abbysssal/RogueLibs/compare">
+    <img src="https://img.shields.io/github/issues-pr/Abbysssal/RogueLibs?color=green&logo=github&style=for-the-badge"/>
+  </a>
+</div>
 
 ## Contents ##
 
 - **Main page**
-- [1. Getting started](./md/1.%20Getting%20Started.md)
+- [1. Getting started](./md/1.%20Getting%20started.md)
 - 2\. Adding custom content
   - [2.1. Custom Names](./md/2.1.%20Custom%20Names.md)
   - [2.2. Custom Unlocks](./md/2.2.%20Custom%20Unlocks.md)

@@ -370,6 +370,7 @@ namespace RogueLibsCore
 		}
 		protected static void CheckPrerequisites(Unlock unlock)
 		{
+			if (unlock.prerequisites.Count == 0) return;
 			foreach (string name in unlock.prerequisites)
 				foreach (Unlock u in GameController.gameController.sessionDataBig.unlocks)
 					if (!u.unlocked && u.unlockName == name)
