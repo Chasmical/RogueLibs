@@ -7,7 +7,7 @@
     <ProjectGuid>{D4A59C1A-DCDA-4DE8-80DF-7B802707000F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RogueLibs.Test</RootNamespace>
+    <RootNamespace>RogueLibsCore.Test</RootNamespace>
     <AssemblyName>RogueLibs.Test</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -57,6 +57,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="TestPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -65,6 +70,19 @@
       <Project>{a1764685-f31f-4864-aab6-99870b10c239}</Project>
       <Name>RogueLibs</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\JokeBook.bin" />
+    <None Include="Resources\PortableAmmoDispenser.bin" />
+    <None Include="Resources\QuantumFud.bin" />
+    <None Include="Resources\SPYTRON3000.bin" />
+    <None Include="Resources\WildBypasser.bin" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

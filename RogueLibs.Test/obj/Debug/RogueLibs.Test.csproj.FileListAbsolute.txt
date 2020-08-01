@@ -22,3 +22,5 @@ D:\repos\RogueLibs\RogueLibs.Test\obj\Debug\RogueLibs.Test.csproj.CoreCompileInp
 D:\repos\RogueLibs\RogueLibs.Test\obj\Debug\RogueLibs.Test.csproj.CopyComplete
 D:\repos\RogueLibs\RogueLibs.Test\obj\Debug\RogueLibs.Test.dll
 D:\repos\RogueLibs\RogueLibs.Test\obj\Debug\RogueLibs.Test.pdb
+D:\repos\RogueLibs\RogueLibs.Test\obj\Debug\RogueLibs.Test.csproj.GenerateResource.cache
+D:\repos\RogueLibs\RogueLibs.Test\obj\Debug\RogueLibsCore.Test.Properties.Resources.resources

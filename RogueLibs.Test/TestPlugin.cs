@@ -11,7 +11,7 @@ namespace RogueLibsCore.Test
 	{
 		public const string pluginGuid = "abbysssal.streetsofrogue.roguelibs.test";
 		public const string pluginName = "RogueLibs.Test";
-		public const string pluginVersion = "0.5.0";
+		public const string pluginVersion = "0.6.0";
 
 		public void Awake()
 		{
@@ -109,7 +109,7 @@ namespace RogueLibsCore.Test
 			#endregion
 
 			#region Wild Bypasser
-			CustomItem wildBypasser = RogueLibs.CreateCustomItem("WildBypasser_u3", noSprite, false,
+			CustomItem wildBypasser = RogueLibs.CreateCustomItem("WildBypasser_u3", RogueUtilities.ConvertToSprite(Properties.Resources.WildBypasser), false,
 				new CustomNameInfo("Wild Bypasser",
 					null, null, null, null,
 					"Универсальный проход сквозь стены",
@@ -163,13 +163,227 @@ namespace RogueLibsCore.Test
 			};
 			#endregion
 
+			#region Quantum Fud
+			CustomItem quantumFud = RogueLibs.CreateCustomItem("QuantumFud", RogueUtilities.ConvertToSprite(Properties.Resources.QuantumFud), true,
+				new CustomNameInfo("Quantum Fud",
+					null, null, null, null,
+					"Квантовый хафчик",
+					null, null),
+				new CustomNameInfo("A very complicated piece of quantum technology. When you eat it, its quantum equivalent clone is consumed, while the original thing remains intact.",
+					null, null, null, null,
+					"Очень сложное квантовое устройство. При его поедании, потребляется его квантово-эквивалентный клон, в то время как оригинал остаётся нетронутым.",
+					null, null),
+				item =>
+				{
+					item.itemType = "Food";
+					item.Categories.Add("Food");
+					item.Categories.Add("Technology");
+					item.itemValue = 180;
+					item.healthChange = 1;
+					item.cantBeCloned = true;
+					item.goesInToolbar = true;
+				});
 
+			quantumFud.UseItem = (item, agent) =>
+			{
+				if (agent.statusEffects.hasTrait("OilRestoresHealth"))
+					agent.SayDialogue("OnlyOilGivesHealth");
+				else if (agent.statusEffects.hasTrait("BloodRestoresHealth"))
+					agent.SayDialogue("OnlyBloodGivesHealth");
+				else if (agent.electronic)
+					agent.SayDialogue("OnlyChargeGivesHealth");
+				else if (agent.statusEffects.hasTrait("CannibalizeRestoresHealth"))
+					agent.SayDialogue("OnlyCannibalizeGivesHealth");
+				else if (agent.health == agent.healthMax)
+					agent.SayDialogue("HealthFullCantUseItem");
+				else
+				{
+					int num23 = new ItemFunctions().DetermineHealthChange(item, agent);
+					agent.statusEffects.ChangeHealth(num23);
+					if (agent.statusEffects.hasTrait("HealthItemsGiveFollowersExtraHealth") || agent.statusEffects.hasTrait("HealthItemsGiveFollowersExtraHealth2"))
+					{
+						new ItemFunctions().GiveFollowersHealth(agent, num23);
+					}
+					item.gc.audioHandler.Play(agent, "UseFood");
+					new ItemFunctions().UseItemAnim(item, agent);
+					return;
+				}
+				item.gc.audioHandler.Play(agent, "CantDo");
+			};
+			#endregion
 
+			#region SPYTRON 3000
+			CustomItem spytron3000 = RogueLibs.CreateCustomItem("SPYTRON3000", RogueUtilities.ConvertToSprite(Properties.Resources.SPYTRON3000), true,
+				new CustomNameInfo("SPYTRON 3000",
+					null, null, null, null,
+					"Шпионотрон 3000",
+					null, null),
+				new CustomNameInfo("Always wanted to be someone else? Now you can!",
+					null, null, null, null,
+					"Всегда хотели быть кем-то другим? Теперь вы можете!",
+					null, null),
+				item =>
+				{
+					item.itemType = "Tool";
+					item.Categories.Add("Social");
+					item.Categories.Add("Stealth");
+					item.Categories.Add("Technology");
+					item.Categories.Add("Usable");
+					item.itemValue = 80;
+					item.initCount = 2;
+					item.rewardCount = 3;
+					item.stackable = true;
+					item.goesInToolbar = true;
+				});
+			spytron3000.TargetFilter = (item, agent, obj) => obj is Agent a && !a.dead && a != agent;
+			spytron3000.TargetObject = (item, agent, obj) =>
+			{
+				Agent target = (Agent)obj;
 
+				string prev = agent.agentName;
+				agent.agentName = target.agentName;
 
+				agent.relationships.CopyLooks(target);
 
+				agent.gc.audioHandler.Play(agent, "Spawn");
+				agent.gc.spawnerMain.SpawnParticleEffect("Spawn", agent.tr.position, 0f);
 
+				foreach (Relationship rel in target.relationships.RelList)
+				{
+					Relationship otherRel = rel.agent.relationships.GetRelationship(target);
 
+					agent.relationships.SetRel(rel.agent, rel.relType);
+					agent.relationships.SetRelHate(rel.agent, 0);
+					agent.relationships.GetRelationship(rel.agent).secretHate = rel.secretHate;
+					agent.relationships.GetRelationship(rel.agent).mechHate = rel.mechHate;
+
+					rel.agent.relationships.SetRel(agent, otherRel.relType);
+					rel.agent.relationships.SetRelHate(agent, 0);
+					rel.agent.relationships.GetRelationship(agent).secretHate = otherRel.secretHate;
+					rel.agent.relationships.GetRelationship(agent).mechHate = otherRel.mechHate;
+				}
+
+				target.relationships.SetRel(agent, "Hateful");
+				target.relationships.SetRelHate(agent, 25);
+				agent.agentName = prev;
+
+				item.database.SubtractFromItemCount(item, 1);
+				item.invInterface.HideTarget();
+			};
+			spytron3000.SetTargetText(new CustomNameInfo("Disguise",
+				null, null, null, null,
+				"Замаскироваться",
+				null, null));
+			#endregion
+
+			#region Portable Ammo Dispenser
+			Sprite sprite7 = RogueUtilities.ConvertToSprite(Properties.Resources.PortableAmmoDispenser);
+			CustomItem portableAmmoDispenser = RogueLibs.CreateCustomItem("PortableAmmoDispenser", sprite7, true,
+				new CustomNameInfo("Portable Ammo Dispenser",
+				null, null, null, null,
+				"Портативный раздатчик боеприпасов",
+				null, null),
+				new CustomNameInfo("Use it to refill your ranged weapons' ammo. For money, of course.",
+				null, null, null, null,
+				"Используйте для пополнения запаса патронов у оружия дальнего боя. За деньги, конечно же.",
+				null, null),
+				item =>
+				{
+					item.itemType = "Combine";
+					item.Categories.Add("Technology");
+					item.Categories.Add("GunAccessory");
+					item.Categories.Add("Guns");
+					item.itemValue = 80;
+					item.initCount = 1;
+					item.rewardCount = 1;
+				});
+			portableAmmoDispenser.CombineFilter = (item, agent, otherItem) => otherItem.itemType == "WeaponProjectile" && !otherItem.noRefills;
+			portableAmmoDispenser.CombineItems = (item, agent, otherItem) =>
+			{
+				int amountToRefill = otherItem.maxAmmo - otherItem.invItemCount;
+				float singleCost = (float)otherItem.itemValue / otherItem.maxAmmo;
+				if (agent.oma.superSpecialAbility && (agent.agentName == "Soldier" || agent.agentName == "Doctor"))
+					singleCost = 0f;
+				if (otherItem.invItemCount >= otherItem.maxAmmo)
+				{
+					agent.SayDialogue("AmmoDispenserFull");
+					agent.gc.audioHandler.Play(agent, "CantDo");
+				}
+				else if (agent.inventory.money.invItemCount < amountToRefill * singleCost)
+				{
+					int affordableAmount = (int)Mathf.Floor(agent.inventory.money.invItemCount / singleCost);
+
+					if (affordableAmount == 0)
+					{
+						agent.SayDialogue("NeedCash");
+						agent.gc.audioHandler.Play(agent, "CantDo");
+						return;
+					}
+					agent.inventory.SubtractFromItemCount(agent.inventory.money, (int)Mathf.Ceil(affordableAmount * singleCost));
+					otherItem.invItemCount += affordableAmount;
+					agent.SayDialogue("AmmoDispenserFilled");
+					agent.gc.audioHandler.Play(agent, "BuyItem");
+					new ItemFunctions().UseItemAnim(item, agent);
+				}
+				else
+				{
+					agent.inventory.money.invItemCount -= (int)Mathf.Ceil(amountToRefill * singleCost);
+					otherItem.invItemCount = otherItem.maxAmmo;
+					agent.SayDialogue("AmmoDispenserFilled");
+					agent.gc.audioHandler.Play(agent, "BuyItem");
+					new ItemFunctions().UseItemAnim(item, agent);
+				}
+
+			};
+			portableAmmoDispenser.CombineTooltip = (item, agent, otherItem) =>
+			{
+				if (otherItem.invItemName == "PortableAmmoDispenser") return null;
+
+				int amountToRefill = otherItem.maxAmmo - otherItem.invItemCount;
+				if (amountToRefill < 1) return null;
+
+				float singleCost = (float)otherItem.itemValue / otherItem.maxAmmo;
+				if (agent.oma.superSpecialAbility && (agent.agentName == "Soldier" || agent.agentName == "Doctor"))
+					singleCost = 0f;
+				int amount = (int)Mathf.Ceil(amountToRefill * singleCost);
+
+				return "$" + amount;
+			};
+			#endregion
+
+			#region Joke Book
+			Sprite sprite9 = RogueUtilities.ConvertToSprite(Properties.Resources.JokeBook);
+			CustomItem jokeBook = RogueLibs.CreateCustomItem("JokeBook", sprite9, true,
+				new CustomNameInfo("Joke Book",
+				null, null, null, null,
+				"Сборник шуток",
+				null, null),
+				new CustomNameInfo("Always wanted to be a Comedian? Now you can! (kind of)",
+				null, null, null, null,
+				"Всегда хотели быть Комиком? Теперь вы можете! (ну, типа)",
+				null, null),
+				item =>
+				{
+					item.itemType = "Tool";
+					item.Categories.Add("Usable");
+					item.Categories.Add("Social");
+					item.itemValue = 200;
+					item.initCount = 10;
+					item.rewardCount = 10;
+					item.stackable = true;
+					item.hasCharges = true;
+					item.goesInToolbar = true;
+				});
+			jokeBook.UseItem = (item, agent) =>
+			{
+				string prev = agent.specialAbility;
+				agent.specialAbility = "Joke";
+				agent.statusEffects.PressedSpecialAbility();
+				agent.specialAbility = prev;
+				item.database.SubtractFromItemCount(item, 1);
+				new ItemFunctions().UseItemAnim(item, agent);
+			};
+			#endregion
 
 		}
 
