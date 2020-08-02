@@ -408,7 +408,7 @@ namespace RogueLibsCore
 				if (customUnlock.SortingOrder == 0) continue;
 
 				int index = ___listUnlocks.FindIndex(u => u.unlockName == customUnlock.Id);
-
+				if (index == -1) continue;
 				if (customUnlock.SortingOrder < 0) addToBeginning.Add(___listUnlocks[index]);
 				else addToEnd.Add(___listUnlocks[index]);
 				___listUnlocks.RemoveAt(index);
@@ -769,11 +769,8 @@ namespace RogueLibsCore
 			foreach (CustomUnlock customUnlock in customUnlocks)
 			{ // enumerate through sorted CustomUnlocks and put them in the lists (in sorted order)
 				int index = listUnlocks.FindIndex(u => u.unlockName == customUnlock.Id);
-				if (index == -1)
-				{
-					MyLogger.LogWarning("Couldn't find \"" + customUnlock.Id + "\" in the unlocks list!");
-					continue;
-				}
+
+				if (index == -1) continue;
 				if (abilityCheck && !((CustomAbility)customUnlock).AvailableInCharacterCreation)
 				{ // non-regular implementation for abilities not available in character creation
 					listUnlocks.RemoveAt(index);
