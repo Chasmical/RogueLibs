@@ -49,7 +49,7 @@ If you have any suggestions or find any bugs, you can open a new issue here on G
 - 3\. Additional tools
   - [3.1. RoguePatcher](./md/3.1.%20RoguePatcher.md)
   - [3.2. RogueUtilities](./md/3.2.%20RogueUtilities.md)
-- [4. Changelog](./4.%20Changelog.md)
+- [4. Changelog](./md/4.%20Changelog.md)
 
 ## Links ##
 - [Download RogueLibs (latest stable version)](https://github.com/Abbysssal/RogueLibs/releases/latest)
