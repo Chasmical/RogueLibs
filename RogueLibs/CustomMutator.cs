@@ -25,7 +25,7 @@ namespace RogueLibsCore
 		/// </summary>
 		public bool IsActive
 		{
-			get => unlock != null ? (isActive == GameController.gameController.challenges.Contains(Id)) : isActive;
+			get => unlock != null ? (isActive = GameController.gameController.challenges.Contains(Id)) : isActive;
 			set
 			{
 				if (unlock != null)
