@@ -465,7 +465,7 @@ namespace RogueLibsCore
 				myButtonData.scrollingHighlighted4 = (__instance.menuType == "Items" || __instance.menuType == "TraitUnlocks") && myUnlock.notActive; // gray 'not active' highlight
 				myButtonData.highlightedSprite = __instance.solidObjectButton;
 			}
-			else if (custom == null || custom.UnlockCost != null)
+			else if ((custom == null && myUnlock.cost != 0) || custom.UnlockCost != null)
 			{ // not unlocked, original mutator OR custom and can be purchased
 				myButtonData.buttonText += " - $" + myUnlock.cost;
 				myButtonData.scrollingHighlighted2 = true; // blue 'purchasable' highlight
@@ -559,7 +559,7 @@ namespace RogueLibsCore
 						__instance.gc.SetDailyRunText();
 						__instance.UpdateOtherVisibleMenus(__instance.menuType);
 					}
-					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					else if (u.nowAvailable && ((custom == null && u.cost != 0) || custom?.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
 					{ // not unlocked, is a custom mutator, can be purchased and affordable
 						__instance.gc.unlocks.SubtractNuggets(u.cost);
 						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
@@ -605,7 +605,7 @@ namespace RogueLibsCore
 							__instance.gc.unlocks.SaveUnlockData(true);
 						}
 					}
-					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					else if (u.nowAvailable && ((custom == null && u.cost != 0) || custom?.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
 					{ // not unlocked, can be purchased and affordable
 						__instance.gc.unlocks.SubtractNuggets(u.cost);
 						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
@@ -651,7 +651,7 @@ namespace RogueLibsCore
 							__instance.gc.unlocks.SaveUnlockData(true);
 						}
 					}
-					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					else if (u.nowAvailable && ((custom == null && u.cost != 0) || custom?.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
 					{ // not unlocked, can be purchased and affordable
 						__instance.gc.unlocks.SubtractNuggets(u.cost);
 						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
@@ -693,7 +693,7 @@ namespace RogueLibsCore
 						}
 						__instance.agent.inventory.DontPlayPickupSounds(false);
 					}
-					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					else if (u.nowAvailable && ((custom == null && u.cost != 0) || custom?.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
 					{ // not unlocked, can be purchased and affordable
 						__instance.gc.unlocks.SubtractNuggets(u.cost);
 						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
@@ -857,7 +857,7 @@ namespace RogueLibsCore
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButton;
 			}
-			else if (custom == null || custom.UnlockCost != null) // not unlocked, original mutator OR custom and can be purchased
+			else if ((custom == null && myUnlock.cost != 0) || custom.UnlockCost != null) // not unlocked, original mutator OR custom and can be purchased
 			{
 				myButtonData.buttonText = __instance.gc.nameDB.GetName(myUnlock.unlockName, myUnlock.unlockNameType) + " - $" + myUnlock.cost;
 				myButtonData.scrollingHighlighted2 = true; // blue 'purchasable' highlight
@@ -968,7 +968,7 @@ namespace RogueLibsCore
 							__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
 						}
 					}
-					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					else if (u.nowAvailable && ((custom == null && u.cost != 0) || custom?.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
 					{ // not unlocked, can be purchased and affordable
 						__instance.gc.unlocks.SubtractNuggets(u.cost);
 						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
@@ -1022,7 +1022,7 @@ namespace RogueLibsCore
 
 						__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
 					}
-					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					else if (u.nowAvailable && ((custom == null && u.cost != 0) || custom?.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
 					{ // not unlocked, can be purchased and affordable
 						__instance.gc.unlocks.SubtractNuggets(u.cost);
 						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
@@ -1080,7 +1080,7 @@ namespace RogueLibsCore
 							__instance.gc.audioHandler.PlayMust(__instance.gc.playerAgent, "ClickButtonMenu");
 						}
 					}
-					else if (u.nowAvailable && (custom == null || custom.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
+					else if (u.nowAvailable && ((custom == null && u.cost != 0) || custom?.UnlockCost != null) && u.cost <= __instance.gc.sessionDataBig.nuggets)
 					{  // not unlocked, can be purchased and affordable
 						__instance.gc.unlocks.SubtractNuggets(u.cost);
 						__instance.gc.unlocks.DoUnlock(u.unlockName, u.unlockType);
