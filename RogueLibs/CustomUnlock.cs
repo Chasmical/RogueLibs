@@ -53,7 +53,12 @@ namespace RogueLibsCore
 		public int CompareTo(CustomUnlock another)
 		{
 			int res = SortingOrder.CompareTo(another.SortingOrder);
-			return res != 0 ? res : SortingIndex.CompareTo(another.SortingIndex);
+			if (res == 0)
+			{
+				res = SortingIndex.CompareTo(another.SortingIndex);
+				if (res == 0) res = unlock.CompareTo(another.unlock);
+			}
+			return res;
 		}
 
 		private bool unlocked = false;

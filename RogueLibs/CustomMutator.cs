@@ -78,8 +78,31 @@ namespace RogueLibsCore
 		/// </summary>
 		public event Action<ScrollingMenu, ButtonHelper> OnUnlockedInMutatorMenu;
 
+		/// <summary>
+		///   <para>Event that is invoked when this mutator is toggled on, in the Mutator menu or by cancellations.</para>
+		/// </summary>
+		public event Action OnEnabled;
+		/// <summary>
+		///   <para>Event that is invoked when this mutator is toggled off, in the Mutator menu or by cancellations.</para>
+		/// </summary>
+		public event Action OnDisabled;
+		/// <summary>
+		///   <para>Event that is invoked when this mutator is toggled on/off, in the Mutator menu or by cancellations.</para>
+		///   <para><see cref="bool"/> obj is the new mutator's state.</para>
+		/// </summary>
+		public event Action<bool> OnChangedState;
+
 		internal void InvokeOnToggledEvent(ScrollingMenu sm, ButtonHelper bh, bool newState) => OnToggledInMutatorMenu?.Invoke(sm, bh, newState);
 		internal void InvokeOnUnlockedEvent(ScrollingMenu sm, ButtonHelper bh) => OnUnlockedInMutatorMenu?.Invoke(sm, bh);
+
+		/// <summary>
+		///   <para>Invoke this method when you enable/disable custom mutators from other mods!</para>
+		/// </summary>
+		public void InvokeOnChangedState(bool newState)
+		{
+			(newState ? OnEnabled : OnDisabled)?.Invoke();
+			OnChangedState?.Invoke(newState);
+		}
 
 	}
 }

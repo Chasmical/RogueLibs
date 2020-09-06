@@ -513,6 +513,8 @@ namespace RogueLibsCore
 									buttonData.highlightedSprite = __instance.solidObjectButton;
 									if (buttonData.scrollingButtonUnlock.unlockName == "SuperSpecialCharacters")
 										__instance.gc.mainGUI.characterSelectScript.RefreshSuperSpecials();
+									CustomMutator dsb = RogueLibs.GetCustomMutator(buttonData.scrollingButtonUnlock.unlockName);
+									dsb?.InvokeOnChangedState(false);
 								}
 							if (__instance.gc.multiplayerMode)
 								__instance.agent.objectMult.SendChatAnnouncement("ClearedAllChallenges", string.Empty, string.Empty);
@@ -536,15 +538,21 @@ namespace RogueLibsCore
 										__instance.gc.originalChallenges.Remove(buttonData.scrollingButtonType);
 										if (buttonData.scrollingButtonUnlock.unlockName == "SuperSpecialCharacters")
 											__instance.gc.mainGUI.characterSelectScript.RefreshSuperSpecials();
+										CustomMutator dsb2 = RogueLibs.GetCustomMutator(buttonData.scrollingButtonUnlock.unlockName);
+										dsb2?.InvokeOnChangedState(false);
 									}
 
 								__instance.gc.challenges.Add(myButton.scrollingButtonType);
 								__instance.gc.originalChallenges.Add(myButton.scrollingButtonType);
+								CustomMutator dsb = RogueLibs.GetCustomMutator(myButton.scrollingButtonType);
+								dsb?.InvokeOnChangedState(true);
 							}
 							else
 							{ // was toggled off
 								__instance.gc.challenges.Remove(myButton.scrollingButtonType);
 								__instance.gc.originalChallenges.Remove(myButton.scrollingButtonType);
+								CustomMutator dsb = RogueLibs.GetCustomMutator(myButton.scrollingButtonType);
+								dsb?.InvokeOnChangedState(false);
 							}
 							custom?.InvokeOnToggledEvent(__instance, myButton, myButton.scrollingHighlighted);
 
