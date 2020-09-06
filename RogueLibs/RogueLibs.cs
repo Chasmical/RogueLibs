@@ -22,7 +22,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para><see cref="RogueLibs"/>' version. Do not use this value in your <see cref="BepInDependency"/> attribute!</para>
 		/// </summary>
-		public const string pluginVersion = "2.0.4";
+		public const string pluginVersion = "2.0.5";
 
 		/// <summary>
 		///   <para>Main <see cref="RogueLibsPlugin"/> instance.</para>

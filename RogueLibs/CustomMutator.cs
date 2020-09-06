@@ -31,6 +31,7 @@ namespace RogueLibsCore
 				if (unlock != null)
 				{
 					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.challenges, Id, value);
+					RogueLibs.PluginInstance.EnsureOne(GameController.gameController.originalChallenges, Id, value);
 					unlock.notActive = !value;
 				}
 				isActive = value;
