@@ -465,7 +465,7 @@ namespace RogueLibsCore
 				myButtonData.scrollingHighlighted4 = (__instance.menuType == "Items" || __instance.menuType == "TraitUnlocks") && myUnlock.notActive; // gray 'not active' highlight
 				myButtonData.highlightedSprite = __instance.solidObjectButton;
 			}
-			else if ((custom == null && myUnlock.cost != 0) || custom.UnlockCost != null)
+			else if ((custom == null && myUnlock.cost != 0) || custom?.UnlockCost != null)
 			{ // not unlocked, original mutator OR custom and can be purchased
 				myButtonData.buttonText += " - $" + myUnlock.cost;
 				myButtonData.scrollingHighlighted2 = true; // blue 'purchasable' highlight
@@ -865,7 +865,7 @@ namespace RogueLibsCore
 				myButtonData.scrollingHighlighted4 = false;
 				myButtonData.highlightedSprite = __instance.solidObjectButton;
 			}
-			else if ((custom == null && myUnlock.cost != 0) || custom.UnlockCost != null) // not unlocked, original mutator OR custom and can be purchased
+			else if ((custom == null && myUnlock.cost != 0) || custom?.UnlockCost != null) // not unlocked, original mutator OR custom and can be purchased
 			{
 				myButtonData.buttonText = __instance.gc.nameDB.GetName(myUnlock.unlockName, myUnlock.unlockNameType) + " - $" + myUnlock.cost;
 				myButtonData.scrollingHighlighted2 = true; // blue 'purchasable' highlight
