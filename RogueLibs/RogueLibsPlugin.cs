@@ -217,7 +217,6 @@ namespace RogueLibsCore
 		{
 			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
-			MyLogger.LogWarning("SPECIAL HOLD " + __instance.agent.gc.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1]);
 			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
 			ability?.OnHeld?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent, ref __instance.agent.gc.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1]);
 		}
@@ -225,7 +224,6 @@ namespace RogueLibsCore
 		{
 			if (__instance.agent.ghost || __instance.agent.teleporting) return;
 
-			MyLogger.LogWarning("SPECIAL RELEASE " + __instance.agent.gc.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1]);
 			CustomAbility ability = RogueLibs.GetCustomAbility(__instance.agent.specialAbility);
 			ability?.OnReleased?.Invoke(__instance.agent.inventory.equippedSpecialAbility, __instance.agent);
 		}
@@ -233,7 +231,8 @@ namespace RogueLibsCore
 		protected static void SpecialAbilityIndicator_ShowIndicator(SpecialAbilityIndicator __instance, string specialAbilityType)
 		{
 			CustomAbility ability = RogueLibs.GetCustomAbility(specialAbilityType);
-			__instance.image.sprite = ability.Sprite;
+			if (ability != null)
+				__instance.image.sprite = ability.Sprite;
 		}
 
 		protected void Awake2()

@@ -15,25 +15,29 @@ namespace RogueLibsCore.Interactions
         public static RogueLibsInteractionsPlugin PluginInstance;
         internal static ManualLogSource Logger;
 
-        public static List<CustomInteraction> CustomInteractions { get; } = new List<CustomInteraction>();
-
-        public static CustomInteraction GetCustomInteraction(string id) => CustomInteractions.Find(i => i.Id == id);
-        public static CustomInteraction CreateCustomInteraction(string id, InteractionType type, CustomNameInfo? buttonName, Func<Agent, PlayfieldObject, bool> condition)
+        public static List<ObjectInteraction> ObjectInteractions { get; } = new List<ObjectInteraction>();
+        
+        public static ObjectInteraction GetObjectInteraction(string id) => ObjectInteractions.Find(i => i.Id == id);
+        public static ObjectInteraction CreateObjectInteraction(string id, InteractionType type, CustomNameInfo? buttonName, Func<Agent, PlayfieldObject, bool> condition)
+            => CreateObjectInteractionInternal(id, type, buttonName, condition, false);
+        internal static ObjectInteraction CreateOriginalInteraction(string id, InteractionType type, Func<Agent, PlayfieldObject, bool> condition)
+            => CreateObjectInteraction(id, type, null, condition);
+        internal static ObjectInteraction CreateObjectInteractionInternal(string id, InteractionType type, CustomNameInfo? buttonName, Func<Agent, PlayfieldObject, bool> condition, bool orig)
 		{
-            CustomInteraction customInteraction = GetCustomInteraction(id);
-            if (customInteraction != null)
+            ObjectInteraction objectInteraction = GetObjectInteraction(id);
+            if (objectInteraction != null)
             {
-                string message = string.Concat("A CustomInteraction with Id \"", id, "\" already exists!");
+                string message = string.Concat("An ObjectInteraction with Id \"", id, "\" already exists!");
                 Logger.LogError(message);
                 throw new ArgumentException(message, nameof(id));
             }
-            CustomInteractions.Add(customInteraction = new CustomInteraction(id, type,
-                buttonName.HasValue ? RogueLibs.CreateCustomName(id, "Interface", buttonName.Value) : null));
-            customInteraction.Condition = condition;
+            ObjectInteractions.Add(objectInteraction = new ObjectInteraction(id, type,
+                buttonName.HasValue && !orig ? RogueLibs.CreateCustomName(id, "Interface", buttonName.Value) : null, orig));
+            objectInteraction.Condition = condition;
 
-            Logger.LogDebug(string.Concat("A CustomInteraction with Id \"", id, "\" (", type.ToString(), ") was created."));
+            Logger.LogDebug(string.Concat("An ObjectInteraction with Id \"", id, "\" (", type.ToString(), ") was created."));
 
-            return customInteraction;
+            return objectInteraction;
 		}
 
 

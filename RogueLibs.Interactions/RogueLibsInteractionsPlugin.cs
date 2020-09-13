@@ -17,7 +17,7 @@ namespace RogueLibsCore.Interactions
 
 			RoguePatcher patcher = new RoguePatcher(this, GetType());
 
-
+			new BarbecueInteraction().Patch();
 
 
 
