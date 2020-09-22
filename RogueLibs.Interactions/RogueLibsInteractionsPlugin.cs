@@ -17,7 +17,11 @@ namespace RogueLibsCore.Interactions
 
 			RoguePatcher patcher = new RoguePatcher(this, GetType());
 
+			new AirConditionerInteraction().Patch();
+			new AlarmButtonInteraction().Patch();
 			new BarbecueInteraction().Patch();
+
+			
 
 
 

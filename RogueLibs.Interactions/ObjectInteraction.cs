@@ -39,7 +39,7 @@ namespace RogueLibsCore.Interactions
 		public Func<Agent, PlayfieldObject, ObjectInteractionInfo?> GetButtonInfo { get; set; }
 		/// <summary>
 		///   <para>Method that will invoked when interacted with an object directly or via a button.</para>
-		///   <para><see cref="Agent"/> arg1 is the interacting player;<br/><see cref="PlayfieldObject"/> arg2 is the object that is being interacted with;<br/><see cref="bool"/> result determines whether the interaction should be stopped after interacting.</para>
+		///   <para><see cref="Agent"/> arg1 is the interacting player;<br/><see cref="PlayfieldObject"/> arg2 is the object that is being interacted with;<br/><see cref="bool"/> result determines whether the interaction should be immediately stopped after interacting/pressing the button.</para>
 		/// </summary>
 		public Func<Agent, PlayfieldObject, bool> Action { get; set; }
 

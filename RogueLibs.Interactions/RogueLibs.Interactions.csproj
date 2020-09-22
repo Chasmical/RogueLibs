@@ -47,11 +47,18 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\Libraries\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.Networking, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\UnityEngine.Networking.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interactions\AltarInteraction.cs" />
+    <Compile Include="Interactions\AlarmButtonInteraction.cs" />
+    <Compile Include="Interactions\AmmoDispenserInteraction.cs" />
+    <Compile Include="Interactions\ArcadeGameInteraction.cs" />
     <Compile Include="ObjectInteraction.cs" />
     <Compile Include="CustomInteractionBase.cs" />
-    <Compile Include="CustomInteractionTemplate.cs" />
     <Compile Include="Interactions\BarbecueInteraction.cs" />
     <Compile Include="Interactions\AirConditionerInteraction.cs" />
     <Compile Include="RogueLibsInteractionsPlugin.cs" />

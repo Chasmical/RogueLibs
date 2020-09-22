@@ -1,8 +1,15 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
+using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Threading;
+using tk2dRuntime;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -266,7 +273,7 @@ namespace RogueLibsCore
 
 			patcher.Postfix(typeof(Unlocks), "DoUnlock"); // CustomUnlock's OnUnlocked event
 
-
+			Awake3();
 		}
 
 		internal void EnsureOne(List<Unlock> list, Unlock unlock, bool add)
@@ -1206,6 +1213,164 @@ namespace RogueLibsCore
 				custom = RogueLibs.GetCustomTrait(unlockName);
 
 			custom?.InvokeOnUnlockedEvent();
+		}
+
+		protected void Awake3()
+		{
+			RoguePatcher patcher = new RoguePatcher(this, GetType());
+			patcher.Prefix(typeof(tk2dSpriteCollectionData), "GetSpriteIdByName", new Type[] { typeof(string), typeof(int) });
+
+			Type type = Assembly.GetAssembly(typeof(ISpriteCollectionForceBuild)).GetType("tk2dRuntime.SpriteCollectionGenerator");
+			createDef = AccessTools.Method(type, "CreateDefinitionForRegionInTexture");
+
+			patcher.Prefix(typeof(Melee), "LateUpdate");
+
+
+
+		}
+		protected static MethodInfo createDef;
+		internal static void AddSpriteToCollection(tk2dSpriteCollectionData collection, Sprite sprite)
+		{
+			try
+			{
+				collection.materials = collection.materials.Where(m => m.mainTexture != sprite.texture).ToArray();
+				collection.textures = collection.textures.Where(t => t != sprite.texture).ToArray();
+				collection.spriteDefinitions = collection.spriteDefinitions.Where(sd => sd.name != sprite.name).ToArray();
+
+				collection.ClearDictionary();
+
+				List<tk2dSpriteDefinition> defs = new List<tk2dSpriteDefinition>(collection.spriteDefinitions);
+				float scale = 1f / collection.invOrthoSize / collection.halfTargetHeight;
+				Rect region = sprite.textureRect;
+
+				// string name, Vector2 textureDimensions, float scale, Rect uvRegion, Rect trimRect, Vector2 anchor, bool rotated
+				tk2dSpriteDefinition def = (tk2dSpriteDefinition)createDef.Invoke(null, new object[7] { sprite.name, region.size, scale, region,
+				new Rect(0f, 0f, region.width, region.height), region.size / 2f, false });
+
+				def.material = def.materialInst = new Material(Shader.Find("tk2d/BlendVertexColor")) { mainTexture = sprite.texture };
+				def.materialId = 1;
+				def.sourceTextureGUID = Convert.ToString(sprite.texture.GetHashCode(), 16);
+
+				collection.materials = collection.materials.AddItem(def.material).ToArray();
+				collection.materialInsts = collection.materials.ToArray();
+				collection.textures = collection.textures.AddItem(sprite.texture).ToArray();
+				collection.spriteDefinitions = collection.spriteDefinitions.AddItem(def).ToArray();
+
+				collection.inst.ClearDictionary();
+				collection.inst.InitDictionary();
+				collection.materialIdsValid = false;
+				collection.needMaterialInstance = true;
+
+				AccessTools.Method(typeof(tk2dSpriteCollectionData), "InitMaterialIds").Invoke(collection, null);
+				AccessTools.Method(typeof(tk2dSpriteCollectionData), "Init").Invoke(collection, null);
+
+				MyLogger.LogWarning("Added/updated tk2dSprite \"" + sprite.name + "\" to the collection \"" + (collection.spriteCollectionName ?? collection.name) + "\"!");
+			}
+			catch (Exception e)
+			{
+				MyLogger.LogError(e);
+			}
+		}
+
+		protected static bool setMelee = false;
+		protected static void Melee_LateUpdate(Melee __instance)
+		{
+			if (__instance.agent.isPlayer != 0 && !setMelee)
+			{
+				setMelee = true;
+			}
+		}
+
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
+		protected static bool tk2dSpriteCollectionData_GetSpriteIdByName(tk2dSpriteCollectionData __instance, string name, int defaultValue, ref int __result)
+		{
+
+			__instance.inst.InitDictionary();
+			Dictionary<string, int> dict = (Dictionary<string, int>)AccessTools.Field(typeof(tk2dSpriteCollectionData), "spriteNameLookupDict").GetValue(__instance);
+			bool success = dict.TryGetValue(name, out int res);
+			if (!success)
+			{
+				MyLogger.LogWarning("Failed to locate sprite \"" + name + "\"!");
+
+				CustomUnlock unlock = null;
+				foreach (CustomUnlock u in RogueLibs.EnumerateCustomUnlocks())
+					if (u.Sprite?.name == name)
+					{
+						unlock = u;
+						break;
+					}
+				if (unlock == null)
+				{
+					MyLogger.LogWarning("Failed to locate a custom unlock \"" + name + "\"!");
+				}
+				else
+				{
+					AddSpriteToCollection(__instance, unlock.Sprite);
+					success = dict.TryGetValue(name, out res);
+					MyLogger.LogWarning("Just created a new tk2dSprite. ^^^ LOG ^^^ (" + res.ToString() + ")");
+					
+
+				}
+
+			}
+
+			if (name == "CupOfMoltenChocolate")
+			{
+				tk2dSpriteDefinition def = __instance.spriteDefinitions[res];
+
+				if (defExample != null)
+				{
+					FieldInfo[] fields = typeof(tk2dSpriteDefinition).GetFields();
+					foreach (FieldInfo field in fields)
+					{
+						try
+						{
+							MyLogger.LogWarning("Cup: " + field.GetValue(def).ToString() + "     Orig: " + field.GetValue(defExample).ToString());
+						}
+						catch (Exception e)
+						{
+							MyLogger.LogError("Field \"" + field.Name + "\" failed.");
+							try
+							{
+								MyLogger.LogError("Orig. has this value: " + field.GetValue(defExample).ToString());
+							} catch { }
+							MyLogger.LogError(e);
+						}
+					}
+				}
+				
+				//GameController.gameController.StartCoroutine(Coroute(def));
+			}
+			else
+			{
+				defExample = __instance.spriteDefinitions[res];
+			}
+
+			__result = success ? res : defaultValue;
+			return false;
+		}
+		public static tk2dSpriteDefinition defExample = null;
+		public static IEnumerator Spy<T>(T def)
+		{
+			FieldInfo[] fields = typeof(T).GetFields();
+			object[] fieldPrev = new object[fields.Length];
+			yield return null;
+			MyLogger.LogError("Started tracking tk2dSpriteDefinition changes.");
+			for (int i = 0; i < 100; i++)
+			{
+				for (int j = 0; j < fields.Length; j++)
+				{
+					object newVal = fields[j].GetValue(def);
+					if (fieldPrev[j] != newVal)
+					{
+						MyLogger.LogWarning("Prev: " + fieldPrev[j].ToString() + "     Cur: " + newVal.ToString());
+						fieldPrev[j] = newVal;
+					}
+				}
+				yield return new WaitForSeconds(0.2f);
+			}
+			MyLogger.LogError("Finished tracking tk2dSpriteDefinition changes.");
+			setMelee = false;
 		}
 
 	}

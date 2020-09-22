@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using UnityEngine;
 using HarmonyLib;
+using System.Linq.Expressions;
 
 namespace RogueLibsCore.Interactions
 {
@@ -64,7 +65,7 @@ namespace RogueLibsCore.Interactions
 		public static bool DetermineButtons(T __instance)
 		{
 			MethodInfo baseMethod = AccessTools.DeclaredMethod(__instance.GetType().BaseType, "DetermineButtons");
-			baseMethod.GetBaseMethod<Action>(__instance).Invoke();
+			baseMethod.GetMethodWithoutOverrides<Action>(__instance).Invoke();
 
 			while (__instance.buttonPrices.Count < __instance.buttons.Count)
 				__instance.buttonPrices.Add(0);
@@ -87,7 +88,7 @@ namespace RogueLibsCore.Interactions
 		public static bool Interact(T __instance, Agent agent)
 		{
 			MethodInfo baseMethod = AccessTools.DeclaredMethod(__instance.GetType().BaseType, "Interact");
-			baseMethod.GetBaseMethod<Action<Agent>>(__instance).Invoke(agent);
+			baseMethod.GetMethodWithoutOverrides<Action<Agent>>(__instance).Invoke(agent);
 
 			List<ObjectInteraction> allInteractions = RogueLibsInteractions.ObjectInteractions.FindAll(i => i.Condition?.Invoke(__instance.interactingAgent, __instance) ?? false);
 			List<ObjectInteraction> actionsOnly = allInteractions.FindAll(i => i.Type == InteractionType.Interact);
@@ -104,15 +105,28 @@ namespace RogueLibsCore.Interactions
 			}
 			else if (possibleButtons.Count > 0 || buttonsOnly.Count > 0)
 				__instance.ShowObjectButtons();
-			else __instance.StopInteraction();
+			else if (actionsOnly.Count == 0)
+				__instance.buttonsHaveTooltips = true;
+			// this field is unused in the game. Determines whether RogueLibs should
+			// find an appropriate dialogue when there are no actions available.
+
 			return false;
 		}
-		public static bool InteractFar(T __instance, Agent agent) => Interact(__instance, agent);
+		public static bool InteractFar(T __instance, Agent agent)
+		{
+			MethodInfo baseMethod = AccessTools.DeclaredMethod(__instance.GetType().BaseType, "InteractFar");
+			baseMethod.GetMethodWithoutOverrides<Action<Agent>>(__instance).Invoke(agent);
+
+			ObjectReal obj = __instance as ObjectReal;
+			if (!obj.isBroken() && !obj.tempNoOperating)
+				obj.HackObject(agent);
+			return false;
+		}
 		public static bool PressedButton(T __instance, string buttonText) => PressedButton(__instance, buttonText, 0);
 		public static bool PressedButton(T __instance, string buttonText, int buttonPrice)
 		{
 			ObjectInteraction interaction = RogueLibsInteractions.GetObjectInteraction(buttonText);
-			if (interaction == null)
+			if (interaction == null && buttonText != "HackExplode" && buttonText != "CollectPart")
 			{
 				Debug.LogError("Unknown interaction \"" + buttonText + "\" for " + typeof(T).Name);
 				__instance.StopInteraction();
@@ -120,7 +134,7 @@ namespace RogueLibsCore.Interactions
 			}
 
 			MethodInfo baseMethod = AccessTools.DeclaredMethod(__instance.GetType().BaseType, "PressedButton", new Type[] { typeof(string), typeof(int) });
-			baseMethod.GetBaseMethod<Action<string, int>>(__instance).Invoke(buttonText, buttonPrice);
+			baseMethod.GetMethodWithoutOverrides<Action<string, int>>(__instance).Invoke(buttonText, buttonPrice);
 
 			if (interaction.Action?.Invoke(__instance.interactingAgent, __instance) ?? false)
 				__instance.StopInteraction();
@@ -131,7 +145,7 @@ namespace RogueLibsCore.Interactions
 	}
 	public static class SSS
 	{
-		public static T GetBaseMethod<T>(this MethodInfo method, object callFrom)
+		public static T GetMethodWithoutOverrides<T>(this MethodInfo method, object callFrom)
 			where T : Delegate
 		{
 			IntPtr ptr = method.MethodHandle.GetFunctionPointer();

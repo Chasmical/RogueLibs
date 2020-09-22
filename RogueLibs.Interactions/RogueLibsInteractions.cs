@@ -21,7 +21,9 @@ namespace RogueLibsCore.Interactions
         public static ObjectInteraction CreateObjectInteraction(string id, InteractionType type, CustomNameInfo? buttonName, Func<Agent, PlayfieldObject, bool> condition)
             => CreateObjectInteractionInternal(id, type, buttonName, condition, false);
         internal static ObjectInteraction CreateOriginalInteraction(string id, InteractionType type, Func<Agent, PlayfieldObject, bool> condition)
-            => CreateObjectInteraction(id, type, null, condition);
+            => CreateObjectInteractionInternal(id, type, null, condition, true);
+        internal static ObjectInteraction CreateOriginalInteraction(string id, InteractionType type, CustomNameInfo? buttonName, Func<Agent, PlayfieldObject, bool> condition)
+            => CreateObjectInteractionInternal(id, type, buttonName, condition, true);
         internal static ObjectInteraction CreateObjectInteractionInternal(string id, InteractionType type, CustomNameInfo? buttonName, Func<Agent, PlayfieldObject, bool> condition, bool orig)
 		{
             ObjectInteraction objectInteraction = GetObjectInteraction(id);
@@ -32,7 +34,7 @@ namespace RogueLibsCore.Interactions
                 throw new ArgumentException(message, nameof(id));
             }
             ObjectInteractions.Add(objectInteraction = new ObjectInteraction(id, type,
-                buttonName.HasValue && !orig ? RogueLibs.CreateCustomName(id, "Interface", buttonName.Value) : null, orig));
+                buttonName.HasValue ? RogueLibs.CreateCustomName(id, "Interface", buttonName.Value) : null, orig));
             objectInteraction.Condition = condition;
 
             Logger.LogDebug(string.Concat("An ObjectInteraction with Id \"", id, "\" (", type.ToString(), ") was created."));

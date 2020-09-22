@@ -168,6 +168,7 @@ namespace RogueLibsCore
 			get => sprite;
 			set
 			{
+				value.name = Id;
 				GameResources gr = GameController.gameController?.gameResources;
 				if (gr != null)
 				{

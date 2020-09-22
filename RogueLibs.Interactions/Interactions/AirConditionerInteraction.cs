@@ -9,7 +9,7 @@ namespace RogueLibsCore.Interactions
 		public override void Patch()
 		{
 			base.Patch();
-
+			
 			ObjectInteraction insertItem = RogueLibsInteractions.CreateOriginalInteraction("InsertItem", InteractionType.Button,
 				(agent, obj) => obj is AirConditioner);
 			insertItem.Action = (agent, obj) =>
@@ -17,18 +17,20 @@ namespace RogueLibsCore.Interactions
 				obj.ShowUseOn("InsertItem");
 				return false;
 			};
+
 		}
 		public static bool Interact2(AirConditioner __instance, Agent agent)
 		{
 			Interact(__instance, agent);
-			if (__instance.buttons.Count == 0)
+			if (__instance.buttonsHaveTooltips)
 			{
+				__instance.buttonsHaveTooltips = false;
 				for (int i = 0; i < __instance.gc.gasesList.Count; i++)
 				{
 					Gas gas = __instance.gc.gasesList[i];
 					if (__instance.startingChunk == gas.startingChunk)
 					{
-						__instance.interactingAgent.SayDialogue("AlreadyGassing");
+						agent.SayDialogue("AlreadyGassing");
 						__instance.StopInteraction();
 						return false;
 					}
@@ -36,17 +38,15 @@ namespace RogueLibsCore.Interactions
 				if (!__instance.isBroken())
 				{
 					bool hasUsableItems = false;
-					for (int j = 0; j < __instance.interactingAgent.inventory.InvItemList.Count; j++)
-					{
-						if (__instance.playerHasUsableItem(__instance.interactingAgent.inventory.InvItemList[j]))
+					for (int j = 0; j < agent.inventory.InvItemList.Count; j++)
+						if (__instance.playerHasUsableItem(agent.inventory.InvItemList[j]))
 						{
 							hasUsableItems = true;
 							break;
 						}
-					}
 					if (!hasUsableItems)
 					{
-						__instance.interactingAgent.SayDialogue("CantUseAirConditioner");
+						agent.SayDialogue("CantUseAirConditioner");
 						__instance.StopInteraction();
 					}
 				}

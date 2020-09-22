@@ -22,7 +22,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para><see cref="RogueLibs"/>' version. Do not use this value in your <see cref="BepInDependency"/> attribute!</para>
 		/// </summary>
-		public const string pluginVersion = "2.1.1";
+		public const string pluginVersion = "2.2";
 
 		/// <summary>
 		///   <para>Main <see cref="RogueLibsPlugin"/> instance.</para>
@@ -166,6 +166,7 @@ namespace RogueLibsCore
 			customItem.Unlocked = unlockedFromStart;
 			customItem.Sprite = sprite;
 			customItem.SetupDetails = setupDetails;
+			sprite.name = id;
 
 			PluginInstance.Setup(customItem);
 
@@ -197,6 +198,7 @@ namespace RogueLibsCore
 			customAbility.Unlocked = unlockedFromStart;
 			customAbility.Sprite = sprite;
 			customAbility.SetupDetails = setupDetails;
+			sprite.name = id;
 
 			PluginInstance.Setup(customAbility);
 

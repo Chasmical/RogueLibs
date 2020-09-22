@@ -26,17 +26,19 @@ namespace RogueLibsCore.Interactions
 				return true;
 			};
 		}
-		public static bool DetermineButtons2(Barbecue __instance)
+		public static bool Interact2(Barbecue __instance, Agent agent)
 		{
-			DetermineButtons(__instance);
-			if (__instance.buttons.Count == 0)
+			Interact(__instance, agent);
+			if (__instance.buttonsHaveTooltips)
 			{
+				__instance.buttonsHaveTooltips = false;
 				if (__instance.burntOut)
-					__instance.interactingAgent.SayDialogue("BarbecueBurntOut");
+					agent.SayDialogue("BarbecueBurntOut");
 				else if (__instance.ora.hasParticleEffect)
-					__instance.interactingAgent.SayDialogue("CantGrillFud");
+					agent.SayDialogue("CantGrillFud");
 				else
-					__instance.interactingAgent.SayDialogue("CantOperateBarbecue");
+					agent.SayDialogue("CantOperateBarbecue");
+				__instance.StopInteraction();
 			}
 			return false;
 		}
