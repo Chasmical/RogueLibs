@@ -1223,7 +1223,6 @@ namespace RogueLibsCore
 			Type type = Assembly.GetAssembly(typeof(ISpriteCollectionForceBuild)).GetType("tk2dRuntime.SpriteCollectionGenerator");
 			createDef = AccessTools.Method(type, "CreateDefinitionForRegionInTexture");
 
-			patcher.Prefix(typeof(Melee), "LateUpdate");
 
 
 
@@ -1237,8 +1236,6 @@ namespace RogueLibsCore
 				collection.textures = collection.textures.Where(t => t != sprite.texture).ToArray();
 				collection.spriteDefinitions = collection.spriteDefinitions.Where(sd => sd.name != sprite.name).ToArray();
 
-				collection.ClearDictionary();
-
 				List<tk2dSpriteDefinition> defs = new List<tk2dSpriteDefinition>(collection.spriteDefinitions);
 				float scale = 1f / collection.invOrthoSize / collection.halfTargetHeight;
 				Rect region = sprite.textureRect;
@@ -1248,7 +1245,6 @@ namespace RogueLibsCore
 				new Rect(0f, 0f, region.width, region.height), region.size / 2f, false });
 
 				def.material = def.materialInst = new Material(Shader.Find("tk2d/BlendVertexColor")) { mainTexture = sprite.texture };
-				def.materialId = 1;
 				def.sourceTextureGUID = Convert.ToString(sprite.texture.GetHashCode(), 16);
 
 				collection.materials = collection.materials.AddItem(def.material).ToArray();
@@ -1272,19 +1268,9 @@ namespace RogueLibsCore
 			}
 		}
 
-		protected static bool setMelee = false;
-		protected static void Melee_LateUpdate(Melee __instance)
-		{
-			if (__instance.agent.isPlayer != 0 && !setMelee)
-			{
-				setMelee = true;
-			}
-		}
-
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles")]
 		protected static bool tk2dSpriteCollectionData_GetSpriteIdByName(tk2dSpriteCollectionData __instance, string name, int defaultValue, ref int __result)
 		{
-
 			__instance.inst.InitDictionary();
 			Dictionary<string, int> dict = (Dictionary<string, int>)AccessTools.Field(typeof(tk2dSpriteCollectionData), "spriteNameLookupDict").GetValue(__instance);
 			bool success = dict.TryGetValue(name, out int res);
@@ -1306,71 +1292,16 @@ namespace RogueLibsCore
 				else
 				{
 					AddSpriteToCollection(__instance, unlock.Sprite);
+					dict = (Dictionary<string, int>)AccessTools.Field(typeof(tk2dSpriteCollectionData), "spriteNameLookupDict").GetValue(__instance);
 					success = dict.TryGetValue(name, out res);
 					MyLogger.LogWarning("Just created a new tk2dSprite. ^^^ LOG ^^^ (" + res.ToString() + ")");
 					
-
 				}
 
-			}
-
-			if (name == "CupOfMoltenChocolate")
-			{
-				tk2dSpriteDefinition def = __instance.spriteDefinitions[res];
-
-				if (defExample != null)
-				{
-					FieldInfo[] fields = typeof(tk2dSpriteDefinition).GetFields();
-					foreach (FieldInfo field in fields)
-					{
-						try
-						{
-							MyLogger.LogWarning("Cup: " + field.GetValue(def).ToString() + "     Orig: " + field.GetValue(defExample).ToString());
-						}
-						catch (Exception e)
-						{
-							MyLogger.LogError("Field \"" + field.Name + "\" failed.");
-							try
-							{
-								MyLogger.LogError("Orig. has this value: " + field.GetValue(defExample).ToString());
-							} catch { }
-							MyLogger.LogError(e);
-						}
-					}
-				}
-				
-				//GameController.gameController.StartCoroutine(Coroute(def));
-			}
-			else
-			{
-				defExample = __instance.spriteDefinitions[res];
 			}
 
 			__result = success ? res : defaultValue;
 			return false;
-		}
-		public static tk2dSpriteDefinition defExample = null;
-		public static IEnumerator Spy<T>(T def)
-		{
-			FieldInfo[] fields = typeof(T).GetFields();
-			object[] fieldPrev = new object[fields.Length];
-			yield return null;
-			MyLogger.LogError("Started tracking tk2dSpriteDefinition changes.");
-			for (int i = 0; i < 100; i++)
-			{
-				for (int j = 0; j < fields.Length; j++)
-				{
-					object newVal = fields[j].GetValue(def);
-					if (fieldPrev[j] != newVal)
-					{
-						MyLogger.LogWarning("Prev: " + fieldPrev[j].ToString() + "     Cur: " + newVal.ToString());
-						fieldPrev[j] = newVal;
-					}
-				}
-				yield return new WaitForSeconds(0.2f);
-			}
-			MyLogger.LogError("Finished tracking tk2dSpriteDefinition changes.");
-			setMelee = false;
 		}
 
 	}
