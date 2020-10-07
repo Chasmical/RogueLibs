@@ -1,6 +1,6 @@
 <div align="center">
   <p>
-    <img src="https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs-github.png" width=50% alt="RogueLibs"/>
+    <img src="https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.png" width=50% alt="RogueLibs"/>
   </p>
   <p>
     <a href="https://github.com/Abbysssal/RogueLibs/releases/latest">
