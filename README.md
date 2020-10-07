@@ -1,6 +1,6 @@
 <div align="center">
   <p>
-    <img src="https://cdn.discordapp.com/attachments/688640720273145915/735092552805515344/2020-07-21_181154.png" width=50% alt="RogueLibs"/>
+    <img src="https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs-github.png" width=50% alt="RogueLibs"/>
   </p>
   <p>
     <a href="https://github.com/Abbysssal/RogueLibs/releases/latest">
