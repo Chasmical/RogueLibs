@@ -174,9 +174,7 @@ namespace RogueLibsCore
 				{
 					if (value != null)
 					{
-						if (gr.itemDic.ContainsKey(Id))
-							gr.itemDic[Id] = value;
-						else gr.itemDic.Add(Id, value);
+						gr.itemDic[Id] = value;
 
 						int index = gr.itemList.IndexOf(sprite);
 						if (index != -1) gr.itemList[index] = value;
@@ -217,7 +215,7 @@ namespace RogueLibsCore
 			ScrollingMenu sm = gc.mainGUI.scrollingMenuScript;
 			CharacterCreation cc = gc.mainGUI.characterCreationScript;
 
-			if (sm != null && sm.gameObject.activeSelf)
+			if (sm?.gameObject.activeSelf == true)
 				if (Type == "Challenge")
 				{
 					List<Unlock> listUnlocks = (List<Unlock>)AccessTools.Field(typeof(ScrollingMenu), "listUnlocks").GetValue(sm);
@@ -258,7 +256,7 @@ namespace RogueLibsCore
 					try { sm.scrollerController.myScroller.RefreshActiveCellViews(); } catch { }
 				}
 
-			if (cc != null && cc.gameObject.activeSelf)
+			if (cc?.gameObject.activeSelf == true)
 				if (Type == "Item")
 				{
 					for (int i = 0; i < cc.numButtonsItems; i++)

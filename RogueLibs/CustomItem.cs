@@ -169,7 +169,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Creates a new <see cref="CustomName"/> and sets <see cref="TargetText"/> to it.</para>
 		/// </summary>
-		public CustomName SetTargetText(CustomNameInfo info) => RogueLibs.CreateCustomName("Verb" + Id, "Interface", info);
+		public CustomName SetTargetText(CustomNameInfo info) => TargetText = RogueLibs.CreateCustomName("Verb" + Id, "Interface", info);
 
 		/// <summary>
 		///   <para>Method that will be used in the <see cref="ScrollingMenu.PushedButton(ButtonHelper)"/> patch.</para>

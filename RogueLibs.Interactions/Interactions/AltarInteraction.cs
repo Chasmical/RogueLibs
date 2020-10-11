@@ -1,8 +1,5 @@
 ﻿using HarmonyLib;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace RogueLibsCore.Interactions
 {
@@ -14,7 +11,7 @@ namespace RogueLibsCore.Interactions
 
 			ObjectInteraction makeOferring = RogueLibsInteractions.CreateOriginalInteraction("MakeOffering", InteractionType.Button,
 				(agent, obj) => obj is Altar a && !agent.interactionHelper.interactingFar);
-			makeOferring.Action = (Agent, obj) =>
+			makeOferring.Action = (_, obj) =>
 			{
 				Altar altar = (Altar)obj;
 				if (altar.offeringsMade >= altar.offeringLimit)

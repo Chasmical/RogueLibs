@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace RogueLibsCore.Interactions
+﻿namespace RogueLibsCore.Interactions
 {
 	internal class AlarmButtonInteraction : CustomInteractionBase<AlarmButton>
 	{
@@ -12,7 +8,7 @@ namespace RogueLibsCore.Interactions
 
 			ObjectInteraction allAccess = RogueLibsInteractions.CreateOriginalInteraction("AllAccessAlarmButton", InteractionType.Button,
 				(agent, obj) => obj is AlarmButton a && agent.interactionHelper.interactingFar && !a.hacked);
-			allAccess.Action = (agent, obj) =>
+			allAccess.Action = (_, obj) =>
 			{
 				AlarmButton alarmButton = (AlarmButton)obj;
 

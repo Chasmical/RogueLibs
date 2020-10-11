@@ -1,8 +1,4 @@
-﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using UnityEngine;
 
 namespace RogueLibsCore.Interactions
@@ -28,7 +24,7 @@ namespace RogueLibsCore.Interactions
 
 			ObjectInteraction refillGun = RogueLibsInteractions.CreateOriginalInteraction("RefillGun", InteractionType.Button,
 				(agent, obj) => obj is AmmoDispenser a && !a.isBrokenShowButtons() && !agent.interactionHelper.interactingFar && agent.inventory.InvItemList.Any(i => i.itemType == "WeaponProjectile"));
-			refillGun.Action = (agent, obj) =>
+			refillGun.Action = (_, obj) =>
 			{
 				obj.ShowUseOn("RefillGun");
 				return false;
@@ -47,7 +43,7 @@ namespace RogueLibsCore.Interactions
 					invItem.ItemSetup(false);
 					float num = 1.5f;
 					if (agent.statusEffects.hasTrait("OilRestoresMoreHealth") || agent.oma.superSpecialAbility) num = 3f;
-					
+
 					invItem.itemValue = (int)(invItem.itemValue / num);
 					float num2 = agent.health / invItem.initCount * invItem.itemValue;
 					int num3 = Mathf.Max(obj.determineMoneyCost((int)(agent.healthMax / invItem.initCount * invItem.itemValue - num2), "AmmoDispenser"), 0);
@@ -70,7 +66,7 @@ namespace RogueLibsCore.Interactions
 
 				return new ObjectInteractionInfo(num3);
 			};
-			giveMechOil.Action = (agent, obj) =>
+			giveMechOil.Action = (_, obj) =>
 			{
 				((AmmoDispenser)obj).GiveMechOil();
 				return true;

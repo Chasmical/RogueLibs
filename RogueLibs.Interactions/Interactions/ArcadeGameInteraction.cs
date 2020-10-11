@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace RogueLibsCore.Interactions
+﻿namespace RogueLibsCore.Interactions
 {
 	internal class ArcadeGameInteraction : CustomInteractionBase<ArcadeGame>
 	{
@@ -13,9 +8,9 @@ namespace RogueLibsCore.Interactions
 
 			ObjectInteraction increaseVolume = RogueLibsInteractions.CreateOriginalInteraction("IncreaseVolume", InteractionType.Button,
 				(agent, obj) => obj is ArcadeGame a && agent.interactionHelper.interactingFar && !a.isHighVolume);
-			increaseVolume.Action = (agent, obj) =>
+			increaseVolume.Action = (_, obj) =>
 			{
-				(obj as ArcadeGame).IncreaseVolume();
+				(obj as ArcadeGame)?.IncreaseVolume();
 				return false;
 			};
 

@@ -1,5 +1,4 @@
-﻿using System;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Logging;
 
 namespace RogueLibsCore.Interactions
@@ -21,7 +20,7 @@ namespace RogueLibsCore.Interactions
 			new AlarmButtonInteraction().Patch();
 			new BarbecueInteraction().Patch();
 
-			
+
 
 
 

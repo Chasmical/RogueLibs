@@ -1,18 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace RogueLibsCore.Interactions
+﻿namespace RogueLibsCore.Interactions
 {
 	internal class AirConditionerInteraction : CustomInteractionBase<AirConditioner>
 	{
 		public override void Patch()
 		{
 			base.Patch();
-			
+
 			ObjectInteraction insertItem = RogueLibsInteractions.CreateOriginalInteraction("InsertItem", InteractionType.Button,
-				(agent, obj) => obj is AirConditioner);
-			insertItem.Action = (agent, obj) =>
+				(_, obj) => obj is AirConditioner);
+			insertItem.Action = (_, obj) =>
 			{
 				obj.ShowUseOn("InsertItem");
 				return false;

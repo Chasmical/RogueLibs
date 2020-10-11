@@ -4,11 +4,8 @@ using HarmonyLib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using tk2dRuntime;
 using UnityEngine;
 using UnityEngine.UI;
@@ -147,7 +144,7 @@ namespace RogueLibsCore
 							__instance.toolbarNumText.text = result;
 						}
 					}
-					else if ((!(__instance.slotType == "Toolbar") || __instance.mainGUI.openedInventory) && __instance.slotType != "NPCChest")
+					else if ((__instance.slotType != "Toolbar" || __instance.mainGUI.openedInventory) && __instance.slotType != "NPCChest")
 					{
 						__instance.myImage.color = new Color32(__instance.br, 0, __instance.br, __instance.standardAlpha);
 						__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, __instance.fadedItemAlpha);
@@ -364,9 +361,7 @@ namespace RogueLibsCore
 
 			if (customUnlock.Sprite != null)
 			{
-				if (gr.itemDic.ContainsKey(customUnlock.Id))
-					gr.itemDic[customUnlock.Id] = customUnlock.Sprite;
-				else gr.itemDic.Add(customUnlock.Id, customUnlock.Sprite);
+				gr.itemDic[customUnlock.Id] = customUnlock.Sprite;
 
 				if (!gr.itemList.Contains(customUnlock.Sprite))
 					gr.itemList.Add(customUnlock.Sprite);
@@ -1295,7 +1290,7 @@ namespace RogueLibsCore
 					dict = (Dictionary<string, int>)AccessTools.Field(typeof(tk2dSpriteCollectionData), "spriteNameLookupDict").GetValue(__instance);
 					success = dict.TryGetValue(name, out res);
 					MyLogger.LogWarning("Just created a new tk2dSprite. ^^^ LOG ^^^ (" + res.ToString() + ")");
-					
+
 				}
 
 			}

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using UnityEngine;
-
-namespace RogueLibsCore.Interactions
+﻿namespace RogueLibsCore.Interactions
 {
 	internal class BarbecueInteraction : CustomInteractionBase<Barbecue>
 	{
@@ -11,16 +7,16 @@ namespace RogueLibsCore.Interactions
 			base.Patch();
 
 			ObjectInteraction grillFud = RogueLibsInteractions.CreateOriginalInteraction("GrillFud", InteractionType.Button,
-				(agent, obj) => obj is Barbecue b && !b.burntOut && b.ora.hasParticleEffect && b.interactingAgent.inventory.HasItem("Fud"));
-			grillFud.Action = (agent, obj) =>
+				(_, obj) => obj is Barbecue b && !b.burntOut && b.ora.hasParticleEffect && b.interactingAgent.inventory.HasItem("Fud"));
+			grillFud.Action = (_, obj) =>
 			{
 				obj.StartCoroutine(obj.Operating(obj.interactingAgent, null, 2f, true, "Grilling"));
 				return false;
 			};
 
 			ObjectInteraction lightBarbecue = RogueLibsInteractions.CreateOriginalInteraction("LightBarbecue", InteractionType.Button,
-				(agent, obj) => obj is Barbecue b && !b.burntOut && !b.ora.hasParticleEffect && b.interactingAgent.inventory.HasItem("CigaretteLighter"));
-			lightBarbecue.Action = (agent, obj) =>
+				(_, obj) => obj is Barbecue b && !b.burntOut && !b.ora.hasParticleEffect && b.interactingAgent.inventory.HasItem("CigaretteLighter"));
+			lightBarbecue.Action = (_, obj) =>
 			{
 				((Barbecue)obj).StartFireInObject();
 				return true;

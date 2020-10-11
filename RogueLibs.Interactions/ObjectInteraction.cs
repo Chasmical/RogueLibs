@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace RogueLibsCore.Interactions
 {
@@ -26,7 +25,7 @@ namespace RogueLibsCore.Interactions
 		///   <para>Localizable name of this <see cref="ObjectInteraction"/>'s button.</para>
 		/// </summary>
 		public CustomName ButtonName { get; }
-		
+
 		/// <summary>
 		///   <para>Method that will determine when this <see cref="ObjectInteraction"/> will be active for an object.</para>
 		///   <para><see cref="Agent"/> arg1 is the interacting player;<br/><see cref="PlayfieldObject"/> arg2 is the object that is being interacted with.</para>

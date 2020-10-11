@@ -1,11 +1,8 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 using UnityEngine;
-using HarmonyLib;
-using System.Linq.Expressions;
 
 namespace RogueLibsCore.Interactions
 {
@@ -19,46 +16,36 @@ namespace RogueLibsCore.Interactions
 			MethodInfo patch;
 			if (original != null)
 			{
-				patch = AccessTools.DeclaredMethod(GetType(), "DetermineButtons2");
-				if (patch == null) patch = AccessTools.Method(GetType().BaseType, "DetermineButtons");
-				if (patch != null)
-					harmony.Patch(original, new HarmonyMethod(patch));
+				patch = AccessTools.DeclaredMethod(GetType(), "DetermineButtons2") ?? AccessTools.Method(GetType().BaseType, "DetermineButtons");
+				if (patch != null) harmony.Patch(original, new HarmonyMethod(patch));
 			}
 
 			original = AccessTools.DeclaredMethod(typeof(T), "Interact");
 			if (original != null)
 			{
-				patch = AccessTools.DeclaredMethod(GetType(), "Interact2");
-				if (patch == null) patch = AccessTools.Method(GetType().BaseType, "Interact");
-				if (patch != null)
-					harmony.Patch(original, new HarmonyMethod(patch));
+				patch = AccessTools.DeclaredMethod(GetType(), "Interact2") ?? AccessTools.Method(GetType().BaseType, "Interact");
+				if (patch != null) harmony.Patch(original, new HarmonyMethod(patch));
 			}
-			
+
 			original = AccessTools.DeclaredMethod(typeof(T), "InteractFar");
 			if (original != null)
 			{
-				patch = AccessTools.DeclaredMethod(GetType(), "InteractFar2");
-				if (patch == null) patch = AccessTools.Method(GetType().BaseType, "InteractFar");
-				if (patch != null)
-					harmony.Patch(original, new HarmonyMethod(patch));
+				patch = AccessTools.DeclaredMethod(GetType(), "InteractFar2") ?? AccessTools.Method(GetType().BaseType, "InteractFar");
+				if (patch != null) harmony.Patch(original, new HarmonyMethod(patch));
 			}
 
 			original = AccessTools.DeclaredMethod(typeof(T), "PressedButton", new Type[] { typeof(string) });
 			if (original != null)
 			{
-				patch = AccessTools.DeclaredMethod(GetType(), "PressedButton2", new Type[] { typeof(string) });
-				if (patch == null) patch = AccessTools.Method(GetType().BaseType, "PressedButton", new Type[] { typeof(string) });
-				if (patch != null)
-					harmony.Patch(original, new HarmonyMethod(patch));
+				patch = AccessTools.DeclaredMethod(GetType(), "PressedButton2", new Type[] { typeof(string) }) ?? AccessTools.Method(GetType().BaseType, "PressedButton", new Type[] { typeof(string) });
+				if (patch != null) harmony.Patch(original, new HarmonyMethod(patch));
 			}
 
 			original = AccessTools.DeclaredMethod(typeof(T), "PressedButton", new Type[] { typeof(string), typeof(int) });
 			if (original != null)
 			{
-				patch = AccessTools.DeclaredMethod(GetType(), "PressedButton2", new Type[] { typeof(string), typeof(int) });
-				if (patch == null) patch = AccessTools.Method(GetType().BaseType, "PressedButton", new Type[] { typeof(string), typeof(int) });
-				if (patch != null)
-					harmony.Patch(original, new HarmonyMethod(patch));
+				patch = AccessTools.DeclaredMethod(GetType(), "PressedButton2", new Type[] { typeof(string), typeof(int) }) ?? AccessTools.Method(GetType().BaseType, "PressedButton", new Type[] { typeof(string), typeof(int) });
+				if (patch != null) harmony.Patch(original, new HarmonyMethod(patch));
 			}
 		}
 

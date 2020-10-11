@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RogueLibsCore.HelperTool
@@ -97,10 +93,7 @@ namespace RogueLibsCore.HelperTool
 		{
 			StringBuilder sb = new StringBuilder();
 			if (AsLambda.Checked)
-			{
-				sb.AppendLine(AsThis.Text + " =>");
-				sb.AppendLine("{");
-			}
+				sb.Append(AsThis.Text).AppendLine(" =>").AppendLine("{");
 			List<string> list = new List<string>();
 
 			Append(list, "itemType", "\"" + type + "\"");
@@ -146,7 +139,7 @@ namespace RogueLibsCore.HelperTool
 				LowCountThresholdBox.Value = defaultLowCount;
 			type = newType;
 		}
-		
+
 		public ItemValueCalculator Calculator;
 		private void ItemValueCalculatorButton_Click(object sender, EventArgs e)
 		{
