@@ -13,15 +13,17 @@ namespace aTonOfMutators
 	[BepInDependency(RogueLibs.GUID, "3.0")]
 	public class ATonOfMutators : BaseUnityPlugin
 	{
-		public const string pluginGUID = "abbysssal.streetsofrogue.atonofitems";
-		public const string pluginName = "a Ton of Items";
-		public const string pluginVersion = "0.3";
+		public const string pluginGUID = "abbysssal.streetsofrogue.atonofmutators";
+		public const string pluginName = "a Ton of Mutators";
+		public const string pluginVersion = "1.4";
+
+		public static int ATOMOffset = -1299;
 
 		public void Awake()
 		{
-			RogueLibs.AddCustomUnlock(new ATOMCategory(ATOMType.MeleeCategory));
+			ATOMCategory category = CreateCategory(ATOMType.MeleeCategory, ATOMOffset);
 
-			CreateMutatorGroup(ATOMType.MeleeCategory | ATOMType.MeleeDamage,
+			CreateMutatorGroup(category, ATOMType.MeleeDamage,
 				new float[] { 0f, float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f, 999f }, null,
 				new CustomNameInfo
 				{
@@ -33,7 +35,7 @@ namespace aTonOfMutators
 					[LanguageCode.English] = "All melee weapons deal [0|1|.x more|.x less] damage.",
 					[LanguageCode.Russian] = "Всё оружие ближнего боя наносит [0 урона|1 урон|в .x больше урона|в .x меньше урона]."
 				});
-			CreateMutatorGroup(ATOMType.MeleeCategory | ATOMType.MeleeDurability,
+			CreateMutatorGroup(category, ATOMType.MeleeDurability,
 				new float[] { float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
 				new CustomNameInfo
 				{
@@ -45,7 +47,7 @@ namespace aTonOfMutators
 					[LanguageCode.English] = "All melee weapons have [|1|.x more|.x less] durability.",
 					[LanguageCode.Russian] = "У всего оружия ближнего боя [|1 прочность|в .x больше прочности|в .x меньше прочности]."
 				});
-			CreateMutatorGroup(ATOMType.MeleeCategory | ATOMType.MeleeSpeed,
+			CreateMutatorGroup(category, ATOMType.MeleeSpeed,
 				new float[] { 0.125f, 0.25f, 0.5f, 2f, 4f, 8f, 999f }, null,
 				new CustomNameInfo
 				{
@@ -54,23 +56,24 @@ namespace aTonOfMutators
 				},
 				new CustomNameInfo
 				{
-					[LanguageCode.English] = "All melee weapons are attack [||.x faster|.x slower].",
+					[LanguageCode.English] = "All melee weapons attack [||.x faster|.x slower].",
 					[LanguageCode.Russian] = "Всё оружие ближнего боя бьют [||в .x быстрее|в .x медленнее]."
 				});
-			CreateMutatorGroup(ATOMType.MeleeCategory | ATOMType.MeleeLunge,
+			CreateMutatorGroup(category, ATOMType.MeleeLunge,
 				new float[] { 0f, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
 				new CustomNameInfo
 				{ [LanguageCode.English] = "Melee Lunge x.",
 					[LanguageCode.Russian] = "Выпады у оружия ближнего боя x." },
 				new CustomNameInfo
 				{ [LanguageCode.English] = "All melee weapons [don't lunge||have .x longer lunges|have .x shorter lunges]",
-					[LanguageCode.Russian] = "У всего оружия ближнего боя [нет выпадов||выпады в .x длиннее|выпады в .x короче]" });
+					[LanguageCode.Russian] = "У всего оружия ближнего боя [нет выпадов||выпады в .x длиннее|выпады в .x короче]"
+				});
 
 
 
-			RogueLibs.AddCustomUnlock(new ATOMCategory(ATOMType.RangedCategory));
+			category = CreateCategory(ATOMType.RangedCategory, ATOMOffset + 1);
 
-			CreateMutatorGroup(ATOMType.RangedCategory | ATOMType.RangedDamage,
+			CreateMutatorGroup(category, ATOMType.RangedDamage,
 				new float[] { 0f, float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f, 999f }, null,
 				new CustomNameInfo
 				{
@@ -82,7 +85,7 @@ namespace aTonOfMutators
 					[LanguageCode.English] = "All ranged weapons deal [0|1|.x more|.x less] damage.",
 					[LanguageCode.Russian] = "Всё оружие дальнего боя наносит [0 урона|1 урон|в .x больше урона|в .x меньше урона]."
 				});
-			CreateMutatorGroup(ATOMType.RangedCategory | ATOMType.RangedAmmo,
+			CreateMutatorGroup(category, ATOMType.RangedAmmo,
 				new float[] { float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
 				new CustomNameInfo
 				{
@@ -94,7 +97,7 @@ namespace aTonOfMutators
 					[LanguageCode.English] = "All ranged weapons have [|1|.x more|.x less] ammo.",
 					[LanguageCode.Russian] = "У всего оружия дальнего боя [|1 снаряд|в .x больше боеприпасов|в .x меньше боеприпасов]."
 				});
-			CreateMutatorGroup(ATOMType.RangedCategory | ATOMType.RangedFirerate,
+			CreateMutatorGroup(category, ATOMType.RangedFirerate,
 				new float[] { 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
 				new CustomNameInfo
 				{
@@ -132,8 +135,17 @@ namespace aTonOfMutators
 				});
 			*/
 		}
-		public List<ATOMMutator> CreateMutatorGroup(ATOMType type, float[] multipliers, int[] unlockCosts, CustomNameInfo name, CustomNameInfo description)
+		public ATOMCategory CreateCategory(ATOMType type, int sortingOrder)
 		{
+			ATOMCategory category = new ATOMCategory(type);
+			RogueLibs.AddCustomUnlock(category);
+			category.SortingOrder = sortingOrder;
+			category.SortingIndex = -1;
+			return category;
+		}
+		public List<ATOMMutator> CreateMutatorGroup(ATOMCategory category, ATOMType type, float[] multipliers, int[] unlockCosts, CustomNameInfo name, CustomNameInfo description)
+		{
+			type |= category.Category;
 			if (multipliers == null) throw new ArgumentNullException(nameof(multipliers));
 			if (unlockCosts == null)
 			{
@@ -162,7 +174,10 @@ namespace aTonOfMutators
 				CustomNameInfo newDescription = new CustomNameInfo(description.Select(pair => new KeyValuePair<LanguageCode, string>(pair.Key,
 					regex.Replace(pair.Value, replacer).Replace("x.", multiplierStr).Replace(".x", multiplierText))));
 
-				list.Add(CreateMutator(type, multiplier, unlockCosts[i], newName, newDescription));
+				ATOMMutator mutator = CreateMutator(type, multiplier, unlockCosts[i], newName, newDescription);
+				mutator.SortingOrder = category.SortingOrder;
+				mutator.SortingIndex = category.Count++;
+				list.Add(mutator);
 			}
 			return list;
 		}
@@ -255,6 +270,7 @@ namespace aTonOfMutators
 	public class ATOMCategory : MutatorUnlock
 	{
 		public ATOMType Category { get; }
+		public int Count { get; set; }
 
 		public ATOMCategory(ATOMType category) : base($"ATOM:{category}", true)
 		{

@@ -46,7 +46,9 @@ namespace RogueLibsCore
 			{
 				bool defined = IsDefined || willBeAddedOnGCAwake;
 				Undefine();
-				Texture.name = Sprite.name = name = value;
+				name = value;
+				if (Texture != null) Texture.name = value;
+				if (Sprite != null) Sprite.name = value;
 				if (defined) Define();
 			}
 		}
@@ -87,12 +89,11 @@ namespace RogueLibsCore
 			}
 		}
 
-		internal static readonly List<RogueSprite>[] addOnGCAwakeList = new List<RogueSprite>[(int)SpriteScope.Extra + 1]
+		internal static readonly Dictionary<SpriteScope, List<RogueSprite>> addOnGCAwakeDict = new Dictionary<SpriteScope, List<RogueSprite>>()
 		{
-			null,
-			new List<RogueSprite>(),
-			new List<RogueSprite>(),
-			new List<RogueSprite>()
+			[SpriteScope.Items] = new List<RogueSprite>(),
+			[SpriteScope.Objects] = new List<RogueSprite>(),
+			[SpriteScope.Floors] = new List<RogueSprite>()
 		};
 		internal bool willBeAddedOnGCAwake;
 
@@ -124,7 +125,6 @@ namespace RogueLibsCore
 
 		private Sprite CreateSprite()
 		{
-			RogueLibs.Logger.LogInfo($"Creating sprite: {Texture?.name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
 			Sprite sprite = Sprite.Create(Texture, Region ?? new Rect(0, 0, Texture.width, Texture.height), Vector2.zero, PixelsPerUnit);
 			sprite.name = Name;
 			return sprite;
@@ -134,6 +134,7 @@ namespace RogueLibsCore
 			GameController gc = GameController.gameController;
 			if (Scope == SpriteScope.Items) return gc?.spawnerMain?.itemSprites;
 			else if (Scope == SpriteScope.Objects) return gc?.spawnerMain?.objectSprites;
+			else if (Scope == SpriteScope.Floors) return gc?.spawnerMain?.floorSprites;
 			else return null;
 		}
 
@@ -144,7 +145,7 @@ namespace RogueLibsCore
 			tk2dSpriteCollectionData coll = GetCollection();
 			if (coll == null)
 			{
-				addOnGCAwakeList[(int)Scope].Add(this);
+				addOnGCAwakeDict[Scope].Add(this);
 				willBeAddedOnGCAwake = true;
 				return;
 			}
@@ -152,25 +153,28 @@ namespace RogueLibsCore
 		}
 		internal void DefineToCollection(tk2dSpriteCollectionData coll)
 		{
-			Collection = coll;
+			RogueLibs.Logger.LogDebug($"Defining: {Name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
 			Definition = AddDefinition(coll, Texture, Region);
+			Collection = coll;
 
 			GameResources gr = GameResources.gameResources;
 
 			if (Scope == SpriteScope.Items) { gr.itemDic[Name] = Sprite; gr.itemList.Add(Sprite); }
 			else if (Scope == SpriteScope.Objects) { gr.objectDic[Name] = Sprite; gr.objectList.Add(Sprite); }
+			else if (Scope == SpriteScope.Floors) { gr.floorDic[Name] = Sprite; gr.floorList.Add(Sprite); }
 			else if (Scope == SpriteScope.Extra) RogueLibs.extraSprites[Name] = Sprite;
 		}
 		public void Undefine()
 		{
 			if (willBeAddedOnGCAwake)
 			{
-				addOnGCAwakeList[(int)Scope].Remove(this);
+				addOnGCAwakeDict[Scope].Remove(this);
 				willBeAddedOnGCAwake = false;
 				return;
 			}
 			if (!IsDefined) return;
 
+			RogueLibs.Logger.LogDebug($"Undefining: {Name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
 			RemoveDefinition(Collection, Definition);
 			Collection = null;
 			Definition = null;
@@ -179,6 +183,7 @@ namespace RogueLibsCore
 
 			if (Scope == SpriteScope.Items) { gr.itemDic.Remove(Name); gr.itemList.Remove(Sprite); }
 			else if (Scope == SpriteScope.Objects) { gr.objectDic.Remove(Name); gr.objectList.Remove(Sprite); }
+			else if (Scope == SpriteScope.Floors) { gr.floorDic.Remove(Name); gr.floorList.Remove(Sprite); }
 			else if (Scope == SpriteScope.Extra) RogueLibs.extraSprites.Remove(Name);
 		}
 
@@ -283,9 +288,10 @@ namespace RogueLibsCore
 	}
 	public enum SpriteScope
 	{
+		Extra   = -1,
 		None    = 0,
 		Items   = 1,
 		Objects = 2,
-		Extra   = 3
+		Floors  = 3
 	}
 }

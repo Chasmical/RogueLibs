@@ -79,10 +79,28 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Unlocks\UnlocksMenu.cs" />
+    <Compile Include="Unlocks\OtherUnlocks.cs" />
+    <Compile Include="Unlocks\AbilityUnlock.cs" />
+    <Compile Include="Unlocks\AchievementUnlock.cs" />
+    <Compile Include="Unlocks\BigQuestUnlock.cs" />
+    <Compile Include="Unlocks\FloorUnlock.cs" />
+    <Compile Include="Unlocks\ItemUnlock.cs" />
+    <Compile Include="Unlocks\MutatorUnlock.cs" />
+    <Compile Include="Unlocks\ReRollLoadoutsUnlock.cs" />
+    <Compile Include="Unlocks\TraitUnlock.cs" />
+    <Compile Include="Unlocks\ClearAllUnlocks.cs" />
     <Compile Include="CustomItem.cs" />
     <Compile Include="CustomItemFactory.cs" />
     <Compile Include="CustomItemInfo.cs" />
-    <Compile Include="UnlockWrapper.cs" />
+    <Compile Include="Unlocks\DisplayedUnlock.cs" />
+    <Compile Include="Patches\Patches_CharacterCreation.cs" />
+    <Compile Include="Patches\Patches_ScrollingMenu.cs" />
+    <Compile Include="Patches\Patches_Misc.cs" />
+    <Compile Include="Patches\Patches_Items.cs" />
+    <Compile Include="Patches\Patches_Sprites.cs" />
+    <Compile Include="Patches\Patches_Unlocks.cs" />
+    <Compile Include="Unlocks\UnlockWrapper.cs" />
     <Compile Include="CustomName.cs" />
     <Compile Include="Events\InventoryEvents.cs" />
     <Compile Include="Events\RogueEvent.cs" />
@@ -101,5 +119,6 @@
     <Compile Include="RogueSprite.cs" />
     <Compile Include="RogueUtilities.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -55,7 +55,14 @@ namespace RogueLibsCore
 					|| extLow == ".ogm" || extLow == ".spx" || extLow == ".opus" ? AudioType.OGGVORBIS
 				: AudioType.UNKNOWN;
 
-			UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip("file:///" + filePath, type);
+			if (type == AudioType.UNKNOWN)
+				RogueLibs.Logger.LogWarning($"Unknown audio file extension \"{extLow}\"! Please, use one of the supported formats: MP3, WAV or Ogg.");
+
+			return ConvertToAudioClip(filePath, type);
+		}
+		public static AudioClip ConvertToAudioClip(string filePath, AudioType format)
+		{
+			UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip("file:///" + filePath, format);
 			request.SendWebRequest();
 			while (!request.isDone) Thread.Sleep(1);
 			return DownloadHandlerAudioClip.GetContent(request);
@@ -63,8 +70,6 @@ namespace RogueLibsCore
 		public static AudioClip ConvertToAudioClip(byte[] rawData)
 		{
 			string name = ".roguelibs.audioclip." + Convert.ToString(new System.Random().Next(), 16).ToLowerInvariant();
-			int postfix = 0;
-			while (postfix == 0 ? File.Exists(name) : File.Exists(name + postfix)) postfix++;
 			string filePath = Path.Combine(Paths.CachePath, name);
 
 			File.WriteAllBytes(filePath, rawData);

@@ -67,8 +67,6 @@ namespace RogueLibsCore
 
 		public static void AddCustomUnlock(UnlockWrapper wrapper)
 		{
-			UnlockWrapper old = Unlocks.Find(w => w.Name == wrapper.Name && w.Type == wrapper.Type);
-			if (old != null) Unlocks.Remove(old);
 			Unlocks.Add(wrapper);
 			if (GameController.gameController?.unlocks == null) return;
 			RogueLibsPlugin.AddCustomUnlockFull(wrapper);
@@ -77,13 +75,18 @@ namespace RogueLibsCore
 		{
 			AddCustomUnlock(unlock);
 			AddCustomName(unlock.Name, unlock.Unlock.unlockNameType, name);
-			AddCustomName(unlock is MutatorUnlock ? "D_" + unlock.Name : unlock.Name, unlock.Unlock.unlockDescriptionType, description);
+			AddCustomName(unlock is MutatorUnlock || unlock is BigQuestUnlock ? "D_" + unlock.Name : unlock.Name,
+				unlock is BigQuestUnlock ? "Unlock" : unlock.Unlock.unlockDescriptionType, description);
 		}
+
+		public static UnlockWrapper GetUnlock(string name, string type) => Unlocks.Find(u => u.Name == name && u.Type == type);
+		public static T GetUnlock<T>(string name) where T : UnlockWrapper => (T)Unlocks.Find(u => u is T && u.Name == name);
+
 		public class ItemInfo
 		{
 			public ItemInfo(ICustomItemFactory factory) => ItemFactory = factory;
 			public ICustomItemFactory ItemFactory { get; }
-			public CustomItemInfo Info { get; }
+			public CustomItemInfo Info => ItemFactory.ItemInfo;
 			public CustomName Name { get; private set; }
 			public CustomName Description { get; private set; }
 			public ItemUnlock Unlock { get; private set; }
@@ -91,29 +94,29 @@ namespace RogueLibsCore
 
 			public ItemInfo WithSprite(byte[] rawData, float ppu = 64f)
 			{
-				Sprite = AddCustomSprite(ItemFactory.ItemInfo.Name, SpriteScope.Items, rawData, ppu);
+				Sprite = AddCustomSprite(Info.Name, SpriteScope.Items, rawData, ppu);
 				return this;
 			}
 			public ItemInfo WithSprite(byte[] rawData, Rect region, float ppu = 64f)
 			{
-				Sprite = AddCustomSprite(ItemFactory.ItemInfo.Name, SpriteScope.Items, rawData, region, ppu);
+				Sprite = AddCustomSprite(Info.Name, SpriteScope.Items, rawData, region, ppu);
 				return this;
 			}
 			public ItemInfo WithName(CustomNameInfo name)
 			{
-				Name = AddCustomName(ItemFactory.ItemInfo.Name, "Item", name);
+				Name = AddCustomName(Info.Name, "Item", name);
 				return this;
 			}
 			public ItemInfo WithName(CustomNameInfo name, CustomNameInfo description)
 				=> WithName(name).WithDescription(description);
 			public ItemInfo WithDescription(CustomNameInfo description)
 			{
-				Description = AddCustomName(ItemFactory.ItemInfo.Name, "Description", description);
+				Description = AddCustomName(Info.Name, "Description", description);
 				return this;
 			}
 			public ItemInfo WithUnlock()
 			{
-				Unlock = new ItemUnlock(ItemFactory.ItemInfo.Name, true);
+				Unlock = new ItemUnlock(Info.Name, true);
 				return this;
 			}
 			public ItemInfo WithUnlock(ItemUnlock unlock)
