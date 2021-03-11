@@ -8,16 +8,26 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
+	/// <summary>
+	///   <para>Trait unlock wrapper.</para>
+	/// </summary>
 	public class TraitUnlock : DisplayedUnlock, IUnlockInCC
 	{
+		/// <summary>
+		///   <para>Initializes a new instance of <see cref="TraitUnlock"/> with the specified <paramref name="name"/>.</para>
+		/// </summary>
+		/// <param name="name">Unlock's name/id.</param>
+		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		public TraitUnlock(string name, bool unlockedFromStart = false) : base(name, "Trait", unlockedFromStart) => IsAvailableInCC = true;
 		internal TraitUnlock(Unlock unlock) : base(unlock) { }
 
+		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
+		/// <inheritdoc/>
 		public bool IsAddedToCC
 		{
 			get => ((CustomCharacterCreation)Menu).CC.traitsChosen.Contains(Unlock);
@@ -30,6 +40,7 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -41,6 +52,7 @@ namespace RogueLibsCore
 				else if (cur == false && value) { gc.sessionDataBig.traitUnlocks.Add(Unlock); Unlock.traitCount++; }
 			}
 		}
+		/// <inheritdoc/>
 		public bool IsAvailableInCC
 		{
 			get => Unlock.onlyInCharacterCreation;
@@ -53,10 +65,23 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <summary>
+		///   <para>Returns the upgrade cost of the trait = Character Creation Cost * 75.</para>
+		/// </summary>
+		/// <returns>Upgrade cost of the trait.</returns>
 		public virtual int GetUpgradeCost() => Mathf.Abs((gc.unlocks.GetUnlock(Unlock.upgrade, "Trait")?.cost3 ?? CharacterCreationCost) * ((CustomScrollingMenu)Menu).Menu.upgradeTraitAdjust);
+		/// <summary>
+		///   <para>Returns the removal cost of the trait = Character Creation Cost * 150.</para>
+		/// </summary>
+		/// <returns>Removal cost of the trait.</returns>
 		public virtual int GetRemovalCost() => Mathf.Abs(CharacterCreationCost * ((CustomScrollingMenu)Menu).Menu.removeTraitAdjust);
+		/// <summary>
+		///   <para>Returns the swap cost of the trait = Character Creation Cost * (35, if it's a positive trait; otherwise, 75).</para>
+		/// </summary>
+		/// <returns>Swap cost of the trait.</returns>
 		public virtual int GetSwapCost() => Mathf.Abs(CharacterCreationCost * (CharacterCreationCost < 0 ? ((CustomScrollingMenu)Menu).Menu.changeTraitRandomAdjustNegativeTrait : ((CustomScrollingMenu)Menu).Menu.changeTraitRandomAdjustPositiveTrait));
 
+		/// <inheritdoc/>
 		public override void UpdateButton()
 		{
 			if (Menu.Type == UnlocksMenuType.TraitsMenu)
@@ -72,6 +97,7 @@ namespace RogueLibsCore
 			else if (Menu.Type == UnlocksMenuType.AB_SwapTrait)
 				Text = $"{GetName()} | ${GetSwapCost()}";
 		}
+		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			if (IsUnlocked)
@@ -95,7 +121,9 @@ namespace RogueLibsCore
 				else if (Menu.Type == UnlocksMenuType.CharacterCreation)
 				{
 					PlaySound("ClickButton");
-					if (IsAddedToCC = !IsAddedToCC) DoCancellations();
+					if (IsAddedToCC = !IsAddedToCC)
+						foreach (DisplayedUnlock du in GetCancellations())
+							((IUnlockInCC)du).IsAddedToCC = false;
 					UpdateButton();
 					UpdateMenu();
 				}

@@ -18,7 +18,7 @@ namespace aTonOfItems
 
 		public void Awake()
 		{
-			RogueLibs.AddCustomItem<VoodooBlank>()
+			RogueLibs.CreateCustomItem<VoodooBlank>()
 				.WithUnlock(new ItemUnlock(nameof(VoodooBlank))
 				{
 					UnlockCost = 5,
@@ -37,7 +37,7 @@ namespace aTonOfItems
 					[LanguageCode.Russian] = "Привяжите куклу к кому-нибудь и потом совмещайте всякие предметы с ней, чтобы наносить урон или эффекты на этого человека."
 				});
 
-			RogueLibs.AddCustomItem<VoodooActive>()
+			RogueLibs.CreateCustomItem<VoodooActive>()
 				.WithSprite(Properties.Resources.VoodooActive)
 				.WithName(new CustomNameInfo
 				{
@@ -49,23 +49,23 @@ namespace aTonOfItems
 					[LanguageCode.Russian] = "Совмещайте всякие предметы с куклой для нанесения урона или эффектов жертве."
 				});
 
-			RogueLibs.AddCustomName("VoodooBind", "Interface", new CustomNameInfo
+			RogueLibs.CreateCustomName("VoodooBind", "Interface", new CustomNameInfo
 			{
 				[LanguageCode.English] = "Bind",
 				[LanguageCode.Russian] = "Привязать"
 			});
 
-			RogueLibs.AddCustomName("VoodooNotAgent", "Interface", new CustomNameInfo
+			RogueLibs.CreateCustomName("VoodooNotAgent", "Interface", new CustomNameInfo
 			{
 				[LanguageCode.English] = "Select a character!",
 				[LanguageCode.Russian] = "Выберите персонажа!"
 			});
-			RogueLibs.AddCustomName("VoodooDeadAgent", "Interface", new CustomNameInfo
+			RogueLibs.CreateCustomName("VoodooDeadAgent", "Interface", new CustomNameInfo
 			{
 				[LanguageCode.English] = "They're already dead",
 				[LanguageCode.Russian] = "Он уже мёртвый"
 			});
-			RogueLibs.AddCustomName("VoodooElectronic", "Interface", new CustomNameInfo
+			RogueLibs.CreateCustomName("VoodooElectronic", "Interface", new CustomNameInfo
 			{
 				[LanguageCode.English] = "This thing doesn't have a soul",
 				[LanguageCode.Russian] = "У этой штуки нет души"
@@ -93,7 +93,8 @@ namespace aTonOfItems
 			Item.hasCharges = true;
 			Item.goesInToolbar = true;
 		}
-		public bool TargetFilter(PlayfieldObject target) => target is Agent agent && !agent.dead && !agent.mechFilled && !agent.mechEmpty;
+		public bool TargetFilter(PlayfieldObject target) => target is Agent agent && !agent.dead && !agent.mechFilled && !agent.mechEmpty
+			&& !agent.statusEffects.hasTrait("Electronic");
 		public void TargetObject(PlayfieldObject target)
 		{
 			Inventory.DestroyItem(Item);

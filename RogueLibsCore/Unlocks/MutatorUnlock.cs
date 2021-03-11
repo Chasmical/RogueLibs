@@ -8,11 +8,20 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
+	/// <summary>
+	///   <para>Mutator unlock wrapper.</para>
+	/// </summary>
 	public class MutatorUnlock : DisplayedUnlock
 	{
+		/// <summary>
+		///   <para>Initializes a new instance of <see cref="MutatorUnlock"/> with the specified <paramref name="name"/>.</para>
+		/// </summary>
+		/// <param name="name">Unlock's name/id.</param>
+		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		public MutatorUnlock(string name, bool unlockedFromStart = false) : base(name, "Challenge", unlockedFromStart) { }
 		internal MutatorUnlock(Unlock unlock) : base(unlock) { }
 
+		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => gc.challenges.Contains(Name);
@@ -35,6 +44,7 @@ namespace RogueLibsCore
 				}
 			}
 		}
+		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -47,6 +57,7 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			if (IsUnlocked)
@@ -54,7 +65,9 @@ namespace RogueLibsCore
 				if (gc.serverPlayer)
 				{
 					PlaySound("ClickButton");
-					if (IsEnabled = !IsEnabled) DoCancellations();
+					if (IsEnabled = !IsEnabled)
+						foreach (DisplayedUnlock du in GetCancellations())
+							du.IsEnabled = false;
 					SendAnnouncementInChat(IsEnabled ? "AddedChallenge" : "RemovedChallenge", Name);
 					UpdateButton();
 					UpdateMenu();
@@ -72,6 +85,7 @@ namespace RogueLibsCore
 			else PlaySound("CantDo");
 		}
 
+		/// <inheritdoc/>
 		public override string GetName()
 		{
 			if (IsUnlocked || Unlock.nowAvailable)
@@ -81,6 +95,7 @@ namespace RogueLibsCore
 			}
 			else return "?????";
 		}
+		/// <inheritdoc/>
 		public override string GetDescription()
 		{
 			if (IsUnlocked || Unlock.nowAvailable)
@@ -89,13 +104,13 @@ namespace RogueLibsCore
 				AddCancellationsTo(ref text);
 				AddRecommendationsTo(ref text);
 				if (!IsUnlocked) AddPrerequisitesTo(ref text);
-				return text;
+				return text.Trim('\n');
 			}
 			else
 			{
 				string text = "?????";
 				AddPrerequisitesTo(ref text);
-				return text;
+				return text.Trim('\n');
 			}
 		}
 	}

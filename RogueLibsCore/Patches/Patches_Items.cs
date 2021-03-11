@@ -13,16 +13,19 @@ namespace RogueLibsCore
 {
 	public partial class RogueLibsPlugin
 	{
+		/// <summary>
+		///   <para>Applies the patches to <see cref="InvItem"/>, <see cref="ItemFunctions"/>, <see cref="InvDatabase"/>, <see cref="InvInterface"/> and <see cref="InvSlot"/>.</para>
+		/// </summary>
 		public void PatchItems()
 		{
 			// create and initialize item hooks
 			Patcher.Postfix(typeof(InvItem), nameof(InvItem.SetupDetails));
 
-			// CustomItem, IItemUsable patch / partial override
+			// CustomItem, IItemUsable patch
 			Patcher.Prefix(typeof(ItemFunctions), nameof(ItemFunctions.UseItem));
 			Patcher.Postfix(typeof(ItemFunctions), nameof(ItemFunctions.UseItem), nameof(ItemFunctions_UseItem_Postfix));
 
-			// CustomItem, IItemCombinable and IItemTargetable / complete override
+			// CustomItem, IItemCombinable and IItemTargetable
 			Patcher.Prefix(typeof(InvItem), nameof(InvItem.CombineItems));
 			Patcher.Prefix(typeof(InvItem), nameof(InvItem.TargetObject));
 
@@ -36,9 +39,13 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.SetColor));
 		}
 
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Sets up and initializes the item's hooks.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="InvItem"/>.</param>
 		public static void InvItem_SetupDetails(InvItem __instance)
 		{
-			foreach (IHookFactory<InvItem> factory in RogueLibs.InvItemFactories)
+			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories)
 				if (factory.CanCreate(__instance))
 				{
 					IHook<InvItem> hook = factory.CreateHook(__instance);
@@ -47,8 +54,16 @@ namespace RogueLibsCore
 				}
 		}
 
-		public static bool ItemFunctions_UseItem(InvItem item, Agent agent)
+		/// <summary>
+		///   <para><b>Prefix-patch (partial override).</b> Makes use of the complicated item usage system.</para>
+		/// </summary>
+		/// <param name="item">Item that is about to be used.</param>
+		/// <param name="agent">Agent who is about to use the <paramref name="item"/>.</param>
+		/// <param name="__state">Value of the <see cref="InvInterface.showingTarget"/>.</param>
+		/// <returns><see langword="false"/>, if the <paramref name="item"/> is a custom item or if it didn't pass the <see cref="InventoryEvents"/> checks; otherwise, <see langword="true"/>. Partial override.</returns>
+		public static bool ItemFunctions_UseItem(InvItem item, Agent agent, ref bool __state)
 		{
+			__state = item.invInterface.showingTarget;
 			CustomItem custom = item.GetHook<CustomItem>();
 			if (custom is IItemTargetable targetable)
 			{
@@ -97,9 +112,15 @@ namespace RogueLibsCore
 			}
 			return false;
 		}
-		public static void ItemFunctions_UseItem_Postfix(InvItem item, Agent agent)
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Invokes the <see cref="InventoryEvents"/> events.</para>
+		/// </summary>
+		/// <param name="item">Item that was used.</param>
+		/// <param name="agent">Agent who used the <paramref name="item"/>.</param>
+		/// <param name="__state">Previously saved value of the <see cref="InvInterface.showingTarget"/>.</param>
+		public static void ItemFunctions_UseItem_Postfix(InvItem item, Agent agent, ref bool __state)
 		{
-			if (!(item.GetHook<CustomItem>() is IItemTargetable))
+			if (__state == item.invInterface.showingTarget)
 			{
 				OnItemUsedArgs args = new OnItemUsedArgs(item, agent);
 				InventoryEvents.Global.onItemUsed.Raise(args);
@@ -107,6 +128,16 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <summary>
+		///   <para><b>Prefix-patch (complete override).</b> Makes use of the complicated item combining system.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="InvItem"/>.</param>
+		/// <param name="otherItem">Item that the current item is being combined with.</param>
+		/// <param name="slotNum">Inventory slot's number, that the <paramref name="otherItem"/> is in.</param>
+		/// <param name="myAgent">Agent who is combining the items.</param>
+		/// <param name="combineType">Combine type.</param>
+		/// <param name="__result">Return value of the method.</param>
+		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool InvItem_CombineItems(InvItem __instance, InvItem otherItem, int slotNum, Agent myAgent, string combineType, ref bool __result)
 		{
 			CustomItem custom = __instance.GetHook<CustomItem>();
@@ -177,6 +208,14 @@ namespace RogueLibsCore
 			}
 			return false;
 		}
+		/// <summary>
+		///   <para><b>Prefix-patch (complete override).</b> Makes use of the complicated item targeting system.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="InvItem"/>.</param>
+		/// <param name="otherObject">Object that the current item is being used on.</param>
+		/// <param name="combineType">Combine type.</param>
+		/// <param name="__result">Return value of the method.</param>
+		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool InvItem_TargetObject(InvItem __instance, PlayfieldObject otherObject, string combineType, ref bool __result)
 		{
 			CustomItem custom = __instance.GetHook<CustomItem>();
@@ -194,7 +233,7 @@ namespace RogueLibsCore
 				? combinable.TargetFilter(otherObject)
 				: __instance.itemFunctions.TargetObject(__instance, __instance.agent, otherObject, string.Empty);
 
-			__result = firstCheck && InventoryEvents.onItemTargetCheck.Raise(new OnItemTargetedArgs(__instance, otherObject));
+			__result = firstCheck && InventoryEvents.onItemTargetCheck.Raise(new OnItemTargetedArgs(__instance, otherObject, __instance.agent));
 
 			if (__result && combineType == "Combine")
 			{
@@ -208,7 +247,7 @@ namespace RogueLibsCore
 					__instance.agent.mainGUI.invInterface.HideTarget();
 				}
 
-				OnItemTargetedArgs args = new OnItemTargetedArgs(__instance, otherObject);
+				OnItemTargetedArgs args = new OnItemTargetedArgs(__instance, otherObject, __instance.agent);
 				InventoryEvents.Global.onItemTargeted.Raise(args);
 				__instance.database.GetEvents().onItemTargeted.Raise(args);
 			}
@@ -216,6 +255,11 @@ namespace RogueLibsCore
 		}
 		private static Color? targetTextColor;
 
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Sets the item's targeting tooltip for the highlighted object.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="InvInterface"/>.</param>
+		/// <param name="item">Item that is being used.</param>
 		public static void InvInterface_ShowTarget(InvInterface __instance, InvItem item)
 		{
 			if (item.itemType != "Combine")
@@ -230,6 +274,11 @@ namespace RogueLibsCore
 				}
 			}
 		}
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Updates the item's targeting tooltip for the highlighted object.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="InvInterface"/>.</param>
+		/// <param name="myPlayfieldObject">Highlighted object.</param>
 		public static void InvInterface_ShowCursorText(InvInterface __instance, PlayfieldObject myPlayfieldObject)
 		{
 			CustomItem custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
@@ -240,6 +289,10 @@ namespace RogueLibsCore
 				__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
 			}
 		}
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Sets the item's targeting tooltip to the default one.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="InvInterface"/>.</param>
 		public static void InvInterface_HideCursorText(InvInterface __instance)
 		{
 			CustomItem custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
@@ -251,7 +304,11 @@ namespace RogueLibsCore
 			}
 		}
 
-		private static Color? combineTextColor;
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Sets the inventory slot's short combining tooltip.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="InvSlot"/>.</param>
+		/// <param name="___itemText">Private field. Text that displays the short tooltip text.</param>
 		public static void InvSlot_SetColor(InvSlot __instance, Text ___itemText)
 		{
 			InvItem combiner = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
@@ -304,5 +361,6 @@ namespace RogueLibsCore
 					__instance.invInterface.OnSelectionBox(__instance.slotType, __instance.tr.position);
 			}
 		}
+		private static Color? combineTextColor;
 	}
 }

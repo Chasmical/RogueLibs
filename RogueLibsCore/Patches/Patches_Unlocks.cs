@@ -13,6 +13,9 @@ namespace RogueLibsCore
 {
 	public partial class RogueLibsPlugin
 	{
+		/// <summary>
+		///   <para>Applies the patches to <see cref="Unlocks"/>.</para>
+		/// </summary>
 		public void PatchUnlocks()
 		{
 			// synchronize some fields
@@ -20,8 +23,19 @@ namespace RogueLibsCore
 
 			// replace the entire foreach loop in the end
 			Patcher.Transpiler(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks));
+
+			RogueLibs.CreateCustomName("UnlockFor", "Interface", new CustomNameInfo
+			{
+				English = "Unlock for",
+				Russian = "Разблокировать за"
+			});
 		}
 
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Synchronizes some of the fields.</para>
+		/// </summary>
+		/// <param name="createdUnlock">Unlock created with up-to-date information.</param>
+		/// <param name="__result">Unlock loaded with potentially outdated information.</param>
 		public static void Unlocks_AddUnlock(Unlock createdUnlock, Unlock __result)
 		{
 			if (createdUnlock != null)
@@ -32,6 +46,11 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <summary>
+		///   <para><b>Transpiler-patch.</b> Replaces the entire foreach loop in the end with <see cref="LoadUnlockWrappersAndCategorize"/> method call.</para>
+		/// </summary>
+		/// <param name="codeEnumerable">Original method's code.</param>
+		/// <returns>Modified code, with the foreach loop in the end replaced with the <see cref="LoadUnlockWrappersAndCategorize"/> method call.</returns>
 		public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
 		{
 			List<CodeInstruction> code = new List<CodeInstruction>(codeEnumerable);
@@ -47,20 +66,29 @@ namespace RogueLibsCore
 			return code;
 		}
 		private static readonly MethodInfo loadUnlockWrappersMethod = SymbolExtensions.GetMethodInfo(() => LoadUnlockWrappersAndCategorize());
+		/// <summary>
+		///   <para>Initializes and sets up the unlock wrappers, both original and custom.</para>
+		/// </summary>
 		public static void LoadUnlockWrappersAndCategorize()
 		{
 			GameController gc = GameController.gameController;
 			SessionDataBig sdb = gc.sessionDataBig;
 
-			sdb.unlocks.AddRange(RogueLibs.Unlocks.Select(w => w.Unlock));
+			sdb.unlocks.AddRange(RogueLibsInternals.Unlocks.Select(w => w.Unlock));
 			foreach (Unlock unlock in new List<Unlock>(sdb.unlocks))
 			{
 				// wrapping original unlocks
 				if (gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock) != "") unlock.cost = -2;
-				UnlockWrapper wrapper = RogueLibs.Unlocks.Find(u => u.Name == unlock.unlockName && u.Type == unlock.unlockType);
-				if (wrapper == null)
+				UnlockWrapper wrapper = RogueLibsInternals.Unlocks.Find(u => u.Name == unlock.unlockName && u.Type == unlock.unlockType);
+				if (wrapper != null)
+					AddUnlockFull(wrapper);
+				else
 				{
-					if (unlock.unlockType == "Challenge") wrapper = new MutatorUnlock(unlock);
+					if (unlock.unlockType == "Challenge")
+					{
+						unlock.unavailable = false;
+						wrapper = new MutatorUnlock(unlock);
+					}
 					else if (unlock.unlockType == "Item")
 					{
 						if (!unlock.unavailable && !unlock.onlyInCharacterCreation && !unlock.freeItem)
@@ -86,7 +114,7 @@ namespace RogueLibsCore
 					else if (unlock.unlockType == "Loadout") wrapper = new LoadoutUnlock(unlock);
 					else
 					{
-						RogueLibs.Logger.LogError("Unknown unlock type!\n" +
+						RogueLibsInternals.Logger.LogError("Unknown unlock type!\n" +
 							$"unlockName: {unlock.unlockName}\n" +
 							$"unlockType: {unlock.unlockType}\n" +
 							$"unlocked:   {unlock.unlocked}");
@@ -94,16 +122,20 @@ namespace RogueLibsCore
 						continue;
 					}
 					if (wrapper is IUnlockInCC inCC && !inCC.IsAvailableInCC) inCC.IsAvailableInCC = wrapper.IsAvailable;
-					RogueLibs.Unlocks.Add(wrapper);
-					AddCustomUnlockFull(wrapper, true);
+					RogueLibsInternals.Unlocks.Add(wrapper);
+					AddUnlockFull(wrapper, true);
 				}
-				else AddCustomUnlockFull(wrapper);
 			}
 		}
-		public static void AddCustomUnlockFull(UnlockWrapper wrapper, bool alreadySetup = false)
+		/// <summary>
+		///   <para>Integrates the specified unlock <paramref name="wrapper"/> into the game.</para>
+		/// </summary>
+		/// <param name="wrapper">Unlock's wrapper.</param>
+		/// <param name="alreadyLoaded">Determines whether the unlock was already loaded from a save file.</param>
+		public static void AddUnlockFull(UnlockWrapper wrapper, bool alreadyLoaded = false)
 		{
 			// integrating custom unlocks
-			Unlock result = alreadySetup ? wrapper.Unlock : GameController.gameController.unlocks.AddUnlock(wrapper.Unlock);
+			Unlock result = alreadyLoaded ? wrapper.Unlock : GameController.gameController.unlocks.AddUnlock(wrapper.Unlock);
 			if (wrapper.Unlock != result)
 			{
 				List<Unlock> list = GameController.gameController.sessionDataBig.unlocks;

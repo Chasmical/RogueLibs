@@ -138,7 +138,7 @@ namespace aTonOfMutators
 		public ATOMCategory CreateCategory(ATOMType type, int sortingOrder)
 		{
 			ATOMCategory category = new ATOMCategory(type);
-			RogueLibs.AddCustomUnlock(category);
+			RogueLibs.CreateCustomUnlock(category);
 			category.SortingOrder = sortingOrder;
 			category.SortingIndex = -1;
 			return category;
@@ -177,6 +177,7 @@ namespace aTonOfMutators
 				ATOMMutator mutator = CreateMutator(type, multiplier, unlockCosts[i], newName, newDescription);
 				mutator.SortingOrder = category.SortingOrder;
 				mutator.SortingIndex = category.Count++;
+				mutator.IgnoreStateSorting = true;
 				list.Add(mutator);
 			}
 			return list;
@@ -185,7 +186,7 @@ namespace aTonOfMutators
 		{
 			ATOMMutator mutator = multiplier != null ? new ATOMMutator(type, multiplier.Value) : new ATOMMutator(type);
 			mutator.UnlockCost = cost;
-			RogueLibs.AddCustomUnlock(mutator, name, description);
+			RogueLibs.CreateCustomUnlock(mutator, name, description);
 			return mutator;
 		}
 		private static readonly Dictionary<float, int> multiplierDefaultCosts = new Dictionary<float, int>
@@ -232,7 +233,8 @@ namespace aTonOfMutators
 				PlaySound("ClickButton");
 				if (IsEnabled = !IsEnabled)
 				{
-					DoCancellations();
+					foreach (DisplayedUnlock du in GetCancellations())
+						du.IsEnabled = false;
 					ATOMMutator mutator = GetActiveOfType(MyType);
 					if (mutator != null)
 					{

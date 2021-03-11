@@ -5,13 +5,28 @@ using UnityEngine;
 
 namespace RogueLibsCore
 {
+	/// <summary>
+	///   <para>Represents a custom sprite, integrated into the game resources. Supports TK2D.</para>
+	/// </summary>
 	public class RogueSprite
 	{
+		/// <summary>
+		///   <para>Gets the <see cref="tk2dSpriteCollectionData"/> that the current custom sprite is defined in.</para>
+		/// </summary>
 		public tk2dSpriteCollectionData Collection { get; private set; }
+		/// <summary>
+		///   <para>Gets the current custom sprite's <see cref="tk2dSpriteDefinition"/>.</para>
+		/// </summary>
 		public tk2dSpriteDefinition Definition { get; private set; }
+		/// <summary>
+		///   <para>Gets the current custom sprite's constructed <see cref="UnityEngine.Sprite"/>.</para>
+		/// </summary>
 		public Sprite Sprite { get; private set; }
 
 		private Texture2D texture;
+		/// <summary>
+		///   <para>Gets/sets the texture used by the custom sprite.</para>
+		/// </summary>
 		public Texture2D Texture
 		{
 			get => texture;
@@ -19,12 +34,16 @@ namespace RogueLibsCore
 			{
 				bool defined = IsDefined || willBeAddedOnGCAwake;
 				Undefine();
-				(texture = value).name = Name;
+				if ((texture = value) != null)
+					value.name = Name;
 				Sprite = CreateSprite();
 				if (defined) Define();
 			}
 		}
 		private float pixelsPerUnit;
+		/// <summary>
+		///   <para>Gets/sets the pixels-per-unit measure of the custom sprite.</para>
+		/// </summary>
 		public float PixelsPerUnit
 		{
 			get => pixelsPerUnit;
@@ -39,6 +58,9 @@ namespace RogueLibsCore
 		}
 
 		private string name;
+		/// <summary>
+		///   <para>Gets/sets the custom sprite's name.</para>
+		/// </summary>
 		public string Name
 		{
 			get => name;
@@ -53,6 +75,9 @@ namespace RogueLibsCore
 			}
 		}
 		private SpriteScope scope;
+		/// <summary>
+		///   <para>Gets/sets the custom sprite's scope.</para>
+		/// </summary>
 		public SpriteScope Scope
 		{
 			get => scope;
@@ -66,6 +91,9 @@ namespace RogueLibsCore
 		}
 
 		private Rect? region;
+		/// <summary>
+		///   <para>Gets/sets the custom sprite's trim region. Set to <see langword="null"/> to use the entire texture.</para>
+		/// </summary>
 		public Rect? Region
 		{
 			get => region;
@@ -79,6 +107,9 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <summary>
+		///   <para>Determines whether the custom sprite is defined in the appropriate collections.</para>
+		/// </summary>
 		public bool IsDefined
 		{
 			get => Definition != null;
@@ -109,22 +140,9 @@ namespace RogueLibsCore
 			Sprite = CreateSprite();
 		}
 
-		public void LoadFromData(byte[] rawData)
-		{
-			Texture2D newTexture = new Texture2D(11, 7);
-			newTexture.LoadImage(rawData);
-			Texture = newTexture;
-		}
-		public void LoadFromData(byte[] rawData, float ppu)
-		{
-			Texture2D newTexture = new Texture2D(11, 7);
-			newTexture.LoadImage(rawData);
-			pixelsPerUnit = ppu;
-			Texture = newTexture;
-		}
-
 		private Sprite CreateSprite()
 		{
+			if (Texture == null) return null;
 			Sprite sprite = Sprite.Create(Texture, Region ?? new Rect(0, 0, Texture.width, Texture.height), Vector2.zero, PixelsPerUnit);
 			sprite.name = Name;
 			return sprite;
@@ -138,6 +156,9 @@ namespace RogueLibsCore
 			else return null;
 		}
 
+		/// <summary>
+		///   <para>Defines the custom sprite in the appropriate collections.</para>
+		/// </summary>
 		public void Define()
 		{
 			if (IsDefined || willBeAddedOnGCAwake || Scope == SpriteScope.None) return;
@@ -153,7 +174,7 @@ namespace RogueLibsCore
 		}
 		internal void DefineToCollection(tk2dSpriteCollectionData coll)
 		{
-			RogueLibs.Logger.LogDebug($"Defining: {Name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
+			RogueLibsInternals.Logger.LogDebug($"Defining: {Name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
 			Definition = AddDefinition(coll, Texture, Region);
 			Collection = coll;
 
@@ -162,8 +183,11 @@ namespace RogueLibsCore
 			if (Scope == SpriteScope.Items) { gr.itemDic[Name] = Sprite; gr.itemList.Add(Sprite); }
 			else if (Scope == SpriteScope.Objects) { gr.objectDic[Name] = Sprite; gr.objectList.Add(Sprite); }
 			else if (Scope == SpriteScope.Floors) { gr.floorDic[Name] = Sprite; gr.floorList.Add(Sprite); }
-			else if (Scope == SpriteScope.Extra) RogueLibs.extraSprites[Name] = Sprite;
+			else if (Scope == SpriteScope.Extra) RogueLibsInternals.ExtraSprites[Name] = Sprite;
 		}
+		/// <summary>
+		///   <para>Removes the custom sprite's definitions from the appropriate collections.</para>
+		/// </summary>
 		public void Undefine()
 		{
 			if (willBeAddedOnGCAwake)
@@ -174,7 +198,7 @@ namespace RogueLibsCore
 			}
 			if (!IsDefined) return;
 
-			RogueLibs.Logger.LogDebug($"Undefining: {Name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
+			RogueLibsInternals.Logger.LogDebug($"Undefining: {Name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
 			RemoveDefinition(Collection, Definition);
 			Collection = null;
 			Definition = null;
@@ -184,9 +208,16 @@ namespace RogueLibsCore
 			if (Scope == SpriteScope.Items) { gr.itemDic.Remove(Name); gr.itemList.Remove(Sprite); }
 			else if (Scope == SpriteScope.Objects) { gr.objectDic.Remove(Name); gr.objectList.Remove(Sprite); }
 			else if (Scope == SpriteScope.Floors) { gr.floorDic.Remove(Name); gr.floorList.Remove(Sprite); }
-			else if (Scope == SpriteScope.Extra) RogueLibs.extraSprites.Remove(Name);
+			else if (Scope == SpriteScope.Extra) RogueLibsInternals.ExtraSprites.Remove(Name);
 		}
 
+		/// <summary>
+		///   <para>Creates a <see cref="tk2dSpriteDefinition"/> from the specified <paramref name="texture"/>, <paramref name="region"/> and <paramref name="scale"/>.</para>
+		/// </summary>
+		/// <param name="texture">Texture to be used by the definition.</param>
+		/// <param name="region">Region of the texture to be used by the definition, or <see langword="null"/> to use the entire texture.</param>
+		/// <param name="scale">Scale of the definition's sprite.</param>
+		/// <returns>Created <see cref="tk2dSpriteDefinition"/>.</returns>
 		public static tk2dSpriteDefinition CreateDefinition(Texture2D texture, Rect? region, float scale)
 		{
 			float x = texture.width;
@@ -286,12 +317,32 @@ namespace RogueLibsCore
 		}
 
 	}
+	/// <summary>
+	///   <para>Represents a type of game resources, that the sprite will be integrated into.</para>
+	/// </summary>
 	public enum SpriteScope
 	{
+		/// <summary>
+		///   <para>Extra RogueLibs defined sprites. Will be used, if a sprite was not found in the appropriate collection.</para>
+		/// </summary>
 		Extra   = -1,
+
+		/// <summary>
+		///   <para>Don't define the sprite anywhere.</para>
+		/// </summary>
 		None    = 0,
+
+		/// <summary>
+		///   <para>Item sprites.</para>
+		/// </summary>
 		Items   = 1,
+		/// <summary>
+		///   <para>Object sprites.</para>
+		/// </summary>
 		Objects = 2,
+		/// <summary>
+		///   <para>Floor sprites.</para>
+		/// </summary>
 		Floors  = 3
 	}
 }

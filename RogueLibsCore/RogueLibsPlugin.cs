@@ -11,14 +11,23 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	[BepInPlugin(RogueLibs.GUID, RogueLibs.Name, RogueLibs.Version)]
-	public partial class RogueLibsPlugin : BaseUnityPlugin
+	/// <summary>
+	///   <para>RogueLibs plugin type.</para>
+	/// </summary>
+	[BepInPlugin(RogueLibs.GUID, RogueLibs.Name, RogueLibs.CompiledVersion)]
+	public sealed partial class RogueLibsPlugin : BaseUnityPlugin
 	{
+		/// <summary>
+		///   <para><see cref="RoguePatcher"/> instance, used by the <see cref="RogueLibsPlugin"/>.</para>
+		/// </summary>
 		public RoguePatcher Patcher;
+		/// <summary>
+		///   <para>Unity's Awake method.</para>
+		/// </summary>
 		public void Awake()
 		{
-			RogueLibs.Plugin = this;
-			RogueLibs.Logger = Logger;
+			RogueLibsInternals.Plugin = this;
+			RogueLibsInternals.Logger = Logger;
 			Patcher = new RoguePatcher(this);
 
 			PatchItems();

@@ -13,6 +13,9 @@ namespace RogueLibsCore
 {
 	public partial class RogueLibsPlugin
 	{
+		/// <summary>
+		///   <para>Applies the patches to <see cref="SpawnerMain"/> and stuff to set up the custom sprites.</para>
+		/// </summary>
 		public void PatchSprites()
 		{
 			// define RogueSprites in the RogueSprite.addOnGCAwakeList
@@ -24,6 +27,10 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(SpawnerMain), nameof(SpawnerMain.SetLighting2));
 		}
 
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Defines the custom sprites from <see cref="RogueSprite.addOnGCAwakeDict"/>.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="GameController"/>.</param>
 		public static void GameController_Awake(GameController __instance)
 		{
 			tk2dSpriteCollectionData coll = __instance.spawnerMain.itemSprites;
@@ -57,6 +64,14 @@ namespace RogueLibsCore
 			RogueSprite.addOnGCAwakeDict.Remove(SpriteScope.Floors);
 		}
 
+		/// <summary>
+		///   <para><b>Prefix-patch (complete override).</b> Sets the dropped item's sprite and sets its materials and shaders.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="SpawnerMain"/>.</param>
+		/// <param name="item">Dropped item as an <see cref="InvItem"/>.</param>
+		/// <param name="itemImage"><see cref="tk2dSprite"/> with the item's sprite.</param>
+		/// <param name="newItem">Dropped item as an <see cref="Item"/>.</param>
+		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool SpawnerMain_SpawnItemSprite(SpawnerMain __instance, InvItem item, tk2dSprite itemImage, Item newItem)
 		{
 			try { itemImage.SetSprite(__instance.gc.spawnerMain.itemSprites, item.spriteName); } catch { }
@@ -113,17 +128,25 @@ namespace RogueLibsCore
 
 			return false;
 		}
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Sets the renderer's material.</para>
+		/// </summary>
+		/// <param name="__result">Created item.</param>
 		public static void SpawnerMain_SpawnItemWeapon(Item __result)
 		{
 			tk2dSprite itemImage = __result.tr.GetChild(0).transform.GetChild(0).GetComponent<tk2dSprite>();
 			itemImage.GetComponent<Renderer>().sharedMaterial = itemImage.CurrentSprite.material;
 		}
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Sets the renderer's material.</para>
+		/// </summary>
+		/// <param name="myObject">Object with a renderer with an incorrect material.</param>
 		public static void SpawnerMain_SetLighting2(PlayfieldObject myObject)
 		{
 			if (myObject.CompareTag("Item") || myObject.CompareTag("Wreckage"))
 			{
 				Item item = (Item)myObject;
-				item.spriteTr.GetComponent<Renderer>().sharedMaterial = item.spr.CurrentSprite.material;
+				item.spriteTr.GetComponent<Renderer>().sharedMaterial = item.spriteRealTr.GetComponent<tk2dSprite>().CurrentSprite.material;
 			}
 		}
 	}
