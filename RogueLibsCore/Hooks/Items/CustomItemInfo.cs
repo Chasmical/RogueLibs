@@ -56,7 +56,7 @@ namespace RogueLibsCore
 
 		private CustomItemInfo(Type type)
 		{
-			if (!typeof(CustomItem).IsAssignableFrom(type)) throw new ArgumentException("The specified type is not a CustomItem!", nameof(type));
+			if (!typeof(CustomItem).IsAssignableFrom(type)) throw new ArgumentException($"The specified type is not a {nameof(CustomItem)}!", nameof(type));
 			Name = type.GetCustomAttribute<ItemNameAttribute>()?.Name ?? type.Name;
 			Categories = new ReadOnlyCollection<string>(type.GetCustomAttributes<ItemCategoriesAttribute>().SelectMany(c => c.Categories).ToArray());
 
@@ -95,7 +95,8 @@ namespace RogueLibsCore
 		///   <para>Initializes a new instance of <see cref="ItemNameAttribute"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Name/id of the custom item.</param>
-		public ItemNameAttribute(string name) => Name = name;
+		/// <exception cref="ArgumentNullException"><paramref name="name"/> is <see langword="null"/>.</exception>
+		public ItemNameAttribute(string name) => Name = name ?? throw new ArgumentNullException(nameof(name));
 	}
 	/// <summary>
 	///   <para>Specifies the custom item's categories.</para>
@@ -111,6 +112,11 @@ namespace RogueLibsCore
 		///   <para>Initializes a new instance of <see cref="ItemCategoriesAttribute"/> with the specified <paramref name="categories"/>.</para>
 		/// </summary>
 		/// <param name="categories">Categories of the custom item.</param>
-		public ItemCategoriesAttribute(params string[] categories) => Categories = new ReadOnlyCollection<string>(categories);
+		/// <exception cref="ArgumentNullException"><paramref name="categories"/> is <see langword="null"/>.</exception>
+		public ItemCategoriesAttribute(params string[] categories)
+		{
+			if (categories is null) throw new ArgumentNullException(nameof(categories));
+			Categories = new ReadOnlyCollection<string>(Array.FindAll(categories, c => !(c is null)));
+		}
 	}
 }

@@ -85,8 +85,10 @@ namespace RogueLibsCore
 		///   <para>Initializes the specified <paramref name="hook"/> and adds it to the hook controller.</para>
 		/// </summary>
 		/// <param name="hook">Hook to attach to the hook controller.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="hook"/> is <see langword="null"/>.</exception>
 		public void AddHook(IHook<T> hook)
 		{
+			if (hook is null) throw new ArgumentNullException(nameof(hook));
 			hook.Instance = Instance;
 			hooks.Add(hook);
 		}
@@ -103,6 +105,7 @@ namespace RogueLibsCore
 		}
 		void IHookController.AddHook(IHook hook)
 		{
+			if (hook is null) throw new ArgumentNullException(nameof(hook));
 			if (hook is IHook<T> ihook) AddHook(ihook);
 			else throw new ArgumentException("Invalid type!", nameof(hook));
 		}

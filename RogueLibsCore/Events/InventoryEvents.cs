@@ -9,23 +9,28 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Contains events for various inventory actions.</para>
 	/// </summary>
-	public class InventoryEvents
+	public class InventoryEvents : IHook<InvDatabase>
 	{
 		private InventoryEvents() { }
 		/// <summary>
 		///   <para>Initializes a new instance of <see cref="InventoryEvents"/> for the specified <paramref name="inventory"/>.</para>
 		/// </summary>
 		/// <param name="inventory">Inventory to attach the events to.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="inventory"/> is <see langword="null"/>.</exception>
 		public InventoryEvents(InvDatabase inventory) => Inventory = inventory ?? throw new ArgumentNullException(nameof(inventory));
 		/// <summary>
 		///   <para>Inventory that the inventory events are attached to.</para>
 		/// </summary>
-		public InvDatabase Inventory { get; }
+		public InvDatabase Inventory { get; private set; }
+		InvDatabase IHook<InvDatabase>.Instance { get => Inventory; set => Inventory = value; }
+		object IHook.Instance { get => Inventory; set => Inventory = (InvDatabase)value; }
+		void IHook.Initialize() { }
 
 		internal readonly RogueEvent<OnItemUsedArgs> onItemUsed = new RogueEvent<OnItemUsedArgs>();
 		/// <summary>
 		///   <para>Event that is called after every item usage.</para>
 		/// </summary>
+		/// <exception cref="ArgumentNullException"><see langword="value"/> is <see langword="null"/>.</exception>
 		public event RogueEventHandler<OnItemUsedArgs> OnItemUsed
 		{
 			add => onItemUsed.Subscribe(value);
@@ -35,6 +40,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Event that is called after every item combination.</para>
 		/// </summary>
+		/// <exception cref="ArgumentNullException"><see langword="value"/> is <see langword="null"/>.</exception>
 		public event RogueEventHandler<OnItemsCombinedArgs> OnItemsCombined
 		{
 			add => onItemsCombined.Subscribe(value);
@@ -44,6 +50,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Event that is called after every item targeting.</para>
 		/// </summary>
+		/// <exception cref="ArgumentNullException"><see langword="value"/> is <see langword="null"/>.</exception>
 		public event RogueEventHandler<OnItemTargetedArgs> OnItemTargeted
 		{
 			add => onItemTargeted.Subscribe(value);
@@ -54,6 +61,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Event that is used to determine whether an item can be used.</para>
 		/// </summary>
+		/// <exception cref="ArgumentNullException"><see langword="value"/> is <see langword="null"/>.</exception>
 		public static event RogueEventHandler<OnItemUsedArgs> OnItemUseCheck
 		{
 			add => onItemUseCheck.Subscribe(value);
@@ -63,6 +71,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Event that is used to determine whether an item can be combined with another.</para>
 		/// </summary>
+		/// <exception cref="ArgumentNullException"><see langword="value"/> is <see langword="null"/>.</exception>
 		public static event RogueEventHandler<OnItemsCombinedArgs> OnItemsCombineCheck
 		{
 			add => onItemsCombineCheck.Subscribe(value);
@@ -72,6 +81,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Event that is used to determine whether an item can be targeted at an object.</para>
 		/// </summary>
+		/// <exception cref="ArgumentNullException"><see langword="value"/> is <see langword="null"/>.</exception>
 		public static event RogueEventHandler<OnItemTargetedArgs> OnItemTargetCheck
 		{
 			add => onItemTargetCheck.Subscribe(value);
@@ -95,6 +105,8 @@ namespace RogueLibsCore
 		/// <param name="user">Agent who used the <paramref name="item"/>.</param>
 		public OnItemUsedArgs(InvItem item, Agent user)
 		{
+			if (item is null) throw new ArgumentNullException(nameof(item));
+			if (user is null) throw new ArgumentNullException(nameof(user));
 			Item = item;
 			User = user;
 		}
@@ -120,6 +132,9 @@ namespace RogueLibsCore
 		/// <param name="combiner">Agent who combined <paramref name="item"/> with the <paramref name="otherItem"/>.</param>
 		public OnItemsCombinedArgs(InvItem item, InvItem otherItem, Agent combiner)
 		{
+			if (item is null) throw new ArgumentNullException(nameof(item));
+			if (otherItem is null) throw new ArgumentNullException(nameof(otherItem));
+			if (combiner is null) throw new ArgumentNullException(nameof(combiner));
 			Item = item;
 			OtherItem = otherItem;
 			Combiner = combiner;
@@ -150,6 +165,9 @@ namespace RogueLibsCore
 		/// <param name="user">Agent who used the <paramref name="item"/></param>
 		public OnItemTargetedArgs(InvItem item, PlayfieldObject target, Agent user)
 		{
+			if (item is null) throw new ArgumentNullException(nameof(item));
+			if (target is null) throw new ArgumentNullException(nameof(target));
+			if (user is null) throw new ArgumentNullException(nameof(user));
 			Item = item;
 			Target = target;
 			User = user;

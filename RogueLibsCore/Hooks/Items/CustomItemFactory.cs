@@ -32,14 +32,16 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="obj"><see cref="InvItem"/> object.</param>
 		/// <returns><see langword="true"/>, if this factory can create a hook for the specified <paramref name="obj"/> (if its name matches the custom item's name); otherwise, <see langword="false"/>.</returns>
-		public override bool CanCreate(InvItem obj) => obj.invItemName == ItemInfo.Name;
+		public override bool CanCreate(InvItem obj) => !(obj is null) && obj.invItemName == ItemInfo.Name;
 		/// <summary>
 		///   <para>Creates a new instance of the <typeparamref name="TItem"/> type for the specified <paramref name="obj"/>.</para>
 		/// </summary>
 		/// <param name="obj"><see cref="InvItem"/> object.</param>
 		/// <returns><typeparamref name="TItem"/> custom item hook, that was created for the specified <paramref name="obj"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
 		public override IHook<InvItem> CreateHook(InvItem obj)
 		{
+			if (obj is null) throw new ArgumentNullException(nameof(obj));
 			IHook<InvItem> hook = new TItem() { ItemInfo = ItemInfo };
 			hook.Instance = obj;
 			return hook;

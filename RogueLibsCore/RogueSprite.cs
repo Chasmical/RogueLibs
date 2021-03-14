@@ -27,14 +27,16 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Gets/sets the texture used by the custom sprite.</para>
 		/// </summary>
+		/// <exception cref="ArgumentNullException"><see langword="value"/> is <see langword="null"/> and the current custom sprite is defined.</exception>
 		public Texture2D Texture
 		{
 			get => texture;
 			set
 			{
 				bool defined = IsDefined || willBeAddedOnGCAwake;
+				if (defined && value is null) throw new ArgumentNullException(nameof(value));
 				Undefine();
-				if ((texture = value) != null)
+				if (!((texture = value) is null))
 					value.name = Name;
 				Sprite = CreateSprite();
 				if (defined) Define();
@@ -44,12 +46,14 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Gets/sets the pixels-per-unit measure of the custom sprite.</para>
 		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException"><see langword="value"/> is less than or equal to 0 and the current custom sprite is defined.</exception>
 		public float PixelsPerUnit
 		{
 			get => pixelsPerUnit;
 			set
 			{
 				bool defined = IsDefined || willBeAddedOnGCAwake;
+				if (defined && value <= 0f) throw new ArgumentOutOfRangeException(nameof(value), value, $"{nameof(value)} must be greater than 0.");
 				Undefine();
 				pixelsPerUnit = value;
 				Sprite = CreateSprite();
@@ -61,16 +65,18 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Gets/sets the custom sprite's name.</para>
 		/// </summary>
+		/// <exception cref="ArgumentNullException"><see langword="value"/> is <see langword="null"/> and the current custom sprite is defined.</exception>
 		public string Name
 		{
 			get => name;
 			set
 			{
 				bool defined = IsDefined || willBeAddedOnGCAwake;
+				if (defined && value is null) throw new ArgumentNullException(nameof(value));
 				Undefine();
 				name = value;
-				if (Texture != null) Texture.name = value;
-				if (Sprite != null) Sprite.name = value;
+				if (!(Texture is null)) Texture.name = value;
+				if (!(Sprite is null)) Sprite.name = value;
 				if (defined) Define();
 			}
 		}
@@ -130,8 +136,6 @@ namespace RogueLibsCore
 
 		internal RogueSprite(string spriteName, SpriteScope spriteScope, byte[] rawData, Rect? spriteRegion, float ppu = 64f)
 		{
-			if (spriteName == null) throw new ArgumentNullException(nameof(spriteName));
-			if (rawData == null) throw new ArgumentNullException(nameof(rawData));
 			texture = new Texture2D(13, 6) { name = name = spriteName };
 			scope = spriteScope;
 			texture.LoadImage(rawData);
@@ -142,8 +146,9 @@ namespace RogueLibsCore
 
 		private Sprite CreateSprite()
 		{
-			if (Texture == null) return null;
-			Sprite sprite = Sprite.Create(Texture, Region ?? new Rect(0, 0, Texture.width, Texture.height), Vector2.zero, PixelsPerUnit);
+			if (Texture is null || Name is null || PixelsPerUnit <= 0f) return null;
+			Rect reg = Region ?? new Rect(0, 0, Texture.width, Texture.height);
+			Sprite sprite = Sprite.Create(Texture, reg, reg.size / 2f, PixelsPerUnit);
 			sprite.name = Name;
 			return sprite;
 		}
@@ -159,15 +164,22 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Defines the custom sprite in the appropriate collections.</para>
 		/// </summary>
+		/// <exception cref="InvalidOperationException"><see cref="Texture"/> or <see cref="Name"/> is <see langword="null"/> or <see cref="PixelsPerUnit"/> is less than or equal to 0.</exception>
 		public void Define()
 		{
 			if (IsDefined || willBeAddedOnGCAwake || Scope == SpriteScope.None) return;
+			if (Name is null) throw new InvalidOperationException($"{nameof(Name)} must not be null.");
+			if (Texture is null) throw new InvalidOperationException($"{nameof(Texture)} must not be null.");
+			if (PixelsPerUnit <= 0f) throw new InvalidOperationException($"{nameof(PixelsPerUnit)} must be greater than 0.");
 
 			tk2dSpriteCollectionData coll = GetCollection();
-			if (coll == null)
+			if (coll is null)
 			{
-				addOnGCAwakeDict[Scope].Add(this);
-				willBeAddedOnGCAwake = true;
+				if (addOnGCAwakeDict.TryGetValue(Scope, out List<RogueSprite> list))
+				{
+					list.Add(this);
+					willBeAddedOnGCAwake = true;
+				}
 				return;
 			}
 			DefineToCollection(coll);
@@ -190,9 +202,9 @@ namespace RogueLibsCore
 		/// </summary>
 		public void Undefine()
 		{
-			if (willBeAddedOnGCAwake)
+			if (willBeAddedOnGCAwake && addOnGCAwakeDict.TryGetValue(Scope, out List<RogueSprite> list))
 			{
-				addOnGCAwakeDict[Scope].Remove(this);
+				list.Remove(this);
 				willBeAddedOnGCAwake = false;
 				return;
 			}
@@ -218,8 +230,13 @@ namespace RogueLibsCore
 		/// <param name="region">Region of the texture to be used by the definition, or <see langword="null"/> to use the entire texture.</param>
 		/// <param name="scale">Scale of the definition's sprite.</param>
 		/// <returns>Created <see cref="tk2dSpriteDefinition"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="texture"/> is <see langword="null"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="scale"/> is less than or equal to 0.</exception>
 		public static tk2dSpriteDefinition CreateDefinition(Texture2D texture, Rect? region, float scale)
 		{
+			if (texture is null) throw new ArgumentNullException(nameof(texture));
+			if (scale <= 0f) throw new ArgumentOutOfRangeException(nameof(scale), scale, $"{nameof(scale)} must be greater than 0.");
+
 			float x = texture.width;
 			float y = texture.height;
 			Rect uvRegion = region ?? new Rect(0f, 0f, x, y);

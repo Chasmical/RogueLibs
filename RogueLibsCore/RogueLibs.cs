@@ -104,10 +104,13 @@ namespace RogueLibsCore
 		/// <param name="rawData">PNG- or JPEG-encoded image.</param>
 		/// <param name="ppu">Pixels-per-unit.</param>
 		/// <returns>Created <see cref="RogueSprite"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="name"/> or <paramref name="rawData"/> is <see langword="null"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
 		public static RogueSprite CreateCustomSprite(string name, SpriteScope scope, byte[] rawData, float ppu = 64f)
 		{
-			if (string.IsNullOrEmpty(name)) throw new ArgumentException("Sprite's name cannot be null or empty!", nameof(name));
-			if (rawData == null) throw new ArgumentNullException(nameof(rawData));
+			if (name is null) throw new ArgumentNullException(nameof(name));
+			if (rawData is null) throw new ArgumentNullException(nameof(rawData));
+			if (ppu <= 0f) throw new ArgumentOutOfRangeException(nameof(ppu), ppu, $"{nameof(ppu)} must be greater than 0.");
 			RogueSprite sprite = new RogueSprite(name, scope, rawData, null, ppu);
 			RogueLibsInternals.CustomSprites.Add(sprite);
 			sprite.Define();
@@ -122,10 +125,13 @@ namespace RogueLibsCore
 		/// <param name="region">Region of the texture to use.</param>
 		/// <param name="ppu">Pixels-per-unit.</param>
 		/// <returns>Created <see cref="RogueSprite"/>.</returns>
+		/// <exception cref="ArgumentException"><paramref name="name"/> or <paramref name="rawData"/> is <see langword="null"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
 		public static RogueSprite CreateCustomSprite(string name, SpriteScope scope, byte[] rawData, Rect region, float ppu = 64f)
 		{
-			if (string.IsNullOrEmpty(name)) throw new ArgumentException("Sprite's name cannot be null or empty!", nameof(name));
-			if (rawData == null) throw new ArgumentNullException(nameof(rawData));
+			if (name is null) throw new ArgumentNullException(nameof(name));
+			if (rawData is null) throw new ArgumentNullException(nameof(rawData));
+			if (ppu <= 0f) throw new ArgumentOutOfRangeException(nameof(ppu), ppu, $"{nameof(ppu)} must be greater than 0.");
 			RogueSprite sprite = new RogueSprite(name, scope, rawData, region, ppu);
 			RogueLibsInternals.CustomSprites.Add(sprite);
 			sprite.Define();
@@ -139,8 +145,11 @@ namespace RogueLibsCore
 		/// <param name="type">Type of the custom name.</param>
 		/// <param name="info">Translations for different languages.</param>
 		/// <returns>Created <see cref="CustomName"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="name"/> or <paramref name="type"/> is <see langword="null"/>.</exception>
 		public static CustomName CreateCustomName(string name, string type, CustomNameInfo info)
 		{
+			if (name is null) throw new ArgumentNullException(nameof(name));
+			if (type is null) throw new ArgumentNullException(nameof(type));
 			if (!RogueLibsInternals.CustomNames.TryGetValue(type, out Dictionary<string, ICustomName> category))
 				RogueLibsInternals.CustomNames.Add(type, category = new Dictionary<string, ICustomName>());
 			CustomName customName = new CustomName(name, type, info);
@@ -152,10 +161,12 @@ namespace RogueLibsCore
 		///   <para>Initializes the specified <paramref name="unlock"/> and adds it to the game.</para>
 		/// </summary>
 		/// <param name="unlock"><see cref="UnlockWrapper"/> to initialize.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="unlock"/> is <see langword="null"/>.</exception>
 		public static void CreateCustomUnlock(UnlockWrapper unlock)
 		{
+			if (unlock is null) throw new ArgumentNullException(nameof(unlock));
 			RogueLibsInternals.Unlocks.Add(unlock);
-			if (GameController.gameController?.unlocks == null) return;
+			if (GameController.gameController?.unlocks is null) return;
 			RogueLibsPlugin.AddUnlockFull(unlock);
 		}
 		/// <summary>
@@ -164,6 +175,7 @@ namespace RogueLibsCore
 		/// <param name="unlock"><see cref="UnlockWrapper"/> to initialize.</param>
 		/// <param name="name">Name of the custom unlock.</param>
 		/// <param name="description">Description of the custom unlock.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="unlock"/> is <see langword="null"/>.</exception>
 		public static void CreateCustomUnlock(UnlockWrapper unlock, CustomNameInfo name, CustomNameInfo description)
 		{
 			CreateCustomUnlock(unlock);
@@ -228,6 +240,8 @@ namespace RogueLibsCore
 		/// <param name="rawData">PNG- pr JPEG-encoded image.</param>
 		/// <param name="ppu">Pixels-per-unit.</param>
 		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="rawData"/> is <see langword="null"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
 		public ItemInfo WithSprite(byte[] rawData, float ppu = 64f)
 		{
 			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, ppu);
@@ -240,6 +254,8 @@ namespace RogueLibsCore
 		/// <param name="region">Region of the texture to use.</param>
 		/// <param name="ppu">Pixels-per-unit.</param>
 		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="rawData"/> is <see langword="null"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
 		public ItemInfo WithSprite(byte[] rawData, Rect region, float ppu = 64f)
 		{
 			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, region, ppu);
@@ -282,9 +298,11 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="unlock"><see cref="ItemUnlock"/> for the current item.</param>
 		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="unlock"/> is <see langword="null"/>.</exception>
 		public ItemInfo WithUnlock(ItemUnlock unlock)
 		{
-			RogueLibs.CreateCustomUnlock(Unlock = unlock);
+			RogueLibs.CreateCustomUnlock(unlock);
+			Unlock = unlock;
 			return this;
 		}
 	}
