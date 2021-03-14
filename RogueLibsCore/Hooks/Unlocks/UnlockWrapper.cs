@@ -7,7 +7,7 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Base unlock wrapper class.</para>
 	/// </summary>
-	public abstract class UnlockWrapper
+	public abstract class UnlockWrapper : IHook<Unlock>
 	{
 		/// <summary>
 		///   <para>Initializes a new instance of the current type with the specified <paramref name="name"/> and <paramref name="type"/>.</para>
@@ -42,6 +42,9 @@ namespace RogueLibsCore
 		///   <para>Gets the <see cref="Unlock"/> associated with the wrapper.</para>
 		/// </summary>
 		public Unlock Unlock { get; internal set; }
+		Unlock IHook<Unlock>.Instance { get => Unlock; set => Unlock = value; }
+		object IHook.Instance { get => Unlock; set => Unlock = (Unlock)value; }
+
 		/// <summary>
 		///   <para>Gets/sets whether the unlock is unlocked.</para>
 		/// </summary>
@@ -81,6 +84,7 @@ namespace RogueLibsCore
 		/// </summary>
 		public List<string> Prerequisites { get => Unlock.prerequisites; set => Unlock.prerequisites = value; }
 
+		void IHook.Initialize() => SetupUnlock();
 		/// <summary>
 		///   <para>Sets up the unlock's variables.</para>
 		/// </summary>

@@ -175,7 +175,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="THook">Type of the hook to search for.</typeparam>
 		/// <param name="obj">Object to search for the hook of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, if found; otherwise, <see langword="null"/>.</returns>
+		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, if found; otherwise, <see langword="null"/>.</returns>
 		public static THook GetHook<THook>(this InvItem obj)
 		{
 			HookController<InvItem> controller = GetHookController(obj, ref obj.__RogueLibsHooks, false);
@@ -186,7 +186,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="THook">Type of the hook to search for.</typeparam>
 		/// <param name="obj">Object to search for the hook of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, if found; otherwise, <see langword="null"/>.</returns>
+		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, if found; otherwise, <see langword="null"/>.</returns>
 		public static THook GetHook<THook>(this Agent obj)
 		{
 			HookController<Agent> controller = GetHookController(obj, ref obj.__RogueLibsHooks, false);
@@ -197,7 +197,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="THook">Type of the hook to search for.</typeparam>
 		/// <param name="obj">Object to search for the hook of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, if found; otherwise, <see langword="null"/>.</returns>
+		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, if found; otherwise, <see langword="null"/>.</returns>
 		public static THook GetHook<THook>(this ObjectReal obj)
 		{
 			HookController<ObjectReal> controller = GetHookController(obj, ref obj.__RogueLibsHooks, false);
@@ -208,7 +208,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="THook">Type of the hook to search for.</typeparam>
 		/// <param name="obj">Object to search for the hook of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, if found; otherwise, <see langword="null"/>.</returns>
+		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, if found; otherwise, <see langword="null"/>.</returns>
 		public static THook GetHook<THook>(this StatusEffect obj)
 		{
 			HookController<StatusEffect> controller = GetHookController(obj, ref obj.__RogueLibsHooks, false);
@@ -219,19 +219,34 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="THook">Type of the hook to search for.</typeparam>
 		/// <param name="obj">Object to search for the hook of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, if found; otherwise, <see langword="null"/>.</returns>
+		/// <returns>First occurence of a hook of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, if found; otherwise, <see langword="null"/>.</returns>
 		public static THook GetHook<THook>(this Trait obj)
 		{
 			HookController<Trait> controller = GetHookController(obj, ref obj.__RogueLibsHooks, false);
 			return controller != null ? controller.GetHook<THook>() : default;
 		}
+		/// <summary>
+		///   <para>Returns the hook, attached to the specified <paramref name="obj"/>.</para>
+		/// </summary>
+		/// <param name="obj">Object to get the hook for.</param>
+		/// <returns>Hook, attached to the specified <paramref name="obj"/>, if found; otherwise, <see langword="null"/>.</returns>
+		public static UnlockWrapper GetHook(this Unlock obj)
+			=> (UnlockWrapper)obj.__RogueLibsCustom;
+		/// <summary>
+		///   <para>Returns a hook of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>.</para>
+		/// </summary>
+		/// <typeparam name="THook">Type of the hook to get.</typeparam>
+		/// <param name="obj">Object to get the hook of the specified <typeparamref name="THook"/> type for.</param>
+		/// <returns>Hook of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, if found; otherwise, <see langword="null"/>.</returns>
+		public static THook GetHook<THook>(this Unlock obj) where THook : UnlockWrapper
+			=> obj.__RogueLibsCustom is THook t ? t : default;
 
 		/// <summary>
 		///   <para>Iterates through hooks of the specified <typeparamref name="THook"/> type.</para>
 		/// </summary>
 		/// <typeparam name="THook">Type of the hooks to search for.</typeparam>
 		/// <param name="obj">Object to search hooks of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, or an empty collection.</returns>
+		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, or an empty collection.</returns>
 		public static IEnumerable<THook> GetHooks<THook>(this InvItem obj)
 			=> GetHookController(obj, ref obj.__RogueLibsHooks, false)?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
 		/// <summary>
@@ -239,7 +254,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="THook">Type of the hooks to search for.</typeparam>
 		/// <param name="obj">Object to search hooks of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, or an empty collection.</returns>
+		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, or an empty collection.</returns>
 		public static IEnumerable<THook> GetHooks<THook>(this Agent obj)
 			=> GetHookController(obj, ref obj.__RogueLibsHooks, false)?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
 		/// <summary>
@@ -247,7 +262,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="THook">Type of the hooks to search for.</typeparam>
 		/// <param name="obj">Object to search hooks of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, or an empty collection.</returns>
+		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, or an empty collection.</returns>
 		public static IEnumerable<THook> GetHooks<THook>(this ObjectReal obj)
 			=> GetHookController(obj, ref obj.__RogueLibsHooks, false)?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
 		/// <summary>
@@ -255,7 +270,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="THook">Type of the hooks to search for.</typeparam>
 		/// <param name="obj">Object to search hooks of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, or an empty collection.</returns>
+		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, or an empty collection.</returns>
 		public static IEnumerable<THook> GetHooks<THook>(this StatusEffect obj)
 			=> GetHookController(obj, ref obj.__RogueLibsHooks, false)?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
 		/// <summary>
@@ -263,7 +278,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="THook">Type of the hooks to search for.</typeparam>
 		/// <param name="obj">Object to search hooks of the specified <typeparamref name="THook"/> type in.</param>
-		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, or an empty collection.</returns>
+		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, attached to the specified <paramref name="obj"/>, or an empty collection.</returns>
 		public static IEnumerable<THook> GetHooks<THook>(this Trait obj)
 			=> GetHookController(obj, ref obj.__RogueLibsHooks, false)?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
 
