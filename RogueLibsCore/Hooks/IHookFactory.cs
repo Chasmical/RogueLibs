@@ -49,17 +49,9 @@ namespace RogueLibsCore
 	/// <typeparam name="T">Type that the produced hooks can be attached to.</typeparam>
 	public abstract class HookFactoryBase<T> : IHookFactory<T>
 	{
-		/// <summary>
-		///   <para>Determines whether the current factory can create a hook for the specified <paramref name="obj"/>.</para>
-		/// </summary>
-		/// <param name="obj">Instance to create a hook for.</param>
-		/// <returns><see langword="true"/>, if the current factory can create a hook for the specified <paramref name="obj"/>; otherwise, <see langword="false"/>.</returns>
+		/// <inheritdoc/>
 		public abstract bool CanCreate(T obj);
-		/// <summary>
-		///   <para>Creates a new instance of the hook type for the specified <paramref name="obj"/>.</para>
-		/// </summary>
-		/// <param name="obj">Instance to create a hook for.</param>
-		/// <returns>Hook created for the specified <paramref name="obj"/>.</returns>
+		/// <inheritdoc/>
 		public abstract IHook<T> CreateHook(T obj);
 
 		bool IHookFactory.CanCreate(object obj) => obj is T t && CanCreate(t);

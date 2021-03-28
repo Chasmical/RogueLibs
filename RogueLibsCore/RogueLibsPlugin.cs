@@ -31,6 +31,7 @@ namespace RogueLibsCore
 			Patcher = new RoguePatcher(this);
 
 			PatchItems();
+			PatchTraitsAndStatusEffects();
 			PatchMisc();
 			PatchUnlocks();
 			PatchScrollingMenu();

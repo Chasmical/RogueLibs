@@ -40,7 +40,9 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Initializes the current hook.</para>
 		/// </summary>
-		public abstract void Initialize();
+		protected abstract void Initialize();
+		void IHook.Initialize() => Initialize();
+
 		/// <summary>
 		///   <para>Gets/sets the instance, that the current hook is attached to.</para>
 		/// </summary>

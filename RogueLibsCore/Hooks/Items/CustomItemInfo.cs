@@ -46,6 +46,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="type"><see cref="CustomItem"/> type.</param>
 		/// <returns><see cref="CustomItemInfo"/> containing the default information about the specified custom item <paramref name="type"/>.</returns>
+		/// <exception cref="ArgumentException"><paramref name="type"/> is not a <see cref="CustomItem"/>.</exception>
 		public static CustomItemInfo Get(Type type) => infos.TryGetValue(type, out CustomItemInfo info) ? info : (infos[type] = new CustomItemInfo(type));
 		/// <summary>
 		///   <para>Gets a <see cref="CustomItemInfo"/> for the specified <typeparamref name="TItem"/>.</para>
@@ -79,12 +80,12 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Ignores the default checks. Read the methods' description for more info.</para>
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Method)]
 	public class IgnoreDefaultChecksAttribute : Attribute { }
 	/// <summary>
-	///   <para>Specifies the custom item's name/id. If not used, uses the type's name, without a namespace.</para>
+	///   <para>Specifies the custom item's name/id. If not used, the type's name is used instead.</para>
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Class)]
 	public class ItemNameAttribute : Attribute
 	{
 		/// <summary>
@@ -101,7 +102,7 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Specifies the custom item's categories.</para>
 	/// </summary>
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = true)]
+	[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
 	public class ItemCategoriesAttribute : Attribute
 	{
 		/// <summary>

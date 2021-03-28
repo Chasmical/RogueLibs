@@ -10,14 +10,12 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Represents a base class for all custom items.</para>
 	/// </summary>
-	public abstract class CustomItem : IHook<InvItem>
+	public abstract class CustomItem : HookBase<InvItem>
 	{
 		/// <summary>
 		///   <para><see cref="InvItem"/>, that the current custom item is associated with.</para>
 		/// </summary>
-		public InvItem Item { get; private set; }
-		InvItem IHook<InvItem>.Instance { get => Item; set => Item = value; }
-		object IHook.Instance { get => Item; set => Item = (InvItem)value; }
+		public InvItem Item => Instance;
 
 		/// <summary>
 		///   <para>Inventory, that this item is in.</para>
@@ -52,7 +50,8 @@ namespace RogueLibsCore
 		/// </summary>
 		public CustomItemInfo ItemInfo { get; internal set; }
 
-		void IHook.Initialize()
+		/// <inheritdoc/>
+		protected override sealed void Initialize()
 		{
 			Item.Categories.AddRange(ItemInfo.Categories);
 			SetupDetails();

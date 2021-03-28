@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Hooks\Effects\CustomEffect.cs" />
     <Compile Include="Hooks\Unlocks\UnlocksMenu.cs" />
     <Compile Include="Hooks\Unlocks\OtherUnlocks.cs" />
     <Compile Include="Hooks\Unlocks\AbilityUnlock.cs" />
@@ -100,6 +101,7 @@
     <Compile Include="Patches\Patches_Misc.cs" />
     <Compile Include="Patches\Patches_Items.cs" />
     <Compile Include="Patches\Patches_Sprites.cs" />
+    <Compile Include="Patches\Patches_TraitsStatusEffects.cs" />
     <Compile Include="Patches\Patches_Unlocks.cs" />
     <Compile Include="Hooks\Unlocks\UnlockWrapper.cs" />
     <Compile Include="CustomName.cs" />

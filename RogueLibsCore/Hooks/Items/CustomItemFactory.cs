@@ -8,12 +8,12 @@ using UnityEngine;
 namespace RogueLibsCore
 {
 	/// <summary>
-	///   <para>Base interface for <see cref="CustomItemFactory{T}"/>.</para>
+	///   <para>Base interface for <see cref="CustomItemFactory{TItem}"/>.</para>
 	/// </summary>
 	public interface ICustomItemFactory : IHookFactory
 	{
 		/// <summary>
-		///   <para>Default information about a custom item, specified in the type's attributes.</para>
+		///   <para>Default information about a custom item, defined in the type's attributes.</para>
 		/// </summary>
 		CustomItemInfo ItemInfo { get; }
 	}
@@ -23,22 +23,11 @@ namespace RogueLibsCore
 	/// <typeparam name="TItem">Custom item's type.</typeparam>
 	public sealed class CustomItemFactory<TItem> : HookFactoryBase<InvItem>, ICustomItemFactory where TItem : CustomItem, new()
 	{
-		/// <summary>
-		///   <para>Default information about a custom item, specified in the type's attributes.</para>
-		/// </summary>
+		/// <inheritdoc/>
 		public CustomItemInfo ItemInfo { get; } = CustomItemInfo.Get(typeof(TItem));
-		/// <summary>
-		///   <para>Determines whether this factory can create a hook for the specified <paramref name="obj"/> (if its name matches the custom item's name).</para>
-		/// </summary>
-		/// <param name="obj"><see cref="InvItem"/> object.</param>
-		/// <returns><see langword="true"/>, if this factory can create a hook for the specified <paramref name="obj"/> (if its name matches the custom item's name); otherwise, <see langword="false"/>.</returns>
+		/// <inheritdoc/>
 		public override bool CanCreate(InvItem obj) => !(obj is null) && obj.invItemName == ItemInfo.Name;
-		/// <summary>
-		///   <para>Creates a new instance of the <typeparamref name="TItem"/> type for the specified <paramref name="obj"/>.</para>
-		/// </summary>
-		/// <param name="obj"><see cref="InvItem"/> object.</param>
-		/// <returns><typeparamref name="TItem"/> custom item hook, that was created for the specified <paramref name="obj"/>.</returns>
-		/// <exception cref="ArgumentNullException"><paramref name="obj"/> is <see langword="null"/>.</exception>
+		/// <inheritdoc/>
 		public override IHook<InvItem> CreateHook(InvItem obj)
 		{
 			if (obj is null) throw new ArgumentNullException(nameof(obj));

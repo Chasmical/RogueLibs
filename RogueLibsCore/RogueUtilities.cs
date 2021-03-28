@@ -6,6 +6,7 @@ using System.Linq;
 using BepInEx;
 using UnityEngine;
 using UnityEngine.Networking;
+using HarmonyLib;
 
 namespace RogueLibsCore
 {
@@ -194,6 +195,207 @@ namespace RogueLibsCore
 			finally
 			{
 				File.Delete(filePath);
+			}
+		}
+	}
+	public static class TranspilerHelper
+	{
+		public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> begin, Func<CodeInstruction, bool> end)
+		{
+			bool yield = true;
+			bool finished = false;
+			foreach (CodeInstruction instr in code)
+			{
+				if (yield)
+				{
+					if (!finished && begin(instr)) yield = false;
+					else yield return instr;
+				}
+				else if (end(instr))
+				{
+					yield = true;
+					finished = true;
+				}
+			}
+		}
+
+		public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> begin, Func<CodeInstruction, bool> end, CodeInstruction[] replacer)
+		{
+			bool yield = true;
+			bool finished = false;
+			foreach (CodeInstruction instr in code)
+			{
+				if (yield)
+				{
+					if (!finished && begin(instr))
+					{
+						foreach (CodeInstruction instr2 in replacer)
+							yield return instr2;
+						yield = false;
+					}
+					else yield return instr;
+				}
+				else if (end(instr))
+				{
+					yield = true;
+					finished = true;
+				}
+			}
+		}
+
+		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> after, CodeInstruction[] added)
+		{
+			bool passed = false;
+			foreach (CodeInstruction instr in code)
+			{
+				if (!passed && after(instr))
+				{
+					yield return instr;
+					foreach (CodeInstruction instr2 in added)
+						yield return instr2;
+					passed = true;
+				}
+				else yield return instr;
+			}
+		}
+
+		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> before, CodeInstruction[] added)
+		{
+			bool passed = false;
+			foreach (CodeInstruction instr in code)
+			{
+				if (!passed && before(instr))
+				{
+					foreach (CodeInstruction instr2 in added)
+						yield return instr2;
+					yield return instr;
+					passed = true;
+				}
+				else yield return instr;
+			}
+		}
+
+		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] after, CodeInstruction[] added)
+		{
+			List<CodeInstruction> cache = new List<CodeInstruction>();
+			int i = 0;
+			bool passed = false;
+			foreach (CodeInstruction instr in code)
+			{
+				if (passed)
+					yield return instr;
+				else if (after[i](instr))
+				{
+					cache.Add(instr);
+					if (++i == after.Length)
+					{
+						foreach (CodeInstruction instr2 in cache)
+							yield return instr2;
+						foreach (CodeInstruction instr2 in added)
+							yield return instr2;
+						passed = true;
+					}
+				}
+				else if (i > 0)
+				{
+					i = 0;
+					foreach (CodeInstruction instr2 in cache)
+						yield return instr2;
+				}
+				else yield return instr;
+			}
+		}
+
+		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] before, CodeInstruction[] added)
+		{
+			List<CodeInstruction> cache = new List<CodeInstruction>();
+			int i = 0;
+			bool passed = false;
+			foreach (CodeInstruction instr in code)
+			{
+				if (passed)
+					yield return instr;
+				else if (before[i](instr))
+				{
+					cache.Add(instr);
+					if (++i == before.Length)
+					{
+						foreach (CodeInstruction instr2 in added)
+							yield return instr2;
+						foreach (CodeInstruction instr2 in cache)
+							yield return instr2;
+						passed = true;
+					}
+				}
+				else if (i > 0)
+				{
+					i = 0;
+					foreach (CodeInstruction instr2 in cache)
+						yield return instr2;
+				}
+				else yield return instr;
+			}
+		}
+
+		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] after, Func<CodeInstruction>[] added)
+		{
+			List<CodeInstruction> cache = new List<CodeInstruction>();
+			int i = 0;
+			bool passed = false;
+			foreach (CodeInstruction instr in code)
+			{
+				if (passed)
+					yield return instr;
+				else if (after[i](instr))
+				{
+					cache.Add(instr);
+					if (++i == after.Length)
+					{
+						foreach (CodeInstruction instr2 in cache)
+							yield return instr2;
+						foreach (Func<CodeInstruction> instr2 in added)
+							yield return instr2();
+						passed = true;
+					}
+				}
+				else if (i > 0)
+				{
+					i = 0;
+					foreach (CodeInstruction instr2 in cache)
+						yield return instr2;
+				}
+				else yield return instr;
+			}
+		}
+
+		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] before, Func<CodeInstruction>[] added)
+		{
+			List<CodeInstruction> cache = new List<CodeInstruction>();
+			int i = 0;
+			bool passed = false;
+			foreach (CodeInstruction instr in code)
+			{
+				if (passed)
+					yield return instr;
+				else if (before[i](instr))
+				{
+					cache.Add(instr);
+					if (++i == before.Length)
+					{
+						foreach (Func<CodeInstruction> instr2 in added)
+							yield return instr2();
+						foreach (CodeInstruction instr2 in cache)
+							yield return instr2;
+						passed = true;
+					}
+				}
+				else if (i > 0)
+				{
+					i = 0;
+					foreach (CodeInstruction instr2 in cache)
+						yield return instr2;
+				}
+				else yield return instr;
 			}
 		}
 	}
