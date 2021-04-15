@@ -45,6 +45,7 @@
     <Compile Include="RogueLibsPlugin.cs" />
     <Compile Include="RoguePatcher.cs" />
     <Compile Include="RogueUtilities.cs" />
+    <Compile Include="VanillaStrings.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="0Harmony">
