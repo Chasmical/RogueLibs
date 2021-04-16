@@ -13,20 +13,20 @@ namespace RogueLibsCore
 	public abstract class CustomItem : HookBase<InvItem>
 	{
 		/// <summary>
-		///   <para><see cref="InvItem"/>, that the current custom item is associated with.</para>
+		///   <para>Gets the associated <see cref="InvItem"/> object.</para>
 		/// </summary>
 		public InvItem Item => Instance;
 
 		/// <summary>
-		///   <para>Inventory, that this item is in.</para>
+		///   <para>Gets the inventory, containing the item.</para>
 		/// </summary>
 		public InvDatabase Inventory => Item.database;
 		/// <summary>
-		///   <para>The item's owner.</para>
+		///   <para>Gets the item's owner.</para>
 		/// </summary>
 		public Agent Owner => Item.agent;
 		/// <summary>
-		///   <para>The amount of this item. Automatically destroys it, if there's 0 or less of it.</para>
+		///   <para>Gets/sets the amount of the item. Automatically destroys it, if there's 0 or less of it.</para>
 		/// </summary>
 		public int Count
 		{
@@ -40,13 +40,13 @@ namespace RogueLibsCore
 		}
 
 		/// <summary>
-		///   <para>The game's <see cref="GameController"/> that controls the game.</para>
+		///   <para>Gets the game's <see cref="GameController"/> that controls the game.</para>
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
 		public static GameController gc => GameController.gameController;
 
 		/// <summary>
-		///   <para>Default information about this item, defined in the type's attributes.</para>
+		///   <para>Gets the default information about the item, defined in the type's attributes.</para>
 		/// </summary>
 		public CustomItemInfo ItemInfo { get; internal set; }
 

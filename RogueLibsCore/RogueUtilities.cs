@@ -198,205 +198,407 @@ namespace RogueLibsCore
 			}
 		}
 	}
+	/// <summary>
+	///   <para>Collection of helper methods for writing transpiler patches.</para>
+	/// </summary>
 	public static class TranspilerHelper
 	{
-		public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> begin, Func<CodeInstruction, bool> end)
-		{
-			bool yield = true;
-			bool finished = false;
-			foreach (CodeInstruction instr in code)
-			{
-				if (yield)
-				{
-					if (!finished && begin(instr)) yield = false;
-					else yield return instr;
-				}
-				else if (end(instr))
-				{
-					yield = true;
-					finished = true;
-				}
-			}
-		}
+		/// <summary>
+		///   <para>Removes the first occurence of a region of the <paramref name="code"/>, starting at an instruction, matched by <paramref name="begin"/> predicate, and ending at an instruction, matched by <paramref name="end"/> predicate.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="begin">Predicate that matches the first instruction of the region to remove.</param>
+		/// <param name="end">Predicate that matches the last instruction of the region to remove.</param>
+		/// <returns>Modified code, with the specified region removed.</returns>
+		public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> begin,
+			Func<CodeInstruction, bool> end)
+			=> RemoveRegion(code, new Func<CodeInstruction, bool>[] { begin }, new Func<CodeInstruction, bool>[] { end });
+		/// <summary>
+		///   <para>Removes the first occurence of a region of the <paramref name="code"/>, matched by <paramref name="region"/> predicates.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="region">Predicates that match to the instructions of the region to remove.</param>
+		/// <returns>Modified code, with the specified region removed.</returns>
+		public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] region)
+			=> RemoveRegion(code, region, new Func<CodeInstruction, bool>[0]);
 
-		public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> begin, Func<CodeInstruction, bool> end, CodeInstruction[] replacer)
+		/// <summary>
+		///   <para>Removes the first occurence of a region of the <paramref name="code"/>, starting with instructions, matched by <paramref name="begin"/> predicates, and ending with instructions, matched by <paramref name="end"/> predicates.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="begin">Predicates that match to the first instructions of the region to remove.</param>
+		/// <param name="end">Predicates that match to the last instructions of the region to remove.</param>
+		/// <returns>Modified code, with the specified region removed.</returns>
+		public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] begin,
+			Func<CodeInstruction, bool>[] end)
 		{
-			bool yield = true;
-			bool finished = false;
-			foreach (CodeInstruction instr in code)
+			if (code is null) throw new ArgumentNullException(nameof(code));
+			if (begin is null) throw new ArgumentNullException(nameof(begin));
+			if (end is null) throw new ArgumentNullException(nameof(end));
+			if (begin.Length == 0) throw new ArgumentException($"{nameof(begin)} cannot be empty.", nameof(begin));
+			if (Array.Exists(begin, b => b is null)) throw new ArgumentException($"Delegates in {nameof(begin)} cannot be null.", nameof(begin));
+			if (Array.Exists(end, b => b is null)) throw new ArgumentException($"Delegates in {nameof(end)} cannot be null.", nameof(end));
+
+			return RemoveRegion2();
+			IEnumerable<CodeInstruction> RemoveRegion2()
 			{
-				if (yield)
+				SearchState state = SearchState.Searching;
+				int current = 0;
+				CodeInstruction[] cache = new CodeInstruction[begin.Length];
+				foreach (CodeInstruction instr in code)
 				{
-					if (!finished && begin(instr))
+					if (state == SearchState.Passed)
+						yield return instr;
+					else if (state == SearchState.Searching)
 					{
-						foreach (CodeInstruction instr2 in replacer)
-							yield return instr2;
-						yield = false;
+						if (begin[current](instr))
+						{
+							cache[current] = instr;
+							if (++current == begin.Length)
+							{
+								state = end.Length > 0 ? SearchState.Found : SearchState.Passed;
+								current = 0;
+							}
+						}
+						else
+						{
+							if (current > 0)
+							{
+								for (int i = 0; i < current; i++)
+									yield return cache[i];
+								current = 0;
+							}
+							yield return instr;
+						}
 					}
-					else yield return instr;
-				}
-				else if (end(instr))
-				{
-					yield = true;
-					finished = true;
-				}
-			}
-		}
-
-		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> after, CodeInstruction[] added)
-		{
-			bool passed = false;
-			foreach (CodeInstruction instr in code)
-			{
-				if (!passed && after(instr))
-				{
-					yield return instr;
-					foreach (CodeInstruction instr2 in added)
-						yield return instr2;
-					passed = true;
-				}
-				else yield return instr;
-			}
-		}
-
-		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> before, CodeInstruction[] added)
-		{
-			bool passed = false;
-			foreach (CodeInstruction instr in code)
-			{
-				if (!passed && before(instr))
-				{
-					foreach (CodeInstruction instr2 in added)
-						yield return instr2;
-					yield return instr;
-					passed = true;
-				}
-				else yield return instr;
-			}
-		}
-
-		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] after, CodeInstruction[] added)
-		{
-			List<CodeInstruction> cache = new List<CodeInstruction>();
-			int i = 0;
-			bool passed = false;
-			foreach (CodeInstruction instr in code)
-			{
-				if (passed)
-					yield return instr;
-				else if (after[i](instr))
-				{
-					cache.Add(instr);
-					if (++i == after.Length)
+					else // if (state == SearchState.Found)
 					{
-						foreach (CodeInstruction instr2 in cache)
-							yield return instr2;
-						foreach (CodeInstruction instr2 in added)
-							yield return instr2;
-						passed = true;
+						if (end[current](instr))
+						{
+							if (++current == end.Length)
+								state = SearchState.Passed;
+						}
+						else current = 0;
 					}
 				}
-				else if (i > 0)
-				{
-					i = 0;
-					foreach (CodeInstruction instr2 in cache)
-						yield return instr2;
-				}
-				else yield return instr;
 			}
 		}
 
-		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] before, CodeInstruction[] added)
+
+
+		/// <summary>
+		///   <para>Adds the specified <paramref name="region"/> to the <paramref name="code"/> after the first occurence of an instruction, matched by <paramref name="after"/> predicate.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="after">Predicate that matches to the instruction to add the <paramref name="region"/> after.</param>
+		/// <param name="region">Collection of the instructions to add.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> added.</returns>
+		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> after,
+			IEnumerable<CodeInstruction> region)
+			=> AddRegionAfter(code, new Func<CodeInstruction, bool>[] { after }, _ => region);
+		/// <summary>
+		///   <para>Adds the specified <paramref name="region"/> to the <paramref name="code"/> after the first occurence of a region, matched by <paramref name="after"/> predicates.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="after">Predicates that match to the instructions to add the <paramref name="region"/> after.</param>
+		/// <param name="region">Collection of the instructions to add.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> added.</returns>
+		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] after,
+			IEnumerable<CodeInstruction> region)
+			=> AddRegionAfter(code, after, _ => region);
+		/// <summary>
+		///   <para>Adds the specified <paramref name="region"/> to the <paramref name="code"/> after the first occurence of a region, matched by <paramref name="after"/> predicates.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="after">Predicates that match to the instructions to add the <paramref name="region"/> after.</param>
+		/// <param name="region">Collection of functions that return the instructions to add. These functions take a region, matched by <paramref name="after"/> predicates, as a parameter.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> added.</returns>
+		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] after,
+			IEnumerable<Func<CodeInstruction[], CodeInstruction>> region)
+			=> AddRegionAfter(code, after, m => region.Select(a => a(m)));
+
+		/// <summary>
+		///   <para>Adds the specified <paramref name="region"/> to the <paramref name="code"/> after the first occurence of a region, matched by <paramref name="after"/> predicates.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="after">Predicates that match to the instructions to add the <paramref name="region"/> after.</param>
+		/// <param name="region">Function that returns a collection of the instructions to add. Takes a region, matched by <paramref name="after"/> predicates, as a parameter.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> added.</returns>
+		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] after,
+			Func<CodeInstruction[], IEnumerable<CodeInstruction>> region)
 		{
-			List<CodeInstruction> cache = new List<CodeInstruction>();
-			int i = 0;
-			bool passed = false;
-			foreach (CodeInstruction instr in code)
+			if (code is null) throw new ArgumentNullException(nameof(code));
+			if (after is null) throw new ArgumentNullException(nameof(after));
+			if (region is null) throw new ArgumentNullException(nameof(region));
+			if (after.Length == 0) throw new ArgumentException($"{nameof(after)} cannot be empty.", nameof(after));
+			if (Array.Exists(after, a => a is null)) throw new ArgumentException($"Delegates in {nameof(after)} cannot be null.", nameof(after));
+
+			return AddRegionAfter2();
+			IEnumerable<CodeInstruction> AddRegionAfter2()
 			{
-				if (passed)
-					yield return instr;
-				else if (before[i](instr))
+				SearchState state = SearchState.Searching;
+				int current = 0;
+				CodeInstruction[] matches = new CodeInstruction[after.Length];
+				foreach (CodeInstruction instr in code)
 				{
-					cache.Add(instr);
-					if (++i == before.Length)
+					if (state == SearchState.Passed)
+						yield return instr;
+					else if (state == SearchState.Searching)
 					{
-						foreach (CodeInstruction instr2 in added)
-							yield return instr2;
-						foreach (CodeInstruction instr2 in cache)
-							yield return instr2;
-						passed = true;
+						yield return instr;
+						if (after[current](instr))
+						{
+							matches[current] = instr;
+							if (++current == after.Length)
+							{
+								state = SearchState.Passed;
+								CodeInstruction[] arr = new CodeInstruction[matches.Length];
+								matches.CopyTo(arr, 0);
+								IEnumerable<CodeInstruction> added = region(arr);
+								if (added is null) throw new ArgumentException($"{nameof(region)} cannot return null.");
+								foreach (CodeInstruction instr2 in added)
+								{
+									if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(region)} cannot contain null.", nameof(region));
+									yield return instr2;
+								}
+							}
+						}
+						else current = 0;
 					}
 				}
-				else if (i > 0)
-				{
-					i = 0;
-					foreach (CodeInstruction instr2 in cache)
-						yield return instr2;
-				}
-				else yield return instr;
 			}
 		}
 
-		public static IEnumerable<CodeInstruction> AddRegionAfter(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] after, Func<CodeInstruction>[] added)
+
+
+		/// <summary>
+		///   <para>Adds the specified <paramref name="region"/> to the <paramref name="code"/> in front of the first occurence of an instruction, matched by <paramref name="before"/> predicate.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="before">Predicate that matches to the instruction to add the <paramref name="region"/> in front of.</param>
+		/// <param name="region">Collection of the instructions to add.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> added.</returns>
+		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> before,
+			IEnumerable<CodeInstruction> region)
+			=> AddRegionBefore(code, new Func<CodeInstruction, bool>[] { before }, _ => region);
+		/// <summary>
+		///   <para>Adds the specified <paramref name="region"/> to the <paramref name="code"/> in front of the first occurence of a region, matched by <paramref name="before"/> predicates.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="before">Predicates that match to the instructions to add the <paramref name="region"/> in front of.</param>
+		/// <param name="region">Collection of the instructions to add.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> added.</returns>
+		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] before,
+			IEnumerable<CodeInstruction> region)
+			=> AddRegionBefore(code, before, _ => region);
+		/// <summary>
+		///   <para>Adds the specified <paramref name="region"/> to the <paramref name="code"/> in front of the first occurence of a region, matched by <paramref name="before"/> predicates.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="before">Predicates that match to the instructions to add the <paramref name="region"/> in front of.</param>
+		/// <param name="region">Collection of functions that return the instructions to add. These functions take a region, matched by <paramref name="before"/> predicates, as a parameter.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> added.</returns>
+		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] before,
+			IEnumerable<Func<CodeInstruction[], CodeInstruction>> region)
+			=> AddRegionBefore(code, before, m => region.Select(a => a(m)));
+
+		/// <summary>
+		///   <para>Adds the specified <paramref name="region"/> to the <paramref name="code"/> in front of the first occurence of a region, matched by <paramref name="before"/> predicates.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="before">Predicates that match to the instructions to add the <paramref name="region"/> in front of.</param>
+		/// <param name="region">Function that returns a collection of the instructions to add. Takes a region, matched by <paramref name="before"/> predicates, as a parameter.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> added.</returns>
+		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] before,
+			Func<CodeInstruction[], IEnumerable<CodeInstruction>> region)
 		{
-			List<CodeInstruction> cache = new List<CodeInstruction>();
-			int i = 0;
-			bool passed = false;
-			foreach (CodeInstruction instr in code)
+			if (code is null) throw new ArgumentNullException(nameof(code));
+			if (before is null) throw new ArgumentNullException(nameof(before));
+			if (region is null) throw new ArgumentNullException(nameof(region));
+			if (before.Length == 0) throw new ArgumentException($"{nameof(before)} cannot be empty.", nameof(before));
+			if (Array.Exists(before, b => b is null)) throw new ArgumentException($"Delegates in {nameof(before)} cannot be null.", nameof(before));
+
+			return AddRegionBefore2();
+			IEnumerable<CodeInstruction> AddRegionBefore2()
 			{
-				if (passed)
-					yield return instr;
-				else if (after[i](instr))
+				SearchState state = SearchState.Searching;
+				int current = 0;
+				CodeInstruction[] matches = new CodeInstruction[before.Length];
+				foreach (CodeInstruction instr in code)
 				{
-					cache.Add(instr);
-					if (++i == after.Length)
+					if (state == SearchState.Passed)
+						yield return instr;
+					else if (state == SearchState.Searching)
 					{
-						foreach (CodeInstruction instr2 in cache)
-							yield return instr2;
-						foreach (Func<CodeInstruction> instr2 in added)
-							yield return instr2();
-						passed = true;
+						if (before[current](instr))
+						{
+							matches[current] = instr;
+							if (++current == before.Length)
+							{
+								state = SearchState.Passed;
+								CodeInstruction[] arr = new CodeInstruction[matches.Length];
+								matches.CopyTo(arr, 0);
+								IEnumerable<CodeInstruction> added = region(arr);
+								if (added is null) throw new ArgumentException($"{nameof(region)} cannot return null.");
+								foreach (CodeInstruction instr2 in added)
+								{
+									if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(region)} cannot contain null.", nameof(region));
+									yield return instr2;
+								}
+								for (int i = 0; i < current; i++)
+									yield return matches[i];
+							}
+						}
+						else
+						{
+							if (current > 0)
+							{
+								for (int i = 0; i < current; i++)
+									yield return matches[i];
+								current = 0;
+							}
+							yield return instr;
+						}
 					}
 				}
-				else if (i > 0)
-				{
-					i = 0;
-					foreach (CodeInstruction instr2 in cache)
-						yield return instr2;
-				}
-				else yield return instr;
 			}
 		}
 
-		public static IEnumerable<CodeInstruction> AddRegionBefore(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] before, Func<CodeInstruction>[] added)
+
+
+		/// <summary>
+		///   <para>Replaces a region of the <paramref name="code"/>, starting with instructions, matched by <paramref name="begin"/> predicates, and ending with instructions, matched by <paramref name="end"/> predicates, with the specified <paramref name="replacer"/> region.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="begin">Predicates that match to the first instructions of the region to replace.</param>
+		/// <param name="end">Predicates that match to the last instructions of the region to replace.</param>
+		/// <param name="replacer">Collection of the instructions to replace a region with.</param>
+		/// <returns>Modified code, with the specified region replaced with <paramref name="replacer"/>.</returns>
+		public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] begin,
+			Func<CodeInstruction, bool>[] end, IEnumerable<CodeInstruction> replacer)
+			=> ReplaceRegion(code, begin, end, (_, __) => replacer);
+		/// <summary>
+		///   <para>Replaces a region of the <paramref name="code"/>, starting with instructions, matched by <paramref name="begin"/> predicates, and ending with instructions, matched by <paramref name="end"/> predicates, with the specified <paramref name="replacer"/> region.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="begin">Predicates that match to the first instructions of the region to replace.</param>
+		/// <param name="end">Predicates that match to the last instructions of the region to replace.</param>
+		/// <param name="replacer">Collection of functions that return the instructions to replace a region with. These functions take regions, matched by <paramref name="begin"/> and <paramref name="end"/> predicates, as parameters.</param>
+		/// <returns>Modified code, with the specified region replaced with <paramref name="replacer"/>.</returns>
+		public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] begin,
+			Func<CodeInstruction, bool>[] end, IEnumerable<Func<CodeInstruction[], CodeInstruction[], CodeInstruction>> replacer)
+			=> ReplaceRegion(code, begin, end, (a, b) => replacer.Select(r => r(a, b)));
+
+		/// <summary>
+		///   <para>Replaces a region of the <paramref name="code"/>, matched by <paramref name="region"/> predicates, with the specified <paramref name="replacer"/> region.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="region">Predicates that match to the instructions of the region to remove.</param>
+		/// <param name="replacer">Collection of the instructions to replace the specified <paramref name="region"/> with.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> replaced with <paramref name="replacer"/>.</returns>
+		public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] region, IEnumerable<CodeInstruction> replacer)
+			=> ReplaceRegion(code, region, new Func<CodeInstruction, bool>[0], (_, __) => replacer);
+		/// <summary>
+		///   <para>Replaces a region of the <paramref name="code"/>, matched by <paramref name="region"/> predicates, with the specified <paramref name="replacer"/> region.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="region">Predicates that match to the instructions of the region to remove.</param>
+		/// <param name="replacer">Collection of functions that return the instructions to replace the specified <paramref name="region"/> with. These functions take a region, matched by <paramref name="region"/> predicates, as a parameter.</param>
+		/// <returns>Modified code, with the specified <paramref name="region"/> replaced with <paramref name="replacer"/>.</returns>
+		public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] region, IEnumerable<Func<CodeInstruction[], CodeInstruction>> replacer)
+			=> ReplaceRegion(code, region, new Func<CodeInstruction, bool>[0], (replaced, _) => replacer.Select(r => r(replaced)));
+
+		/// <summary>
+		///   <para>Replaces a region of the <paramref name="code"/>, starting with instructions, matched by <paramref name="begin"/> predicates, and ending with instructions, matched by <paramref name="end"/> predicates, with the specified <paramref name="replacer"/> region.</para>
+		/// </summary>
+		/// <param name="code">Original method's code.</param>
+		/// <param name="begin">Predicates that match to the first instructions of the region to replace.</param>
+		/// <param name="end">Predicates that match to the last instructions of the region to replace.</param>
+		/// <param name="replacer">Function that returns a collection of the instructions to replace a region with. Takes regions, matched by <paramref name="begin"/> and <paramref name="end"/> predicates, as parameters.</param>
+		/// <returns>Modified code, with the specified region replaced with <paramref name="replacer"/>.</returns>
+		public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] begin, Func<CodeInstruction, bool>[] end, Func<CodeInstruction[], CodeInstruction[], IEnumerable<CodeInstruction>> replacer)
 		{
-			List<CodeInstruction> cache = new List<CodeInstruction>();
-			int i = 0;
-			bool passed = false;
-			foreach (CodeInstruction instr in code)
+			if (code is null) throw new ArgumentNullException(nameof(code));
+			if (begin is null) throw new ArgumentNullException(nameof(begin));
+			if (end is null) throw new ArgumentNullException(nameof(end));
+			if (replacer is null) throw new ArgumentNullException(nameof(replacer));
+			if (begin.Length == 0) throw new ArgumentException($"{nameof(begin)} cannot be empty.", nameof(begin));
+			if (Array.Exists(begin, b => b is null)) throw new ArgumentException($"Delegates in {nameof(begin)} cannot be null.", nameof(begin));
+			if (Array.Exists(end, e => e is null)) throw new ArgumentException($"Delegates in {nameof(end)} cannot be null.", nameof(end));
+
+			return ReplaceRegion2();
+			IEnumerable<CodeInstruction> ReplaceRegion2()
 			{
-				if (passed)
-					yield return instr;
-				else if (before[i](instr))
+				SearchState state = SearchState.Searching;
+				int current = 0;
+				CodeInstruction[] beginCache = new CodeInstruction[begin.Length];
+				CodeInstruction[] endCache = new CodeInstruction[end.Length];
+				foreach (CodeInstruction instr in code)
 				{
-					cache.Add(instr);
-					if (++i == before.Length)
+					if (state == SearchState.Passed)
+						yield return instr;
+					else if (state == SearchState.Searching)
 					{
-						foreach (Func<CodeInstruction> instr2 in added)
-							yield return instr2();
-						foreach (CodeInstruction instr2 in cache)
-							yield return instr2;
-						passed = true;
+						if (begin[current](instr))
+						{
+							beginCache[current] = instr;
+							if (++current == begin.Length)
+							{
+								state = end.Length > 0 ? SearchState.Found : SearchState.Passed;
+								if (state == SearchState.Passed)
+								{
+									IEnumerable<CodeInstruction> replaced = replacer(beginCache, endCache);
+									if (replaced is null) throw new ArgumentException($"{nameof(replacer)} cannot return null.");
+									foreach (CodeInstruction instr2 in replaced)
+									{
+										if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(replacer)} cannot contain null.", nameof(replacer));
+										yield return instr2;
+									}
+								}
+								current = 0;
+							}
+						}
+						else
+						{
+							if (current > 0)
+							{
+								for (int i = 0; i < current; i++)
+									yield return beginCache[i];
+								current = 0;
+							}
+							yield return instr;
+						}
+					}
+					else // if (state == SearchState.Found)
+					{
+						if (end[current](instr))
+						{
+							endCache[current] = instr;
+							if (++current == end.Length)
+							{
+								state = SearchState.Passed;
+								IEnumerable<CodeInstruction> replaced = replacer(beginCache, endCache);
+								if (replaced is null) throw new ArgumentException($"{nameof(replacer)} cannot return null.");
+								foreach (CodeInstruction instr2 in replaced)
+								{
+									if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(replacer)} cannot contain null.", nameof(replacer));
+									yield return instr2;
+								}
+							}
+						}
+						else current = 0;
 					}
 				}
-				else if (i > 0)
-				{
-					i = 0;
-					foreach (CodeInstruction instr2 in cache)
-						yield return instr2;
-				}
-				else yield return instr;
 			}
+		}
+
+
+
+		private enum SearchState
+		{
+			Searching = 0,
+			Found     = 1,
+			Passed    = 2
 		}
 	}
 }

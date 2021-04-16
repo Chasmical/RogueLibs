@@ -53,16 +53,21 @@ namespace RogueLibsCore
 		/// <returns>Modified code, with the foreach loop in the end replaced with the <see cref="LoadUnlockWrappersAndCategorize"/> method call.</returns>
 		public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
 			=> codeEnumerable.ReplaceRegion(
-				i => i.opcode == OpCodes.Callvirt && i.Calls(typeof(List<Unlock>).GetMethod("GetEnumerator")),
-				i => i.opcode == OpCodes.Endfinally,
+				new Func<CodeInstruction, bool>[]
+				{
+					i => i.opcode == OpCodes.Callvirt && i.Calls(typeof(List<Unlock>).GetMethod("GetEnumerator"))
+				},
+				new Func<CodeInstruction, bool>[]
+				{
+					i => i.opcode == OpCodes.Endfinally
+				},
 
 				new CodeInstruction[]
 				{
 					new CodeInstruction(OpCodes.Pop),
-					new CodeInstruction(OpCodes.Call, loadUnlockWrappersMethod)
+					new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)))
 				}
 			);
-		private static readonly MethodInfo loadUnlockWrappersMethod = SymbolExtensions.GetMethodInfo(() => LoadUnlockWrappersAndCategorize());
 		/// <summary>
 		///   <para>Initializes and sets up the unlock wrappers, both original and custom.</para>
 		/// </summary>
