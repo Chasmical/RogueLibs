@@ -1171,28 +1171,28 @@ namespace RogueLibsCore
     {
         public const string
             Bite = "Bite",
-            Camouflage = "Camouflage",
+            Camouflage = "InvisibleLimitedItem",
             Cannibalize = "Cannibalize",
-            Chaaarge = "Chaaarge!",
-            ChloroformHankie = "Chloroform Hankie",
-            CryProfusely = "Cry Profusely",
+            Chaaarge = "Charge",
+            ChloroformHankie = "ChloroformHankie",
+            CryProfusely = "TutorialAbility",
             Enslave = "Enslave",
             Handcuffs = "Handcuffs",
             Joke = "Joke",
             Laptop = "Laptop",
-            LaserGun = "Laser Gun",
-            MechTransformation = "Mech Transformation",
-            MindControl = "Mind Control",
+            LaserCannon = "LaserGun",
+            RideMech = "MechTransform",
+            MindControl = "MindControl",
             Possess = "Possess",
-            PowerSap = "Power Sap",
-            PrimalLunge = "Primal Lunge",
-            SharpLunge = "Sharp Lunge",
-            StickyGlove = "Sticky Glove",
+            PowerSap = "PowerSap",
+            PrimalLunge = "Lunge",
+            SharpLunge = "WerewolfLunge",
+            StickyGlove = "StealingGlove",
             Stomp = "Stomp",
             Toss = "Toss",
-            WaterCannon = "Water Cannon",
-            WerewolfTransformation = "Werewolf Transformation",
-            ZombieSpit = "Zombie Spit";
+            WaterCannon = "WaterCannon",
+            WerewolfTransformation = "WerewolfTransform",
+            ZombiePhlegm = "ZombieSpit";
     }
     public static class vStatus
     {
