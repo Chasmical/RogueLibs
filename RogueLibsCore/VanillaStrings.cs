@@ -5,8 +5,10 @@ using System.Text;
 
 namespace RogueLibsCore
 {
-    public static class vAgent // Vanilla Agent Classes
-    {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning disable IDE1006 // Naming Styles
+    public static class vAgent
+	{
         public const string
             Alien = "Alien",
             Assassin = "Assassin",
@@ -55,7 +57,7 @@ namespace RogueLibsCore
             Wrestler = "Wrestler",
             Zombie = "Zombie";
     }
-    public static class vGoals // Vanilla Agent Goals
+    public static class vGoals
     {
         public const string
             CuriousObject = "CuriousObject",
@@ -74,7 +76,7 @@ namespace RogueLibsCore
             WanderFar = "WanderFar",
             WanderInOwnedProperty = "WanderInOwnedProperty";
     }
-    public static class vArmor // Vanilla Armor
+    public static class vArmor
     {
         public const string
             BraceletOfStrength = "BraceletStrength",
@@ -85,7 +87,7 @@ namespace RogueLibsCore
             MoodRing = "MoodRing",
             Null = "";
     }
-    public static class vArmorHead // Vanilla Headgear
+    public static class vArmorHead
     {
         public const string
             BlueHat = "HatBlue",
@@ -106,7 +108,7 @@ namespace RogueLibsCore
             SuperCopHat = "Cop2Hat",
             ThiefHat = "ThiefHat";
     }
-    public static class vAudioClip // Vanilla Audio Clips
+    public static class vAudioClip
     {
         public const string
             AddTrait = "AddTrait",
@@ -529,7 +531,7 @@ namespace RogueLibsCore
             ZombieSpitCharge = "ZombieSpitCharge",
             ZombieSpitFire = "ZombieSpitFire";
     }
-    public static class vChunkType // Vanilla Chunks
+    public static class vChunkType
     {
         public const string
             Apartments = "Apartments",
@@ -584,7 +586,7 @@ namespace RogueLibsCore
             TVStation = "TVStation",
             Zoo = "Zoo";
     }
-    public static class vColor // Vanilla Colors
+    public static class vColor
     {
         public const string
             AlienSkin = "AlienSkin",
@@ -621,7 +623,7 @@ namespace RogueLibsCore
             ZombieSkin3 = "ZombieSkin3",
             ZombieSkin4 = "ZombieSkin4";
     }
-    public static class vDirection // Vanilla Directions
+    public static class vDirection
     {
         public const string
             East = "E",
@@ -634,7 +636,7 @@ namespace RogueLibsCore
             SouthWest = "SW",
             West = "W";
     }
-    public static class vExplosion // Vanilla Explosion Types
+    public static class vExplosion
     {
         public const string
             Big = "Big",
@@ -653,7 +655,7 @@ namespace RogueLibsCore
             Warp = "Warp",
             Water = "Water";
     }
-    public static class vEyesType // Vanilla Eye Types
+    public static class vEyesType
     {
         public const string
             Cannibal = "EyesCannibal",
@@ -664,7 +666,7 @@ namespace RogueLibsCore
             Wide = "EyesWide",
             Zombie = "EyesZombie";
     }
-    public static class vFacialHairType // Vanilla Facial Hair
+    public static class vFacialHairType
     {
         public const string
             Beard = "Beard",
@@ -673,7 +675,7 @@ namespace RogueLibsCore
             Mustache = "Mustache",
             Null = "None";
     }
-    public static class vFloor // Vanilla Floors
+    public static class vFloor
     {
         public const string
             ArenaFloor = "ArenaFloor",
@@ -729,7 +731,7 @@ namespace RogueLibsCore
             WoodClean = "WoodClean",
             WoodSlats = "WoodSlats";
     }
-    public static class vHairType // Vanilla Hair
+    public static class vHairType
     {
         public const string
             Afro = "Afro",
@@ -770,7 +772,7 @@ namespace RogueLibsCore
             Wave = "Wave",
             WerewolfHead = "WerewolfHead";
     }
-    public static class vItem // Vanilla Items
+    public static class vItem
     {
         public const string
             AccuracyMod = "AccuracyMod",
@@ -956,7 +958,7 @@ namespace RogueLibsCore
             WindowCutter = "WindowCutter",
             Wrench = "Wrench";
     }
-    public static class vLevelFeature // Vanilla Features
+    public static class vLevelFeature
     {
         public const string
             AlarmButton = " AlarmButton",
@@ -999,7 +1001,7 @@ namespace RogueLibsCore
             VendingMachine = " VendingMachine",
             VendorCart = " VendorCart";
     }
-    public static class vLevelFeeling // Vanilla Disasters
+    public static class vLevelFeeling
     {
         public const string
             BountyOnYourHead = "Bounty",
@@ -1014,7 +1016,7 @@ namespace RogueLibsCore
             WarZone = "WarZone",
             Zombies = "Zombies";
     }
-    public static class vLevelTheme // Vanilla Floor Names
+    public static class vLevelTheme
     {
         public const string
             Downtown = "Downtown",
@@ -1024,7 +1026,7 @@ namespace RogueLibsCore
             Slums = "Slums",
             Uptown = "Uptown";
     }
-    public static class vLevelType // Vanilla Level Types
+    public static class vLevelType
     {
         public const string
             Attract = "Attract",
@@ -1033,7 +1035,7 @@ namespace RogueLibsCore
             Null = "",
             Tutorial = "Tutorial";
     }
-    public static class vChallenge // Vanilla Mutators
+    public static class vChallenge
     {
         public const string
             AssassinsEveryLevel = "AssassinsEveryLevel",
@@ -1069,7 +1071,7 @@ namespace RogueLibsCore
             ZombieMutator = "ZombieMutator",
             ZombiesWelcome = "ZombiesWelcome";
     }
-    public static class vObject // Vanilla Objects
+    public static class vObject
     {
         public const string
             AirConditioner = "AirConditioner",
@@ -1123,7 +1125,7 @@ namespace RogueLibsCore
             PoolTable = "PoolTable",
             PowerBox = "PowerBox";
     }
-    public static class vQuest // Vanilla Quests
+    public static class vQuest
     {
         public const string
             Destroy = "Destroy",
@@ -1140,7 +1142,7 @@ namespace RogueLibsCore
             Retrieve = "Retrieve",
             UseAll = "UseAll";
     }
-    public static class vQuestStatus // Vanilla Quest Statuses
+    public static class vQuestStatus
     {
         public const string
             Accepted = "Accepted",
@@ -1150,7 +1152,7 @@ namespace RogueLibsCore
             NotAccepted = "NotAccepted",
             Null = "";
     }
-    public static class vSecurityType // Vanilla Security Types
+    public static class vSecurityType
     {
         public const string
         ID = "ID",
@@ -1160,7 +1162,7 @@ namespace RogueLibsCore
         Null = "",
         Weapons = "Weapons";
     }
-    public static class vSpecialAbility // Vanilla Special Abilities
+    public static class vSpecialAbility
     {
         public const string
             Bite = "Bite",
@@ -1187,7 +1189,7 @@ namespace RogueLibsCore
             WerewolfTransformation = "Werewolf Transformation",
             ZombieSpit = "Zombie Spit";
     }
-    public static class vStatus // Vanilla Status Effects
+    public static class vStatus
     {
         public const string
             AbovetheLaw = "AboveTheLaw",
@@ -1260,7 +1262,7 @@ namespace RogueLibsCore
             Werewolf = "WerewolfEffect",
             Withdrawal = "Withdrawal";
     }
-    public static class vSyringeEffect // Vanilla Syringe Effects
+    public static class vSyringeEffect
     {
         public const string
             Acid = "Acid",
@@ -1274,7 +1276,7 @@ namespace RogueLibsCore
             Strength = "Strength",
             Weak = "Weak";
     }
-    public static class vTrait // Vanilla Traits
+    public static class vTrait
     {
         public const string
             AbovetheLaw = "AboveTheLaw",
@@ -1482,7 +1484,7 @@ namespace RogueLibsCore
             WrongBuilding = "OwnersNotHostile",
             Zombiism = "Zombify";
     }
-    public static class vWall // Vanilla Walls
+    public static class vWall
     {
         public const string
             BarbedWire = "BarbedWire",
@@ -1495,4 +1497,6 @@ namespace RogueLibsCore
             Steel = "Steel",
             Wood = "Wood";
     }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }
