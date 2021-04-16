@@ -126,6 +126,7 @@
     <Compile Include="RoguePatcher.cs" />
     <Compile Include="RogueSprite.cs" />
     <Compile Include="RogueUtilities.cs" />
+    <Compile Include="VanillaStrings.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
