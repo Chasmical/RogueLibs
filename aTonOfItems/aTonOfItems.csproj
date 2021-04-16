@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A1764685-F31F-4864-AAB6-99870B10C239}</ProjectGuid>
+    <ProjectGuid>{3A1A66D2-41C1-45BF-8514-0CE67A28D9D0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>RogueLibsCore</RootNamespace>
