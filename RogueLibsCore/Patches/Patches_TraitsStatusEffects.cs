@@ -20,6 +20,9 @@ namespace RogueLibsCore
 			Patcher.Transpiler(typeof(StatusEffects), nameof(StatusEffects.AddStatusEffect),
 				new Type[] { typeof(string), typeof(bool), typeof(Agent), typeof(NetworkInstanceId), typeof(bool), typeof(int) });
 #pragma warning restore CS0618
+			Patcher.Transpiler(typeof(StatusEffects), nameof(StatusEffects.AddTrait),
+				new Type[] { typeof(string), typeof(bool), typeof(bool) });
+
 			Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.RemoveTrait), nameof(StatusEffects_RemoveTrait_Prefix),
 				new Type[] { typeof(string), typeof(bool) });
 			Patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.RemoveTrait),
@@ -40,9 +43,9 @@ namespace RogueLibsCore
 				},
 				new Func<CodeInstruction[], CodeInstruction>[]
 				{
-					(a) => a[0],
-					(_) => new CodeInstruction(OpCodes.Ldarg_0),
-					(_) => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook)))
+					a => a[0],
+					_ => new CodeInstruction(OpCodes.Ldarg_0),
+					_ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook)))
 				});
 		/// <summary>
 		///   <para>Sets up and initializes <see cref="StatusEffect"/>'s hooks.</para>
@@ -77,5 +80,6 @@ namespace RogueLibsCore
 			CustomTrait trait = __state?.GetHook<CustomTrait>();
 			trait?.OnRemoved();
 		}
+		public static string CombineStrings(int a, int b) => a.ToString() + b.ToString();
 	}
 }

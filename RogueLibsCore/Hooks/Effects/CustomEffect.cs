@@ -25,6 +25,8 @@ namespace RogueLibsCore
 		/// </summary>
 		public Agent Owner => Effect.GetStatusEffects().agent;
 
+		public int CurrentTime { get => Effect.curTime; set => Effect.curTime = value; }
+
 		/// <summary>
 		///   <para>Gets the game's <see cref="GameController"/> that controls the game.</para>
 		/// </summary>
@@ -46,6 +48,7 @@ namespace RogueLibsCore
 		}
 
 		public abstract void OnAdded();
+		public virtual void OnUpdated(StatusEffect newEffect) => CurrentTime = newEffect.curTime;
 		public abstract void OnRemoved();
 		public abstract void OnUpdated(ref float nextUpdateDelay);
 	}

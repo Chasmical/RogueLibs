@@ -95,6 +95,18 @@ namespace RogueLibsCore
 			RogueLibsInternals.InvItemFactories.Add(factory);
 			return new ItemInfo(factory);
 		}
+		public static void CreateCustomEffect<TEffect>()
+			where TEffect : CustomEffect, new()
+		{
+			CustomEffectFactory<TEffect> factory = new CustomEffectFactory<TEffect>();
+			RogueLibsInternals.StatusEffectFactories.Add(factory);
+		}
+		public static void CreateCustomTrait<TTrait>()
+			where TTrait : CustomTrait, new()
+		{
+			CustomTraitFactory<TTrait> factory = new CustomTraitFactory<TTrait>();
+			RogueLibsInternals.TraitFactories.Add(factory);
+		}
 
 		/// <summary>
 		///   <para>Creates a <see cref="RogueSprite"/> from the provided data and defines it as soon as possible.</para>

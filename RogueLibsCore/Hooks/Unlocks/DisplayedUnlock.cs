@@ -210,14 +210,14 @@ namespace RogueLibsCore
 		///   <para>Plays a clip with the specified <paramref name="clipName"/> to the player.</para>
 		/// </summary>
 		/// <param name="clipName"><see cref="AudioClip"/>'s name/id.</param>
-		public void PlaySound(string clipName) => gc.audioHandler.Play(Menu.Agent, clipName);
+		protected void PlaySound(string clipName) => gc.audioHandler.Play(Menu.Agent, clipName);
 		/// <summary>
 		///   <para>Sends an announcement in chat with the specified <paramref name="msg1"/>, <paramref name="msg2"/> and <paramref name="msg3"/>.</para>
 		/// </summary>
 		/// <param name="msg1">Message 1.</param>
 		/// <param name="msg2">Message 2.</param>
 		/// <param name="msg3">Message 3.</param>
-		public void SendAnnouncementInChat(string msg1, string msg2 = "", string msg3 = "")
+		protected void SendAnnouncementInChat(string msg1, string msg2 = "", string msg3 = "")
 		{
 			if (gc.serverPlayer && gc.multiplayerMode)
 				Menu.Agent.objectMult.SendChatAnnouncement(msg1, msg2, msg3);
