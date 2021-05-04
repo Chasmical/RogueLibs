@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Threading;
 using System.Linq;
 using BepInEx;
@@ -359,7 +360,7 @@ namespace RogueLibsCore
 								foreach (CodeInstruction instr2 in added)
 								{
 									if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(region)} cannot contain null.", nameof(region));
-									yield return instr2;
+									yield return new CodeInstruction(instr2) { labels = new List<Label>(), blocks = new List<ExceptionBlock>() };
 								}
 							}
 						}
@@ -443,7 +444,7 @@ namespace RogueLibsCore
 								foreach (CodeInstruction instr2 in added)
 								{
 									if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(region)} cannot contain null.", nameof(region));
-									yield return instr2;
+									yield return new CodeInstruction(instr2) { labels = new List<Label>(), blocks = new List<ExceptionBlock>() };
 								}
 								for (int i = 0; i < current; i++)
 									yield return matches[i];

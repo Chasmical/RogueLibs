@@ -37,10 +37,7 @@ namespace RogueLibsCore
 		public CustomTraitInfo TraitInfo { get; internal set; }
 
 		/// <inheritdoc/>
-		protected override sealed void Initialize()
-		{
-			OnAdded();
-		}
+		protected override sealed void Initialize() => OnAdded();
 
 		public abstract void OnAdded();
 		public abstract void OnRemoved();

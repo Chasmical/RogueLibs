@@ -45,14 +45,7 @@ namespace RogueLibsCore
 		/// <param name="__instance">Instance of <see cref="InvItem"/>.</param>
 		public static void InvItem_SetupDetails(InvItem __instance)
 		{
-			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories_Init)
-				if (factory.CanCreate(__instance))
-				{
-					IHook<InvItem> hook = factory.CreateHook(__instance);
-					__instance.AddHook(hook);
-					hook.Initialize();
-				}
-			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories)
+			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories_Init.Concat(RogueLibsInternals.InvItemFactories))
 				if (factory.CanCreate(__instance))
 				{
 					IHook<InvItem> hook = factory.CreateHook(__instance);

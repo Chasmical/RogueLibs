@@ -26,6 +26,23 @@ namespace RogueLibsCore
 		/// </summary>
 		public static readonly List<IHookFactory<InvItem>> InvItemFactories_Init = new List<IHookFactory<InvItem>>();
 		/// <summary>
+		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="Agent"/>s, specifically the ones that initialize the <see cref="Agent"/> instance.</para>
+		/// </summary>
+		public static readonly List<IHookFactory<Agent>> AgentFactories_Init = new List<IHookFactory<Agent>>();
+		/// <summary>
+		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="ObjectReal"/>s, specifically the ones that initialize the <see cref="ObjectReal"/> instance.</para>
+		/// </summary>
+		public static readonly List<IHookFactory<ObjectReal>> ObjectRealFactories_Init = new List<IHookFactory<ObjectReal>>();
+		/// <summary>
+		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="StatusEffect"/>s, specifically the ones that initialize the <see cref="StatusEffect"/> instance.</para>
+		/// </summary>
+		public static readonly List<IHookFactory<StatusEffect>> EffectFactories_Init = new List<IHookFactory<StatusEffect>>();
+		/// <summary>
+		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="Trait"/>s, specifically the ones that initialize the <see cref="Trait"/> instance.</para>
+		/// </summary>
+		public static readonly List<IHookFactory<Trait>> TraitFactories_Init = new List<IHookFactory<Trait>>();
+
+		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="InvItem"/>s.</para>
 		/// </summary>
 		public static readonly List<IHookFactory<InvItem>> InvItemFactories = new List<IHookFactory<InvItem>>();
@@ -40,7 +57,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="StatusEffect"/>s.</para>
 		/// </summary>
-		public static readonly List<IHookFactory<StatusEffect>> StatusEffectFactories = new List<IHookFactory<StatusEffect>>();
+		public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new List<IHookFactory<StatusEffect>>();
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="Trait"/>s.</para>
 		/// </summary>
@@ -103,7 +120,7 @@ namespace RogueLibsCore
 			where TEffect : CustomEffect, new()
 		{
 			CustomEffectFactory<TEffect> factory = new CustomEffectFactory<TEffect>();
-			RogueLibsInternals.StatusEffectFactories.Add(factory);
+			RogueLibsInternals.EffectFactories.Add(factory);
 		}
 		public static void CreateCustomTrait<TTrait>()
 			where TTrait : CustomTrait, new()

@@ -27,6 +27,8 @@ namespace RogueLibsCore
 				new Type[] { typeof(string), typeof(bool) });
 			Patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.RemoveTrait),
 				new Type[] { typeof(string), typeof(bool) });
+
+			Patcher.postf
 		}
 		/// <summary>
 		///   <para><b>Transpiler-patch.</b> Adds a status effect initialization right after initializing a new instance of <see cref="StatusEffect"/>.</para>
@@ -55,7 +57,7 @@ namespace RogueLibsCore
 		public static void SetupEffectHook(StatusEffect effect, StatusEffects parent)
 		{
 			effect.__RogueLibsContainer = parent;
-			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.StatusEffectFactories)
+			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories_Init.Concat(RogueLibsInternals.EffectFactories))
 				if (factory.CanCreate(effect))
 				{
 					IHook<StatusEffect> hook = factory.CreateHook(effect);
@@ -63,6 +65,33 @@ namespace RogueLibsCore
 					hook.Initialize();
 				}
 		}
+
+		public static IEnumerable<CodeInstruction> StatusEffects_AddTrait(IEnumerable<CodeInstruction> codeEnumerable)
+			=> codeEnumerable.AddRegionAfter(
+				new Func<CodeInstruction, bool>[]
+				{
+					i => i.IsLdloc(),
+					i => i.opcode == OpCodes.Ldarg_1,
+					i => i.opcode == OpCodes.Stfld && i.StoresField(typeof(Trait).GetField(nameof(Trait.traitName)))
+				},
+				new Func<CodeInstruction[], CodeInstruction>[]
+				{
+					a => a[0],
+					_ => new CodeInstruction(OpCodes.Ldarg_0),
+					_ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupTraitHook)))
+				});
+		public static void SetupTraitHook(Trait trait, StatusEffects parent)
+		{
+			trait.__RogueLibsContainer = parent;
+			foreach (IHookFactory<Trait> factory in RogueLibsInternals.TraitFactories_Init.Concat(RogueLibsInternals.TraitFactories))
+				if (factory.CanCreate(trait))
+				{
+					IHook<Trait> hook = factory.CreateHook(trait);
+					trait.AddHook(hook);
+					hook.Initialize();
+				}
+		}
+
 		/// <summary>
 		///   <para><b>Prefix-patch.</b> Stores the removed trait in <paramref name="__state"/>.</para>
 		/// </summary>
@@ -80,6 +109,5 @@ namespace RogueLibsCore
 			CustomTrait trait = __state?.GetHook<CustomTrait>();
 			trait?.OnRemoved();
 		}
-		public static string CombineStrings(int a, int b) => a.ToString() + b.ToString();
 	}
 }
