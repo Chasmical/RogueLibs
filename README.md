@@ -37,26 +37,31 @@ If you have any suggestions or find any bugs, you can open a new issue here on G
 
 ## Table of Contents ##
 
-- **Main Page**
-- 1\. Introduction and Basics
-  - 1.1. [Patching](./md/1.1-Patching.md)
-  - 1.2. Custom Names, Sprites and Unlocks
-  - 1.5. Hook System
-- 2\. Custom Items
-  - 2.1. Basic Setup
-  - 2.2. Adding Functionality
+- **Main page**
+- **1. Introduction**
+  - 1.1. [Basic Setup](./md/1.1-Basic-Setup.md)
+  - 1.2. [Patching and Utilities](./md/1.2-Patching-and-Utilities.md)
+  - 1.3. [Classes](./md/1.3-Classes.md)
+- **2. Custom Items and Abilities**
+  - 2.1. [Custom Items](./md/2.1-Custom-Items.md)
+  - 2.2. [Adding Functionality](./md/2.2-Adding-Functionality.md)
   - 2.3. Making Weapons
-  - 2.4. Inventory and Events
+  - 2.4. [Inventory and Events](./md/2.4-Inventory-and-Events.md)
   - 2.5. Custom Abilities
-- 4\. Other Custom Stuff
-  - 4.1. Custom Mutators
-  - 4.2. Custom Traits
-  - 4.3. Custom Status Effects
-  - 4.4. Custom State Unlocks
-- 5\. Custom Agents
+- **3. Custom Traits and Status Effects**
+  - 3.1. Custom Traits
+  - 3.2. Custom Status Effects
+- **4. Custom Unlocks and Mutators**
+  - 4.1. Custom Unlocks
+  - 4.2. Custom Mutators
+  - 4.3. Custom State Unlocks
+- **5. Custom Objects**
   - 5.1. ???
-- 6\. Custom Objects
+- **6. Custom Agents**
   - 6.1. ???
+- **7. Advanced**
+  - 7.1. [Hook System](./md/7.1-Hook-System.md)
+  - 7.2. Unlocks and Menus
 
 ## Links ##
 - [Download RogueLibs (latest stable version)](https://github.com/Abbysssal/RogueLibs/releases/latest)
