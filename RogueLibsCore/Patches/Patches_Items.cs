@@ -45,6 +45,13 @@ namespace RogueLibsCore
 		/// <param name="__instance">Instance of <see cref="InvItem"/>.</param>
 		public static void InvItem_SetupDetails(InvItem __instance)
 		{
+			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories_Init)
+				if (factory.CanCreate(__instance))
+				{
+					IHook<InvItem> hook = factory.CreateHook(__instance);
+					__instance.AddHook(hook);
+					hook.Initialize();
+				}
 			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories)
 				if (factory.CanCreate(__instance))
 				{
@@ -65,25 +72,22 @@ namespace RogueLibsCore
 		{
 			__state = item.invInterface.showingTarget;
 			CustomItem custom = item.GetHook<CustomItem>();
-			if (custom is IItemTargetable targetable)
+			if (custom is IItemTargetable)
 			{
 				item.invInterface.ShowOrHideTarget(item);
 				return false;
 			}
 
-			if (custom?.ItemInfo.IgnoreDefaultChecks_UseItem != true)
-			{ // ignore default checks OR original item
-				if (agent.ghost)
-				{
-					agent.gc.audioHandler.Play(agent, "CantDo");
-					return false;
-				}
-				else if (agent.statusEffects.hasTrait("CantInteract") && item.itemType != "Food")
-				{
-					agent.SayDialogue("CantInteract");
-					agent.gc.audioHandler.Play(agent, "CantDo");
-					return false;
-				}
+			if (custom?.ItemInfo.IgnoreChecks_UseItem.Contains("Ghost") != true && agent.ghost)
+			{
+				agent.gc.audioHandler.Play(agent, "CantDo");
+				return false;
+			}
+			if (custom?.ItemInfo.IgnoreChecks_UseItem.Contains("CantInteract") != true && agent.statusEffects.hasTrait("CantInteract") && item.itemType != "Food")
+			{
+				agent.SayDialogue("CantInteract");
+				agent.gc.audioHandler.Play(agent, "CantDo");
+				return false;
 			}
 			if (agent.localPlayer)
 			{
@@ -142,7 +146,7 @@ namespace RogueLibsCore
 		{
 			CustomItem custom = __instance.GetHook<CustomItem>();
 
-			if (custom?.ItemInfo.IgnoreDefaultChecks_CombineFilter != true)
+			if (custom?.ItemInfo.IgnoreChecks_CombineItems.Contains("StackItems") != true)
 			{
 				if (__instance.invItemName == otherItem.invItemName && __instance.stackable)
 				{
@@ -195,7 +199,7 @@ namespace RogueLibsCore
 				}
 				else __instance.itemFunctions.CombineItems(__instance, myAgent, otherItem, slotNum, "Combine");
 
-				if (custom?.ItemInfo.IgnoreDefaultChecks_CombineItems != true
+				if (custom?.ItemInfo.IgnoreChecks_CombineItems.Contains("StopOnZero") != true
 					&& (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance)))
 				{
 					myAgent.mainGUI.invInterface.HideDraggedItem();
@@ -220,13 +224,20 @@ namespace RogueLibsCore
 		{
 			CustomItem custom = __instance.GetHook<CustomItem>();
 
-			if (custom?.ItemInfo.IgnoreDefaultChecks_TargetFilter != true)
+			if (custom?.ItemInfo.IgnoreChecks_TargetFilter.Contains("Distance") != true && Vector2.Distance(__instance.agent.curPosition, otherObject.curPosition) > 15f)
 			{
-				if (Vector2.Distance(__instance.agent.curPosition, otherObject.curPosition) > 15f || otherObject.playfieldObjectType == "Agent" && (otherObject.playfieldObjectAgent.butlerBot || otherObject.playfieldObjectAgent.mechEmpty))
-				{
-					__result = false;
-					return false;
-				}
+				__result = false;
+				return false;
+			}
+			if (custom?.ItemInfo.IgnoreChecks_TargetFilter.Contains("ButlerBot") != true && otherObject.playfieldObjectType == "Agent" && otherObject.playfieldObjectAgent.butlerBot)
+			{
+				__result = false;
+				return false;
+			}
+			if (custom?.ItemInfo.IgnoreChecks_TargetFilter.Contains("EmptyMech") != true && otherObject.playfieldObjectType == "Agent" && otherObject.playfieldObjectAgent.mechEmpty)
+			{
+				__result = false;
+				return false;
 			}
 
 			bool firstCheck = custom is IItemTargetable combinable
@@ -240,7 +251,7 @@ namespace RogueLibsCore
 				if (custom is IItemTargetable combinable2) combinable2.TargetObject(otherObject);
 				else __instance.itemFunctions.TargetObject(__instance, __instance.agent, otherObject, "Combine");
 
-				if (custom?.ItemInfo.IgnoreDefaultChecks_TargetObject != true
+				if (custom?.ItemInfo.IgnoreChecks_TargetObject.Contains("StopOnZero") != true
 					&& (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance)))
 				{
 					__instance.agent.mainGUI.invInterface.HideDraggedItem();
@@ -285,8 +296,10 @@ namespace RogueLibsCore
 			if (custom is IItemTargetable targetable)
 			{
 				CustomTooltip tooltip = targetable.TargetTooltip(myPlayfieldObject);
+				__instance.cursorTextCanvas3.enabled = true;
 				__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
 				__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
+				if (string.IsNullOrEmpty(tooltip.Text)) __instance.cursorTextCanvas3.enabled = false;
 			}
 		}
 		/// <summary>
@@ -299,8 +312,10 @@ namespace RogueLibsCore
 			if (custom is IItemTargetable targetable)
 			{
 				CustomTooltip tooltip = targetable.TargetTooltip(null);
+				__instance.cursorTextCanvas3.enabled = true;
 				__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
 				__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
+				if (string.IsNullOrEmpty(tooltip.Text)) __instance.cursorTextCanvas3.enabled = false;
 			}
 		}
 
@@ -337,13 +352,23 @@ namespace RogueLibsCore
 							__instance.toolbarNumText.color = tooltip.Color ?? combineTextColor.Value;
 						}
 					}
-					else if ((__instance.slotType != "Toolbar" || __instance.mainGUI.openedInventory) && __instance.slotType != "NPCChest")
+					else
 					{
-						__instance.myImage.color = new Color32(__instance.br, 0, __instance.br, __instance.standardAlpha);
-						__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, __instance.fadedItemAlpha);
-						__instance.myImage.sprite = __instance.invBoxNormal;
-						___itemText.color = __instance.whiteTransparent;
-						__instance.toolbarNumTextGo.SetActive(false);
+						if (custom?.ItemInfo.IgnoreChecks_CombineTooltip.Contains("CombineFilter") == true)
+						{
+							CustomTooltip tooltip = combinable.CombineTooltip(combinee);
+							__instance.toolbarNumTextGo.SetActive(true);
+							__instance.toolbarNumText.text = tooltip.Text ?? string.Empty;
+							__instance.toolbarNumText.color = tooltip.Color ?? combineTextColor.Value;
+						}
+						if ((__instance.slotType != "Toolbar" || __instance.mainGUI.openedInventory) && __instance.slotType != "NPCChest")
+						{
+							__instance.myImage.color = new Color32(__instance.br, 0, __instance.br, __instance.standardAlpha);
+							__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, __instance.fadedItemAlpha);
+							__instance.myImage.sprite = __instance.invBoxNormal;
+							___itemText.color = __instance.whiteTransparent;
+							__instance.toolbarNumTextGo.SetActive(false);
+						}
 					}
 				}
 				else if (__instance.slotType != "NPCChest" && (combinee.invItemName != null || combiner.itemType != "Combine"))

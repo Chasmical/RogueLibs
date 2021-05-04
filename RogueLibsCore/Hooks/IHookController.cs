@@ -51,6 +51,11 @@ namespace RogueLibsCore
 	public interface IHookController<T> : IHookController, IEnumerable<IHook<T>>
 	{
 		/// <summary>
+		///   <para>Gets the instance that the hook controller is attached to.</para>
+		/// </summary>
+		new T Instance { get; }
+
+		/// <summary>
 		///   <para>Initializes the specified <paramref name="hook"/> and adds it to the hook controller.</para>
 		/// </summary>
 		/// <param name="hook">Hook to attach to the hook controller.</param>
@@ -73,9 +78,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="instance">Instance that the hook controller is attached to.</param>
 		public HookController(T instance) => Instance = instance;
-		/// <summary>
-		///   <para>Instance that the hook controller is attached to.</para>
-		/// </summary>
+		/// <inheritdoc/>
 		public T Instance { get; }
 		object IHookController.Instance => Instance;
 
@@ -148,6 +151,11 @@ namespace RogueLibsCore
 		/// <typeparam name="THook">Type of the hooks to search for.</typeparam>
 		/// <returns>Hooks of the specified <typeparamref name="THook"/> type, or an empty collection.</returns>
 		public IEnumerable<THook> GetHooks<THook>() => hooks.OfType<THook>();
+		/// <summary>
+		///   <para>Iterates through all hooks.</para>
+		/// </summary>
+		/// <returns>All hooks or an empty collection.</returns>
+		public IEnumerable<IHook<T>> GetHooks() => hooks.ToArray();
 
 		/// <summary>
 		///   <para>Gets the default enumerator for the current hook controller.</para>

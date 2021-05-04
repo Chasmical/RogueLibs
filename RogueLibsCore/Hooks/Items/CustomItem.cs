@@ -61,6 +61,10 @@ namespace RogueLibsCore
 		///   <para>Method that is called once, when creating a new item. Set up your item's fields and properties here.</para>
 		/// </summary>
 		public abstract void SetupDetails();
+		/// <summary>
+		///   <para>Plays the item usage animation.</para>
+		/// </summary>
+		public void UseItemAnim() => new ItemFunctions().UseItemAnim(Item, Owner);
 	}
 	/// <summary>
 	///   <para>Specifies that this <see cref="CustomItem"/> can be used/consumed.</para>
@@ -69,7 +73,6 @@ namespace RogueLibsCore
 	{
 		/// <summary>
 		///   <para>Determines what will happen when the player uses/consumes this item.</para>
-		///   <para><see cref="IgnoreDefaultChecksAttribute"/>: if applied, <b>does not</b> cancel the usage, if the user is a ghost or has a "CantInteract" trait and the item is not "Food".</para>
 		/// </summary>
 		void UseItem();
 	}
@@ -80,14 +83,12 @@ namespace RogueLibsCore
 	{
 		/// <summary>
 		///   <para>Determines what items this item can be combined with.</para>
-		///   <para><see cref="IgnoreDefaultChecksAttribute"/>: if applied, <b>does not</b> automatically combine stacks of the current item.</para>
 		/// </summary>
 		/// <param name="other">Other item.</param>
 		/// <returns><see langword="true"/>, if this item can be combined with the specified <paramref name="other"/> item; otherwise, <see langword="false"/>.</returns>
 		bool CombineFilter(InvItem other);
 		/// <summary>
 		///   <para>Determines what will happen when the player combines this item with the specified <paramref name="other"/> item.</para>
-		///   <para><see cref="IgnoreDefaultChecksAttribute"/>: if applied, <b>does not</b> automatically close the targeting interface if the item's count is 0 or less or if the item is no longer in the player's inventory.</para>
 		/// </summary>
 		/// <param name="other">Other item.</param>
 		void CombineItems(InvItem other);
@@ -105,14 +106,12 @@ namespace RogueLibsCore
 	{
 		/// <summary>
 		///   <para>Determines what objects this item can be used on.</para>
-		///   <para><see cref="IgnoreDefaultChecksAttribute"/>: if applied, <b>does not</b> skip objects that are more than 15 units away from the player and butler bots and empty mechs.</para>
 		/// </summary>
 		/// <param name="target">Target object.</param>
 		/// <returns><see langword="true"/>, if this item can be used on the specified <paramref name="target"/> object; otherwise, <see langword="false"/>.</returns>
 		bool TargetFilter(PlayfieldObject target);
 		/// <summary>
 		///   <para>Determines what will happen when the player uses this item on the specified <paramref name="target"/> object.</para>
-		///   <para><see cref="IgnoreDefaultChecksAttribute"/>: if applied, <b>does not</b> automatically close the targeting interface if the item's count is 0 or less or if the item is no longer in the player's inventory.</para>
 		/// </summary>
 		/// <param name="target">Target object.</param>
 		void TargetObject(PlayfieldObject target);

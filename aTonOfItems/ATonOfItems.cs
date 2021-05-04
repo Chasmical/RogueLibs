@@ -141,7 +141,7 @@ namespace aTonOfItems
 			}
 		}
 
-		[IgnoreDefaultChecks]
+		[IgnoreChecks]
 		public bool CombineFilter(InvItem other) => Item == other || other.itemType == ItemTypes.Consumable
 			|| other.itemType == ItemTypes.WeaponMelee || other.itemType == ItemTypes.WeaponProjectile;
 		public void CombineItems(InvItem other)

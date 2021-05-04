@@ -22,6 +22,10 @@ namespace RogueLibsCore
 		public static ManualLogSource Logger { get; internal set; }
 
 		/// <summary>
+		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="InvItem"/>s, specifically the ones that initialize the <see cref="InvItem"/> instance.</para>
+		/// </summary>
+		public static readonly List<IHookFactory<InvItem>> InvItemFactories_Init = new List<IHookFactory<InvItem>>();
+		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="InvItem"/>s.</para>
 		/// </summary>
 		public static readonly List<IHookFactory<InvItem>> InvItemFactories = new List<IHookFactory<InvItem>>();
@@ -92,7 +96,7 @@ namespace RogueLibsCore
 			where TItem : CustomItem, new()
 		{
 			CustomItemFactory<TItem> factory = new CustomItemFactory<TItem>();
-			RogueLibsInternals.InvItemFactories.Add(factory);
+			RogueLibsInternals.InvItemFactories_Init.Add(factory);
 			return new ItemInfo(factory);
 		}
 		public static void CreateCustomEffect<TEffect>()
