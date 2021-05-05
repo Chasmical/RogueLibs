@@ -41,11 +41,14 @@ namespace RogueLibsCore
 		/// <inheritdoc/>
 		protected override sealed void Initialize()
 		{
-			Effect.keepBetweenLevels = !EffectInfo.RemoveOnNextLevel;
-			Effect.dontRemoveOnDeath = !EffectInfo.RemoveOnDeath;
-			Effect.removeOnKnockout = EffectInfo.RemoveOnKnockout;
+			Effect.keepBetweenLevels = false;
+			Effect.dontRemoveOnDeath = true;
+			Effect.removeOnKnockout = false;
 			OnAdded();
 		}
+
+		public abstract int GetEffectTime();
+		public abstract int GetEffectHate();
 
 		public abstract void OnAdded();
 		public virtual void OnUpdated(StatusEffect newEffect) => CurrentTime = newEffect.curTime;

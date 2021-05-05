@@ -28,7 +28,7 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.RemoveTrait),
 				new Type[] { typeof(string), typeof(bool) });
 
-			Patcher.postf
+			Patcher.Transpiler(typeof(StatusEffects), nameof(StatusEffects.GetStatusEffectTime));
 		}
 		/// <summary>
 		///   <para><b>Transpiler-patch.</b> Adds a status effect initialization right after initializing a new instance of <see cref="StatusEffect"/>.</para>
@@ -37,6 +37,17 @@ namespace RogueLibsCore
 		/// <returns>Modified code, with an added status effect initialization.</returns>
 		public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> codeEnumerable)
 			=> codeEnumerable.AddRegionAfter(
+				new Func<CodeInstruction, bool>[]
+				{
+					i => i.opcode == OpCodes.Ldarg_0,
+					i => i.opcode == OpCodes.Ldarg_1,
+					i => i.opcode == OpCodes.Call && i.Calls(typeof(StatusEffects).GetMethod(nameof(StatusEffects.GetStatusEffectTime))),
+					i => i.IsStloc()
+				},
+				new Func<CodeInstruction[], CodeInstruction>[]
+				{
+
+				}).AddRegionAfter(
 				new Func<CodeInstruction, bool>[]
 				{
 					i => i.IsLdloc(),
@@ -108,6 +119,37 @@ namespace RogueLibsCore
 		{
 			CustomTrait trait = __state?.GetHook<CustomTrait>();
 			trait?.OnRemoved();
+		}
+
+		public static IEnumerable<CodeInstruction> StatusEffects_GetStatusEffectTime(IEnumerable<CodeInstruction> codeEnumerable)
+			=> codeEnumerable.ReplaceRegion(
+				new Func<CodeInstruction, bool>[]
+				{
+					i => i.opcode == OpCodes.Ldc_I4 && i.operand is 9999,
+					i => i.IsStloc(),
+					i => i.opcode == OpCodes.Ldarg_0
+				},
+				new Func<CodeInstruction[], CodeInstruction>[]
+				{
+					_ => new CodeInstruction(OpCodes.Ldarg_0),
+					_ => new CodeInstruction(OpCodes.Ldarg_1),
+					_ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(GetStatusEffectTime))),
+					a => a[1],
+					a => a[2]
+				});
+
+		public static int GetStatusEffectTime(StatusEffects instance, string name)
+		{
+			StatusEffect effect = new StatusEffect { statusEffectName = name, __RogueLibsContainer = instance };
+
+			CustomEffect custom = null;
+			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories_Init)
+				if (factory.CanCreate(effect))
+				{
+					IHook<StatusEffect> hook = factory.CreateHook(effect);
+					if (hook is CustomEffect custom2) custom = custom2;
+				}
+			return custom?.GetEffectTime() ?? 9999;
 		}
 	}
 }
