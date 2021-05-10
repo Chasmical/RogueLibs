@@ -18,31 +18,35 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Gets the item's categories.</para>
 		/// </summary>
-		public ReadOnlyCollection<string> Categories { get; }
+		public ReadOnlyCollection<string> Categories { get; } = RogueUtilities.Empty;
 		/// <summary>
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemUsable.UseItem"/>.</para>
 		/// </summary>
-		public ReadOnlyCollection<string> IgnoreChecks_UseItem { get; }
+		public ReadOnlyCollection<string> IgnoreChecks_UseItem { get; } = RogueUtilities.Empty;
 		/// <summary>
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemCombinable.CombineFilter(InvItem)"/>.</para>
 		/// </summary>
-		public ReadOnlyCollection<string> IgnoreChecks_CombineFilter { get; }
+		public ReadOnlyCollection<string> IgnoreChecks_CombineFilter { get; } = RogueUtilities.Empty;
 		/// <summary>
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemCombinable.CombineItems(InvItem)"/>.</para>
 		/// </summary>
-		public ReadOnlyCollection<string> IgnoreChecks_CombineItems { get; }
+		public ReadOnlyCollection<string> IgnoreChecks_CombineItems { get; } = RogueUtilities.Empty;
 		/// <summary>
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemCombinable.CombineTooltip(InvItem)"/>.</para>
 		/// </summary>
-		public ReadOnlyCollection<string> IgnoreChecks_CombineTooltip { get; }
+		public ReadOnlyCollection<string> IgnoreChecks_CombineTooltip { get; } = RogueUtilities.Empty;
 		/// <summary>
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemTargetable.TargetFilter(PlayfieldObject)"/>.</para>
 		/// </summary>
-		public ReadOnlyCollection<string> IgnoreChecks_TargetFilter { get; }
+		public ReadOnlyCollection<string> IgnoreChecks_TargetFilter { get; } = RogueUtilities.Empty;
 		/// <summary>
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemTargetable.TargetObject(PlayfieldObject)"/>.</para>
 		/// </summary>
-		public ReadOnlyCollection<string> IgnoreChecks_TargetObject { get; }
+		public ReadOnlyCollection<string> IgnoreChecks_TargetObject { get; } = RogueUtilities.Empty;
+		/// <summary>
+		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemTargetable.TargetTooltip(PlayfieldObject)"/>.</para>
+		/// </summary>
+		public ReadOnlyCollection<string> IgnoreChecks_TargetTooltip { get; } = RogueUtilities.Empty;
 
 		private static readonly Dictionary<Type, CustomItemInfo> infos = new Dictionary<Type, CustomItemInfo>();
 		/// <summary>
@@ -67,18 +71,19 @@ namespace RogueLibsCore
 
 			if (typeof(IItemUsable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_UseItem = type.GetMethod(nameof(IItemUsable.UseItem)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? new ReadOnlyCollection<string>(new string[0]);
+				IgnoreChecks_UseItem = type.GetMethod(nameof(IItemUsable.UseItem)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
 			}
 			if (typeof(IItemCombinable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_CombineFilter = type.GetMethod(nameof(IItemCombinable.CombineFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? new ReadOnlyCollection<string>(new string[0]);
-				IgnoreChecks_CombineItems = type.GetMethod(nameof(IItemCombinable.CombineItems)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? new ReadOnlyCollection<string>(new string[0]);
-				IgnoreChecks_CombineItems = type.GetMethod(nameof(IItemCombinable.CombineTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? new ReadOnlyCollection<string>(new string[0]);
+				IgnoreChecks_CombineFilter = type.GetMethod(nameof(IItemCombinable.CombineFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_CombineItems = type.GetMethod(nameof(IItemCombinable.CombineItems)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_CombineItems = type.GetMethod(nameof(IItemCombinable.CombineTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
 			}
 			if (typeof(IItemTargetable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_TargetFilter = type.GetMethod(nameof(IItemTargetable.TargetFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? new ReadOnlyCollection<string>(new string[0]);
-				IgnoreChecks_TargetObject = type.GetMethod(nameof(IItemTargetable.TargetObject)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? new ReadOnlyCollection<string>(new string[0]);
+				IgnoreChecks_TargetFilter = type.GetMethod(nameof(IItemTargetable.TargetFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_TargetObject = type.GetMethod(nameof(IItemTargetable.TargetObject)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_TargetObject = type.GetMethod(nameof(IItemTargetable.TargetTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
 			}
 		}
 	}

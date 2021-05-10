@@ -530,6 +530,21 @@ namespace RogueLibsCore
 			InvItem item = inventory.FindItem(CustomItemInfo.Get<T>().Name);
 			return item?.GetHook<T>();
 		}
+		public static bool HasItem<T>(this InvDatabase inventory)
+			where T : CustomItem
+		{
+			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
+			InvItem item = inventory.FindItem(CustomItemInfo.Get<T>().Name);
+			return item != null;
+		}
+		public static bool HasItem<T>(this InvDatabase inventory, int count)
+			where T : CustomItem
+		{
+			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
+			string itemName = CustomItemInfo.Get<T>().Name;
+			List<InvItem> items = inventory.InvItemList.FindAll(i => i.invItemName == itemName);
+			return items.Sum(i => i.invItemCount) >= count;
+		}
 
 		/// <summary>
 		///   <para>Gets the state of the specified <paramref name="buttonData"/> as an <see cref="UnlockButtonState"/> value.</para>
@@ -569,5 +584,58 @@ namespace RogueLibsCore
 					? buttonData.scrollingMenu?.solidObjectButton ?? buttonData.characterCreation.solidObjectButton
 				: buttonData.scrollingMenu?.solidObjectButton ?? buttonData.characterCreation.solidObjectButton;
 		}
+
+		public static T AddTrait<T>(this Agent agent)
+			where T : CustomTrait
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			string traitName = CustomTraitInfo.Get<T>().Name;
+			agent.statusEffects.AddTrait(traitName);
+			return agent.statusEffects.TraitList.Find(t => t.traitName == traitName)?.GetHook<T>();
+		}
+		public static T GetTrait<T>(this Agent agent)
+			where T : CustomTrait
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			string traitName = CustomTraitInfo.Get<T>().Name;
+			return agent.statusEffects.TraitList.Find(t => t.traitName == traitName)?.GetHook<T>();
+		}
+		public static bool HasTrait<T>(this Agent agent) where T : CustomTrait
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.hasTrait(CustomTraitInfo.Get<T>().Name);
+		}
+
+		public static Trait AddTrait(this Agent agent, string traitName)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			agent.statusEffects.AddTrait(traitName);
+			return agent.GetTrait(traitName);
+		}
+		public static Trait GetTrait(this Agent agent, string traitName)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.TraitList.Find(t => t.traitName == traitName);
+		}
+		public static bool HasTrait(this Agent agent, string traitName)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.hasTrait(traitName);
+		}
+
+		public static bool IgnoresUseItemCheck(this InvItem item, string checkName)
+			=> item.GetHook<CustomItem>()?.ItemInfo.IgnoreChecks_UseItem.Contains(checkName) == true;
+		public static bool IgnoresCombineFilterCheck(this InvItem item, string checkName)
+			=> item.GetHook<CustomItem>()?.ItemInfo.IgnoreChecks_CombineFilter.Contains(checkName) == true;
+		public static bool IgnoresCombineItemsCheck(this InvItem item, string checkName)
+			=> item.GetHook<CustomItem>()?.ItemInfo.IgnoreChecks_CombineItems.Contains(checkName) == true;
+		public static bool IgnoresCombineTooltipCheck(this InvItem item, string checkName)
+			=> item.GetHook<CustomItem>()?.ItemInfo.IgnoreChecks_CombineTooltip.Contains(checkName) == true;
+		public static bool IgnoresTargetFilterCheck(this InvItem item, string checkName)
+			=> item.GetHook<CustomItem>()?.ItemInfo.IgnoreChecks_TargetFilter.Contains(checkName) == true;
+		public static bool IgnoresTargetObjectCheck(this InvItem item, string checkName)
+			=> item.GetHook<CustomItem>()?.ItemInfo.IgnoreChecks_TargetObject.Contains(checkName) == true;
+		public static bool IgnoresTargetTooltipCheck(this InvItem item, string checkName)
+			=> item.GetHook<CustomItem>()?.ItemInfo.IgnoreChecks_TargetTooltip.Contains(checkName) == true;
 	}
 }

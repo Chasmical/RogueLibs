@@ -21,6 +21,7 @@ namespace RogueLibsCore
 			// synchronize some fields
 			Patcher.Postfix(typeof(Unlocks), nameof(Unlocks.AddUnlock), new Type[] { typeof(string), typeof(string), typeof(bool), typeof(int), typeof(int), typeof(int), typeof(Unlock) });
 
+			Logger.LogWarning("Transpiler: Unlocks.");
 			// replace the entire foreach loop in the end
 			Patcher.Transpiler(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks));
 
@@ -61,7 +62,6 @@ namespace RogueLibsCore
 				{
 					i => i.opcode == OpCodes.Endfinally
 				},
-
 				new CodeInstruction[]
 				{
 					new CodeInstruction(OpCodes.Pop),

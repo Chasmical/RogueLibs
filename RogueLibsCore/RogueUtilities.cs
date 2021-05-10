@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Reflection.Emit;
 using System.Threading;
@@ -16,6 +17,8 @@ namespace RogueLibsCore
 	/// </summary>
 	public static class RogueUtilities
 	{
+		public static readonly ReadOnlyCollection<string> Empty = new ReadOnlyCollection<string>(new string[0]);
+
 		/// <summary>
 		///   <para>Returns a copy of the <paramref name="original"/> texture, that can be read from.</para>
 		/// </summary>
@@ -360,7 +363,7 @@ namespace RogueLibsCore
 								foreach (CodeInstruction instr2 in added)
 								{
 									if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(region)} cannot contain null.", nameof(region));
-									yield return new CodeInstruction(instr2) { labels = new List<Label>(), blocks = new List<ExceptionBlock>() };
+									yield return new CodeInstruction(instr2);
 								}
 							}
 						}
@@ -444,7 +447,7 @@ namespace RogueLibsCore
 								foreach (CodeInstruction instr2 in added)
 								{
 									if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(region)} cannot contain null.", nameof(region));
-									yield return new CodeInstruction(instr2) { labels = new List<Label>(), blocks = new List<ExceptionBlock>() };
+									yield return new CodeInstruction(instr2);
 								}
 								for (int i = 0; i < current; i++)
 									yield return matches[i];
@@ -553,7 +556,7 @@ namespace RogueLibsCore
 									foreach (CodeInstruction instr2 in replaced)
 									{
 										if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(replacer)} cannot contain null.", nameof(replacer));
-										yield return instr2;
+										yield return new CodeInstruction(instr2);
 									}
 								}
 								current = 0;
@@ -583,7 +586,7 @@ namespace RogueLibsCore
 								foreach (CodeInstruction instr2 in replaced)
 								{
 									if (instr2 is null) throw new ArgumentException($"Collection returned by {nameof(replacer)} cannot contain null.", nameof(replacer));
-									yield return instr2;
+									yield return new CodeInstruction(instr2);
 								}
 							}
 						}
@@ -600,6 +603,18 @@ namespace RogueLibsCore
 			Searching = 0,
 			Found     = 1,
 			Passed    = 2
+		}
+
+		/// <summary>
+		///   <para>Copies all labels from the specified <paramref name="otherInstruction"/> into the current one.</para>
+		/// </summary>
+		/// <param name="instruction">The current instance of <see cref="CodeInstruction"/>.</param>
+		/// <param name="otherInstruction">Another instance of <see cref="CodeInstruction"/> to copy labels from.</param>
+		/// <returns>The current instance of <see cref="CodeInstruction"/>.</returns>
+		public static CodeInstruction WithLabels(this CodeInstruction instruction, CodeInstruction otherInstruction)
+		{
+			instruction.labels.AddRange(otherInstruction.labels);
+			return instruction;
 		}
 	}
 }

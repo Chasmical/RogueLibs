@@ -39,17 +39,6 @@ namespace RogueLibsCore
 			=> codeEnumerable.AddRegionAfter(
 				new Func<CodeInstruction, bool>[]
 				{
-					i => i.opcode == OpCodes.Ldarg_0,
-					i => i.opcode == OpCodes.Ldarg_1,
-					i => i.opcode == OpCodes.Call && i.Calls(typeof(StatusEffects).GetMethod(nameof(StatusEffects.GetStatusEffectTime))),
-					i => i.IsStloc()
-				},
-				new Func<CodeInstruction[], CodeInstruction>[]
-				{
-
-				}).AddRegionAfter(
-				new Func<CodeInstruction, bool>[]
-				{
 					i => i.IsLdloc(),
 					i => i.opcode == OpCodes.Ldarg_3,
 					i => i.opcode == OpCodes.Stfld && i.StoresField(typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent)))
@@ -125,13 +114,13 @@ namespace RogueLibsCore
 			=> codeEnumerable.ReplaceRegion(
 				new Func<CodeInstruction, bool>[]
 				{
-					i => i.opcode == OpCodes.Ldc_I4 && i.operand is 9999,
+					i => i.opcode == OpCodes.Ldc_I4 && (int)i.operand == 9999,
 					i => i.IsStloc(),
 					i => i.opcode == OpCodes.Ldarg_0
 				},
 				new Func<CodeInstruction[], CodeInstruction>[]
 				{
-					_ => new CodeInstruction(OpCodes.Ldarg_0),
+					a => new CodeInstruction(OpCodes.Ldarg_0).WithLabels(a[0]),
 					_ => new CodeInstruction(OpCodes.Ldarg_1),
 					_ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(GetStatusEffectTime))),
 					a => a[1],

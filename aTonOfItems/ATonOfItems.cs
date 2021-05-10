@@ -141,7 +141,6 @@ namespace aTonOfItems
 			}
 		}
 
-		[IgnoreChecks]
 		public bool CombineFilter(InvItem other) => Item == other || other.itemType == ItemTypes.Consumable
 			|| other.itemType == ItemTypes.WeaponMelee || other.itemType == ItemTypes.WeaponProjectile;
 		public void CombineItems(InvItem other)
@@ -201,9 +200,7 @@ namespace aTonOfItems
 				cooldown = Owner.weaponCooldown;
 
 				bullet.curPosition = bullet.transform.position = Victim.curPosition;
-				bullet.transform.rotation = Quaternion.FromToRotation(Vector2.zero, Victim.rb.velocity);
-
-				Owner.gun.SubtractBullets(1, other);
+				bullet.rb.velocity = Victim.rb.velocity;
 			}
 			else return;
 
