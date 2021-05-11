@@ -41,6 +41,10 @@ namespace RogueLibsCore
 
 		public abstract void OnAdded();
 		public abstract void OnRemoved();
-		public abstract void OnUpdated(ref float nextUpdateDelay);
+		public abstract void OnUpdated(TraitUpdatedArgs e);
+	}
+	public class TraitUpdatedArgs : EventArgs
+	{
+		public float UpdateDelay { get; set; }
 	}
 }

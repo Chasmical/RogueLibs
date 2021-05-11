@@ -313,6 +313,7 @@ namespace RogueLibsCore
 		/// <exception cref="ArgumentNullException"><paramref name="unlock"/> is <see langword="null"/>.</exception>
 		public ItemInfo WithUnlock(ItemUnlock unlock)
 		{
+			unlock.Name = Info.Name;
 			RogueLibs.CreateCustomUnlock(unlock);
 			Unlock = unlock;
 			return this;
