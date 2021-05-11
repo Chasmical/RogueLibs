@@ -49,7 +49,7 @@ If you have any suggestions or find any bugs, you can open a new issue here on G
   - 2.4. [Inventory and Events](./md/2.4-Inventory-and-Events.md)
   - 2.5. Custom Abilities
 - **3. Custom Traits and Status Effects**
-  - 3.1. [Custom Traits](./md/3.1-Custom-Traits.md)
+  - 3.1. Custom Traits
   - 3.2. Custom Status Effects
 - **4. Custom Unlocks and Mutators**
   - 4.1. Custom Unlocks
