@@ -17,9 +17,9 @@ namespace RogueLibsCore
 		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		protected UnlockWrapper(string name, string type, bool unlockedFromStart)
 		{
+			Unlock = new Unlock(name, type, unlockedFromStart) { __RogueLibsCustom = this };
 			Name = name;
 			Type = type;
-			Unlock = new Unlock(name, type, unlockedFromStart) { __RogueLibsCustom = this };
 		}
 		internal UnlockWrapper(Unlock unlock)
 		{

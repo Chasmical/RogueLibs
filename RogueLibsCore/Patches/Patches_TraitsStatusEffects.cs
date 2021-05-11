@@ -31,9 +31,9 @@ namespace RogueLibsCore
 				new Type[] { typeof(string), typeof(bool) });
 
 #pragma warning disable CS0618 // NetworkInstanceId is obsolete
-			Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.RemoveTrait), nameof(StatusEffects_RemoveTrait_Prefix),
+			Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.RemoveStatusEffect), nameof(StatusEffects_RemoveStatusEffect_Prefix),
 				new Type[] { typeof(string), typeof(bool), typeof(NetworkInstanceId), typeof(bool) });
-			Patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.RemoveTrait),
+			Patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.RemoveStatusEffect),
 				new Type[] { typeof(string), typeof(bool), typeof(NetworkInstanceId), typeof(bool) });
 #pragma warning restore CS0618
 
@@ -41,7 +41,7 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.GetStatusEffectHate));
 
 			Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.UpdateStatusEffect));
-			Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.UpdateTrait));
+			// Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.UpdateTrait));
 		}
 
 		/// <summary>

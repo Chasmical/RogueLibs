@@ -85,11 +85,11 @@ namespace RogueLibsCore
 			}
 			if (typeof(IItemTargetable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_TargetFilter = type.GetInterfaceMethod(typeof(IItemCombinable),
+				IgnoreChecks_TargetFilter = type.GetInterfaceMethod(typeof(IItemTargetable),
 					nameof(IItemTargetable.TargetFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_TargetObject = type.GetInterfaceMethod(typeof(IItemCombinable),
+				IgnoreChecks_TargetObject = type.GetInterfaceMethod(typeof(IItemTargetable),
 					nameof(IItemTargetable.TargetObject)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_TargetObject = type.GetInterfaceMethod(typeof(IItemCombinable),
+				IgnoreChecks_TargetObject = type.GetInterfaceMethod(typeof(IItemTargetable),
 					nameof(IItemTargetable.TargetTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
 			}
 		}
