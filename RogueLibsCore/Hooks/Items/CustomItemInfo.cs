@@ -71,19 +71,26 @@ namespace RogueLibsCore
 
 			if (typeof(IItemUsable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_UseItem = type.GetMethod(nameof(IItemUsable.UseItem)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_UseItem = type.GetInterfaceMethod(typeof(IItemUsable),
+					nameof(IItemUsable.UseItem)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
 			}
 			if (typeof(IItemCombinable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_CombineFilter = type.GetMethod(nameof(IItemCombinable.CombineFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_CombineItems = type.GetMethod(nameof(IItemCombinable.CombineItems)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_CombineItems = type.GetMethod(nameof(IItemCombinable.CombineTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_CombineFilter = type.GetInterfaceMethod(typeof(IItemCombinable),
+					nameof(IItemCombinable.CombineFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_CombineItems = type.GetInterfaceMethod(typeof(IItemCombinable),
+					nameof(IItemCombinable.CombineItems)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_CombineItems = type.GetInterfaceMethod(typeof(IItemCombinable),
+					nameof(IItemCombinable.CombineTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
 			}
 			if (typeof(IItemTargetable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_TargetFilter = type.GetMethod(nameof(IItemTargetable.TargetFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_TargetObject = type.GetMethod(nameof(IItemTargetable.TargetObject)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_TargetObject = type.GetMethod(nameof(IItemTargetable.TargetTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_TargetFilter = type.GetInterfaceMethod(typeof(IItemCombinable),
+					nameof(IItemTargetable.TargetFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_TargetObject = type.GetInterfaceMethod(typeof(IItemCombinable),
+					nameof(IItemTargetable.TargetObject)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IgnoreChecks_TargetObject = type.GetInterfaceMethod(typeof(IItemCombinable),
+					nameof(IItemTargetable.TargetTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
 			}
 		}
 	}

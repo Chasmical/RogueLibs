@@ -9,6 +9,7 @@ using BepInEx;
 using UnityEngine;
 using UnityEngine.Networking;
 using HarmonyLib;
+using System.Reflection;
 
 namespace RogueLibsCore
 {
@@ -17,6 +18,9 @@ namespace RogueLibsCore
 	/// </summary>
 	public static class RogueUtilities
 	{
+		/// <summary>
+		///   <para>Static instance of an empty <see cref="ReadOnlyCollection{T}"/>.</para>
+		/// </summary>
 		public static readonly ReadOnlyCollection<string> Empty = new ReadOnlyCollection<string>(new string[0]);
 
 		/// <summary>
@@ -200,6 +204,33 @@ namespace RogueLibsCore
 			{
 				File.Delete(filePath);
 			}
+		}
+
+		/// <summary>
+		///   <para>Gets the current <paramref name="type"/>'s method, that implements the specified <paramref name="interfaceType"/>'s method with the specified <paramref name="name"/>.</para>
+		/// </summary>
+		/// <param name="type">This instance of <see cref="Type"/>.</param>
+		/// <param name="interfaceType">The type of the interface.</param>
+		/// <param name="name">The name of the interface's method.</param>
+		/// <returns>The type's method, that implements the specified <paramref name="interfaceType"/>'s method with the specified <paramref name="name"/>.</returns>
+		public static MethodInfo GetInterfaceMethod(this Type type, Type interfaceType, string name)
+		{
+			Type implementedInterface;
+			if (interfaceType.IsGenericTypeDefinition)
+			{
+				implementedInterface = Array.Find(type.GetInterfaces(), i => i.IsGenericType && i.GetGenericTypeDefinition() == interfaceType);
+				if (implementedInterface == null) return null;
+			}
+			else
+			{
+				implementedInterface = interfaceType;
+				if (!type.GetInterfaces().Contains(interfaceType)) return null;
+			}
+			InterfaceMapping mapping = type.GetInterfaceMap(implementedInterface);
+
+			int index = Array.FindIndex(mapping.InterfaceMethods, m => m.Name == name);
+			if (index == -1) return null;
+			return mapping.TargetMethods[index];
 		}
 	}
 	/// <summary>

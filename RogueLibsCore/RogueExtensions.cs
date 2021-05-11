@@ -530,6 +530,12 @@ namespace RogueLibsCore
 			InvItem item = inventory.FindItem(CustomItemInfo.Get<T>().Name);
 			return item?.GetHook<T>();
 		}
+		/// <summary>
+		///   <para>Determines whether there's an item of the specified <typeparamref name="T"/> type in the inventory.</para>
+		/// </summary>
+		/// <typeparam name="T">Type of the custom item to search for.</typeparam>
+		/// <param name="inventory">Inventory to search for a custom item of the specifeid <typeparamref name="T"/> type in.</param>
+		/// <returns><see langword="true"/>, if <paramref name="inventory"/> contains an item of the specified <typeparamref name="T"/> type; otherwise, <see langword="false"/>.</returns>
 		public static bool HasItem<T>(this InvDatabase inventory)
 			where T : CustomItem
 		{
@@ -537,13 +543,20 @@ namespace RogueLibsCore
 			InvItem item = inventory.FindItem(CustomItemInfo.Get<T>().Name);
 			return item != null;
 		}
-		public static bool HasItem<T>(this InvDatabase inventory, int count)
+		/// <summary>
+		///   <para>Determines whether there's the specified <paramref name="amount"/> of the specified <typeparamref name="T"/> type in the inventory.</para>
+		/// </summary>
+		/// <typeparam name="T">Type of the custom item to search for.</typeparam>
+		/// <param name="inventory">Inventory to search for a custom item of the specifeid <typeparamref name="T"/> type in.</param>
+		/// <param name="amount">Amount of the item.</param>
+		/// <returns><see langword="true"/>, if <paramref name="inventory"/> contains the specified <paramref name="amount"/> of an item of the specified <typeparamref name="T"/> type; otherwise, <see langword="false"/>.</returns>
+		public static bool HasItem<T>(this InvDatabase inventory, int amount)
 			where T : CustomItem
 		{
 			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
 			string itemName = CustomItemInfo.Get<T>().Name;
 			List<InvItem> items = inventory.InvItemList.FindAll(i => i.invItemName == itemName);
-			return items.Sum(i => i.invItemCount) >= count;
+			return items.Sum(i => i.invItemCount) >= amount;
 		}
 
 		/// <summary>

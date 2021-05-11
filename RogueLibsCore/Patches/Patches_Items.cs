@@ -165,8 +165,11 @@ namespace RogueLibsCore
 				if (factory.CanCreate(__instance))
 				{
 					IHook<InvItem> hook = factory.CreateHook(__instance);
-					__instance.AddHook(hook);
-					hook.Initialize();
+					if (hook != null)
+					{
+						__instance.AddHook(hook);
+						hook.Initialize();
+					}
 				}
 		}
 
