@@ -267,17 +267,15 @@ namespace RogueLibsCore
 			}
 			if (flag && __instance.StatusEffectList != null)
 			{
-				EffectUpdatedArgs args = null;
-				while (args?.Cancel != true && (customEffect.CurrentTime > 0 && __instance.hasStatusEffect(customEffect.EffectInfo.Name) && (!__instance.agent.disappeared || __instance.agent.oma.notReadyToEnterLevel || __instance.agent.FellInHole() || __instance.agent.teleporting) || __instance.agent.FellInHole() || __instance.agent.teleporting || __instance.agent.KnockedOut()))
+				while (customEffect.CurrentTime > 0 && __instance.hasStatusEffect(customEffect.EffectInfo.Name) && (!__instance.agent.disappeared || __instance.agent.oma.notReadyToEnterLevel || __instance.agent.FellInHole() || __instance.agent.teleporting) || __instance.agent.FellInHole() || __instance.agent.teleporting || __instance.agent.KnockedOut())
 				{
 					if (!__instance.agent.FellInHole() && !__instance.agent.teleporting && !__instance.agent.KnockedOut() && GameController.gameController.loadComplete && !GameController.gameController.cinematic)
 					{
 						if (!customEffect.Effect.infiniteTime)
 							customEffect.Effect.prevTime = customEffect.CurrentTime;
 
-						args = new EffectUpdatedArgs
+						EffectUpdatedArgs args = new EffectUpdatedArgs
 						{
-							Cancel = false,
 							IsFirstTick = firstTick,
 							UpdateDelay = countSpeed,
 							ShowTextOnRemoval = showTextOnRemoval
@@ -289,7 +287,7 @@ namespace RogueLibsCore
 					if (__instance.agent.isPlayer > 0 && __instance.agent.localPlayer && !customEffect.Effect.infiniteTime)
 						__instance.myStatusEffectDisplay.RefreshStatusEffectText();
 					firstTick = false;
-					if (args?.Cancel != true) yield return new WaitForSeconds(countSpeed);
+					if (customEffect.CurrentTime > 0) yield return new WaitForSeconds(countSpeed);
 				}
 				if (!customEffect.Effect.infiniteTime && (!__instance.agent.disappeared || __instance.agent.FellInHole() || __instance.agent.teleporting) && (!__instance.agent.dead || customEffect.EffectInfo.Name != "Resurrection"))
 				{

@@ -24,6 +24,10 @@ namespace RogueLibsCore
 		///   <para>Gets the <see cref="Agent"/> that has the status effect.</para>
 		/// </summary>
 		public Agent Owner => Effect.GetStatusEffects().agent;
+		/// <summary>
+		///   <para>Gets the <see cref="Agent"/> that caused this status effect.</para>
+		/// </summary>
+		public Agent CausedBy => Effect.causingAgent;
 
 		/// <summary>
 		///   <para>Gets or sets the status effect's current time.</para>
@@ -70,22 +74,17 @@ namespace RogueLibsCore
 		/// </summary>
 		public virtual void OnRefreshed() => CurrentTime = GetEffectTime();
 		/// <summary>
-		///   <para>Method that is called once, when the status effect is removed. Change the character's stats and data here.</para>
+		///   <para>Method that is called once, when the status effect is removed.</para>
 		/// </summary>
 		public abstract void OnRemoved();
 		/// <summary>
 		///   <para>Method that is called every time the effect is updated.</para>
 		/// </summary>
 		public abstract void OnUpdated(EffectUpdatedArgs e);
-		/// <summary>
-		///   <para>Method that is called once, when the effect's time is up. Use it to add new stage</para>
-		/// </summary>
-		public abstract void OnFinished();
 	}
 	public class EffectUpdatedArgs : EventArgs
 	{
 		public float UpdateDelay { get; set; }
-		public bool Cancel { get; set; }
 		public bool ShowTextOnRemoval { get; set; }
 		public bool IsFirstTick { get; set; }
 	}
