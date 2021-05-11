@@ -161,7 +161,7 @@ namespace RogueLibsCore
 		/// <param name="__instance">Instance of <see cref="InvItem"/>.</param>
 		public static void InvItem_SetupDetails(InvItem __instance)
 		{
-			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories_Init.Concat(RogueLibsInternals.InvItemFactories))
+			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories)
 				if (factory.CanCreate(__instance))
 				{
 					IHook<InvItem> hook = factory.CreateHook(__instance);
@@ -247,7 +247,7 @@ namespace RogueLibsCore
 			if (otherItem == null) RogueLibsInternals.Logger.LogError($"otherItem is null! {__instance.invItemName} {slotNum} {combineType}");
 			CustomItem custom = __instance.GetHook<CustomItem>();
 
-			if (custom?.ItemInfo.IgnoreChecks_CombineItems.Contains("StackItems") != true)
+			if (!__instance.IgnoresCombineItemsCheck("StackItems"))
 			{
 				if (__instance.invItemName == otherItem.invItemName && __instance.stackable)
 				{
@@ -300,7 +300,7 @@ namespace RogueLibsCore
 				}
 				else new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, "Combine");
 
-				if (custom?.ItemInfo.IgnoreChecks_CombineItems.Contains("StopOnZero") != true
+				if (!__instance.IgnoresCombineItemsCheck("StopOnZero")
 					&& (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance)))
 				{
 					myAgent.mainGUI.invInterface.HideDraggedItem();
@@ -326,7 +326,7 @@ namespace RogueLibsCore
 			if (otherObject == null) RogueLibsInternals.Logger.LogError($"otherObject can be null! {__instance.invItemName} {combineType}");
 			CustomItem custom = __instance.GetHook<CustomItem>();
 
-			if (custom?.ItemInfo.IgnoreChecks_TargetFilter.Contains("Nothing") != true)
+			if (!__instance.IgnoresTargetFilterCheck("Nothing"))
 			{
 				if (otherObject is null)
 				{
@@ -340,17 +340,17 @@ namespace RogueLibsCore
 				throw new NotImplementedException();
 			}
 
-			if (custom?.ItemInfo.IgnoreChecks_TargetFilter.Contains("Distance") != true && Vector2.Distance(__instance.agent.curPosition, otherObject.curPosition) > 15f)
+			if (!__instance.IgnoresTargetFilterCheck("Distance") && Vector2.Distance(__instance.agent.curPosition, otherObject.curPosition) > 15f)
 			{
 				__result = false;
 				return false;
 			}
-			if (custom?.ItemInfo.IgnoreChecks_TargetFilter.Contains("ButlerBot") != true && otherObject.playfieldObjectType == "Agent" && otherObject.playfieldObjectAgent.butlerBot)
+			if (!__instance.IgnoresTargetFilterCheck("ButlerBot") && (otherObject as Agent)?.butlerBot == true)
 			{
 				__result = false;
 				return false;
 			}
-			if (custom?.ItemInfo.IgnoreChecks_TargetFilter.Contains("EmptyMech") != true && otherObject.playfieldObjectType == "Agent" && otherObject.playfieldObjectAgent.mechEmpty)
+			if (!__instance.IgnoresTargetFilterCheck("EmptyMech") && (otherObject as Agent)?.mechEmpty == true)
 			{
 				__result = false;
 				return false;
@@ -367,7 +367,7 @@ namespace RogueLibsCore
 				if (custom is IItemTargetable combinable2) combinable2.TargetObject(otherObject);
 				else new ItemFunctions().TargetObject(__instance, __instance.agent, otherObject, "Combine");
 
-				if (custom?.ItemInfo.IgnoreChecks_TargetObject.Contains("StopOnZero") != true
+				if (!__instance.IgnoresTargetObjectCheck("StopOnZero")
 					&& (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance)))
 				{
 					__instance.agent.mainGUI.invInterface.HideDraggedItem();
@@ -470,8 +470,9 @@ namespace RogueLibsCore
 					}
 					else
 					{
-						if (custom?.ItemInfo.IgnoreChecks_CombineTooltip.Contains("CombineFilter") == true)
+						if (combiner.IgnoresCombineTooltipCheck("CombineFilter") && __instance.slotType != "NPCChest" && __instance.slotType != "Chest")
 						{
+							if (combineTextColor == null) combineTextColor = __instance.toolbarNumText.color;
 							CustomTooltip tooltip = combinable.CombineTooltip(combinee);
 							__instance.toolbarNumTextGo.SetActive(true);
 							__instance.toolbarNumText.text = tooltip.Text ?? string.Empty;

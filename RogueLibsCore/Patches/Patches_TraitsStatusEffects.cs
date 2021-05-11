@@ -87,7 +87,7 @@ namespace RogueLibsCore
 		public static void SetupEffectHook(StatusEffect effect, StatusEffects parent)
 		{
 			effect.__RogueLibsContainer = parent;
-			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories_Init.Concat(RogueLibsInternals.EffectFactories))
+			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories)
 				if (factory.CanCreate(effect))
 				{
 					IHook<StatusEffect> hook = factory.CreateHook(effect);
@@ -137,7 +137,7 @@ namespace RogueLibsCore
 		public static void SetupTraitHook(Trait trait, StatusEffects parent)
 		{
 			trait.__RogueLibsContainer = parent;
-			foreach (IHookFactory<Trait> factory in RogueLibsInternals.TraitFactories_Init.Concat(RogueLibsInternals.TraitFactories))
+			foreach (IHookFactory<Trait> factory in RogueLibsInternals.TraitFactories)
 				if (factory.CanCreate(trait))
 				{
 					IHook<Trait> hook = factory.CreateHook(trait);
@@ -217,7 +217,7 @@ namespace RogueLibsCore
 			StatusEffect effect = new StatusEffect { statusEffectName = name, __RogueLibsContainer = instance };
 
 			CustomEffect custom = null;
-			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories_Init)
+			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories)
 				if (factory.CanCreate(effect))
 				{
 					IHook<StatusEffect> hook = factory.CreateHook(effect);
@@ -236,7 +236,7 @@ namespace RogueLibsCore
 			StatusEffect effect = new StatusEffect { statusEffectName = statusEffectName, __RogueLibsContainer = __instance };
 
 			CustomEffect custom = null;
-			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories_Init)
+			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories)
 				if (factory.CanCreate(effect))
 				{
 					IHook<StatusEffect> hook = factory.CreateHook(effect);
