@@ -14,6 +14,10 @@ namespace RogueLibsCore
 	public class BigQuestUnlock : DisplayedUnlock, IUnlockInCC
 	{
 		/// <summary>
+		///   <para>Initializes a new instance of <see cref="BigQuestUnlock"/> class.</para>
+		/// </summary>
+		public BigQuestUnlock() : this(null, false) { }
+		/// <summary>
 		///   <para>Initializes a new instance of <see cref="BigQuestUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Unlock's name/id. Must be "&lt;Agent&gt;_BQ".</param>

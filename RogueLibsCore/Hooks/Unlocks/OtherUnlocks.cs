@@ -14,6 +14,10 @@ namespace RogueLibsCore
 	public class HomeBaseUnlock : UnlockWrapper
 	{
 		/// <summary>
+		///   <para>Initializes a new instance of <see cref="HomeBaseUnlock"/> class.</para>
+		/// </summary>
+		public HomeBaseUnlock() : this(null, false) { }
+		/// <summary>
 		///   <para>Initializes a new instance of <see cref="HomeBaseUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Unlock's name/id.</param>
@@ -45,6 +49,10 @@ namespace RogueLibsCore
 	/// </summary>
 	public class ExtraUnlock : UnlockWrapper
 	{
+		/// <summary>
+		///   <para>Initializes a new instance of <see cref="ExtraUnlock"/> class.</para>
+		/// </summary>
+		public ExtraUnlock() : this(null, false) { }
 		/// <summary>
 		///   <para>Initializes a new instance of <see cref="ExtraUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
@@ -78,6 +86,10 @@ namespace RogueLibsCore
 	public class LoadoutUnlock : UnlockWrapper
 	{
 		/// <summary>
+		///   <para>Initializes a new instance of <see cref="LoadoutUnlock"/> class.</para>
+		/// </summary>
+		public LoadoutUnlock() : this(null, false) { }
+		/// <summary>
 		///   <para>Initializes a new instance of <see cref="LoadoutUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Unlock's name/id.</param>
@@ -109,6 +121,10 @@ namespace RogueLibsCore
 	/// </summary>
 	public class AgentUnlock : UnlockWrapper
 	{
+		/// <summary>
+		///   <para>Initializes a new instance of <see cref="AgentUnlock"/> class.</para>
+		/// </summary>
+		public AgentUnlock() : this(null, false) { }
 		/// <summary>
 		///   <para>Initializes a new instance of <see cref="AgentUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>

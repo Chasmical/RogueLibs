@@ -14,6 +14,10 @@ namespace RogueLibsCore
 	public class MutatorUnlock : DisplayedUnlock
 	{
 		/// <summary>
+		///   <para>Initializes a new instance of <see cref="MutatorUnlock"/> class.</para>
+		/// </summary>
+		public MutatorUnlock() : this(null, false) { }
+		/// <summary>
 		///   <para>Initializes a new instance of <see cref="MutatorUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Unlock's name/id.</param>

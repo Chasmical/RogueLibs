@@ -14,6 +14,10 @@ namespace RogueLibsCore
 	public class FloorUnlock : DisplayedUnlock
 	{
 		/// <summary>
+		///   <para>Initializes a new instance of <see cref="FloorUnlock"/> class.</para>
+		/// </summary>
+		public FloorUnlock() : this(null, false) { }
+		/// <summary>
 		///   <para>Initializes a new instance of <see cref="FloorUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Unlock's name/id.</param>

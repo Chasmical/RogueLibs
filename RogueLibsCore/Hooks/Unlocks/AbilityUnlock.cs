@@ -14,6 +14,10 @@ namespace RogueLibsCore
 	public class AbilityUnlock : DisplayedUnlock, IUnlockInCC
 	{
 		/// <summary>
+		///   <para>Initializes a new instance of <see cref="AbilityUnlock"/> class.</para>
+		/// </summary>
+		public AbilityUnlock() : this(null, false) { }
+		/// <summary>
 		///   <para>Initializes a new instance of <see cref="AbilityUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Unlock's name/id. Must be the same as the ability's name/id.</param>

@@ -14,6 +14,10 @@ namespace RogueLibsCore
 	public class ItemUnlock : DisplayedUnlock, IUnlockInCC
 	{
 		/// <summary>
+		///   <para>Initializes a new instance of <see cref="ItemUnlock"/> class.</para>
+		/// </summary>
+		public ItemUnlock() : this(null, false) { }
+		/// <summary>
 		///   <para>Initializes a new instance of <see cref="FloorUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Unlock's name/id. <b>Must be the same as the item's name/id.</b></param>

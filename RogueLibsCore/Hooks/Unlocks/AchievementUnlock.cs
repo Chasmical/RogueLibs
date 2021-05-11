@@ -14,6 +14,10 @@ namespace RogueLibsCore
 	public class AchievementUnlock : DisplayedUnlock
 	{
 		/// <summary>
+		///   <para>Initializes a new instance of <see cref="AchievementUnlock"/> class.</para>
+		/// </summary>
+		public AchievementUnlock() : this(null, false) { }
+		/// <summary>
 		///   <para>Initializes a new instance of <see cref="AchievementUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Unlock's name/id.</param>

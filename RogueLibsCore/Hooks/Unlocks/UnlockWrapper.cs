@@ -29,10 +29,19 @@ namespace RogueLibsCore
 			Type = unlock.unlockType;
 		}
 
+		private string name;
 		/// <summary>
 		///   <para>Gets the unlock's name.</para>
 		/// </summary>
-		public string Name { get; }
+		public string Name
+		{
+			get => name;
+			internal set
+			{
+				name = value;
+				Unlock.unlockName = value;
+			}
+		}
 		/// <summary>
 		///   <para>Gets the unlock's type.</para>
 		/// </summary>

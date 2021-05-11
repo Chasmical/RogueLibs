@@ -14,6 +14,10 @@ namespace RogueLibsCore
 	public class TraitUnlock : DisplayedUnlock, IUnlockInCC
 	{
 		/// <summary>
+		///   <para>Initializes a new instance of <see cref="TraitUnlock"/> class.</para>
+		/// </summary>
+		public TraitUnlock() : this(null, false) { }
+		/// <summary>
 		///   <para>Initializes a new instance of <see cref="TraitUnlock"/> with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <param name="name">Unlock's name/id.</param>
