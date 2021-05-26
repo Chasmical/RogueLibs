@@ -25,6 +25,7 @@ namespace RogueLibsCore
 			Patcher.Prefix(typeof(SpawnerMain), nameof(SpawnerMain.SpawnItemSprite));
 			Patcher.Postfix(typeof(SpawnerMain), nameof(SpawnerMain.SpawnItemWeapon));
 			Patcher.Postfix(typeof(SpawnerMain), nameof(SpawnerMain.SetLighting2));
+			Patcher.Prefix(typeof(ObjectSprite), nameof(ObjectSprite.SetObjectHighlight));
 		}
 
 		/// <summary>
@@ -64,6 +65,8 @@ namespace RogueLibsCore
 			RogueSprite.addOnGCAwakeDict.Remove(SpriteScope.Floors);
 		}
 
+
+
 		/// <summary>
 		///   <para><b>Prefix-patch (complete override).</b> Sets the dropped item's sprite and sets its materials and shaders.</para>
 		/// </summary>
@@ -92,13 +95,13 @@ namespace RogueLibsCore
 			{
 				try
 				{
+					newItem.objectSprite.transform.Find("Highlight").GetComponent<tk2dSprite>().SetSprite(itemImage.spriteId);
 					try { newItem.objectSprite.GetComponent<Renderer>().sharedMaterial = mat; }
 					catch { Debug.LogError("Couldn't set highlight for item 1: " + newItem); }
 					try { newItem.objectSprite.spr.GetComponent<Renderer>().sharedMaterial = mat; }
 					catch { Debug.LogError("Couldn't set highlight for item 2: " + newItem); }
 					try { newItem.objectSprite.sprH.GetComponent<Renderer>().sharedMaterial = mat; }
 					catch { Debug.LogError("Couldn't set highlight for item 3: " + newItem); }
-					newItem.objectSprite.transform.Find("Highlight").GetComponent<tk2dSprite>().SetSprite(itemImage.spriteId);
 					Debug.LogError("SPAWNN");
 				}
 				catch
@@ -148,6 +151,56 @@ namespace RogueLibsCore
 				Item item = (Item)myObject;
 				item.spriteTr.GetComponent<Renderer>().sharedMaterial = item.spriteRealTr.GetComponent<tk2dSprite>().CurrentSprite.material;
 			}
+		}
+		public static bool ObjectSprite_SetObjectHighlight(ObjectSprite __instance)
+		{
+			if (!__instance.gc.serverPlayer && !__instance.gc.loadCompleteReally)
+				__instance.sprH.SetSprite(__instance.spr.GetSpriteIdByName("Clear"));
+			__instance.sprH.SetSprite(__instance.spr.spriteId);
+
+			if (__instance.isItem)
+			{
+				RogueSprite sprite = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.sprH.CurrentSprite);
+				__instance.objectRendererH.sharedMaterial = sprite != null ? sprite.LightUpMaterial : __instance.itemLightUp;
+			}
+			else
+			{
+				RogueSprite sprite = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.sprH.CurrentSprite);
+				__instance.objectRendererH.sharedMaterial = sprite != null ? sprite.LightUpMaterial : __instance.objectLightUp;
+			}
+			if (__instance.extraSprite)
+			{
+				__instance.sprTrH.position = new Vector3(__instance.sprTr.position.x, __instance.sprTr.position.y, __instance.sprTr.position.z - 1E-05f);
+				__instance.sprTrH.rotation = __instance.sprTr.rotation;
+				__instance.sprTrH.localScale = __instance.sprTr.localScale;
+				__instance.sprH.scale = __instance.spr.scale;
+			}
+			else
+			{
+				__instance.sprTrH.localPosition = new Vector3(__instance.sprTr.localPosition.x, __instance.sprTr.localPosition.y, __instance.sprTr.localPosition.z - 1E-05f);
+				__instance.sprTrH.localRotation = __instance.sprTr.localRotation;
+				__instance.sprTrH.localScale = __instance.sprTr.localScale;
+				__instance.sprH.scale = __instance.spr.scale;
+			}
+			__instance.objectRendererH.enabled = __instance.objectRenderer.enabled;
+			if (__instance.sprGoH != null)
+			{
+				if (!__instance.sprGo.activeSelf)
+					__instance.sprH.color = ObjectSprite.clearColor;
+
+				__instance.sprGoH.layer = !__instance.gc.splitScreen
+						? 0
+					: __instance.player1Highlight && !__instance.player2Highlight && !__instance.player3Highlight && !__instance.player4Highlight
+						? 1
+					: !__instance.player1Highlight && __instance.player2Highlight && !__instance.player3Highlight && !__instance.player4Highlight
+						? 2
+					: !__instance.player1Highlight && !__instance.player2Highlight && __instance.player3Highlight && !__instance.player4Highlight
+						? 8
+					: !__instance.player1Highlight && !__instance.player2Highlight && !__instance.player3Highlight && __instance.player4Highlight
+						? 9
+					: 0;
+			}
+			return false;
 		}
 	}
 }

@@ -144,6 +144,9 @@ namespace RogueLibsCore
 			Sprite = CreateSprite();
 		}
 
+		internal Material Material { get; private set; }
+		internal Material LightUpMaterial { get; private set; }
+
 		private Sprite CreateSprite()
 		{
 			if (Texture is null || Name is null || PixelsPerUnit <= 0f) return null;
@@ -189,6 +192,10 @@ namespace RogueLibsCore
 			RogueLibsInternals.Logger.LogDebug($"Defining: {Name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
 			Definition = AddDefinition(coll, Texture, Region);
 			Collection = coll;
+
+			Material = Definition.material;
+			LightUpMaterial = UnityEngine.Object.Instantiate(Material);
+			LightUpMaterial.shader = GameController.gameController.lightUpShader;
 
 			GameResources gr = GameResources.gameResources;
 
@@ -332,7 +339,6 @@ namespace RogueLibsCore
 			coll.ClearDictionary();
 			coll.InitDictionary();
 		}
-
 	}
 	/// <summary>
 	///   <para>Represents a type of game resources, that the sprite will be integrated into.</para>

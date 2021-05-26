@@ -256,12 +256,13 @@ namespace RogueLibsCore
 			__result = StatusEffectUpdateEnumerator(__instance, custom, showTextOnRemoval);
 			return false;
 		}
+		private static readonly FieldInfo removeEffectOnUpdateField = AccessTools.Field(typeof(StatusEffects), "removeStatusEffectOnUpdate");
 		public static IEnumerator StatusEffectUpdateEnumerator(StatusEffects __instance, CustomEffect customEffect, bool showTextOnRemoval)
 		{
 			float countSpeed = 1f;
 			bool firstTick = true;
 			bool flag = true;
-			if (GameController.gameController.multiplayerMode && ((GameController.gameController.serverPlayer && __instance.agent.isPlayer > 0 && !__instance.agent.localPlayer) || (!GameController.gameController.serverPlayer && !__instance.agent.localPlayer)))
+			if (GameController.gameController.multiplayerMode && (GameController.gameController.serverPlayer && __instance.agent.isPlayer > 0 && !__instance.agent.localPlayer || !GameController.gameController.serverPlayer && !__instance.agent.localPlayer))
 			{
 				flag = false;
 			}
@@ -291,10 +292,9 @@ namespace RogueLibsCore
 				}
 				if (!customEffect.Effect.infiniteTime && (!__instance.agent.disappeared || __instance.agent.FellInHole() || __instance.agent.teleporting) && (!__instance.agent.dead || customEffect.EffectInfo.Name != "Resurrection"))
 				{
-					FieldInfo field = AccessTools.Field(typeof(StatusEffects), "removeStatusEffectOnUpdate");
-					field.SetValue(__instance, true);
+					removeEffectOnUpdateField.SetValue(__instance, true);
 					__instance.RemoveStatusEffect(customEffect.EffectInfo.Name, showTextOnRemoval);
-					field.SetValue(__instance, false);
+					removeEffectOnUpdateField.SetValue(__instance, false);
 				}
 			}
 		}
