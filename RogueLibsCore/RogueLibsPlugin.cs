@@ -15,6 +15,7 @@ namespace RogueLibsCore
 	///   <para>RogueLibs plugin type.</para>
 	/// </summary>
 	[BepInPlugin(RogueLibs.GUID, RogueLibs.Name, RogueLibs.CompiledVersion)]
+	[BepInIncompatibility("abbysssal.streetsofrogue.ectd")]
 	public sealed partial class RogueLibsPlugin : BaseUnityPlugin
 	{
 		/// <summary>
