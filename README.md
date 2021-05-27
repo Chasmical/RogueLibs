@@ -35,6 +35,19 @@ If you have any suggestions or find any bugs, you can open a new issue here on G
   </a>
 </div>
 
+## Installation ##
+
+1. Install BepInEx
+   1. [Download the latest version of BepInEx](https://github.com/BepInEx/BepInEx/releases/latest);
+   2. Drag all files from the archive into directory `/Steam/SteamApps/common/Streets of Rogue`;
+   3. Run the game, so BepInEx can create needed files and directories, and close the game;
+2. Install RogueLibs
+   1. [Download the latest version of RogueLibs](https://github.com/Abbysssal/RogueLibs/releases/latest);
+   2. Drag the file "RogueLibsCore.dll" into directory `/Steam/SteamApps/common/Streets of Rogue/BepInEx/plugins`;
+   3. Drag the file "RogueLibsPatcher.dll" into directory `/Steam/SteamApps/common/Streets of Rogue/BepInEx/patchers`;
+3. Download and install whatever mods you want to use.
+4. Run the game!
+
 ## Table of Contents ##
 
 - **Main page**
