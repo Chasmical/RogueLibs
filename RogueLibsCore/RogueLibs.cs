@@ -25,6 +25,7 @@ namespace RogueLibsCore
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="InvItem"/>s.</para>
 		/// </summary>
 		public static readonly List<IHookFactory<InvItem>> InvItemFactories = new List<IHookFactory<InvItem>>();
+		public static CustomItemFactory CustomItemFactory { get; } = new CustomItemFactory();
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="Agent"/>s.</para>
 		/// </summary>
@@ -37,15 +38,13 @@ namespace RogueLibsCore
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="StatusEffect"/>s.</para>
 		/// </summary>
 		public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new List<IHookFactory<StatusEffect>>();
+		public static CustomEffectFactory CustomEffectFactory { get; } = new CustomEffectFactory();
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="Trait"/>s.</para>
 		/// </summary>
 		public static readonly List<IHookFactory<Trait>> TraitFactories = new List<IHookFactory<Trait>>();
+		public static CustomTraitFactory CustomTraitFactory { get; } = new CustomTraitFactory();
 
-		/// <summary>
-		///   <para>Collection of initialized <see cref="RogueSprite"/>s (both defined and undefined).</para>
-		/// </summary>
-		public static readonly List<RogueSprite> CustomSprites = new List<RogueSprite>();
 		/// <summary>
 		///   <para>Collection of initialized <see cref="CustomName"/>s.</para>
 		/// </summary>
@@ -84,28 +83,37 @@ namespace RogueLibsCore
 		public const string CompiledVersion = "3.0";
 
 		/// <summary>
-		///   <para>Creates a <see cref="CustomItemFactory{T}"/> with the specified <typeparamref name="TItem"/> and returns <see cref="ItemInfo"/> with it.</para>
+		///   <para>Adds the specified <typeparamref name="TItem"/> type to the game and returns <see cref="ItemBuilder"/> with it.</para>
 		/// </summary>
-		/// <typeparam name="TItem">Type of the <see cref="CustomItem"/> that you want to add.</typeparam>
-		/// <returns><see cref="ItemInfo"/> for the created <typeparamref name="TItem"/>.</returns>
-		public static ItemInfo CreateCustomItem<TItem>()
+		/// <typeparam name="TItem">Type of the <see cref="CustomItem"/> to add.</typeparam>
+		/// <returns><see cref="ItemBuilder"/> for the created <typeparamref name="TItem"/>.</returns>
+		public static ItemBuilder CreateCustomItem<TItem>()
 			where TItem : CustomItem, new()
 		{
-			CustomItemFactory<TItem> factory = new CustomItemFactory<TItem>();
-			RogueLibsInternals.InvItemFactories.Add(factory);
-			return new ItemInfo(factory);
+			ItemInfo info = RogueLibsInternals.CustomItemFactory.AddItem<TItem>();
+			return new ItemBuilder(info);
 		}
-		public static void CreateCustomEffect<TEffect>()
-			where TEffect : CustomEffect, new()
-		{
-			CustomEffectFactory<TEffect> factory = new CustomEffectFactory<TEffect>();
-			RogueLibsInternals.EffectFactories.Add(factory);
-		}
-		public static void CreateCustomTrait<TTrait>()
+		/// <summary>
+		///   <para>Adds the specified <typeparamref name="TTrait"/> type to the game and returns <see cref="TraitBuilder"/> with it.</para>
+		/// </summary>
+		/// <typeparam name="TTrait">Type of the <see cref="CustomTrait"/> to add.</typeparam>
+		/// <returns><see cref="TraitBuilder"/> for the created <typeparamref name="TTrait"/>.</returns>
+		public static TraitBuilder CreateCustomTrait<TTrait>()
 			where TTrait : CustomTrait, new()
 		{
-			CustomTraitFactory<TTrait> factory = new CustomTraitFactory<TTrait>();
-			RogueLibsInternals.TraitFactories.Add(factory);
+			TraitInfo info = RogueLibsInternals.CustomTraitFactory.AddTrait<TTrait>();
+			return new TraitBuilder(info);
+		}
+		/// <summary>
+		///   <para>Adds the specified <typeparamref name="TEffect"/> type to the game and returns <see cref="EffectBuilder"/> with it.</para>
+		/// </summary>
+		/// <typeparam name="TEffect">Type of the <see cref="CustomEffect"/> to add.</typeparam>
+		/// <returns><see cref="EffectBuilder"/> for the created <typeparamref name="TEffect"/>.</returns>
+		public static EffectBuilder CreateCustomEffect<TEffect>()
+			where TEffect : CustomEffect, new()
+		{
+			EffectInfo info = RogueLibsInternals.CustomEffectFactory.AddEffect<TEffect>();
+			return new EffectBuilder(info);
 		}
 
 		/// <summary>
@@ -124,7 +132,6 @@ namespace RogueLibsCore
 			if (rawData is null) throw new ArgumentNullException(nameof(rawData));
 			if (ppu <= 0f) throw new ArgumentOutOfRangeException(nameof(ppu), ppu, $"{nameof(ppu)} must be greater than 0.");
 			RogueSprite sprite = new RogueSprite(name, scope, rawData, null, ppu);
-			RogueLibsInternals.CustomSprites.Add(sprite);
 			sprite.Define();
 			return sprite;
 		}
@@ -145,7 +152,6 @@ namespace RogueLibsCore
 			if (rawData is null) throw new ArgumentNullException(nameof(rawData));
 			if (ppu <= 0f) throw new ArgumentOutOfRangeException(nameof(ppu), ppu, $"{nameof(ppu)} must be greater than 0.");
 			RogueSprite sprite = new RogueSprite(name, scope, rawData, region, ppu);
-			RogueLibsInternals.CustomSprites.Add(sprite);
 			sprite.Define();
 			return sprite;
 		}
@@ -214,21 +220,18 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Helper class, that provides methods for defining additional data about a custom item.</para>
 	/// </summary>
-	public class ItemInfo
+	public class ItemBuilder
 	{
 		/// <summary>
-		///   <para>Initializes a new instance of <see cref="ItemInfo"/> with the specified <paramref name="factory"/>.</para>
+		///   <para>Initializes a new instance of <see cref="ItemBuilder"/> class with the specified <paramref name="info"/>.</para>
 		/// </summary>
-		/// <param name="factory">Factory that creates <see cref="CustomItem"/> hooks for the current item.</param>
-		public ItemInfo(ICustomItemFactory factory) => ItemFactory = factory;
-		/// <summary>
-		///   <para>Gets the hook factory, that creates hooks for the current item.</para>
-		/// </summary>
-		public ICustomItemFactory ItemFactory { get; }
+		/// <param name="info">The custom item information.</param>
+		public ItemBuilder(ItemInfo info) => Info = info;
 		/// <summary>
 		///   <para>Gets the default information about the current item, specified in the type's attributes.</para>
 		/// </summary>
-		public CustomItemInfo Info => ItemFactory.ItemInfo;
+		public ItemInfo Info { get; }
+
 		/// <summary>
 		///   <para>Gets the name of the current item.</para>
 		/// </summary>
@@ -251,10 +254,10 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="rawData">PNG- pr JPEG-encoded image.</param>
 		/// <param name="ppu">Pixels-per-unit.</param>
-		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
+		/// <returns>The current instance of <see cref="ItemBuilder"/>, for chaining purposes.</returns>
 		/// <exception cref="ArgumentNullException"><paramref name="rawData"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
-		public ItemInfo WithSprite(byte[] rawData, float ppu = 64f)
+		public ItemBuilder WithSprite(byte[] rawData, float ppu = 64f)
 		{
 			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, ppu);
 			return this;
@@ -265,10 +268,10 @@ namespace RogueLibsCore
 		/// <param name="rawData">PNG- pr JPEG-encoded image.</param>
 		/// <param name="region">Region of the texture to use.</param>
 		/// <param name="ppu">Pixels-per-unit.</param>
-		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
+		/// <returns>The current instance of <see cref="ItemBuilder"/>, for chaining purposes.</returns>
 		/// <exception cref="ArgumentNullException"><paramref name="rawData"/> is <see langword="null"/>.</exception>
 		/// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
-		public ItemInfo WithSprite(byte[] rawData, Rect region, float ppu = 64f)
+		public ItemBuilder WithSprite(byte[] rawData, Rect region, float ppu = 64f)
 		{
 			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, region, ppu);
 			return this;
@@ -277,25 +280,18 @@ namespace RogueLibsCore
 		///   <para>Creates a <see cref="CustomName"/> from the specified <paramref name="name"/> translations and attaches it to the current item.</para>
 		/// </summary>
 		/// <param name="name">Translations of the item's name.</param>
-		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
-		public ItemInfo WithName(CustomNameInfo name)
+		/// <returns>The current instance of <see cref="ItemBuilder"/>, for chaining purposes.</returns>
+		public ItemBuilder WithName(CustomNameInfo name)
 		{
 			Name = RogueLibs.CreateCustomName(Info.Name, "Item", name);
 			return this;
 		}
 		/// <summary>
-		///   <para>Creates <see cref="CustomName"/>s from the specified <paramref name="name"/> and <paramref name="description"/> translations and attaches them to the current item.</para>
-		/// </summary>
-		/// <param name="name">Translations of the item's name.</param>
-		/// <param name="description">Translations of the item's description.</param>
-		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
-		public ItemInfo WithName(CustomNameInfo name, CustomNameInfo description) => WithName(name).WithDescription(description);
-		/// <summary>
 		///   <para>Creates a <see cref="CustomName"/> from the specified <paramref name="description"/> translations and attaches it to the current item.</para>
 		/// </summary>
 		/// <param name="description">Translations of the item's description.</param>
 		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
-		public ItemInfo WithDescription(CustomNameInfo description)
+		public ItemBuilder WithDescription(CustomNameInfo description)
 		{
 			Description = RogueLibs.CreateCustomName(Info.Name, "Description", description);
 			return this;
@@ -303,19 +299,88 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Initializes a default <see cref="ItemUnlock"/> for the current item. Unlocked by default.</para>
 		/// </summary>
-		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
-		public ItemInfo WithUnlock() => WithUnlock(new ItemUnlock(Info.Name, true));
+		/// <returns>The current instance of <see cref="ItemBuilder"/>, for chaining purposes.</returns>
+		public ItemBuilder WithUnlock() => WithUnlock(new ItemUnlock(Info.Name, true));
 		/// <summary>
 		///   <para>Initializes the specified <paramref name="unlock"/> for the current item.</para>
 		/// </summary>
 		/// <param name="unlock"><see cref="ItemUnlock"/> for the current item.</param>
-		/// <returns>The current instance of <see cref="ItemInfo"/>, for chaining purposes.</returns>
+		/// <returns>The current instance of <see cref="ItemBuilder"/>, for chaining purposes.</returns>
 		/// <exception cref="ArgumentNullException"><paramref name="unlock"/> is <see langword="null"/>.</exception>
-		public ItemInfo WithUnlock(ItemUnlock unlock)
+		public ItemBuilder WithUnlock(ItemUnlock unlock)
 		{
 			unlock.Name = Info.Name;
 			RogueLibs.CreateCustomUnlock(unlock);
 			Unlock = unlock;
+			return this;
+		}
+	}
+	public class TraitBuilder
+	{
+		public TraitBuilder(TraitInfo info) => Info = info;
+		public TraitInfo Info { get; }
+
+		public CustomName Name { get; private set; }
+		public CustomName Description { get; private set; }
+		public TraitUnlock Unlock { get; private set; }
+		public RogueSprite Sprite { get; private set; }
+
+		public TraitBuilder WithSprite(byte[] rawData, float ppu = 64f)
+		{
+			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Extra, rawData, ppu);
+			return this;
+		}
+		public TraitBuilder WithSprite(byte[] rawData, Rect region, float ppu = 64f)
+		{
+			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Extra, rawData, region, ppu);
+			return this;
+		}
+		public TraitBuilder WithName(CustomNameInfo name)
+		{
+			Name = RogueLibs.CreateCustomName(Info.Name, "StatusEffect", name);
+			return this;
+		}
+		public TraitBuilder WithDescription(CustomNameInfo description)
+		{
+			Description = RogueLibs.CreateCustomName(Info.Name, "Description", description);
+			return this;
+		}
+		public TraitBuilder WithUnlock() => WithUnlock(new TraitUnlock(Info.Name, true));
+		public TraitBuilder WithUnlock(TraitUnlock unlock)
+		{
+			unlock.Name = Info.Name;
+			RogueLibs.CreateCustomUnlock(unlock);
+			Unlock = unlock;
+			return this;
+		}
+	}
+	public class EffectBuilder
+	{
+		public EffectBuilder(EffectInfo info) => Info = info;
+		public EffectInfo Info { get; }
+
+		public CustomName Name { get; private set; }
+		public CustomName Description { get; private set; }
+		public RogueSprite Sprite { get; private set; }
+
+		public EffectBuilder WithSprite(byte[] rawData, float ppu = 64f)
+		{
+			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Extra, rawData, ppu);
+			return this;
+		}
+		public EffectBuilder WithSprite(byte[] rawData, Rect region, float ppu = 64f)
+		{
+			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Extra, rawData, region, ppu);
+			return this;
+		}
+		public EffectBuilder WithName(CustomNameInfo name)
+		{
+			Name = RogueLibs.CreateCustomName(Info.Name, "StatusEffect", name);
+			return this;
+		}
+		public EffectBuilder WithDescription(CustomNameInfo description)
+		{
+			Description = RogueLibs.CreateCustomName(Info.Name, "Description", description);
 			return this;
 		}
 	}

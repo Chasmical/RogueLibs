@@ -88,14 +88,10 @@ namespace RogueLibsCore
 		{
 			effect.__RogueLibsContainer = parent;
 			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories)
-				if (factory.CanCreate(effect))
+				if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
 				{
-					IHook<StatusEffect> hook = factory.CreateHook(effect);
-					if (hook != null)
-					{
-						effect.AddHook(hook);
-						hook.Initialize();
-					}
+					effect.AddHook(hook);
+					hook.Initialize();
 				}
 		}
 		/// <summary>
@@ -138,14 +134,10 @@ namespace RogueLibsCore
 		{
 			trait.__RogueLibsContainer = parent;
 			foreach (IHookFactory<Trait> factory in RogueLibsInternals.TraitFactories)
-				if (factory.CanCreate(trait))
+				if (factory.TryCreate(trait, out IHook<Trait> hook))
 				{
-					IHook<Trait> hook = factory.CreateHook(trait);
-					if (hook != null)
-					{
-						trait.AddHook(hook);
-						hook.Initialize();
-					}
+					trait.AddHook(hook);
+					hook.Initialize();
 				}
 		}
 
@@ -218,10 +210,10 @@ namespace RogueLibsCore
 
 			CustomEffect custom = null;
 			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories)
-				if (factory.CanCreate(effect))
+				if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
 				{
-					IHook<StatusEffect> hook = factory.CreateHook(effect);
-					if (hook is CustomEffect custom2) custom = custom2;
+					if (hook is CustomEffect custom2)
+						custom = custom2;
 				}
 			return custom?.GetEffectTime() ?? 9999;
 		}
@@ -237,10 +229,10 @@ namespace RogueLibsCore
 
 			CustomEffect custom = null;
 			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories)
-				if (factory.CanCreate(effect))
+				if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
 				{
-					IHook<StatusEffect> hook = factory.CreateHook(effect);
-					if (hook is CustomEffect custom2) custom = custom2;
+					if (hook is CustomEffect custom2)
+						custom = custom2;
 				}
 			if (custom != null)
 			{
@@ -261,40 +253,38 @@ namespace RogueLibsCore
 		{
 			float countSpeed = 1f;
 			bool firstTick = true;
-			bool flag = true;
-			if (GameController.gameController.multiplayerMode && (GameController.gameController.serverPlayer && __instance.agent.isPlayer > 0 && !__instance.agent.localPlayer || !GameController.gameController.serverPlayer && !__instance.agent.localPlayer))
+			if (!GameController.gameController.multiplayerMode || (!GameController.gameController.serverPlayer || __instance.agent.isPlayer <= 0 || __instance.agent.localPlayer) && (GameController.gameController.serverPlayer || __instance.agent.localPlayer))
 			{
-				flag = false;
-			}
-			if (flag && __instance.StatusEffectList != null)
-			{
-				while (customEffect.CurrentTime > 0 && __instance.hasStatusEffect(customEffect.EffectInfo.Name) && (!__instance.agent.disappeared || __instance.agent.oma.notReadyToEnterLevel || __instance.agent.FellInHole() || __instance.agent.teleporting) || __instance.agent.FellInHole() || __instance.agent.teleporting || __instance.agent.KnockedOut())
+				if (__instance.StatusEffectList != null)
 				{
-					if (!__instance.agent.FellInHole() && !__instance.agent.teleporting && !__instance.agent.KnockedOut() && GameController.gameController.loadComplete && !GameController.gameController.cinematic)
+					while (customEffect.CurrentTime > 0 && __instance.hasStatusEffect(customEffect.EffectInfo.Name) && (!__instance.agent.disappeared || __instance.agent.oma.notReadyToEnterLevel || __instance.agent.FellInHole() || __instance.agent.teleporting) || __instance.agent.FellInHole() || __instance.agent.teleporting || __instance.agent.KnockedOut())
 					{
-						if (!customEffect.Effect.infiniteTime)
-							customEffect.Effect.prevTime = customEffect.CurrentTime;
-
-						EffectUpdatedArgs args = new EffectUpdatedArgs
+						if (!__instance.agent.FellInHole() && !__instance.agent.teleporting && !__instance.agent.KnockedOut() && GameController.gameController.loadComplete && !GameController.gameController.cinematic)
 						{
-							IsFirstTick = firstTick,
-							UpdateDelay = countSpeed,
-							ShowTextOnRemoval = showTextOnRemoval
-						};
-						customEffect.OnUpdated(args);
-						countSpeed = args.UpdateDelay;
-						showTextOnRemoval = args.ShowTextOnRemoval;
+							if (!customEffect.Effect.infiniteTime)
+								customEffect.Effect.prevTime = customEffect.CurrentTime;
+
+							EffectUpdatedArgs args = new EffectUpdatedArgs
+							{
+								IsFirstTick = firstTick,
+								UpdateDelay = countSpeed,
+								ShowTextOnRemoval = showTextOnRemoval
+							};
+							customEffect.OnUpdated(args);
+							countSpeed = args.UpdateDelay;
+							showTextOnRemoval = args.ShowTextOnRemoval;
+						}
+						if (__instance.agent.isPlayer > 0 && __instance.agent.localPlayer && !customEffect.Effect.infiniteTime)
+							__instance.myStatusEffectDisplay.RefreshStatusEffectText();
+						firstTick = false;
+						if (customEffect.CurrentTime > 0) yield return new WaitForSeconds(countSpeed);
 					}
-					if (__instance.agent.isPlayer > 0 && __instance.agent.localPlayer && !customEffect.Effect.infiniteTime)
-						__instance.myStatusEffectDisplay.RefreshStatusEffectText();
-					firstTick = false;
-					if (customEffect.CurrentTime > 0) yield return new WaitForSeconds(countSpeed);
-				}
-				if (!customEffect.Effect.infiniteTime && (!__instance.agent.disappeared || __instance.agent.FellInHole() || __instance.agent.teleporting) && (!__instance.agent.dead || customEffect.EffectInfo.Name != "Resurrection"))
-				{
-					removeEffectOnUpdateField.SetValue(__instance, true);
-					__instance.RemoveStatusEffect(customEffect.EffectInfo.Name, showTextOnRemoval);
-					removeEffectOnUpdateField.SetValue(__instance, false);
+					if (!customEffect.Effect.infiniteTime && (!__instance.agent.disappeared || __instance.agent.FellInHole() || __instance.agent.teleporting) && (!__instance.agent.dead || customEffect.EffectInfo.Name != "Resurrection"))
+					{
+						removeEffectOnUpdateField.SetValue(__instance, true);
+						__instance.RemoveStatusEffect(customEffect.EffectInfo.Name, showTextOnRemoval);
+						removeEffectOnUpdateField.SetValue(__instance, false);
+					}
 				}
 			}
 		}

@@ -9,7 +9,7 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Default information about a <see cref="CustomItem"/>, specified in the type's attributes.</para>
 	/// </summary>
-	public sealed class CustomItemInfo
+	public sealed class ItemInfo
 	{
 		/// <summary>
 		///   <para>Gets the item's name/id.</para>
@@ -19,10 +19,12 @@ namespace RogueLibsCore
 		///   <para>Gets the item's categories.</para>
 		/// </summary>
 		public ReadOnlyCollection<string> Categories { get; } = RogueUtilities.Empty;
+
 		/// <summary>
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemUsable.UseItem"/>.</para>
 		/// </summary>
 		public ReadOnlyCollection<string> IgnoreChecks_UseItem { get; } = RogueUtilities.Empty;
+
 		/// <summary>
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemCombinable.CombineFilter(InvItem)"/>.</para>
 		/// </summary>
@@ -35,6 +37,7 @@ namespace RogueLibsCore
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemCombinable.CombineTooltip(InvItem)"/>.</para>
 		/// </summary>
 		public ReadOnlyCollection<string> IgnoreChecks_CombineTooltip { get; } = RogueUtilities.Empty;
+
 		/// <summary>
 		///   <para>Determines whether an <see cref="IgnoreChecksAttribute"/> was applied to <see cref="IItemTargetable.TargetFilter(PlayfieldObject)"/>.</para>
 		/// </summary>
@@ -48,49 +51,66 @@ namespace RogueLibsCore
 		/// </summary>
 		public ReadOnlyCollection<string> IgnoreChecks_TargetTooltip { get; } = RogueUtilities.Empty;
 
-		private static readonly Dictionary<Type, CustomItemInfo> infos = new Dictionary<Type, CustomItemInfo>();
+		private static readonly Dictionary<Type, ItemInfo> infos = new Dictionary<Type, ItemInfo>();
 		/// <summary>
-		///   <para>Gets a <see cref="CustomItemInfo"/> for the specified <paramref name="type"/>.</para>
+		///   <para>Gets a <see cref="ItemInfo"/> for the specified <paramref name="type"/>.</para>
 		/// </summary>
 		/// <param name="type"><see cref="CustomItem"/> type.</param>
-		/// <returns><see cref="CustomItemInfo"/> containing the default information about the specified custom item <paramref name="type"/>.</returns>
+		/// <returns><see cref="ItemInfo"/> containing the default information about the specified custom item <paramref name="type"/>.</returns>
 		/// <exception cref="ArgumentException"><paramref name="type"/> is not a <see cref="CustomItem"/>.</exception>
-		public static CustomItemInfo Get(Type type) => infos.TryGetValue(type, out CustomItemInfo info) ? info : (infos[type] = new CustomItemInfo(type));
+		public static ItemInfo Get(Type type)
+		{
+			if (!infos.TryGetValue(type, out ItemInfo info))
+				infos.Add(type, info = new ItemInfo(type));
+			return info;
+		}
 		/// <summary>
-		///   <para>Gets a <see cref="CustomItemInfo"/> for the specified <typeparamref name="TItem"/>.</para>
+		///   <para>Gets a <see cref="ItemInfo"/> for the specified <typeparamref name="TItem"/>.</para>
 		/// </summary>
 		/// <typeparam name="TItem"><see cref="CustomItem"/> type.</typeparam>
-		/// <returns><see cref="CustomItemInfo"/> containing the default information about the specified custom item <typeparamref name="TItem"/>.</returns>
-		public static CustomItemInfo Get<TItem>() where TItem : CustomItem => Get(typeof(TItem));
+		/// <returns><see cref="ItemInfo"/> containing the default information about the specified custom item <typeparamref name="TItem"/>.</returns>
+		public static ItemInfo Get<TItem>() where TItem : CustomItem => Get(typeof(TItem));
 
-		private CustomItemInfo(Type type)
+		private ItemInfo(Type type)
 		{
-			if (!typeof(CustomItem).IsAssignableFrom(type)) throw new ArgumentException($"The specified type is not a {nameof(CustomItem)}!", nameof(type));
+			if (!typeof(CustomItem).IsAssignableFrom(type))
+				throw new ArgumentException($"The specified type does not inherit from {nameof(CustomItem)}!", nameof(type));
 			Name = type.GetCustomAttribute<ItemNameAttribute>()?.Name ?? type.Name;
 			Categories = new ReadOnlyCollection<string>(type.GetCustomAttributes<ItemCategoriesAttribute>().SelectMany(c => c.Categories).ToArray());
 
 			if (typeof(IItemUsable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_UseItem = type.GetInterfaceMethod(typeof(IItemUsable),
-					nameof(IItemUsable.UseItem)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IEnumerable<string> checks = type.GetInterfaceMethod(typeof(IItemUsable), nameof(IItemUsable.UseItem))
+					.GetCustomAttributes<IgnoreChecksAttribute>().SelectMany(a => a.IgnoredChecks);
+				IgnoreChecks_UseItem = checks.Any() ? new ReadOnlyCollection<string>(checks.ToArray()) : RogueUtilities.Empty;
 			}
 			if (typeof(IItemCombinable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_CombineFilter = type.GetInterfaceMethod(typeof(IItemCombinable),
-					nameof(IItemCombinable.CombineFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_CombineItems = type.GetInterfaceMethod(typeof(IItemCombinable),
-					nameof(IItemCombinable.CombineItems)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_CombineItems = type.GetInterfaceMethod(typeof(IItemCombinable),
-					nameof(IItemCombinable.CombineTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IEnumerable<string> checks = type.GetInterfaceMethod(typeof(IItemCombinable), nameof(IItemCombinable.CombineFilter))
+					.GetCustomAttributes<IgnoreChecksAttribute>().SelectMany(a => a.IgnoredChecks);
+				IgnoreChecks_CombineFilter = checks.Any() ? new ReadOnlyCollection<string>(checks.ToArray()) : RogueUtilities.Empty;
+
+				checks = type.GetInterfaceMethod(typeof(IItemCombinable), nameof(IItemCombinable.CombineItems))
+					.GetCustomAttributes<IgnoreChecksAttribute>().SelectMany(a => a.IgnoredChecks);
+				IgnoreChecks_CombineItems = checks.Any() ? new ReadOnlyCollection<string>(checks.ToArray()) : RogueUtilities.Empty;
+
+				checks = type.GetInterfaceMethod(typeof(IItemCombinable), nameof(IItemCombinable.CombineTooltip))
+					.GetCustomAttributes<IgnoreChecksAttribute>().SelectMany(a => a.IgnoredChecks);
+				IgnoreChecks_CombineTooltip = checks.Any() ? new ReadOnlyCollection<string>(checks.ToArray()) : RogueUtilities.Empty;
 			}
 			if (typeof(IItemTargetable).IsAssignableFrom(type))
 			{
-				IgnoreChecks_TargetFilter = type.GetInterfaceMethod(typeof(IItemTargetable),
-					nameof(IItemTargetable.TargetFilter)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_TargetObject = type.GetInterfaceMethod(typeof(IItemTargetable),
-					nameof(IItemTargetable.TargetObject)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
-				IgnoreChecks_TargetObject = type.GetInterfaceMethod(typeof(IItemTargetable),
-					nameof(IItemTargetable.TargetTooltip)).GetCustomAttribute<IgnoreChecksAttribute>()?.IgnoredChecks ?? RogueUtilities.Empty;
+				IEnumerable<string> checks = type.GetInterfaceMethod(typeof(IItemTargetable), nameof(IItemTargetable.TargetFilter))
+					.GetCustomAttributes<IgnoreChecksAttribute>().SelectMany(a => a.IgnoredChecks);
+				IgnoreChecks_TargetFilter = checks.Any() ? new ReadOnlyCollection<string>(checks.ToArray()) : RogueUtilities.Empty;
+
+				checks = type.GetInterfaceMethod(typeof(IItemTargetable), nameof(IItemTargetable.TargetObject))
+					.GetCustomAttributes<IgnoreChecksAttribute>().SelectMany(a => a.IgnoredChecks);
+				IgnoreChecks_TargetObject = checks.Any() ? new ReadOnlyCollection<string>(checks.ToArray()) : RogueUtilities.Empty;
+
+				checks = type.GetInterfaceMethod(typeof(IItemTargetable), nameof(IItemTargetable.TargetTooltip))
+					.GetCustomAttributes<IgnoreChecksAttribute>().SelectMany(a => a.IgnoredChecks);
+				IgnoreChecks_TargetTooltip = checks.Any() ? new ReadOnlyCollection<string>(checks.ToArray()) : RogueUtilities.Empty;
 			}
 		}
 	}

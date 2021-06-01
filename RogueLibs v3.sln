@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aTonOfItems", "aTonOfItems\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aTonOfMutators", "aTonOfMutators\aTonOfMutators.csproj", "{3B1501B6-7C4D-4FAC-BB05-90CE176A8B0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PluginBuildEvents", "PluginBuildEvents\PluginBuildEvents.csproj", "{9DC48356-328C-46AE-9F0C-107F09BAD5A7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginBuildEvents", "PluginBuildEvents\PluginBuildEvents.csproj", "{9DC48356-328C-46AE-9F0C-107F09BAD5A7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

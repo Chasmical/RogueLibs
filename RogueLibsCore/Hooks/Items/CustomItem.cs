@@ -48,7 +48,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Gets the default information about the item, defined in the type's attributes.</para>
 		/// </summary>
-		public CustomItemInfo ItemInfo { get; internal set; }
+		public ItemInfo ItemInfo { get; internal set; }
 
 		/// <inheritdoc/>
 		protected override sealed void Initialize()
@@ -161,5 +161,42 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="text">Tooltip text.</param>
 		public static implicit operator CustomTooltip(string text) => new CustomTooltip(text);
+	}
+	/// <summary>
+	///   <para>Represents a specialized <see cref="IHookFactory{T}"/> for <see cref="CustomItem"/> types.</para>
+	/// </summary>
+	public sealed class CustomItemFactory : HookFactoryBase<InvItem>
+	{
+		private readonly Dictionary<string, ItemEntry> itemsDict = new Dictionary<string, ItemEntry>();
+		/// <inheritdoc/>
+		public override bool TryCreate(InvItem instance, out IHook<InvItem> hook)
+		{
+			if (instance != null && itemsDict.TryGetValue(instance.invItemName, out ItemEntry entry))
+			{
+				hook = entry.Initializer();
+				if (hook is CustomItem custom)
+					custom.ItemInfo = entry.ItemInfo;
+				hook.Instance = instance;
+				return true;
+			}
+			hook = null;
+			return false;
+		}
+		/// <summary>
+		///   <para>Adds the specified <typeparamref name="T"/> item type to the factory.</para>
+		/// </summary>
+		/// <typeparam name="T">Custom item's type.</typeparam>
+		public ItemInfo AddItem<T>() where T : CustomItem, new()
+		{
+			ItemInfo info = ItemInfo.Get<T>();
+			itemsDict.Add(info.Name, new ItemEntry { Initializer = () => new T(), ItemInfo = info });
+			return info;
+		}
+
+		private struct ItemEntry
+		{
+			public Func<IHook<InvItem>> Initializer;
+			public ItemInfo ItemInfo;
+		}
 	}
 }

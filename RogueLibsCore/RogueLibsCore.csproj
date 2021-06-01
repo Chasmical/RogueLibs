@@ -84,11 +84,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hooks\Effects\CustomEffect.cs" />
-    <Compile Include="Hooks\Effects\CustomEffectFactory.cs" />
-    <Compile Include="Hooks\Effects\CustomEffectInfo.cs" />
+    <Compile Include="Hooks\Effects\EffectInfo.cs" />
     <Compile Include="Hooks\Traits\CustomTrait.cs" />
-    <Compile Include="Hooks\Traits\CustomTraitFactory.cs" />
-    <Compile Include="Hooks\Traits\CustomTraitInfo.cs" />
+    <Compile Include="Hooks\Traits\TraitInfo.cs" />
     <Compile Include="Hooks\Unlocks\UnlocksMenu.cs" />
     <Compile Include="Hooks\Unlocks\OtherUnlocks.cs" />
     <Compile Include="Hooks\Unlocks\AbilityUnlock.cs" />
@@ -101,8 +99,7 @@
     <Compile Include="Hooks\Unlocks\TraitUnlock.cs" />
     <Compile Include="Hooks\Unlocks\ClearAllUnlocks.cs" />
     <Compile Include="Hooks\Items\CustomItem.cs" />
-    <Compile Include="Hooks\Items\CustomItemFactory.cs" />
-    <Compile Include="Hooks\Items\CustomItemInfo.cs" />
+    <Compile Include="Hooks\Items\ItemInfo.cs" />
     <Compile Include="Hooks\Unlocks\DisplayedUnlock.cs" />
     <Compile Include="Patches\Patches_CharacterCreation.cs" />
     <Compile Include="Patches\Patches_ScrollingMenu.cs" />

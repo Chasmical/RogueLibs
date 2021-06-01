@@ -46,6 +46,9 @@ namespace RogueLibsPatcher
 
             TypeDefinition unlock = module.GetType("Unlock");
             PatchCustom(unlock);
+
+            TypeDefinition tk2ddef = module.GetType("tk2dSpriteDefinition");
+            PatchCustom(tk2ddef);
         }
 
         public static void PatchHooks(TypeDefinition type) => Patch(type, "__RogueLibsHooks");

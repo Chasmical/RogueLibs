@@ -32,43 +32,15 @@ namespace RogueLibsCore
 		}
 
 		/// <summary>
-		///   <para><b>Postfix-patch.</b> Defines the custom sprites from <see cref="RogueSprite.addOnGCAwakeDict"/>.</para>
+		///   <para><b>Postfix-patch.</b> Defines the custom sprites from <see cref="RogueSprite.prepared"/>.</para>
 		/// </summary>
 		/// <param name="__instance">Instance of <see cref="GameController"/>.</param>
 		public static void GameController_Awake(GameController __instance)
 		{
-			tk2dSpriteCollectionData coll = __instance.spawnerMain.itemSprites;
-			List<RogueSprite> list = RogueSprite.addOnGCAwakeDict[SpriteScope.Items];
-			for (int i = 0; i < list.Count; i++)
-			{
-				RogueSprite sprite = list[i];
-				sprite.willBeAddedOnGCAwake = false;
-				sprite.DefineToCollection(coll);
-			}
-			RogueSprite.addOnGCAwakeDict.Remove(SpriteScope.Items);
-
-			coll = __instance.spawnerMain.objectSprites;
-			list = RogueSprite.addOnGCAwakeDict[SpriteScope.Objects];
-			for (int i = 0; i < list.Count; i++)
-			{
-				RogueSprite sprite = list[i];
-				sprite.willBeAddedOnGCAwake = false;
-				sprite.DefineToCollection(coll);
-			}
-			RogueSprite.addOnGCAwakeDict.Remove(SpriteScope.Objects);
-
-			coll = __instance.spawnerMain.floorSprites;
-			list = RogueSprite.addOnGCAwakeDict[SpriteScope.Floors];
-			for (int i = 0; i < list.Count; i++)
-			{
-				RogueSprite sprite = list[i];
-				sprite.willBeAddedOnGCAwake = false;
-				sprite.DefineToCollection(coll);
-			}
-			RogueSprite.addOnGCAwakeDict.Remove(SpriteScope.Floors);
+			RogueSprite.DefinePrepared(__instance.spawnerMain.itemSprites, SpriteScope.Items);
+			RogueSprite.DefinePrepared(__instance.spawnerMain.objectSprites, SpriteScope.Objects);
+			RogueSprite.DefinePrepared(__instance.spawnerMain.floorSprites, SpriteScope.Floors);
 		}
-
-
 
 		/// <summary>
 		///   <para><b>Prefix-patch (complete override).</b> Sets the dropped item's sprite and sets its materials and shaders.</para>
@@ -157,56 +129,8 @@ namespace RogueLibsCore
 		}
 		public static void ObjectSprite_SetObjectHighlight(ObjectSprite __instance)
 		{
-			/*
-			if (!__instance.gc.serverPlayer && !__instance.gc.loadCompleteReally)
-				__instance.sprH.SetSprite(__instance.spr.GetSpriteIdByName("Clear"));
-			__instance.sprH.SetSprite(__instance.spr.spriteId);
-			*/
-			if (__instance.isItem)
-			{
-				RogueSprite sprite = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.sprH.CurrentSprite);
-				if (sprite != null) __instance.objectRendererH.sharedMaterial = sprite.LightUpMaterial;
-			}
-			else
-			{
-				RogueSprite sprite = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.sprH.CurrentSprite);
-				if (sprite != null) __instance.objectRendererH.sharedMaterial = sprite.LightUpMaterial;
-			}
-			/*
-			if (__instance.extraSprite)
-			{
-				__instance.sprTrH.position = new Vector3(__instance.sprTr.position.x, __instance.sprTr.position.y, __instance.sprTr.position.z - 1E-05f);
-				__instance.sprTrH.rotation = __instance.sprTr.rotation;
-				__instance.sprTrH.localScale = __instance.sprTr.localScale;
-				__instance.sprH.scale = __instance.spr.scale;
-			}
-			else
-			{
-				__instance.sprTrH.localPosition = new Vector3(__instance.sprTr.localPosition.x, __instance.sprTr.localPosition.y, __instance.sprTr.localPosition.z - 1E-05f);
-				__instance.sprTrH.localRotation = __instance.sprTr.localRotation;
-				__instance.sprTrH.localScale = __instance.sprTr.localScale;
-				__instance.sprH.scale = __instance.spr.scale;
-			}
-			__instance.objectRendererH.enabled = __instance.objectRenderer.enabled;
-			if (__instance.sprGoH != null)
-			{
-				if (!__instance.sprGo.activeSelf)
-					__instance.sprH.color = ObjectSprite.clearColor;
-
-				__instance.sprGoH.layer = !__instance.gc.splitScreen
-						? 0
-					: __instance.player1Highlight && !__instance.player2Highlight && !__instance.player3Highlight && !__instance.player4Highlight
-						? 1
-					: !__instance.player1Highlight && __instance.player2Highlight && !__instance.player3Highlight && !__instance.player4Highlight
-						? 2
-					: !__instance.player1Highlight && !__instance.player2Highlight && __instance.player3Highlight && !__instance.player4Highlight
-						? 8
-					: !__instance.player1Highlight && !__instance.player2Highlight && !__instance.player3Highlight && __instance.player4Highlight
-						? 9
-					: 0;
-			}
-			return false;
-			*/
+			RogueSprite sprite = (RogueSprite)__instance.sprH.CurrentSprite.__RogueLibsCustom;
+			if (sprite != null) __instance.objectRendererH.sharedMaterial = sprite.LightUpMaterial;
 		}
 		public static void ObjectSprite_SetAgentOff(ObjectSprite __instance)
 		{
@@ -214,44 +138,39 @@ namespace RogueLibsCore
 			List<tk2dSprite> agentSpriteList = __instance.agentHitbox.agentSpriteList;
 			if (!__instance.agentColorDirty && __instance.gc.loadCompleteReally && __instance.didSetRendererOffInitial)
 			{
-				int count = agentSpriteRendererListH.Count;
 				for (int i = 0; i < agentSpriteRendererListH.Count; i++)
 				{
 					agentSpriteRendererListH[i].enabled = false;
-					RogueSprite sprite = RogueLibsInternals.CustomSprites.Find(s => s.Definition == agentSpriteList[i].CurrentSprite);
+					RogueSprite sprite = (RogueSprite)agentSpriteList[i].CurrentSprite.__RogueLibsCustom;
 					if (sprite != null) __instance.agentHitbox.agentSpriteRendererList[i].sharedMaterial = sprite.Material;
 				}
 				return;
 			}
 
 			List<Renderer> agentSpriteRendererList = __instance.agentHitbox.agentSpriteRendererList;
-			int count2 = agentSpriteRendererListH.Count;
 			for (int j = 0; j < agentSpriteList.Count; j++)
 			{
-				tk2dSprite tk2dSprite = agentSpriteList[j];
-				Renderer renderer = agentSpriteRendererList[j];
 				agentSpriteRendererListH[j].enabled = false;
-
-				RogueSprite sprite = RogueLibsInternals.CustomSprites.Find(s => s.Definition == tk2dSprite.CurrentSprite);
-				if (sprite != null) __instance.agentHitbox.agentSpriteRendererList[j].sharedMaterial = sprite.Material;
+				RogueSprite sprite = (RogueSprite)agentSpriteList[j].CurrentSprite.__RogueLibsCustom;
+				if (sprite != null) agentSpriteRendererList[j].sharedMaterial = sprite.Material;
 			}
 
-			RogueSprite meleeSpr1 = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.agent.melee.spr.CurrentSprite);
+			RogueSprite meleeSpr1 = (RogueSprite)__instance.agent.melee.spr.CurrentSprite.__RogueLibsCustom;
 			if (meleeSpr1 != null) __instance.agent.melee.arm1SpriteRenderer.sharedMaterial = meleeSpr1.Material;
 
-			RogueSprite meleeSpr2 = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.agent.melee.spr.CurrentSprite);
+			RogueSprite meleeSpr2 = (RogueSprite)__instance.agent.melee.spr.CurrentSprite.__RogueLibsCustom;
 			if (meleeSpr2 != null) __instance.agent.melee.arm2SpriteRenderer.sharedMaterial = meleeSpr2.Material;
 
-			RogueSprite meleeSpr = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.agent.melee.spr.CurrentSprite);
+			RogueSprite meleeSpr = (RogueSprite)__instance.agent.melee.spr.CurrentSprite.__RogueLibsCustom;
 			if (meleeSpr != null) __instance.agent.melee.meleeSpriteRenderer.sharedMaterial = meleeSpr.Material;
 
-			RogueSprite gunSpr1 = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.agent.melee.spr.CurrentSprite);
+			RogueSprite gunSpr1 = (RogueSprite)__instance.agent.melee.spr.CurrentSprite.__RogueLibsCustom;
 			if (gunSpr1 != null) __instance.agent.gun.arm1SpriteRenderer.sharedMaterial = gunSpr1.Material;
 
-			RogueSprite gunSpr2 = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.agent.melee.spr.CurrentSprite);
+			RogueSprite gunSpr2 = (RogueSprite)__instance.agent.melee.spr.CurrentSprite.__RogueLibsCustom;
 			if (gunSpr2 != null) __instance.agent.gun.arm2SpriteRenderer.sharedMaterial = gunSpr2.Material;
 
-			RogueSprite gunSpr = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.agent.melee.spr.CurrentSprite);
+			RogueSprite gunSpr = (RogueSprite)__instance.agent.melee.spr.CurrentSprite.__RogueLibsCustom;
 			if (gunSpr != null) __instance.agent.gun.gunSpriteRenderer.sharedMaterial = gunSpr.Material;
 		}
 		public static void Melee_MeleeLateUpdate_Prefix(Melee __instance, ref bool __state)
@@ -260,8 +179,9 @@ namespace RogueLibsCore
 		{
 			if (!__state) return;
 
-			RogueSprite sprite = RogueLibsInternals.CustomSprites.Find(s => s.Definition == __instance.agent.agentHitboxScript.heldItem2.CurrentSprite);
-			if (sprite != null) __instance.agent.agentHitboxScript.heldItem2Renderer.sharedMaterial = sprite.Material;
+			AgentHitbox hb = __instance.agent.agentHitboxScript;
+			RogueSprite sprite = (RogueSprite)hb.heldItem2.CurrentSprite.__RogueLibsCustom;
+			if (sprite != null) hb.heldItem2Renderer.sharedMaterial = sprite.Material;
 		}
 	}
 }

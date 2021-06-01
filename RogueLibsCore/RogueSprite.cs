@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
@@ -11,17 +12,10 @@ namespace RogueLibsCore
 	public class RogueSprite
 	{
 		/// <summary>
-		///   <para>Gets the <see cref="tk2dSpriteCollectionData"/> that the current custom sprite is defined in.</para>
-		/// </summary>
-		public tk2dSpriteCollectionData Collection { get; private set; }
-		/// <summary>
-		///   <para>Gets the current custom sprite's <see cref="tk2dSpriteDefinition"/>.</para>
-		/// </summary>
-		public tk2dSpriteDefinition Definition { get; private set; }
-		/// <summary>
 		///   <para>Gets the current custom sprite's constructed <see cref="UnityEngine.Sprite"/>.</para>
 		/// </summary>
 		public Sprite Sprite { get; private set; }
+		private List<tk2dDefinition> definitions = new List<tk2dDefinition>();
 
 		private Texture2D texture;
 		/// <summary>
@@ -33,11 +27,13 @@ namespace RogueLibsCore
 			get => texture;
 			set
 			{
-				bool defined = IsDefined || willBeAddedOnGCAwake;
+				bool defined = IsDefined || isPrepared;
 				if (defined && value is null) throw new ArgumentNullException(nameof(value));
 				Undefine();
-				if (!((texture = value) is null))
-					value.name = Name;
+				texture = value;
+				if (value != null) value.name = Name;
+				Material = null;
+				LightUpMaterial = null;
 				Sprite = CreateSprite();
 				if (defined) Define();
 			}
@@ -52,15 +48,15 @@ namespace RogueLibsCore
 			get => pixelsPerUnit;
 			set
 			{
-				bool defined = IsDefined || willBeAddedOnGCAwake;
-				if (defined && value <= 0f) throw new ArgumentOutOfRangeException(nameof(value), value, $"{nameof(value)} must be greater than 0.");
+				bool defined = IsDefined || isPrepared;
 				Undefine();
 				pixelsPerUnit = value;
+				Material = null;
+				LightUpMaterial = null;
 				Sprite = CreateSprite();
 				if (defined) Define();
 			}
 		}
-
 		private string name;
 		/// <summary>
 		///   <para>Gets/sets the custom sprite's name.</para>
@@ -71,12 +67,12 @@ namespace RogueLibsCore
 			get => name;
 			set
 			{
-				bool defined = IsDefined || willBeAddedOnGCAwake;
+				bool defined = IsDefined || isPrepared;
 				if (defined && value is null) throw new ArgumentNullException(nameof(value));
 				Undefine();
 				name = value;
-				if (!(Texture is null)) Texture.name = value;
-				if (!(Sprite is null)) Sprite.name = value;
+				if (Texture != null) Texture.name = value;
+				if (Sprite != null) Sprite.name = value;
 				if (defined) Define();
 			}
 		}
@@ -89,13 +85,12 @@ namespace RogueLibsCore
 			get => scope;
 			set
 			{
-				bool defined = IsDefined || willBeAddedOnGCAwake;
+				bool defined = IsDefined || isPrepared;
 				Undefine();
 				scope = value;
 				if (defined) Define();
 			}
 		}
-
 		private Rect? region;
 		/// <summary>
 		///   <para>Gets/sets the custom sprite's trim region. Set to <see langword="null"/> to use the entire texture.</para>
@@ -105,20 +100,21 @@ namespace RogueLibsCore
 			get => region;
 			set
 			{
-				bool defined = IsDefined || willBeAddedOnGCAwake;
+				bool defined = IsDefined || isPrepared;
 				Undefine();
 				region = value;
+				Material = null;
+				LightUpMaterial = null;
 				Sprite = CreateSprite();
 				if (defined) Define();
 			}
 		}
-
 		/// <summary>
 		///   <para>Determines whether the custom sprite is defined in the appropriate collections.</para>
 		/// </summary>
 		public bool IsDefined
 		{
-			get => Definition != null;
+			get => definitions != null;
 			set
 			{
 				if (value) Define();
@@ -126,13 +122,22 @@ namespace RogueLibsCore
 			}
 		}
 
-		internal static readonly Dictionary<SpriteScope, List<RogueSprite>> addOnGCAwakeDict = new Dictionary<SpriteScope, List<RogueSprite>>()
+		internal Material Material { get; private set; }
+		internal Material LightUpMaterial { get; private set; }
+
+		internal static readonly Dictionary<SpriteScope, List<RogueSprite>> prepared = new Dictionary<SpriteScope, List<RogueSprite>>
 		{
 			[SpriteScope.Items] = new List<RogueSprite>(),
 			[SpriteScope.Objects] = new List<RogueSprite>(),
 			[SpriteScope.Floors] = new List<RogueSprite>()
 		};
-		internal bool willBeAddedOnGCAwake;
+		internal bool isPrepared;
+		internal static void DefinePrepared(tk2dSpriteCollectionData collection, SpriteScope scope)
+		{
+			if (prepared.TryGetValue(scope, out List<RogueSprite> sprites))
+				foreach (RogueSprite sprite in sprites)
+					sprite.Define(collection, scope);
+		}
 
 		internal RogueSprite(string spriteName, SpriteScope spriteScope, byte[] rawData, Rect? spriteRegion, float ppu = 64f)
 		{
@@ -144,9 +149,6 @@ namespace RogueLibsCore
 			Sprite = CreateSprite();
 		}
 
-		internal Material Material { get; private set; }
-		internal Material LightUpMaterial { get; private set; }
-
 		private Sprite CreateSprite()
 		{
 			if (Texture is null || Name is null || PixelsPerUnit <= 0f) return null;
@@ -155,72 +157,75 @@ namespace RogueLibsCore
 			sprite.name = Name;
 			return sprite;
 		}
-		private tk2dSpriteCollectionData GetCollection()
+
+		private static tk2dSpriteCollectionData GetCollection(SpriteScope scope)
 		{
 			GameController gc = GameController.gameController;
-			if (Scope == SpriteScope.Items) return gc?.spawnerMain?.itemSprites;
-			else if (Scope == SpriteScope.Objects) return gc?.spawnerMain?.objectSprites;
-			else if (Scope == SpriteScope.Floors) return gc?.spawnerMain?.floorSprites;
-			else return null;
+			switch (scope)
+			{
+				case SpriteScope.Items: return gc?.spawnerMain?.itemSprites;
+				case SpriteScope.Objects: return gc?.spawnerMain?.objectSprites;
+				case SpriteScope.Floors: return gc?.spawnerMain?.floorSprites;
+				default: return null;
+			}
 		}
-
-		/// <summary>
-		///   <para>Defines the custom sprite in the appropriate collections.</para>
-		/// </summary>
-		/// <exception cref="InvalidOperationException"><see cref="Texture"/> or <see cref="Name"/> is <see langword="null"/> or <see cref="PixelsPerUnit"/> is less than or equal to 0.</exception>
 		public void Define()
 		{
-			if (IsDefined || willBeAddedOnGCAwake || Scope == SpriteScope.None) return;
+			if (IsDefined || isPrepared || Scope == SpriteScope.None) return;
 			if (Name is null) throw new InvalidOperationException($"{nameof(Name)} must not be null.");
 			if (Texture is null) throw new InvalidOperationException($"{nameof(Texture)} must not be null.");
 			if (PixelsPerUnit <= 0f) throw new InvalidOperationException($"{nameof(PixelsPerUnit)} must be greater than 0.");
 
-			tk2dSpriteCollectionData coll = GetCollection();
+			definitions = new List<tk2dDefinition>();
+			DefineScope(Scope & SpriteScope.Items);
+			DefineScope(Scope & SpriteScope.Objects);
+			DefineScope(Scope & SpriteScope.Floors);
+		}
+		private void DefineScope(SpriteScope scope)
+		{
+			if (scope == SpriteScope.None) return;
+			tk2dSpriteCollectionData coll = GetCollection(scope);
 			if (coll is null)
 			{
-				if (addOnGCAwakeDict.TryGetValue(Scope, out List<RogueSprite> list))
-				{
-					list.Add(this);
-					willBeAddedOnGCAwake = true;
-				}
-				return;
+				if (prepared.TryGetValue(scope, out List<RogueSprite> sprites))
+					sprites.Add(this);
+				isPrepared = true;
 			}
-			DefineToCollection(coll);
+			else Define(coll, scope);
 		}
-		internal void DefineToCollection(tk2dSpriteCollectionData coll)
+		internal void Define(tk2dSpriteCollectionData coll, SpriteScope scope)
 		{
-			RogueLibsInternals.Logger.LogDebug($"Defining: {Name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
-			Definition = AddDefinition(coll, Texture, Region);
-			Collection = coll;
+			if (coll != null)
+			{
+				tk2dSpriteDefinition def = AddDefinition(coll, texture, region);
+				definitions.Add(new tk2dDefinition(coll, def));
 
-			Material = Definition.material;
-			LightUpMaterial = UnityEngine.Object.Instantiate(Material);
-			LightUpMaterial.shader = GameController.gameController.lightUpShader;
+				if (Material is null) Material = def.material;
+				if (LightUpMaterial is null) LightUpMaterial = UnityEngine.Object.Instantiate(Material);
+				LightUpMaterial.shader = GameController.gameController.lightUpShader;
+			}
 
 			GameResources gr = GameResources.gameResources;
 
-			if (Scope == SpriteScope.Items) { gr.itemDic[Name] = Sprite; gr.itemList.Add(Sprite); }
-			else if (Scope == SpriteScope.Objects) { gr.objectDic[Name] = Sprite; gr.objectList.Add(Sprite); }
-			else if (Scope == SpriteScope.Floors) { gr.floorDic[Name] = Sprite; gr.floorList.Add(Sprite); }
-			else if (Scope == SpriteScope.Extra) RogueLibsInternals.ExtraSprites[Name] = Sprite;
+			if (scope == SpriteScope.Items) { gr.itemDic[Name] = Sprite; gr.itemList.Add(Sprite); }
+			else if (scope == SpriteScope.Objects) { gr.objectDic[Name] = Sprite; gr.objectList.Add(Sprite); }
+			else if (scope == SpriteScope.Floors) { gr.floorDic[Name] = Sprite; gr.floorList.Add(Sprite); }
+			else if (scope == SpriteScope.Extra) RogueLibsInternals.ExtraSprites[Name] = Sprite;
 		}
-		/// <summary>
-		///   <para>Removes the custom sprite's definitions from the appropriate collections.</para>
-		/// </summary>
 		public void Undefine()
 		{
-			if (willBeAddedOnGCAwake && addOnGCAwakeDict.TryGetValue(Scope, out List<RogueSprite> list))
+			if (isPrepared)
 			{
-				list.Remove(this);
-				willBeAddedOnGCAwake = false;
+				if (prepared.TryGetValue(Scope, out List<RogueSprite> list))
+					list.Remove(this);
+				isPrepared = false;
 				return;
 			}
 			if (!IsDefined) return;
 
-			RogueLibsInternals.Logger.LogDebug($"Undefining: {Name} ({Texture?.width}x{Texture?.height}) / {PixelsPerUnit}p/u");
-			RemoveDefinition(Collection, Definition);
-			Collection = null;
-			Definition = null;
+			foreach (tk2dDefinition def in definitions)
+				RemoveDefinition(def.Collection, def.Definition);
+			definitions = null;
 
 			GameResources gr = GameResources.gameResources;
 
@@ -339,16 +344,28 @@ namespace RogueLibsCore
 			coll.ClearDictionary();
 			coll.InitDictionary();
 		}
+
+		public class tk2dDefinition
+		{
+			internal tk2dDefinition(tk2dSpriteCollectionData collection, tk2dSpriteDefinition definition)
+			{
+				Collection = collection;
+				Definition = definition;
+			}
+			public tk2dSpriteCollectionData Collection { get; internal set; }
+			public tk2dSpriteDefinition Definition { get; internal set; }
+		}
 	}
 	/// <summary>
 	///   <para>Represents a type of game resources, that the sprite will be integrated into.</para>
 	/// </summary>
+	[Flags]
 	public enum SpriteScope
 	{
 		/// <summary>
-		///   <para>Extra RogueLibs defined sprites. Will be used, if a sprite was not found in the appropriate collection.</para>
+		///   <para>Extra RogueLibs defined sprites. Will be used, if a sprite is not found in the appropriate collection.</para>
 		/// </summary>
-		Extra   = -1,
+		Extra   = 1 << 31,
 
 		/// <summary>
 		///   <para>Don't define the sprite anywhere.</para>
@@ -358,14 +375,14 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Item sprites.</para>
 		/// </summary>
-		Items   = 1,
+		Items   = 1 << 0,
 		/// <summary>
 		///   <para>Object sprites.</para>
 		/// </summary>
-		Objects = 2,
+		Objects = 1 << 1,
 		/// <summary>
 		///   <para>Floor sprites.</para>
 		/// </summary>
-		Floors  = 3
+		Floors  = 1 << 2
 	}
 }

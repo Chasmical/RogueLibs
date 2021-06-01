@@ -162,14 +162,10 @@ namespace RogueLibsCore
 		public static void InvItem_SetupDetails(InvItem __instance)
 		{
 			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories)
-				if (factory.CanCreate(__instance))
+				if (factory.TryCreate(__instance, out IHook<InvItem> hook))
 				{
-					IHook<InvItem> hook = factory.CreateHook(__instance);
-					if (hook != null)
-					{
-						__instance.AddHook(hook);
-						hook.Initialize();
-					}
+					__instance.AddHook(hook);
+					hook.Initialize();
 				}
 		}
 

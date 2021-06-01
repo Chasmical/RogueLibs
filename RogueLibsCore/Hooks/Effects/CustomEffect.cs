@@ -43,7 +43,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Gets the default information about the status effect, defined in the type's attributes.</para>
 		/// </summary>
-		public CustomEffectInfo EffectInfo { get; internal set; }
+		public EffectInfo EffectInfo { get; internal set; }
 
 		/// <inheritdoc/>
 		protected override sealed void Initialize()
@@ -87,5 +87,42 @@ namespace RogueLibsCore
 		public float UpdateDelay { get; set; }
 		public bool ShowTextOnRemoval { get; set; }
 		public bool IsFirstTick { get; set; }
+	}
+	/// <summary>
+	///   <para>Represents a specialized <see cref="IHookFactory{T}"/> for <see cref="CustomEffect"/> types.</para>
+	/// </summary>
+	public sealed class CustomEffectFactory : HookFactoryBase<StatusEffect>
+	{
+		private readonly Dictionary<string, ItemEntry> effectsDict = new Dictionary<string, ItemEntry>();
+		/// <inheritdoc/>
+		public override bool TryCreate(StatusEffect instance, out IHook<StatusEffect> hook)
+		{
+			if (instance != null && effectsDict.TryGetValue(instance.statusEffectName, out ItemEntry entry))
+			{
+				hook = entry.Initializer();
+				if (hook is CustomEffect custom)
+					custom.EffectInfo = entry.EffectInfo;
+				hook.Instance = instance;
+				return true;
+			}
+			hook = null;
+			return false;
+		}
+		/// <summary>
+		///   <para>Adds the specified <typeparamref name="T"/> effect type to the factory.</para>
+		/// </summary>
+		/// <typeparam name="T">Custom effect's type.</typeparam>
+		public EffectInfo AddEffect<T>() where T : CustomEffect, new()
+		{
+			EffectInfo info = EffectInfo.Get<T>();
+			effectsDict.Add(info.Name, new ItemEntry { Initializer = () => new T(), EffectInfo = info });
+			return info;
+		}
+
+		private struct ItemEntry
+		{
+			public Func<IHook<StatusEffect>> Initializer;
+			public EffectInfo EffectInfo;
+		}
 	}
 }

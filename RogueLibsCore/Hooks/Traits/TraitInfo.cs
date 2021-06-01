@@ -9,29 +9,29 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Default information about a <see cref="CustomTrait"/>, specified in the type's attributes.</para>
 	/// </summary>
-	public sealed class CustomTraitInfo
+	public sealed class TraitInfo
 	{
 		/// <summary>
 		///   <para>Gets the trait's name/id.</para>
 		/// </summary>
 		public string Name { get; }
 
-		private static readonly Dictionary<Type, CustomTraitInfo> infos = new Dictionary<Type, CustomTraitInfo>();
+		private static readonly Dictionary<Type, TraitInfo> infos = new Dictionary<Type, TraitInfo>();
 		/// <summary>
-		///   <para>Gets a <see cref="CustomTraitInfo"/> for the specified <paramref name="type"/>.</para>
+		///   <para>Gets a <see cref="TraitInfo"/> for the specified <paramref name="type"/>.</para>
 		/// </summary>
 		/// <param name="type"><see cref="CustomTrait"/> type.</param>
-		/// <returns><see cref="CustomTraitInfo"/> containing the default information about the specified custom trait <paramref name="type"/>.</returns>
+		/// <returns><see cref="TraitInfo"/> containing the default information about the specified custom trait <paramref name="type"/>.</returns>
 		/// <exception cref="ArgumentException"><paramref name="type"/> is not a <see cref="CustomTrait"/>.</exception>
-		public static CustomTraitInfo Get(Type type) => infos.TryGetValue(type, out CustomTraitInfo info) ? info : (infos[type] = new CustomTraitInfo(type));
+		public static TraitInfo Get(Type type) => infos.TryGetValue(type, out TraitInfo info) ? info : (infos[type] = new TraitInfo(type));
 		/// <summary>
-		///   <para>Gets a <see cref="CustomTraitInfo"/> for the specified <typeparamref name="TTrait"/>.</para>
+		///   <para>Gets a <see cref="TraitInfo"/> for the specified <typeparamref name="TTrait"/>.</para>
 		/// </summary>
 		/// <typeparam name="TTrait"><see cref="CustomTrait"/> type.</typeparam>
-		/// <returns><see cref="CustomTraitInfo"/> containing the default information about the specified custom trait <typeparamref name="TTrait"/>.</returns>
-		public static CustomTraitInfo Get<TTrait>() where TTrait : CustomTrait => Get(typeof(TTrait));
+		/// <returns><see cref="TraitInfo"/> containing the default information about the specified custom trait <typeparamref name="TTrait"/>.</returns>
+		public static TraitInfo Get<TTrait>() where TTrait : CustomTrait => Get(typeof(TTrait));
 
-		private CustomTraitInfo(Type type)
+		private TraitInfo(Type type)
 		{
 			if (!typeof(CustomTrait).IsAssignableFrom(type)) throw new ArgumentException($"The specified type is not a {nameof(CustomTrait)}!", nameof(type));
 			TraitNameAttribute attr = type.GetCustomAttribute<TraitNameAttribute>();

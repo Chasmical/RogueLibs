@@ -637,15 +637,16 @@ namespace RogueLibsCore
 		}
 
 		/// <summary>
-		///   <para>Copies all labels from the specified <paramref name="otherInstruction"/> into the current one.</para>
+		///   <para>Copies all labels from the specified <paramref name="otherInstruction"/> into a copy of the current one.</para>
 		/// </summary>
 		/// <param name="instruction">The current instance of <see cref="CodeInstruction"/>.</param>
 		/// <param name="otherInstruction">Another instance of <see cref="CodeInstruction"/> to copy labels from.</param>
-		/// <returns>The current instance of <see cref="CodeInstruction"/>.</returns>
+		/// <returns>The copy of the current instance with labels from <see cref="CodeInstruction"/>.</returns>
 		public static CodeInstruction WithLabels(this CodeInstruction instruction, CodeInstruction otherInstruction)
 		{
-			instruction.labels.AddRange(otherInstruction.labels);
-			return instruction;
+			CodeInstruction instr = new CodeInstruction(instruction);
+			instr.labels.AddRange(otherInstruction.labels);
+			return instr;
 		}
 	}
 }

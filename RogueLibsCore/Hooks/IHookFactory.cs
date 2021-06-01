@@ -12,17 +12,12 @@ namespace RogueLibsCore
 	public interface IHookFactory
 	{
 		/// <summary>
-		///   <para>Determines whether the current factory can create a hook for the specified <paramref name="obj"/>.</para>
+		///   <para>Tries to create a hook for the specified <paramref name="instance"/>.</para>
 		/// </summary>
-		/// <param name="obj">Instance to create a hook for.</param>
-		/// <returns><see langword="true"/>, if the current factory can create a hook for the specified <paramref name="obj"/>; otherwise, <see langword="false"/>.</returns>
-		bool CanCreate(object obj);
-		/// <summary>
-		///   <para>Creates a new instance of the hook type for the specified <paramref name="obj"/>.</para>
-		/// </summary>
-		/// <param name="obj">Instance to create a hook for.</param>
-		/// <returns>Hook created for the specified <paramref name="obj"/>.</returns>
-		IHook CreateHook(object obj);
+		/// <param name="instance">The instance to create a hook for.</param>
+		/// <param name="hook">The created hook.</param>
+		/// <returns><see langword="true"/>, if a hook was created; otherwise, <see langword="false"/>.</returns>
+		bool TryCreate(object instance, out IHook hook);
 	}
 	/// <summary>
 	///   <para>Base interface for hook factories, producing hooks, attachable to instance of <typeparamref name="T"/> type.</para>
@@ -31,17 +26,12 @@ namespace RogueLibsCore
 	public interface IHookFactory<T> : IHookFactory
 	{
 		/// <summary>
-		///   <para>Determines whether the current factory can create a hook for the specified <paramref name="obj"/>.</para>
+		///   <para>Tries to create a hook for the specified <paramref name="instance"/>.</para>
 		/// </summary>
-		/// <param name="obj">Instance to create a hook for.</param>
-		/// <returns><see langword="true"/>, if the current factory can create a hook for the specified <paramref name="obj"/>; otherwise, <see langword="false"/>.</returns>
-		bool CanCreate(T obj);
-		/// <summary>
-		///   <para>Creates a new instance of the hook type for the specified <paramref name="obj"/>.</para>
-		/// </summary>
-		/// <param name="obj">Instance to create a hook for.</param>
-		/// <returns>Hook created for the specified <paramref name="obj"/>.</returns>
-		IHook<T> CreateHook(T obj);
+		/// <param name="instance">The instance to create a hook for.</param>
+		/// <param name="hook">The created hook.</param>
+		/// <returns><see langword="true"/>, if a hook was created; otherwise, <see langword="false"/>.</returns>
+		bool TryCreate(T instance, out IHook<T> hook);
 	}
 	/// <summary>
 	///   <para>Hook factory base class. Implements some of the methods.</para>
@@ -50,11 +40,12 @@ namespace RogueLibsCore
 	public abstract class HookFactoryBase<T> : IHookFactory<T>
 	{
 		/// <inheritdoc/>
-		public abstract bool CanCreate(T obj);
-		/// <inheritdoc/>
-		public abstract IHook<T> CreateHook(T obj);
-
-		bool IHookFactory.CanCreate(object obj) => obj is T t && CanCreate(t);
-		IHook IHookFactory.CreateHook(object obj) => CreateHook((T)obj);
+		public abstract bool TryCreate(T instance, out IHook<T> hook);
+		bool IHookFactory.TryCreate(object instance, out IHook hook)
+		{
+			bool res = TryCreate((T)instance, out IHook<T> hookT);
+			hook = hookT;
+			return res;
+		}
 	}
 }

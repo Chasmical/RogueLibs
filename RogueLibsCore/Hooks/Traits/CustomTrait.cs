@@ -34,7 +34,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Gets the default information about the trait, defined in the type's attributes.</para>
 		/// </summary>
-		public CustomTraitInfo TraitInfo { get; internal set; }
+		public TraitInfo TraitInfo { get; internal set; }
 
 		/// <inheritdoc/>
 		protected override sealed void Initialize() => OnAdded();
@@ -46,5 +46,42 @@ namespace RogueLibsCore
 	public class TraitUpdatedArgs : EventArgs
 	{
 		public float UpdateDelay { get; set; }
+	}
+	/// <summary>
+	///   <para>Represents a specialized <see cref="IHookFactory{T}"/> for <see cref="CustomTrait"/> types.</para>
+	/// </summary>
+	public sealed class CustomTraitFactory : HookFactoryBase<Trait>
+	{
+		private readonly Dictionary<string, TraitEntry> traitsDict = new Dictionary<string, TraitEntry>();
+		/// <inheritdoc/>
+		public override bool TryCreate(Trait instance, out IHook<Trait> hook)
+		{
+			if (instance != null && traitsDict.TryGetValue(instance.traitName, out TraitEntry entry))
+			{
+				hook = entry.Initializer();
+				if (hook is CustomTrait custom)
+					custom.TraitInfo = entry.TraitInfo;
+				hook.Instance = instance;
+				return true;
+			}
+			hook = null;
+			return false;
+		}
+		/// <summary>
+		///   <para>Adds the specified <typeparamref name="T"/> trait type to the factory.</para>
+		/// </summary>
+		/// <typeparam name="T">Custom trait's type.</typeparam>
+		public TraitInfo AddTrait<T>() where T : CustomTrait, new()
+		{
+			TraitInfo info = TraitInfo.Get<T>();
+			traitsDict.Add(info.Name, new TraitEntry { Initializer = () => new T(), TraitInfo = info });
+			return info;
+		}
+
+		private struct TraitEntry
+		{
+			public Func<IHook<Trait>> Initializer;
+			public TraitInfo TraitInfo;
+		}
 	}
 }

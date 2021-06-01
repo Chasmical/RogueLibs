@@ -513,7 +513,7 @@ namespace RogueLibsCore
 		{
 			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
 			if (count <= 0) throw new ArgumentOutOfRangeException(nameof(count), count, $"{nameof(count)} must be greater than 0.");
-			InvItem item = inventory.AddItem(CustomItemInfo.Get<T>().Name, count);
+			InvItem item = inventory.AddItem(ItemInfo.Get<T>().Name, count);
 			return item.GetHook<T>();
 		}
 		/// <summary>
@@ -527,7 +527,7 @@ namespace RogueLibsCore
 			where T : CustomItem
 		{
 			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-			InvItem item = inventory.FindItem(CustomItemInfo.Get<T>().Name);
+			InvItem item = inventory.FindItem(ItemInfo.Get<T>().Name);
 			return item?.GetHook<T>();
 		}
 		/// <summary>
@@ -540,7 +540,7 @@ namespace RogueLibsCore
 			where T : CustomItem
 		{
 			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-			InvItem item = inventory.FindItem(CustomItemInfo.Get<T>().Name);
+			InvItem item = inventory.FindItem(ItemInfo.Get<T>().Name);
 			return item != null;
 		}
 		/// <summary>
@@ -554,7 +554,7 @@ namespace RogueLibsCore
 			where T : CustomItem
 		{
 			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-			string itemName = CustomItemInfo.Get<T>().Name;
+			string itemName = ItemInfo.Get<T>().Name;
 			List<InvItem> items = inventory.InvItemList.FindAll(i => i.invItemName == itemName);
 			return items.Sum(i => i.invItemCount) >= amount;
 		}
@@ -602,7 +602,7 @@ namespace RogueLibsCore
 			where T : CustomTrait
 		{
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
-			string traitName = CustomTraitInfo.Get<T>().Name;
+			string traitName = TraitInfo.Get<T>().Name;
 			agent.statusEffects.AddTrait(traitName);
 			return agent.statusEffects.TraitList.Find(t => t.traitName == traitName)?.GetHook<T>();
 		}
@@ -610,13 +610,13 @@ namespace RogueLibsCore
 			where T : CustomTrait
 		{
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
-			string traitName = CustomTraitInfo.Get<T>().Name;
+			string traitName = TraitInfo.Get<T>().Name;
 			return agent.statusEffects.TraitList.Find(t => t.traitName == traitName)?.GetHook<T>();
 		}
 		public static bool HasTrait<T>(this Agent agent) where T : CustomTrait
 		{
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
-			return agent.statusEffects.hasTrait(CustomTraitInfo.Get<T>().Name);
+			return agent.statusEffects.hasTrait(TraitInfo.Get<T>().Name);
 		}
 
 		public static Trait AddTrait(this Agent agent, string traitName)
