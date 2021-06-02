@@ -77,7 +77,7 @@ namespace RogueLibsCore
 			SessionDataBig sdb = gc.sessionDataBig;
 
 			sdb.unlocks.AddRange(RogueLibsInternals.Unlocks.Select(w => w.Unlock));
-			foreach (Unlock unlock in new List<Unlock>(sdb.unlocks))
+			foreach (Unlock unlock in sdb.unlocks.ToList())
 			{
 				// wrapping original unlocks
 				if (gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock) != "") unlock.cost = -2;

@@ -39,6 +39,8 @@ namespace RogueLibsCore
 			Patcher.Prefix(typeof(ScrollingMenu), nameof(ScrollingMenu.ShowDetails));
 
 			Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.RefreshLoadouts));
+
+			Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.CanHaveTrait));
 		}
 
 		/// <summary>
@@ -328,5 +330,26 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="___loadoutList">Private field. List with loadout unlocks.</param>
 		public static void ScrollingMenu_RefreshLoadouts(List<Unlock> ___loadoutList) => ___loadoutList.RemoveAt(0);
+
+		public static void ScrollingMenu_CanHaveTrait(ScrollingMenu __instance, Unlock myUnlock, ref bool __result)
+		{
+			if (__result)
+			{
+				foreach (Trait trait in __instance.agent.statusEffects.TraitList)
+				{
+					if (myUnlock.cancellations.Contains(trait.traitName))
+					{
+						__result = false;
+						return;
+					}
+					Unlock traitUnlock = RogueLibs.GetUnlock(trait.traitName, "Trait")?.Unlock;
+					if (traitUnlock?.cancellations.Contains(myUnlock.unlockName) == true)
+					{
+						__result = false;
+						return;
+					}
+				}
+			}
+		}
 	}
 }
