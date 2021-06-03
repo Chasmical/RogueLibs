@@ -136,10 +136,9 @@ namespace RogueLibsCore
 					ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
 					if (menu.twitchCountdownOn) return;
 					State = UnlockButtonState.Selected;
-					if (gc.twitchMode || (gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchTraits))
-					{
+					UpdateMenu();
+					if (gc.twitchMode || gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchTraits)
 						gc.twitchFunctions.ShowWinner(Name, "StatusEffect", Menu.Agent.isPlayer);
-					}
 					if (Name == "EnduranceTrait")
 					{
 						Menu.Agent.SetEndurance(Menu.Agent.enduranceStatMod + 1, true);

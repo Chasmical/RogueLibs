@@ -93,7 +93,7 @@ namespace RogueLibsCore
 		/// <param name="normal">Disabled/not selected state.</param>
 		protected void UpdateButton(bool isEnabledOrSelected, UnlockButtonState selected, UnlockButtonState normal)
 		{
-			Text = GetName();
+			Text = GetFancyName();
 			if (IsUnlocked)
 			{
 				State = isEnabledOrSelected ? selected : normal;
