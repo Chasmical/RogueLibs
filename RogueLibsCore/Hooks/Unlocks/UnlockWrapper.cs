@@ -147,6 +147,72 @@ namespace RogueLibsCore
 		public virtual Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable) && RogueLibsInternals.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
 
 		/// <summary>
+		///   <para>Adds the unlock's cancellations to the <paramref name="description"/>.</para>
+		/// </summary>
+		/// <param name="description">Unlock's description.</param>
+		protected void AddCancellationsTo(ref string description)
+		{
+			if (Unlock.cancellations.Count > 0)
+			{
+				description += $"\n\n<color=orange>{gc.nameDB.GetName("Cancels", "Interface")}:</color>\n" +
+					string.Join(", ", Unlock.cancellations.ConvertAll(unlockName =>
+					{
+						DisplayedUnlock unlock = (DisplayedUnlock)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+						return unlock?.GetName();
+					}));
+			}
+		}
+		/// <summary>
+		///   <para>Adds the unlock's recommendations to the <paramref name="description"/>.</para>
+		/// </summary>
+		/// <param name="description">Unlock's description.</param>
+		protected void AddRecommendationsTo(ref string description)
+		{
+			if (Unlock.recommendations.Count > 0)
+			{
+				description += $"\n\n<color=cyan>{gc.nameDB.GetName("Recommends", "Interface")}:</color>\n" +
+					string.Join(", ", Unlock.recommendations.ConvertAll(unlockName =>
+					{
+						DisplayedUnlock unlock = (DisplayedUnlock)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+						return unlock?.GetName();
+					}));
+			}
+		}
+		/// <summary>
+		///   <para>Adds the unlock's prerequisites, special unlock conditions and/or unlock cost to the <paramref name="description"/>.</para>
+		/// </summary>
+		/// <param name="description">Unlock's description.</param>
+		protected void AddPrerequisitesTo(ref string description)
+		{
+			List<string> prereqs = new List<string>();
+			if (Unlock.prerequisites.Count > 0 || UnlockCost != 0)
+			{
+				prereqs.Add(string.Join(", ", Unlock.prerequisites.ConvertAll(unlockName =>
+				{
+					Unlock un = gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName);
+					if (un.__RogueLibsCustom is UnlockWrapper unlock)
+					{
+						string name = unlock.GetName();
+						if (unlock.IsUnlocked) name = $"<color=#EEEEEE55>{name}</color>";
+						return name;
+					}
+					else return "?????";
+				})));
+			}
+			if (Unlock.cost == -2)
+			{
+				prereqs.Add(gc.unlocks.GetSpecialUnlockInfo(Name, Unlock));
+			}
+			if (Unlock.cost > 0)
+			{
+				string costColor = gc.sessionDataBig.nuggets >= Unlock.cost ? "cyan" : "red";
+				prereqs.Add($"{gc.nameDB.GetName("UnlockFor", "Unlock")} <color={costColor}>${Unlock.cost}</color>");
+			}
+			if (prereqs.Count > 0)
+				description += $"\n<color=cyan>{gc.nameDB.GetName("Prerequisites", "Unlock")}:</color>\n" + string.Join("\n", prereqs);
+		}
+
+		/// <summary>
 		///   <para>The game's <see cref="GameController"/> that controls the game.</para>
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]

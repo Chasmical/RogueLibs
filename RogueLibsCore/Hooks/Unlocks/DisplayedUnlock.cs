@@ -113,70 +113,44 @@ namespace RogueLibsCore
 		/// </summary>
 		public abstract void OnPushedButton();
 
-		/// <summary>
-		///   <para>Adds the unlock's cancellations to the <paramref name="description"/>.</para>
-		/// </summary>
-		/// <param name="description">Unlock's description.</param>
-		protected void AddCancellationsTo(ref string description)
+		public virtual string GetFancyName()
 		{
-			if (Unlock.cancellations.Count > 0)
+			string name = GetName();
+			if (Menu.Type == UnlocksMenuType.NewLevelTraits)
 			{
-				description += $"\n\n<color=orange>{gc.nameDB.GetName("Cancels", "Interface")}:</color>\n" +
-					string.Join(", ", Unlock.cancellations.ConvertAll(unlockName =>
-					{
-						DisplayedUnlock unlock = (DisplayedUnlock)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
-						return unlock?.GetName();
-					}));
+				if (Unlock.specialAbilities.Count > 0 || Unlock.leadingTraits.Count > 0)
+					name = $"<color=yellow>{name}</color>";
+				if (Unlock.isUpgrade)
+					name = $"<color=lime>{name}</color>";
+				if (Name == "EnduranceTrait" || Name == "Strength" || Name == "Accuracy" || Name == "Speed")
+					name = $"<color=cyan>{name}</color>";
+				if ((gc.twitchMode || gc.sessionDataBig.twitchOn) && (gc.sessionDataBig.twitchTraits || gc.twitchMode))
+				{
+					int num = Menu.Unlocks.IndexOf(this);
+					int votes = Menu.Agent.isPlayer == 2 ? gc.twitchFunctions.voteCount[num + 5]
+						: Menu.Agent.isPlayer == 3 ? gc.twitchFunctions.voteCount[num + 10]
+                        : Menu.Agent.isPlayer == 4 ? gc.twitchFunctions.voteCount[num + 15]
+						: gc.twitchFunctions.voteCount[num];
+					Text = $"{Text} <color=yellow>#{num + 1 + (Menu.Agent.isPlayer - 1) * 5}</color> <color=cyan>({votes})</color>";
+				}
 			}
-		}
-		/// <summary>
-		///   <para>Adds the unlock's recommendations to the <paramref name="description"/>.</para>
-		/// </summary>
-		/// <param name="description">Unlock's description.</param>
-		protected void AddRecommendationsTo(ref string description)
-		{
-			if (Unlock.recommendations.Count > 0)
+			else if (Menu.Type == UnlocksMenuType.TwitchRewards)
 			{
-				description += $"\n\n<color=cyan>{gc.nameDB.GetName("Recommends", "Interface")}:</color>\n" +
-					string.Join(", ", Unlock.recommendations.ConvertAll(unlockName =>
-					{
-						DisplayedUnlock unlock = (DisplayedUnlock)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
-						return unlock?.GetName();
-					}));
+				if (gc.twitchMode || gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchRewards)
+				{
+					int num = Menu.Unlocks.IndexOf(this);
+					Text = $"{Text} <color=yellow>#{num + 1}</color> <color=cyan>({gc.twitchFunctions.voteCount[num]})</color>";
+				}
 			}
-		}
-		/// <summary>
-		///   <para>Adds the unlock's prerequisites, special unlock conditions and/or unlock cost to the <paramref name="description"/>.</para>
-		/// </summary>
-		/// <param name="description">Unlock's description.</param>
-		protected void AddPrerequisitesTo(ref string description)
-		{
-			if (Unlock.prerequisites.Count > 0 || UnlockCost != 0)
+			else if (Menu.Type == UnlocksMenuType.TwitchDisasters)
 			{
-				string add = $"\n\n<color=cyan>{gc.nameDB.GetName("Prerequisites", "Unlock")}:</color>\n" +
-					string.Join(", ", Unlock.prerequisites.ConvertAll(unlockName =>
-					{
-						Unlock un = gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName);
-						if (un.__RogueLibsCustom is UnlockWrapper unlock)
-						{
-							string name = unlock.GetName();
-							if (unlock.IsUnlocked) name = $"<color=#80808080>{name}</color>";
-							return name;
-						}
-						else return "?????";
-					}));
-				if (UnlockCost == -2) add += "\n\n" + gc.unlocks.GetSpecialUnlockInfo(Name, Unlock);
-				description += add;
+				if (gc.twitchMode || gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchRewards)
+				{
+					int num = Menu.Unlocks.IndexOf(this);
+					Text = $"{Text} <color=yellow>#{num + 1}</color> <color=cyan>({gc.twitchFunctions.voteCount[num]})</color>";
+				}
 			}
-			if (Unlock.cost == -2)
-			{
-				description += $"\n<color=cyan>{gc.nameDB.GetName("Prerequisites", "Unlock")}:</color>\n" +
-					gc.unlocks.GetSpecialUnlockInfo(Name, Unlock) + "\n";
-			}
-			else if (Unlock.cost > 0)
-			{
-				description += $"\n<color=cyan>{gc.nameDB.GetName("UnlockFor", "Unlock")} ${Unlock.cost}</color>\n";
-			}
+			return name;
 		}
 
 		/// <summary>
@@ -190,10 +164,10 @@ namespace RogueLibsCore
 		/// <param name="msg1">Message 1.</param>
 		/// <param name="msg2">Message 2.</param>
 		/// <param name="msg3">Message 3.</param>
-		protected void SendAnnouncementInChat(string msg1, string msg2 = "", string msg3 = "")
+		protected void SendAnnouncementInChat(string msg1, string msg2 = null, string msg3 = null)
 		{
 			if (gc.serverPlayer && gc.multiplayerMode)
-				Menu.Agent.objectMult.SendChatAnnouncement(msg1, msg2, msg3);
+				Menu.Agent.objectMult.SendChatAnnouncement(msg1, msg2 ?? string.Empty, msg3 ?? string.Empty);
 		}
 
 		/// <summary>
