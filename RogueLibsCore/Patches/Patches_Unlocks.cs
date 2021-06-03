@@ -25,7 +25,7 @@ namespace RogueLibsCore
 			// replace the entire foreach loop in the end
 			Patcher.Transpiler(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks));
 
-			RogueLibs.CreateCustomName("UnlockFor", "Interface", new CustomNameInfo
+			RogueLibs.CreateCustomName("UnlockFor", "Unlock", new CustomNameInfo
 			{
 				English = "Unlock for",
 				Russian = "Разблокировать за"
@@ -47,7 +47,7 @@ namespace RogueLibsCore
 			}
 		}
 
-		public static void Unlocks_LoadInitialUnlocks_Prefix(Unlocks __instance, bool ___loadedInitialUnlocks)
+		public static void Unlocks_LoadInitialUnlocks_Prefix(bool ___loadedInitialUnlocks)
 		{
 			if (___loadedInitialUnlocks) return;
 			RogueLibsInternals.Unlocks.Clear();
