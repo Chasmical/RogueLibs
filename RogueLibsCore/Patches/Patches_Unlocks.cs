@@ -21,7 +21,7 @@ namespace RogueLibsCore
 			// synchronize some fields
 			Patcher.Postfix(typeof(Unlocks), nameof(Unlocks.AddUnlock), new Type[] { typeof(string), typeof(string), typeof(bool), typeof(int), typeof(int), typeof(int), typeof(Unlock) });
 
-			Logger.LogWarning("Transpiler: Unlocks.");
+			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks), nameof(Unlocks_LoadInitialUnlocks_Prefix));
 			// replace the entire foreach loop in the end
 			Patcher.Transpiler(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks));
 
@@ -47,6 +47,11 @@ namespace RogueLibsCore
 			}
 		}
 
+		public static void Unlocks_LoadInitialUnlocks_Prefix(Unlocks __instance, bool ___loadedInitialUnlocks)
+		{
+			if (___loadedInitialUnlocks) return;
+			RogueLibsInternals.Unlocks.Clear();
+		}
 		/// <summary>
 		///   <para><b>Transpiler-patch.</b> Replaces the entire foreach loop in the end with <see cref="LoadUnlockWrappersAndCategorize"/> method call.</para>
 		/// </summary>

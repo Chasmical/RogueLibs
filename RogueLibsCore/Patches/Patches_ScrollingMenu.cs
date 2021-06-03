@@ -331,6 +331,12 @@ namespace RogueLibsCore
 		/// <param name="___loadoutList">Private field. List with loadout unlocks.</param>
 		public static void ScrollingMenu_RefreshLoadouts(List<Unlock> ___loadoutList) => ___loadoutList.RemoveAt(0);
 
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Accounts for traits' cancellations.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="ScrollingMenu"/>.</param>
+		/// <param name="myUnlock">Unlock being checked.</param>
+		/// <param name="__result">Return value of the method.</param>
 		public static void ScrollingMenu_CanHaveTrait(ScrollingMenu __instance, Unlock myUnlock, ref bool __result)
 		{
 			if (__result)
