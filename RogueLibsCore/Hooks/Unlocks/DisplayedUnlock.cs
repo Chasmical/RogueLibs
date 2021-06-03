@@ -112,11 +112,6 @@ namespace RogueLibsCore
 		///   <para>Determines what will happen when you push the unlock's button.</para>
 		/// </summary>
 		public abstract void OnPushedButton();
-		/// <summary>
-		///   <para>Gets the unlock's display image.</para>
-		/// </summary>
-		/// <returns>Unlock's sprite/image, if it's unlocked or purchasable; otherwise, <see langword="null"/>.</returns>
-		public virtual Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable) && RogueLibsInternals.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
 
 		/// <summary>
 		///   <para>Adds the unlock's cancellations to the <paramref name="description"/>.</para>

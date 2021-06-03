@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -139,6 +140,11 @@ namespace RogueLibsCore
 				return text.Trim('\n');
 			}
 		}
+		/// <summary>
+		///   <para>Gets the unlock's display image.</para>
+		/// </summary>
+		/// <returns>Unlock's sprite/image, if it's unlocked or purchasable; otherwise, <see langword="null"/>.</returns>
+		public virtual Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable) && RogueLibsInternals.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
 
 		/// <summary>
 		///   <para>The game's <see cref="GameController"/> that controls the game.</para>
