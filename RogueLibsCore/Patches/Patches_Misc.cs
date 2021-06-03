@@ -43,7 +43,8 @@ namespace RogueLibsCore
 		/// <param name="__result">Return value of the method.</param>
 		public static void NameDB_GetName(string myName, string type, ref string __result)
 		{
-			if (__result.StartsWith("E_") && RogueLibsInternals.CustomNames.TryGetValue(type, out Dictionary<string, ICustomName> category)
+			if (__result.StartsWith("E_") && myName != null && type != null
+				&& RogueLibsInternals.CustomNames.TryGetValue(type, out Dictionary<string, ICustomName> category)
 				&& category.TryGetValue(myName, out ICustomName customName))
 				__result = customName[currentLanguageCode] ?? customName[LanguageCode.English];
 		}
