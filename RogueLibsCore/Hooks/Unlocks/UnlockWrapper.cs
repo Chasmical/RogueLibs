@@ -114,6 +114,33 @@ namespace RogueLibsCore
 		}
 
 		/// <summary>
+		///   <para>Gets the unlock's display name.</para>
+		/// </summary>
+		/// <returns>Unlock's display name, if it's unlocked or purchasable; otherwise, "?????".</returns>
+		public virtual string GetName() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockNameType) : "?????";
+		/// <summary>
+		///   <para>Gets the unlock's display description, including the cancellations, recommendations and prerequisites.</para>
+		/// </summary>
+		/// <returns>Unlock's display description, if it's unlocked or purchasable; otherwise, "?????". Includes the cancellations and recommendations, if it's unlocked or purchasable. Includes the prerequisites and the unlock cost, if it's purchasable or locked.</returns>
+		public virtual string GetDescription()
+		{
+			if (IsUnlocked || Unlock.nowAvailable)
+			{
+				string text = gc.nameDB.GetName(Name, Unlock.unlockDescriptionType);
+				AddCancellationsTo(ref text);
+				AddRecommendationsTo(ref text);
+				if (!IsUnlocked) AddPrerequisitesTo(ref text);
+				return text.Trim('\n');
+			}
+			else
+			{
+				string text = "?????";
+				AddPrerequisitesTo(ref text);
+				return text.Trim('\n');
+			}
+		}
+
+		/// <summary>
 		///   <para>The game's <see cref="GameController"/> that controls the game.</para>
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]

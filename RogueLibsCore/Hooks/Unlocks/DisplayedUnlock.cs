@@ -113,32 +113,6 @@ namespace RogueLibsCore
 		/// </summary>
 		public abstract void OnPushedButton();
 		/// <summary>
-		///   <para>Gets the unlock's display name.</para>
-		/// </summary>
-		/// <returns>Unlock's display name, if it's unlocked or purchasable; otherwise, "?????".</returns>
-		public virtual string GetName() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockNameType) : "?????";
-		/// <summary>
-		///   <para>Gets the unlock's display description, including the cancellations, recommendations and prerequisites.</para>
-		/// </summary>
-		/// <returns>Unlock's display description, if it's unlocked or purchasable; otherwise, "?????". Includes the cancellations and recommendations, if it's unlocked or purchasable. Includes the prerequisites and the unlock cost, if it's purchasable or locked.</returns>
-		public virtual string GetDescription()
-		{
-			if (IsUnlocked || Unlock.nowAvailable)
-			{
-				string text = gc.nameDB.GetName(Name, Unlock.unlockDescriptionType);
-				AddCancellationsTo(ref text);
-				AddRecommendationsTo(ref text);
-				if (!IsUnlocked) AddPrerequisitesTo(ref text);
-				return text.Trim('\n');
-			}
-			else
-			{
-				string text = "?????";
-				AddPrerequisitesTo(ref text);
-				return text.Trim('\n');
-			}
-		}
-		/// <summary>
 		///   <para>Gets the unlock's display image.</para>
 		/// </summary>
 		/// <returns>Unlock's sprite/image, if it's unlocked or purchasable; otherwise, <see langword="null"/>.</returns>
@@ -187,10 +161,14 @@ namespace RogueLibsCore
 				string add = $"\n\n<color=cyan>{gc.nameDB.GetName("Prerequisites", "Unlock")}:</color>\n" +
 					string.Join(", ", Unlock.prerequisites.ConvertAll(unlockName =>
 					{
-						DisplayedUnlock unlock = (DisplayedUnlock)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName).__RogueLibsCustom;
-						string name = unlock.GetName();
-						if (unlock.IsUnlocked) name = $"<color=#80808080>{name}</color>";
-						return name;
+						Unlock un = gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName);
+						if (un.__RogueLibsCustom is UnlockWrapper unlock)
+						{
+							string name = unlock.GetName();
+							if (unlock.IsUnlocked) name = $"<color=#80808080>{name}</color>";
+							return name;
+						}
+						else return "?????";
 					}));
 				if (UnlockCost == -2) add += "\n\n" + gc.unlocks.GetSpecialUnlockInfo(Name, Unlock);
 				description += add;
