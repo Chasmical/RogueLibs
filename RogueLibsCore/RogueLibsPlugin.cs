@@ -29,6 +29,11 @@ namespace RogueLibsCore
 		{
 			RogueLibsInternals.Plugin = this;
 			RogueLibsInternals.Logger = Logger;
+
+			RogueLibsInternals.InvItemFactories.Add(RogueLibsInternals.CustomItemFactory);
+			RogueLibsInternals.EffectFactories.Add(RogueLibsInternals.CustomEffectFactory);
+			RogueLibsInternals.TraitFactories.Add(RogueLibsInternals.CustomTraitFactory);
+
 			Patcher = new RoguePatcher(this);
 
 			PatchItems();

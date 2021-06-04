@@ -21,29 +21,33 @@ namespace RogueLibsCore
 		/// </summary>
 		public static ManualLogSource Logger { get; internal set; }
 
+		public static readonly CustomItemFactory CustomItemFactory = new CustomItemFactory();
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="InvItem"/>s.</para>
 		/// </summary>
-		public static readonly List<IHookFactory<InvItem>> InvItemFactories = new List<IHookFactory<InvItem>>();
-		public static CustomItemFactory CustomItemFactory { get; } = new CustomItemFactory();
+		public static readonly List<IHookFactory<InvItem>> InvItemFactories = new List<IHookFactory<InvItem>> { CustomItemFactory };
+
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="Agent"/>s.</para>
 		/// </summary>
 		public static readonly List<IHookFactory<Agent>> AgentFactories = new List<IHookFactory<Agent>>();
+
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="ObjectReal"/>s.</para>
 		/// </summary>
 		public static readonly List<IHookFactory<ObjectReal>> ObjectRealFactories = new List<IHookFactory<ObjectReal>>();
+
+		public static readonly CustomEffectFactory CustomEffectFactory = new CustomEffectFactory();
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="StatusEffect"/>s.</para>
 		/// </summary>
-		public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new List<IHookFactory<StatusEffect>>();
-		public static CustomEffectFactory CustomEffectFactory { get; } = new CustomEffectFactory();
+		public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new List<IHookFactory<StatusEffect>> { CustomEffectFactory };
+
+		public static readonly CustomTraitFactory CustomTraitFactory = new CustomTraitFactory();
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="Trait"/>s.</para>
 		/// </summary>
-		public static readonly List<IHookFactory<Trait>> TraitFactories = new List<IHookFactory<Trait>>();
-		public static CustomTraitFactory CustomTraitFactory { get; } = new CustomTraitFactory();
+		public static readonly List<IHookFactory<Trait>> TraitFactories = new List<IHookFactory<Trait>> { CustomTraitFactory };
 
 		/// <summary>
 		///   <para>Collection of initialized <see cref="CustomName"/>s.</para>
