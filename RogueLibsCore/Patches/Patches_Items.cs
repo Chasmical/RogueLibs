@@ -37,6 +37,8 @@ namespace RogueLibsCore
 
 			// CustomItem, IItemCombinable.CombineTooltip(.) patch
 			Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.SetColor));
+			// CustomItem, IItemCustomCount.GetCount(.) patch
+			Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.UpdateInvSlot));
 
 			SubscribeDefaultChecks();
 		}
@@ -435,8 +437,7 @@ namespace RogueLibsCore
 		///   <para><b>Postfix-patch.</b> Sets the inventory slot's short combining tooltip.</para>
 		/// </summary>
 		/// <param name="__instance">Instance of <see cref="InvSlot"/>.</param>
-		/// <param name="___itemText">Private field. Text that displays the short tooltip text.</param>
-		public static void InvSlot_SetColor(InvSlot __instance, Text ___itemText)
+		public static void InvSlot_SetColor(InvSlot __instance)
 		{
 			InvItem combiner = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
 			if (combiner == null) return;
@@ -479,7 +480,6 @@ namespace RogueLibsCore
 							__instance.myImage.color = new Color32(__instance.br, 0, __instance.br, __instance.standardAlpha);
 							__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, __instance.fadedItemAlpha);
 							__instance.myImage.sprite = __instance.invBoxNormal;
-							___itemText.color = __instance.whiteTransparent;
 							__instance.toolbarNumTextGo.SetActive(false);
 						}
 					}
@@ -500,5 +500,22 @@ namespace RogueLibsCore
 			}
 		}
 		private static Color? combineTextColor;
+
+		/// <summary>
+		///   <para><b>Postfix-patch.</b> Sets the inventory slot's item count text.</para>
+		/// </summary>
+		/// <param name="__instance">Instance of <see cref="InvSlot"/>.</param>
+		/// <param name="___itemText">Private field that holds the inventory slot's item count text.</param>
+		public static void InvSlot_UpdateInvSlot(InvSlot __instance, Text ___itemText)
+		{
+			CustomItem custom = __instance.item?.GetHook<CustomItem>();
+			if (custom is IItemCustomCount customCount)
+			{
+				___itemText.enabled = true;
+				CustomTooltip tooltip = customCount.GetCount();
+				___itemText.text = tooltip.Text;
+				___itemText.color = tooltip.Color ?? __instance.whiteVisible;
+			}
+		}
 	}
 }

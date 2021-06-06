@@ -115,7 +115,7 @@ namespace aTonOfItems
 		}
 	}
 	[ItemCategories(RogueCategories.Social, RogueCategories.Stealth, RogueCategories.Weird)]
-	public class VoodooActive : CustomItem, IItemCombinable, IDoUpdate
+	public class VoodooActive : CustomItem, IItemCombinable, IDoUpdate, IItemCustomCount
 	{
 		public Agent Victim { get; set; }
 		public Bullet LastFiredBullet { get; set; }
@@ -128,17 +128,21 @@ namespace aTonOfItems
 			Item.hasCharges = true;
 		}
 
-		private int actualCount;
 		public float Cooldown;
 		public void Update()
 		{
 			if (Victim.dead || !Victim.isActiveAndEnabled) CombineItems(Item);
+			if (Cooldown > 0f) Cooldown = Math.Max(Cooldown - Time.deltaTime, 0f);
+		}
+		public CustomTooltip GetCount()
+		{
 			if (Cooldown > 0f)
 			{
 				Cooldown = Math.Max(Cooldown - Time.deltaTime, 0f);
 				int displayCount = (int)(Cooldown * 10);
-				Count = displayCount > 0 ? displayCount : actualCount;
+				return displayCount > 0 ? displayCount : Count;
 			}
+			else return Count;
 		}
 
 		public bool CombineFilter(InvItem other) => Item == other || other.itemType == ItemTypes.Consumable
@@ -204,8 +208,7 @@ namespace aTonOfItems
 			}
 			else return;
 
-			actualCount = Count;
-			Cooldown = cooldown;
+			Cooldown = cooldown * 10;
 		}
 		public CustomTooltip CombineTooltip(InvItem other)
 		{

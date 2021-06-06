@@ -122,6 +122,10 @@ namespace RogueLibsCore
 		/// <returns>Text and color of the tooltip to display.</returns>
 		CustomTooltip TargetTooltip(PlayfieldObject target);
 	}
+	public interface IItemCustomCount
+	{
+		CustomTooltip GetCount();
+	}
 	/// <summary>
 	///   <para>Value type, containing information about a custom tooltip - its text and color.</para>
 	/// </summary>
@@ -161,6 +165,16 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="text">Tooltip text.</param>
 		public static implicit operator CustomTooltip(string text) => new CustomTooltip(text);
+		/// <summary>
+		///   <para>Converts an <see cref="int"/> into a <see cref="CustomTooltip"/>.</para>
+		/// </summary>
+		/// <param name="number">Tooltip text.</param>
+		public static implicit operator CustomTooltip(int number) => new CustomTooltip(number.ToString());
+		/// <summary>
+		///   <para>Converts a <see cref="float"/> into a <see cref="CustomTooltip"/>.</para>
+		/// </summary>
+		/// <param name="number">Tooltip text.</param>
+		public static implicit operator CustomTooltip(float number) => new CustomTooltip(number.ToString());
 	}
 	/// <summary>
 	///   <para>Represents a specialized <see cref="IHookFactory{T}"/> for <see cref="CustomItem"/> types.</para>
