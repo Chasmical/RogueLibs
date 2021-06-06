@@ -93,8 +93,8 @@ namespace aTonOfItems
 			Item.hasCharges = true;
 			Item.goesInToolbar = true;
 		}
-		public bool TargetFilter(PlayfieldObject target) => target is Agent agent && !agent.dead && !agent.mechFilled && !agent.mechEmpty
-			&& !agent.statusEffects.hasTrait("Electronic");
+		public bool TargetFilter(PlayfieldObject target) => target is Agent agent && !agent.dead
+			&& !agent.mechFilled && !agent.mechEmpty && !agent.butlerBot && !agent.electronic;
 		public void TargetObject(PlayfieldObject target)
 		{
 			Inventory.DestroyItem(Item);
@@ -207,6 +207,11 @@ namespace aTonOfItems
 			actualCount = Count;
 			Cooldown = cooldown;
 		}
-		public CustomTooltip CombineTooltip(InvItem other) => "456";
+		public CustomTooltip CombineTooltip(InvItem other)
+		{
+			if (other.itemType == ItemTypes.Consumable || other.itemType == ItemTypes.WeaponMelee || other.itemType == ItemTypes.WeaponProjectile)
+				return "+";
+			else return "-";
+		}
 	}
 }
