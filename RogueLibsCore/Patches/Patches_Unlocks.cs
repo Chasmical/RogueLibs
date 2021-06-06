@@ -51,6 +51,11 @@ namespace RogueLibsCore
 		{
 			if (___loadedInitialUnlocks) return;
 			RogueLibsInternals.Unlocks.Clear();
+			foreach (UnlockWrapper wrapper in RogueLibsInternals.CustomUnlocks)
+			{
+				RogueLibsInternals.Unlocks.Add(wrapper);
+				AddUnlockFull(wrapper);
+			}
 		}
 		/// <summary>
 		///   <para><b>Transpiler-patch.</b> Replaces the entire foreach loop in the end with <see cref="LoadUnlockWrappersAndCategorize"/> method call.</para>

@@ -58,6 +58,7 @@ namespace RogueLibsCore
 		///   <para>Collection of initialized <see cref="UnlockWrapper"/>s (both custom and original unlocks).</para>
 		/// </summary>
 		public static readonly List<UnlockWrapper> Unlocks = new List<UnlockWrapper>();
+		internal static readonly List<UnlockWrapper> CustomUnlocks = new List<UnlockWrapper>();
 
 		/// <summary>
 		///   <para><b>Usage of this feature is not recommended.</b><br/>Collection of extra sprites, that will be used if a sprite in the appropriate collection is not found.</para>
@@ -188,6 +189,7 @@ namespace RogueLibsCore
 		{
 			if (unlock is null) throw new ArgumentNullException(nameof(unlock));
 			RogueLibsInternals.Unlocks.Add(unlock);
+			RogueLibsInternals.CustomUnlocks.Add(unlock);
 			if (GameController.gameController?.unlocks is null) return;
 			RogueLibsPlugin.AddUnlockFull(unlock);
 		}
