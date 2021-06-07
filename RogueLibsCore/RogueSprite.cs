@@ -15,7 +15,7 @@ namespace RogueLibsCore
 		///   <para>Gets the current custom sprite's constructed <see cref="UnityEngine.Sprite"/>.</para>
 		/// </summary>
 		public Sprite Sprite { get; private set; }
-		private List<tk2dDefinition> definitions = new List<tk2dDefinition>();
+		private List<tk2dDefinition> definitions;
 
 		private Texture2D texture;
 		/// <summary>
@@ -136,7 +136,10 @@ namespace RogueLibsCore
 		{
 			if (prepared.TryGetValue(scope, out List<RogueSprite> sprites))
 				foreach (RogueSprite sprite in sprites)
+				{
+					sprite.isPrepared = false;
 					sprite.Define(collection, scope);
+				}
 		}
 
 		internal RogueSprite(string spriteName, SpriteScope spriteScope, byte[] rawData, Rect? spriteRegion, float ppu = 64f)
