@@ -5,6 +5,7 @@ on:
     branches: [documentation]
   push:
     branches: [documentation]
+  workflow_dispatch:
 
 jobs:
   checks:
