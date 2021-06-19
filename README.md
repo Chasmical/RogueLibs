@@ -54,3 +54,16 @@ If you have any suggestions or find any bugs, you can open a new issue here on G
 ## Links ##
 - [Download RogueLibs (latest stable version)](https://github.com/Abbysssal/RogueLibs/releases/latest)
 - [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
+
+## Discord ##
+
+<div>
+  <h4>Official Streets of Rogue Discord Server</h4>
+  <a href="https://discord.com/invite/streetsofrogue">
+    <img src="./md/2021-06-19_230057.png"/>
+  </a>
+  <h4>Русский сервер Дискорд по Streets of Rogue (russian Discord server)</h4>
+  <a href="https://discord.gg/neDvsmk">
+    <img src="./md/2021-06-19_230107.png"/>
+  </a>
+</div>
