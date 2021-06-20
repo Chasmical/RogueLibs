@@ -11,7 +11,7 @@ namespace aTonOfMutators
 {
 	[BepInPlugin(pluginGUID, pluginName, pluginVersion)]
 	[BepInDependency(RogueLibs.GUID, "3.0")]
-	public class ATonOfMutators : BaseUnityPlugin
+	public class ATOMPlugin : BaseUnityPlugin
 	{
 		public const string pluginGUID = "abbysssal.streetsofrogue.atonofmutators";
 		public const string pluginName = "a Ton of Mutators";
@@ -21,96 +21,219 @@ namespace aTonOfMutators
 
 		public void Awake()
 		{
-			ATOMCategory category = CreateCategory(ATOMType.MeleeCategory, ATOMOffset);
+			#region Melee Mutators
+			ATOMCategory category = CreateCategory(ATOMType.MeleeCategory);
 
 			CreateMutatorGroup(category, ATOMType.MeleeDamage,
 				new float[] { 0f, float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f, 999f }, null,
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "Melee Damage x.",
-					[LanguageCode.Russian] = "Урон оружия ближнего боя x."
+					[LanguageCode.Russian] = "Урон оружия ближнего боя x.",
 				},
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "All melee weapons deal [0|1|.x more|.x less] damage.",
-					[LanguageCode.Russian] = "Всё оружие ближнего боя наносит [0 урона|1 урон|в .x больше урона|в .x меньше урона]."
-				});
+					[LanguageCode.Russian] = "Всё оружие ближнего боя наносит [0 урона|1 урон|в .x больше урона|в .x меньше урона].",
+				})
+				.AddConflicts("NoMelee");
+
 			CreateMutatorGroup(category, ATOMType.MeleeDurability,
 				new float[] { float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "Melee Durability x.",
-					[LanguageCode.Russian] = "Прочность оружия ближнего боя x."
+					[LanguageCode.Russian] = "Прочность оружия ближнего боя x.",
 				},
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "All melee weapons have [|1|.x more|.x less] durability.",
-					[LanguageCode.Russian] = "У всего оружия ближнего боя [|1 прочность|в .x больше прочности|в .x меньше прочности]."
-				});
+					[LanguageCode.Russian] = "У всего оружия ближнего боя [|1 прочность|в .x больше прочности|в .x меньше прочности].",
+				})
+				.AddConflicts("NoMelee", "InfiniteMeleeDurability");
+
 			CreateMutatorGroup(category, ATOMType.MeleeSpeed,
 				new float[] { 0.125f, 0.25f, 0.5f, 2f, 4f, 8f, 999f }, null,
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "Melee Speed x.",
-					[LanguageCode.Russian] = "Скорость оружия ближнего боя x."
+					[LanguageCode.Russian] = "Скорость оружия ближнего боя x.",
 				},
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "All melee weapons attack [||.x faster|.x slower].",
-					[LanguageCode.Russian] = "Всё оружие ближнего боя бьют [||в .x быстрее|в .x медленнее]."
-				});
+					[LanguageCode.Russian] = "Всё оружие ближнего боя бьёт [||в .x быстрее|в .x медленнее].",
+				})
+				.AddConflicts("NoMelee");
+
 			CreateMutatorGroup(category, ATOMType.MeleeLunge,
 				new float[] { 0f, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
 				new CustomNameInfo
-				{ [LanguageCode.English] = "Melee Lunge x.",
-					[LanguageCode.Russian] = "Выпады у оружия ближнего боя x." },
+				{
+					[LanguageCode.English] = "Melee Lunge x.",
+					[LanguageCode.Russian] = "Выпады у оружия ближнего боя x.",
+				},
 				new CustomNameInfo
-				{ [LanguageCode.English] = "All melee weapons [don't lunge||have .x longer lunges|have .x shorter lunges]",
-					[LanguageCode.Russian] = "У всего оружия ближнего боя [нет выпадов||выпады в .x длиннее|выпады в .x короче]"
+				{
+					[LanguageCode.English] = "All melee weapons [don't lunge||have .x longer lunges|have .x shorter lunges]",
+					[LanguageCode.Russian] = "У всего оружия ближнего боя [нет выпадов||выпады в .x длиннее|выпады в .x короче]",
+				})
+				.AddConflicts("NoMelee");
+			#endregion
+
+			#region Thrown Mutators
+			category = CreateCategory(ATOMType.ThrownCategory);
+
+			CreateMutatorGroup(category, ATOMType.ThrownDamage,
+				new float[] { 0f, float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f, 999f }, null,
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "Thrown Damage x.",
+					[LanguageCode.Russian] = "Урон кидательного оружия x.",
+				},
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "All thrown weapons deal [0|1|.x more|.x less] damage.",
+					[LanguageCode.Russian] = "Всё кидательное оружие наносит [0 урона|1 урон|в .x больше урона|в .x меньше урона].",
 				});
 
+			CreateMutatorGroup(category, ATOMType.ThrownCount,
+				new float[] { float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f, 999f }, null,
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "Thrown Count x.",
+					[LanguageCode.Russian] = "Количество кидательного оружия x.",
+				},
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "All thrown weapons appear [|stacks of 1|.x larger stacks|.x smaller stacks].",
+					[LanguageCode.Russian] = "Всё кидательное оружие появляется в [|стаках по 1|.x больших стаках|в .x меньших стаках].",
+				});
 
+			CreateMutatorGroup(category, ATOMType.ThrownDistance,
+				new float[] { 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "Thrown Distance x.",
+					[LanguageCode.Russian] = "Дальность кидательного оружия x.",
+				},
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "All thrown weapons can be thrown at [||.x larger|.x smakker] distance.",
+					[LanguageCode.Russian] = "Всё кидательное оружие может быть кинуто на [||в .x большее|в .x меньшее] расстояние.",
+				});
+			#endregion
 
-			category = CreateCategory(ATOMType.RangedCategory, ATOMOffset + 1);
+			#region Ranged Mutators
+			category = CreateCategory(ATOMType.RangedCategory);
 
 			CreateMutatorGroup(category, ATOMType.RangedDamage,
 				new float[] { 0f, float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f, 999f }, null,
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "Ranged Damage x.",
-					[LanguageCode.Russian] = "Урон оружия дальнего боя x."
+					[LanguageCode.Russian] = "Урон оружия дальнего боя x.",
 				},
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "All ranged weapons deal [0|1|.x more|.x less] damage.",
-					[LanguageCode.Russian] = "Всё оружие дальнего боя наносит [0 урона|1 урон|в .x больше урона|в .x меньше урона]."
-				});
+					[LanguageCode.Russian] = "Всё оружие дальнего боя наносит [0 урона|1 урон|в .x больше урона|в .x меньше урона].",
+				})
+				.AddConflicts("NoGuns");
+
 			CreateMutatorGroup(category, ATOMType.RangedAmmo,
 				new float[] { float.Epsilon, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "Ranged Ammo x.",
-					[LanguageCode.Russian] = "Боезапас оружия дальнего боя x."
+					[LanguageCode.Russian] = "Боезапас оружия дальнего боя x.",
 				},
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "All ranged weapons have [|1|.x more|.x less] ammo.",
-					[LanguageCode.Russian] = "У всего оружия дальнего боя [|1 снаряд|в .x больше боеприпасов|в .x меньше боеприпасов]."
-				});
+					[LanguageCode.Russian] = "У всего оружия дальнего боя [|1 снаряд|в .x больше боеприпасов|в .x меньше боеприпасов].",
+				})
+				.AddConflicts("NoGuns", "InfiniteAmmo");
+
 			CreateMutatorGroup(category, ATOMType.RangedFirerate,
 				new float[] { 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "Ranged Firerate x.",
-					[LanguageCode.Russian] = "Скорострельность оружия дальнего боя x."
+					[LanguageCode.Russian] = "Скорострельность оружия дальнего боя x.",
 				},
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "All ranged weapons have [||.x faster|.x slower] rate of fire.",
-					[LanguageCode.Russian] = "Всё оружие дальнего боя стреляет [||в .x быстрее|в .x медленнее]."
+					[LanguageCode.Russian] = "Всё оружие дальнего боя стреляет [||в .x быстрее|в .x медленнее].",
+				})
+				.AddConflicts("NoGuns");
+
+			CreateMutator(ATOMType.RangedCategory | ATOMType.RangedFullAuto, null, 25,
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "Fully Automatic Ranged Weapons",
+					[LanguageCode.Russian] = "Автоматическое оружие дальнего боя",
+				},
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "All ranged weapons are fully automatic",
+					[LanguageCode.Russian] = "Всё оружие дальнего боя автоматическое",
+				}).Cancellations.Add("NoGuns");
+			#endregion
+
+			#region Projectile Mutators
+			category = CreateCategory(ATOMType.ProjectileCategory);
+
+			CreateMutatorGroup(category, ATOMType.ProjectileSpeed,
+				new float[] { 0f, 0.125f, 0.25f, 0.5f, 2f, 4f, 8f }, null,
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "Projectile Speed x.",
+					[LanguageCode.Russian] = "Скорость снарядов x.",
+				},
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "All projectiles are [||.x faster|.x slower].",
+					[LanguageCode.Russian] = "Все снаряды в [||.x быстрее|.x медленнее].",
 				});
 
+			CreateMutator(ATOMType.ProjectileRockets, null, 15,
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "Rocket Projectiles",
+					[LanguageCode.Russian] = "Ракетные снаряды",
+				},
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "All projectiles are rockets.",
+					[LanguageCode.Russian] = "Все снаряды - ракеты.",
+				});
 
+			CreateMutator(ATOMType.ProjectileEffects, null, 15,
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "Effect Projectiles",
+					[LanguageCode.Russian] = "Эффектные снаряды",
+				},
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "All projectiles are water pistol bullets.",
+					[LanguageCode.Russian] = "Все снаряды - пули водяного пистолета.",
+				});
+
+			CreateMutator(ATOMType.ProjectileRandom, null, 15,
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "Random Projectiles",
+					[LanguageCode.Russian] = "Рандомные снаряды",
+				},
+				new CustomNameInfo
+				{
+					[LanguageCode.English] = "All projectiles are random.",
+					[LanguageCode.Russian] = "Все снаряды случайные.",
+				});
+			#endregion
 
 
 
@@ -126,28 +249,29 @@ namespace aTonOfMutators
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "",
-					[LanguageCode.Russian] = ""
+					[LanguageCode.Russian] = "",
 				},
 				new CustomNameInfo
 				{
 					[LanguageCode.English] = "",
-					[LanguageCode.Russian] = ""
+					[LanguageCode.Russian] = "",
 				});
 			*/
+			Patches.Patch(this);
 		}
-		public ATOMCategory CreateCategory(ATOMType type, int sortingOrder)
+		public ATOMCategory CreateCategory(ATOMType type)
 		{
 			ATOMCategory category = new ATOMCategory(type);
 			RogueLibs.CreateCustomUnlock(category);
-			category.SortingOrder = sortingOrder;
+			category.SortingOrder = ATOMOffset++;
 			category.SortingIndex = -1;
 			return category;
 		}
 		public List<ATOMMutator> CreateMutatorGroup(ATOMCategory category, ATOMType type, float[] multipliers, int[] unlockCosts, CustomNameInfo name, CustomNameInfo description)
 		{
 			type |= category.Category;
-			if (multipliers == null) throw new ArgumentNullException(nameof(multipliers));
-			if (unlockCosts == null)
+			if (multipliers is null) throw new ArgumentNullException(nameof(multipliers));
+			if (unlockCosts is null)
 			{
 				int[] newUnlockCosts = new int[multipliers.Length];
 				for (int i = 0; i < newUnlockCosts.Length; i++)
@@ -253,20 +377,29 @@ namespace aTonOfMutators
 		public static IEnumerable<ATOMMutator> GetOfType(ATOMType type) => Mutators.Where(m => (m.MyType & ATOMType.Values) == type);
 		public static IEnumerable<ATOMMutator> GetOfCategory(ATOMType category) => Mutators.Where(m => (m.MyType & category) != 0);
 		public static ATOMMutator GetActiveOfType(ATOMType type) => Mutators.Find(m => (m.MyType & ATOMType.Values) == type && m.IsEnabled);
-		public static void UseMultiplier(ref float value, ATOMType type)
+		public static bool IsActive(ATOMType type) => GetActiveOfType(type) != null;
+		public static void UseMultiplier(ref float value, ATOMType type, bool inverse = false)
 		{
 			ATOMMutator mutator = GetActiveOfType(type);
-			if (mutator == null) return;
-			float multiplier = mutator.Multiplier;
+			if (mutator is null) return;
+			float multiplier = inverse ? 1f / mutator.Multiplier : mutator.Multiplier;
 			if (multiplier == float.Epsilon) value = 1f;
 			else value *= multiplier;
 		}
-		public static void UseMultiplier(ref int value, ATOMType type)
+		public static void UseMultiplier(ref int value, ATOMType type, bool inverse = false)
 		{
 			ATOMMutator mutator = GetActiveOfType(type);
-			if (mutator == null) return;
-			float multiplier = mutator.Multiplier;
+			if (mutator is null) return;
+			float multiplier = inverse ? 1f / mutator.Multiplier : mutator.Multiplier;
 			value = multiplier == float.Epsilon ? 1 : (int)Mathf.Ceil(value * multiplier);
+		}
+	}
+	public static class ATOMExtensions
+	{
+		public static void AddConflicts(this List<ATOMMutator> mutators, params string[] conflicts)
+		{
+			foreach (ATOMMutator mutator in mutators)
+				mutator.Cancellations.AddRange(conflicts);
 		}
 	}
 	public class ATOMCategory : MutatorUnlock
