@@ -267,4 +267,27 @@ namespace RogueLibsCore
 		/// </summary>
 		Korean    = 7
 	}
+	public interface ICustomNameProvider
+	{
+		NameDB NameDB { get; set; }
+		LanguageCode Language { get; set; }
+		void GetName(string name, string type, ref string result);
+	}
+	public class CustomNameProvider : ICustomNameProvider
+	{
+		/// <summary>
+		///   <para>Collection of initialized <see cref="CustomName"/>s.</para>
+		/// </summary>
+		public readonly Dictionary<string, Dictionary<string, CustomName>> CustomNames = new Dictionary<string, Dictionary<string, CustomName>>();
+
+		public NameDB NameDB { get; set; }
+		public LanguageCode Language { get; set; }
+		public void GetName(string name, string type, ref string result)
+		{
+			if (name != null && type != null
+				&& CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category)
+				&& category.TryGetValue(name, out CustomName customName))
+				result = customName[Language] ?? customName.English;
+		}
+	}
 }

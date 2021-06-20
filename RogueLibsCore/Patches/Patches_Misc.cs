@@ -34,7 +34,17 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="__instance">Instance of <see cref="NameDB"/>.</param>
 		public static void NameDB_RealAwake(NameDB __instance)
-			=> currentLanguageCode = CustomName.Languages.TryGetValue(__instance.language, out LanguageCode code) ? code : LanguageCode.English;
+		{
+			if (!CustomName.Languages.TryGetValue(__instance.language, out LanguageCode code))
+				code = LanguageCode.English;
+			currentLanguageCode = code;
+
+			foreach (ICustomNameProvider provider in RogueLibsInternals.NameProviders)
+			{
+				provider.NameDB = __instance;
+				provider.Language = code;
+			}
+		}
 		/// <summary>
 		///   <para><b>Postfix-patch.</b> Makes the original method return the appropriate <see cref="ICustomName"/>'s translation, if the original returned a string starting with <c>"E_"</c>.</para>
 		/// </summary>
@@ -43,12 +53,10 @@ namespace RogueLibsCore
 		/// <param name="__result">Return value of the method.</param>
 		public static void NameDB_GetName(string myName, string type, ref string __result)
 		{
-			if (__result.StartsWith("E_") && myName != null && type != null
-				&& RogueLibsInternals.CustomNames.TryGetValue(type, out Dictionary<string, ICustomName> category)
-				&& category.TryGetValue(myName, out ICustomName customName))
-				__result = customName[currentLanguageCode] ?? customName[LanguageCode.English];
+			foreach (ICustomNameProvider provider in RogueLibsInternals.NameProviders)
+				provider.GetName(myName, type, ref __result);
 		}
-		private static LanguageCode currentLanguageCode;
+		internal static LanguageCode currentLanguageCode;
 
 		/// <summary>
 		///   <para><b>Postfix-patch.</b> Invokes <see cref="IDoUpdate.Update"/> of all custom hooks, attached to the game's agents, the items in their inventory, their traits and status effects, the dropped items and the placed objects.</para>

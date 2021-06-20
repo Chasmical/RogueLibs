@@ -49,10 +49,8 @@ namespace RogueLibsCore
 		/// </summary>
 		public static readonly List<IHookFactory<Trait>> TraitFactories = new List<IHookFactory<Trait>> { CustomTraitFactory };
 
-		/// <summary>
-		///   <para>Collection of initialized <see cref="CustomName"/>s.</para>
-		/// </summary>
-		public static readonly Dictionary<string, Dictionary<string, ICustomName>> CustomNames = new Dictionary<string, Dictionary<string, ICustomName>>();
+		public static readonly CustomNameProvider CustomNameProvider = new CustomNameProvider();
+		public static readonly List<ICustomNameProvider> NameProviders = new List<ICustomNameProvider> { CustomNameProvider };
 
 		/// <summary>
 		///   <para>Collection of initialized <see cref="UnlockWrapper"/>s (both custom and original unlocks).</para>
@@ -120,6 +118,9 @@ namespace RogueLibsCore
 			EffectInfo info = RogueLibsInternals.CustomEffectFactory.AddEffect<TEffect>();
 			return new EffectBuilder(info);
 		}
+		public static void AddItemFactory(IHookFactory<InvItem> factory) => RogueLibsInternals.InvItemFactories.Add(factory);
+		public static void AddTraitFactory(IHookFactory<Trait> factory) => RogueLibsInternals.TraitFactories.Add(factory);
+		public static void AddEffectFactory(IHookFactory<StatusEffect> factory) => RogueLibsInternals.EffectFactories.Add(factory);
 
 		/// <summary>
 		///   <para>Creates a <see cref="RogueSprite"/> from the provided data and defines it as soon as possible.</para>
@@ -173,12 +174,13 @@ namespace RogueLibsCore
 		{
 			if (name is null) throw new ArgumentNullException(nameof(name));
 			if (type is null) throw new ArgumentNullException(nameof(type));
-			if (!RogueLibsInternals.CustomNames.TryGetValue(type, out Dictionary<string, ICustomName> category))
-				RogueLibsInternals.CustomNames.Add(type, category = new Dictionary<string, ICustomName>());
+			if (!RogueLibsInternals.CustomNameProvider.CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category))
+				RogueLibsInternals.CustomNameProvider.CustomNames.Add(type, category = new Dictionary<string, CustomName>());
 			CustomName customName = new CustomName(name, type, info);
 			category.Add(name, customName);
 			return customName;
 		}
+		public static void AddNameProvider(ICustomNameProvider provider) => RogueLibsInternals.NameProviders.Add(provider);
 
 		/// <summary>
 		///   <para>Initializes the specified <paramref name="unlock"/> and adds it to the game.</para>
