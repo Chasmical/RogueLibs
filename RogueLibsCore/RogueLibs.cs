@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using BepInEx.Logging;
 using UnityEngine;
 
@@ -16,41 +17,32 @@ namespace RogueLibsCore
 		///   <para>RogueLibs plugin instance.</para>
 		/// </summary>
 		public static RogueLibsPlugin Plugin { get; internal set; }
-		/// <summary>
-		///   <para>RogueLibs' logger.</para>
-		/// </summary>
-		public static ManualLogSource Logger { get; internal set; }
+		internal static ManualLogSource Logger { get; set; }
 
-		public static readonly CustomItemFactory CustomItemFactory = new CustomItemFactory();
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="InvItem"/>s.</para>
 		/// </summary>
-		public static readonly List<IHookFactory<InvItem>> InvItemFactories = new List<IHookFactory<InvItem>> { CustomItemFactory };
-
+		public static readonly List<IHookFactory<InvItem>> InvItemFactories = new List<IHookFactory<InvItem>> { new CustomItemFactory() };
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="Agent"/>s.</para>
 		/// </summary>
 		public static readonly List<IHookFactory<Agent>> AgentFactories = new List<IHookFactory<Agent>>();
-
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="ObjectReal"/>s.</para>
 		/// </summary>
 		public static readonly List<IHookFactory<ObjectReal>> ObjectRealFactories = new List<IHookFactory<ObjectReal>>();
-
-		public static readonly CustomEffectFactory CustomEffectFactory = new CustomEffectFactory();
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="StatusEffect"/>s.</para>
 		/// </summary>
-		public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new List<IHookFactory<StatusEffect>> { CustomEffectFactory };
-
-		public static readonly CustomTraitFactory CustomTraitFactory = new CustomTraitFactory();
+		public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new List<IHookFactory<StatusEffect>> { new CustomEffectFactory() };
 		/// <summary>
 		///   <para>Collection of initialized <see cref="IHookFactory{T}"/> for <see cref="Trait"/>s.</para>
 		/// </summary>
-		public static readonly List<IHookFactory<Trait>> TraitFactories = new List<IHookFactory<Trait>> { CustomTraitFactory };
-
-		public static readonly CustomNameProvider CustomNameProvider = new CustomNameProvider();
-		public static readonly List<ICustomNameProvider> NameProviders = new List<ICustomNameProvider> { CustomNameProvider };
+		public static readonly List<IHookFactory<Trait>> TraitFactories = new List<IHookFactory<Trait>> { new CustomTraitFactory() };
+		/// <summary>
+		///   <para>Collection of initialized <see cref="INameProvider"/>s.</para>
+		/// </summary>
+		public static readonly List<INameProvider> NameProviders = new List<INameProvider> { new CustomNameProvider() };
 
 		/// <summary>
 		///   <para>Collection of initialized <see cref="UnlockWrapper"/>s (both custom and original unlocks).</para>
@@ -79,11 +71,20 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Version of RogueLibs that is currently in use.</para>
 		/// </summary>
-		public static string Version => "3.0";
+		public static string Version { [MethodImpl(MethodImplOptions.NoInlining)] get => CompiledVersion; }
 		/// <summary>
 		///   <para>Version of RogueLibs that the current mod was compiled with.</para>
 		/// </summary>
 		public const string CompiledVersion = "3.0";
+
+		private static readonly CustomItemFactory ItemFactory
+			= (CustomItemFactory)RogueLibsInternals.InvItemFactories.Find(t => t is CustomItemFactory);
+		private static readonly CustomTraitFactory TraitFactory
+			= (CustomTraitFactory)RogueLibsInternals.TraitFactories.Find(t => t is CustomTraitFactory);
+		private static readonly CustomEffectFactory EffectFactory
+			= (CustomEffectFactory)RogueLibsInternals.EffectFactories.Find(t => t is CustomEffectFactory);
+		private static readonly CustomNameProvider NameProvider
+			= (CustomNameProvider)RogueLibsInternals.NameProviders.Find(t => t is CustomNameProvider);
 
 		/// <summary>
 		///   <para>Adds the specified <typeparamref name="TItem"/> type to the game and returns <see cref="ItemBuilder"/> with it.</para>
@@ -93,7 +94,7 @@ namespace RogueLibsCore
 		public static ItemBuilder CreateCustomItem<TItem>()
 			where TItem : CustomItem, new()
 		{
-			ItemInfo info = RogueLibsInternals.CustomItemFactory.AddItem<TItem>();
+			ItemInfo info = ItemFactory.AddItem<TItem>();
 			return new ItemBuilder(info);
 		}
 		/// <summary>
@@ -104,7 +105,7 @@ namespace RogueLibsCore
 		public static TraitBuilder CreateCustomTrait<TTrait>()
 			where TTrait : CustomTrait, new()
 		{
-			TraitInfo info = RogueLibsInternals.CustomTraitFactory.AddTrait<TTrait>();
+			TraitInfo info = TraitFactory.AddTrait<TTrait>();
 			return new TraitBuilder(info);
 		}
 		/// <summary>
@@ -115,12 +116,9 @@ namespace RogueLibsCore
 		public static EffectBuilder CreateCustomEffect<TEffect>()
 			where TEffect : CustomEffect, new()
 		{
-			EffectInfo info = RogueLibsInternals.CustomEffectFactory.AddEffect<TEffect>();
+			EffectInfo info = EffectFactory.AddEffect<TEffect>();
 			return new EffectBuilder(info);
 		}
-		public static void AddItemFactory(IHookFactory<InvItem> factory) => RogueLibsInternals.InvItemFactories.Add(factory);
-		public static void AddTraitFactory(IHookFactory<Trait> factory) => RogueLibsInternals.TraitFactories.Add(factory);
-		public static void AddEffectFactory(IHookFactory<StatusEffect> factory) => RogueLibsInternals.EffectFactories.Add(factory);
 
 		/// <summary>
 		///   <para>Creates a <see cref="RogueSprite"/> from the provided data and defines it as soon as possible.</para>
@@ -174,13 +172,12 @@ namespace RogueLibsCore
 		{
 			if (name is null) throw new ArgumentNullException(nameof(name));
 			if (type is null) throw new ArgumentNullException(nameof(type));
-			if (!RogueLibsInternals.CustomNameProvider.CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category))
-				RogueLibsInternals.CustomNameProvider.CustomNames.Add(type, category = new Dictionary<string, CustomName>());
+			if (!NameProvider.CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category))
+				NameProvider.CustomNames.Add(type, category = new Dictionary<string, CustomName>());
 			CustomName customName = new CustomName(name, type, info);
 			category.Add(name, customName);
 			return customName;
 		}
-		public static void AddNameProvider(ICustomNameProvider provider) => RogueLibsInternals.NameProviders.Add(provider);
 
 		/// <summary>
 		///   <para>Initializes the specified <paramref name="unlock"/> and adds it to the game.</para>
@@ -216,14 +213,16 @@ namespace RogueLibsCore
 		/// <param name="name">Name/id of the unlock.</param>
 		/// <param name="type">Type of the unlock.</param>
 		/// <returns><see cref="UnlockWrapper"/>, attached to the unlock with the specified <paramref name="name"/> and <paramref name="type"/>.</returns>
-		public static UnlockWrapper GetUnlock(string name, string type) => RogueLibsInternals.Unlocks.Find(u => u.Name == name && u.Type == type);
+		public static UnlockWrapper GetUnlock(string name, string type)
+			=> RogueLibsInternals.Unlocks.Find(u => u.Name == name && u.Type == type);
 		/// <summary>
 		///   <para>Returns an <see cref="UnlockWrapper"/> of the specified <typeparamref name="TUnlock"/> type, attached to the unlock with the specified <paramref name="name"/>.</para>
 		/// </summary>
 		/// <typeparam name="TUnlock">Type of the <see cref="UnlockWrapper"/>.</typeparam>
 		/// <param name="name">Name/id of the unlock.</param>
 		/// <returns><typeparamref name="TUnlock"/>, attached to the unlock with the specified <paramref name="name"/>.</returns>
-		public static TUnlock GetUnlock<TUnlock>(string name) where TUnlock : UnlockWrapper => (TUnlock)RogueLibsInternals.Unlocks.Find(u => u is TUnlock && u.Name == name);
+		public static TUnlock GetUnlock<TUnlock>(string name) where TUnlock : UnlockWrapper
+			=> (TUnlock)RogueLibsInternals.Unlocks.Find(u => u is TUnlock && u.Name == name);
 	}
 	/// <summary>
 	///   <para>Helper class, that provides methods for defining additional data about a custom item.</para>

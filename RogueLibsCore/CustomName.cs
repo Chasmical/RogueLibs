@@ -267,13 +267,13 @@ namespace RogueLibsCore
 		/// </summary>
 		Korean    = 7
 	}
-	public interface ICustomNameProvider
+	public interface INameProvider
 	{
 		NameDB NameDB { get; set; }
 		LanguageCode Language { get; set; }
 		void GetName(string name, string type, ref string result);
 	}
-	public class CustomNameProvider : ICustomNameProvider
+	public class CustomNameProvider : INameProvider
 	{
 		/// <summary>
 		///   <para>Collection of initialized <see cref="CustomName"/>s.</para>

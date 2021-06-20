@@ -39,7 +39,7 @@ namespace RogueLibsCore
 				code = LanguageCode.English;
 			currentLanguageCode = code;
 
-			foreach (ICustomNameProvider provider in RogueLibsInternals.NameProviders)
+			foreach (INameProvider provider in RogueLibsInternals.NameProviders)
 			{
 				provider.NameDB = __instance;
 				provider.Language = code;
@@ -53,7 +53,7 @@ namespace RogueLibsCore
 		/// <param name="__result">Return value of the method.</param>
 		public static void NameDB_GetName(string myName, string type, ref string __result)
 		{
-			foreach (ICustomNameProvider provider in RogueLibsInternals.NameProviders)
+			foreach (INameProvider provider in RogueLibsInternals.NameProviders)
 				provider.GetName(myName, type, ref __result);
 		}
 		internal static LanguageCode currentLanguageCode;
