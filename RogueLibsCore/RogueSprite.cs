@@ -201,6 +201,7 @@ namespace RogueLibsCore
 			if (coll != null)
 			{
 				tk2dSpriteDefinition def = AddDefinition(coll, texture, region);
+				def.__RogueLibsCustom = this;
 				definitions.Add(new tk2dDefinition(coll, def));
 
 				if (Material is null) Material = def.material;
@@ -346,6 +347,7 @@ namespace RogueLibsCore
 			coll.InitMaterialIds();
 			coll.ClearDictionary();
 			coll.InitDictionary();
+			definition.__RogueLibsCustom = null;
 		}
 
 		public class tk2dDefinition
