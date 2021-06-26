@@ -13,9 +13,6 @@ namespace RogueLibsCore
 {
 	public partial class RogueLibsPlugin
 	{
-		/// <summary>
-		///   <para>Applies the patches to <see cref="CharacterCreation"/>.</para>
-		/// </summary>
 		public void PatchCharacterCreation()
 		{
 			Patcher.Prefix(typeof(CharacterCreation), nameof(CharacterCreation.SetupItems));
@@ -30,42 +27,11 @@ namespace RogueLibsCore
 			Patcher.Prefix(typeof(CharacterCreation), nameof(CharacterCreation.ShowDetails));
 		}
 
-		/// <summary>
-		///   <para><b>Prefix-patch (complete override).</b> Invokes the default unlocks setup method - <see cref="SetupUnlocks(ButtonData, Unlock)"/>.</para>
-		/// </summary>
-		/// <param name="myButtonData"><see cref="ButtonData"/> that displays <paramref name="myUnlock"/> in the menu.</param>
-		/// <param name="myUnlock"><see cref="Unlock"/> that is displayed by <paramref name="myButtonData"/>.</param>
-		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool CharacterCreation_SetupItems(ButtonData myButtonData, Unlock myUnlock) => SetupUnlocks(myButtonData, myUnlock);
-		/// <summary>
-		///   <para><b>Prefix-patch (complete override).</b> Invokes the default unlocks setup method - <see cref="SetupUnlocks(ButtonData, Unlock)"/>.</para>
-		/// </summary>
-		/// <param name="myButtonData"><see cref="ButtonData"/> that displays <paramref name="myUnlock"/> in the menu.</param>
-		/// <param name="myUnlock"><see cref="Unlock"/> that is displayed by <paramref name="myButtonData"/>.</param>
-		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool CharacterCreation_SetupTraits(ButtonData myButtonData, Unlock myUnlock) => SetupUnlocks(myButtonData, myUnlock);
-		/// <summary>
-		///   <para><b>Prefix-patch (complete override).</b> Invokes the default unlocks setup method - <see cref="SetupUnlocks(ButtonData, Unlock)"/>.</para>
-		/// </summary>
-		/// <param name="myButtonData"><see cref="ButtonData"/> that displays <paramref name="myUnlock"/> in the menu.</param>
-		/// <param name="myUnlock"><see cref="Unlock"/> that is displayed by <paramref name="myButtonData"/>.</param>
-		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool CharacterCreation_SetupAbilities(ButtonData myButtonData, Unlock myUnlock) => SetupUnlocks(myButtonData, myUnlock);
-		/// <summary>
-		///   <para><b>Prefix-patch (complete override).</b> Invokes the default unlocks setup method - <see cref="SetupUnlocks(ButtonData, Unlock)"/>.</para>
-		/// </summary>
-		/// <param name="myButtonData"><see cref="ButtonData"/> that displays <paramref name="myUnlock"/> in the menu.</param>
-		/// <param name="myUnlock"><see cref="Unlock"/> that is displayed by <paramref name="myButtonData"/>.</param>
-		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool CharacterCreation_SetupBigQuests(ButtonData myButtonData, Unlock myUnlock) => SetupUnlocks(myButtonData, myUnlock);
 
-		/// <summary>
-		///   <para><b>Prefix-patch (complete override).</b> Sets up the <see cref="CustomCharacterCreation"/> menu and sorts the unlocks according to their <see cref="DisplayedUnlock"/>s.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="CharacterCreation"/>.</param>
-		/// <param name="myUnlockList">List with unlocks to be displayed in the menu.</param>
-		/// <param name="unlockType">Type of the unlocks to be displayed.</param>
-		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool CharacterCreation_SortUnlocks(CharacterCreation __instance, List<Unlock> myUnlockList, string unlockType)
 		{
 			if (unlockType == "BigQuest") myUnlockList = __instance.gc.sessionDataBig.bigQuestUnlocks;
@@ -104,12 +70,6 @@ namespace RogueLibsCore
 			return false;
 		}
 
-		/// <summary>
-		///   <para><b>Prefix-patch (partial override).</b> Invokes the selected unlock's <see cref="DisplayedUnlock.OnPushedButton"/> method.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="CharacterCreation"/>.</param>
-		/// <param name="myButton">Pressed button.</param>
-		/// <returns><see langword="false"/>, if the selected namespace is not "Load"; otherwise, <see langword="true"/>. Partial override.</returns>
 		public static bool CharacterCreation_PushedButton(CharacterCreation __instance, ButtonHelper myButton)
 		{
 			if (__instance.selectedSpace == "Load") return true;
@@ -129,12 +89,6 @@ namespace RogueLibsCore
 			return false;
 		}
 
-		/// <summary>
-		///   <para><b>Prefix-patch (partial override).</b> Makes use of the <see cref="DisplayedUnlock"/>'s self-descriptive methods to set up the details window.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="CharacterCreation"/>.</param>
-		/// <param name="myButton">Button whose unlock's details are to be displayed.</param>
-		/// <returns><see langword="false"/>, if the character loading menu is not active; otherwise, <see langword="true"/>. Partial override.</returns>
 		public static bool CharacterCreation_ShowDetails(CharacterCreation __instance, ButtonHelper myButton)
 		{
 			if (__instance.loadMenu.gameObject.activeSelf) return true;

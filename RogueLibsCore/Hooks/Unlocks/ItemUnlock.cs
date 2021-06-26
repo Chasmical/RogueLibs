@@ -8,20 +8,9 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	/// <summary>
-	///   <para>Item unlock wrapper.</para>
-	/// </summary>
 	public class ItemUnlock : DisplayedUnlock, IUnlockInCC
 	{
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="ItemUnlock"/> class.</para>
-		/// </summary>
 		public ItemUnlock() : this(null, false) { }
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="FloorUnlock"/> with the specified <paramref name="name"/>.</para>
-		/// </summary>
-		/// <param name="name">Unlock's name/id. <b>Must be the same as the item's name/id.</b></param>
-		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		public ItemUnlock(string name, bool unlockedFromStart = false)
 			: base(name, "Item", unlockedFromStart)
 		{
@@ -30,13 +19,11 @@ namespace RogueLibsCore
 		}
 		internal ItemUnlock(Unlock unlock) : base(unlock) { }
 
-		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
-		/// <inheritdoc/>
 		public bool IsAddedToCC
 		{
 			get => ((CustomCharacterCreation)Menu).CC.itemsChosen.Contains(Unlock);
@@ -48,9 +35,6 @@ namespace RogueLibsCore
 				else if (!cur && value) list.Add(Unlock);
 			}
 		}
-		/// <summary>
-		///   <para>Gets/sets whether the item is selected as a loadout.</para>
-		/// </summary>
 		public bool IsSelectedLoadout
 		{
 			get => GetMyLoadouts().Contains(Name);
@@ -63,7 +47,6 @@ namespace RogueLibsCore
 			}
 		}
 
-		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -75,7 +58,6 @@ namespace RogueLibsCore
 				else if (cur == false && value) { gc.sessionDataBig.itemUnlocks.Add(Unlock); Unlock.itemCount++; }
 			}
 		}
-		/// <inheritdoc/>
 		public bool IsAvailableInCC
 		{
 			get => Unlock.onlyInCharacterCreation;
@@ -87,9 +69,6 @@ namespace RogueLibsCore
 				else if (cur == false && value) { gc.sessionDataBig.itemUnlocksCharacterCreation.Add(Unlock); Unlock.itemCountCharacterCreation++; }
 			}
 		}
-		/// <summary>
-		///   <para>Gets/sets whether the item is available in the Item Teleporter menu.</para>
-		/// </summary>
 		public bool IsAvailableInItemTeleporter
 		{
 			get => Unlock.freeItem;
@@ -102,12 +81,11 @@ namespace RogueLibsCore
 			}
 		}
 
-		private List<string> GetMyLoadouts() => Menu.Agent.isPlayer == 1 ? gc.sessionDataBig.loadouts1
-			: Menu.Agent.isPlayer == 2 ? gc.sessionDataBig.loadouts2
-			: Menu.Agent.isPlayer == 3 ? gc.sessionDataBig.loadouts3
+		private List<string> GetMyLoadouts() => Menu.Agent.isPlayer is 1 ? gc.sessionDataBig.loadouts1
+			: Menu.Agent.isPlayer is 2 ? gc.sessionDataBig.loadouts2
+			: Menu.Agent.isPlayer is 3 ? gc.sessionDataBig.loadouts3
 			: gc.sessionDataBig.loadouts4;
 
-		/// <inheritdoc/>
 		public override void UpdateButton()
 		{
 			if (Menu.Type == UnlocksMenuType.RewardsMenu)
@@ -126,7 +104,6 @@ namespace RogueLibsCore
 			else if (Menu.Type == UnlocksMenuType.CharacterCreation)
 				UpdateButton(IsAddedToCC);
 		}
-		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			if (IsUnlocked)
@@ -220,7 +197,7 @@ namespace RogueLibsCore
 			else PlaySound("CantDo");
 		}
 
-		/// <inheritdoc/>
-		public override Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable) && GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
+		public override Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable)
+			&& GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
 	}
 }

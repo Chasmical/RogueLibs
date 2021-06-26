@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{3A1A66D2-41C1-45BF-8514-0CE67A28D9D0}</ProjectGuid>
+    <ProjectGuid>{99ED3605-22DC-4E91-A9F0-790209CFE9E8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>aTonOfItems</RootNamespace>
-    <AssemblyName>aTonOfItems</AssemblyName>
+    <RootNamespace>RogueLibsCore.Test</RootNamespace>
+    <AssemblyName>RogueLibsCore.Test</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -31,6 +31,24 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="TestPlugin.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tests\Duplicator.cs" />
+    <Compile Include="Tests\LootBox.cs" />
+    <Compile Include="Tests\Recycler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RogueLibsCore\RogueLibsCore.csproj">
+      <Project>{43a221f2-a56c-4f59-8c3c-828de75259c4}</Project>
+      <Name>RogueLibsCore</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="Assembly-CSharp">
       <HintPath>..\Libraries\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -48,25 +66,6 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\Libraries\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Libraries\UnityEngine.Physics2DModule.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="ATonOfItems.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RogueLibsCore\RogueLibsCore.csproj">
-      <Project>{43a221f2-a56c-4f59-8c3c-828de75259c4}</Project>
-      <Name>RogueLibsCore</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -74,12 +73,5 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\VoodooActive.bin" />
-    <None Include="Resources\VoodooBlank.bin" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>"D:\repos\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"</PostBuildEvent>
-  </PropertyGroup>
 </Project>

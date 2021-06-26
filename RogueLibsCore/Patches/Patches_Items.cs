@@ -13,9 +13,6 @@ namespace RogueLibsCore
 {
 	public partial class RogueLibsPlugin
 	{
-		/// <summary>
-		///   <para>Applies the patches to <see cref="InvItem"/>, <see cref="ItemFunctions"/>, <see cref="InvDatabase"/>, <see cref="InvInterface"/> and <see cref="InvSlot"/>.</para>
-		/// </summary>
 		public void PatchItems()
 		{
 			// create and initialize item hooks
@@ -23,7 +20,6 @@ namespace RogueLibsCore
 
 			// CustomItem, IItemUsable patch
 			Patcher.Prefix(typeof(ItemFunctions), nameof(ItemFunctions.UseItem));
-			Patcher.Postfix(typeof(ItemFunctions), nameof(ItemFunctions.UseItem), nameof(ItemFunctions_UseItem_Postfix));
 
 			// CustomItem, IItemCombinable and IItemTargetable
 			Patcher.Prefix(typeof(InvItem), nameof(InvItem.CombineItems));
@@ -37,25 +33,24 @@ namespace RogueLibsCore
 
 			// CustomItem, IItemCombinable.CombineTooltip(.) patch
 			Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.SetColor));
-			// CustomItem, IItemCustomCount.GetCount(.) patch
+			// CustomItem.GetCount(.) patch
 			Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.UpdateInvSlot));
 
 			SubscribeDefaultChecks();
 		}
 		private void SubscribeDefaultChecks()
 		{
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("Ghost") && e.User.ghost)
+				if (e.User.ghost)
 				{
 					e.User.gc.audioHandler.Play(e.User, "CantDo");
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("CantInteract") && e.User.statusEffects.hasTrait("CantInteract")
-					&& e.Item.itemType != ItemTypes.Food)
+				if (e.User.HasTrait("CantInteract") && e.Item.itemType != ItemTypes.Food)
 				{
 					e.User.SayDialogue("CantInteract");
 					e.User.gc.audioHandler.Play(e.User, "CantDo");
@@ -63,19 +58,19 @@ namespace RogueLibsCore
 				}
 			};
 
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("OnlyOil") && e.User.HasTrait("OilRestoresHealth")
-					&& e.Item.itemType == ItemTypes.Food && (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol")))
+				if (e.User.HasTrait("OilRestoresHealth") && e.Item.itemType == ItemTypes.Food
+					&& (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol")))
 				{
 					e.User.SayDialogue("OnlyOilGivesHealth");
 					e.User.gc.audioHandler.Play(e.User, "CantDo");
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("OnlyOilMedicine") && e.User.HasTrait("OilRestoresHealth")
+				if (e.User.HasTrait("OilRestoresHealth")
 					&& e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
 				{
 					e.User.SayDialogue("OnlyOilGivesHealth");
@@ -83,19 +78,19 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("OnlyBlood") && e.User.HasTrait("BloodRestoresHealth")
-					&& e.Item.itemType == ItemTypes.Food && (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol")))
+				if (e.User.HasTrait("BloodRestoresHealth") && e.Item.itemType == ItemTypes.Food
+					&& (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol")))
 				{
 					e.User.SayDialogue("OnlyBloodGivesHealth");
 					e.User.gc.audioHandler.Play(e.User, "CantDo");
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("OnlyBloodMedicine") && e.User.HasTrait("BloodRestoresHealth")
+				if (e.User.HasTrait("BloodRestoresHealth")
 					&& e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
 				{
 					e.User.SayDialogue("OnlyBloodGivesHealth2");
@@ -103,29 +98,27 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("OnlyCharge") && e.User.electronic
-					&& e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food"))
+				if (e.User.electronic && e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food"))
 				{
 					e.User.SayDialogue("OnlyChargeGivesHealth");
 					e.User.gc.audioHandler.Play(e.User, "CantDo");
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("OnlyChargeMedicine") && e.User.electronic
-					&& e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
+				if (e.User.electronic && e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
 				{
 					e.User.SayDialogue("OnlyChargeGivesHealth");
 					e.User.gc.audioHandler.Play(e.User, "CantDo");
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("OnlyHumanFlesh") && e.User.HasTrait("CannibalizeRestoresHealth")
+				if (e.User.HasTrait("CannibalizeRestoresHealth")
 					&& e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food"))
 				{
 					e.User.SayDialogue("OnlyCannibalizeGivesHealth");
@@ -133,9 +126,9 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUseCheck += e =>
+			InventoryEvents.OnItemUsing += e =>
 			{
-				if (!e.Item.IgnoresUseItemCheck("HealthFull") && e.User.health == e.User.healthMax && e.Item.healthChange > 0)
+				if (e.User.health == e.User.healthMax && e.Item.healthChange > 0)
 				{
 					e.User.SayDialogue("HealthFullCantUseItem");
 					e.User.gc.audioHandler.Play(e.User, "CantDo");
@@ -157,13 +150,9 @@ namespace RogueLibsCore
 
 		}
 
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Sets up and initializes the item's hooks.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="InvItem"/>.</param>
 		public static void InvItem_SetupDetails(InvItem __instance)
 		{
-			foreach (IHookFactory<InvItem> factory in RogueLibsInternals.InvItemFactories)
+			foreach (IHookFactory<InvItem> factory in RogueFramework.ItemFactories)
 				if (factory.TryCreate(__instance, out IHook<InvItem> hook))
 				{
 					__instance.AddHook(hook);
@@ -171,81 +160,48 @@ namespace RogueLibsCore
 				}
 		}
 
-		/// <summary>
-		///   <para><b>Prefix-patch (partial override).</b> Makes use of the complicated item usage system.</para>
-		/// </summary>
-		/// <param name="item">Item that is about to be used.</param>
-		/// <param name="agent">Agent who is about to use the <paramref name="item"/>.</param>
-		/// <param name="__state">Value of the <see cref="InvInterface.showingTarget"/>.</param>
-		/// <returns><see langword="false"/>, if the <paramref name="item"/> is a custom item or if it didn't pass the <see cref="InventoryEvents"/> checks; otherwise, <see langword="true"/>. Partial override.</returns>
-		public static bool ItemFunctions_UseItem(InvItem item, Agent agent, ref bool __state)
+		public static bool ItemFunctions_UseItem(InvItem item, Agent agent)
 		{
-			__state = item.database.invInterface.showingTarget;
 			CustomItem custom = item.GetHook<CustomItem>();
-			if (custom is IItemTargetable)
+			if (custom is IItemTargetable || custom is IItemTargetableAnywhere)
 			{
 				item.invInterface.ShowOrHideTarget(item);
 				return false;
 			}
 
-			if (InventoryEvents.onItemUseCheck.Raise(new OnItemUsedArgs(item, agent)))
+			OnItemUsedArgs args = new OnItemUsedArgs(item, agent);
+			if (InventoryEvents.onItemUsing.Raise(args))
 			{
-				if (agent.localPlayer)
+				agent = args.User;
+				// in case an inventory check redirected the use of an item on someone else
+				using (AgentSwapper swapper = new AgentSwapper(item, agent))
 				{
-					if (!agent.inventory.HasItem(item.invItemName) && agent.inventory.equippedSpecialAbility?.invItemName != item.invItemName)
-						return false;
-					else if ((item.Categories.Contains("Usable") || item.itemType == "Consumable") && !item.used)
+					if (agent.localPlayer)
 					{
-						item.used = true;
-						if (agent.isPlayer > 0) agent.gc.sessionData.endStats[agent.isPlayer].itemsUsed++;
+						if (!agent.inventory.HasItem(item.invItemName) && agent.inventory.equippedSpecialAbility?.invItemName != item.invItemName)
+							return false;
+						else if ((item.Categories.Contains("Usable") || item.itemType == "Consumable") && !item.used)
+						{
+							item.used = true;
+							if (agent.isPlayer > 0) agent.gc.sessionData.endStats[agent.isPlayer].itemsUsed++;
+						}
 					}
-				}
-				if (!(custom is IItemUsable usable))
-					return true;
+					// if it's not a custom item, run the original method
+					if (!(custom is IItemUsable usable))
+						return true;
 
-				if (item.agent == agent) usable.UseItem();
-				else
-				{
-					Agent prev = item.agent;
-					item.agent = agent;
-					usable.UseItem();
-					item.agent = prev;
+					bool success = usable.UseItem();
+					if (success) new ItemFunctions().UseItemAnim(item, agent);
 				}
 			}
 			return false;
 		}
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Invokes the <see cref="InventoryEvents"/> events.</para>
-		/// </summary>
-		/// <param name="item">Item that was used.</param>
-		/// <param name="agent">Agent who used the <paramref name="item"/>.</param>
-		/// <param name="__state">Previously saved value of the <see cref="InvInterface.showingTarget"/>.</param>
-		public static void ItemFunctions_UseItem_Postfix(InvItem item, Agent agent, ref bool __state)
-		{
-			if (__state == item.database.invInterface.showingTarget)
-			{
-				OnItemUsedArgs args = new OnItemUsedArgs(item, agent);
-				InventoryEvents.Global.onItemUsed.Raise(args);
-				item.database.GetEvents().onItemUsed.Raise(args);
-			}
-		}
 
-		/// <summary>
-		///   <para><b>Prefix-patch (complete override).</b> Makes use of the complicated item combining system.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="InvItem"/>.</param>
-		/// <param name="otherItem">Item that the current item is being combined with.</param>
-		/// <param name="slotNum">Inventory slot's number, that the <paramref name="otherItem"/> is in.</param>
-		/// <param name="myAgent">Agent who is combining the items.</param>
-		/// <param name="combineType">Combine type.</param>
-		/// <param name="__result">Return value of the method.</param>
-		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool InvItem_CombineItems(InvItem __instance, InvItem otherItem, int slotNum, Agent myAgent, string combineType, ref bool __result)
 		{
-			if (otherItem == null) RogueLibsInternals.Logger.LogError($"otherItem is null! {__instance.invItemName} {slotNum} {combineType}");
 			CustomItem custom = __instance.GetHook<CustomItem>();
 
-			if (!__instance.IgnoresCombineItemsCheck("StackItems"))
+			if (true)
 			{
 				if (__instance.invItemName == otherItem.invItemName && __instance.stackable)
 				{
@@ -267,88 +223,55 @@ namespace RogueLibsCore
 				}
 			}
 
-			bool firstCheck;
+			bool filterResult;
 			if (custom is IItemCombinable combinable)
 			{
-				if (__instance.agent == myAgent) firstCheck = combinable.CombineFilter(otherItem);
-				else
-				{
-					Agent prev = __instance.agent;
-					__instance.agent = myAgent;
-					firstCheck = combinable.CombineFilter(otherItem);
-					__instance.agent = prev;
-				}
+				using (AgentSwapper swapper = new AgentSwapper(__instance, myAgent))
+					filterResult = combinable.CombineFilter(otherItem);
 			}
-			else firstCheck = new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, string.Empty);
+			else filterResult = new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, string.Empty);
 
-			__result = firstCheck && InventoryEvents.onItemsCombineCheck.Raise(new OnItemsCombinedArgs(__instance, otherItem, myAgent));
+			OnItemsCombinedArgs args = new OnItemsCombinedArgs(__instance, otherItem, myAgent);
+			__result = filterResult && InventoryEvents.onItemsCombining.Raise(args);
 
 			if (__result && combineType == "Combine")
 			{
+				myAgent = args.Combiner;
+				otherItem = args.OtherItem;
 				if (custom is IItemCombinable combinable2)
 				{
-					if (__instance.agent == myAgent) combinable2.CombineItems(otherItem);
-					else
+					using (AgentSwapper swapper = new AgentSwapper(__instance, myAgent))
 					{
-						Agent prev = __instance.agent;
-						__instance.agent = myAgent;
-						combinable2.CombineItems(otherItem);
-						__instance.agent = prev;
+						bool success = combinable2.CombineItems(otherItem);
+						if (success) new ItemFunctions().UseItemAnim(__instance, myAgent);
 					}
 				}
 				else new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, "Combine");
 
-				if (!__instance.IgnoresCombineItemsCheck("StopOnZero")
-					&& (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance)))
+				if (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance))
 				{
 					myAgent.mainGUI.invInterface.HideDraggedItem();
 					myAgent.mainGUI.invInterface.HideTarget();
 				}
 
-				OnItemsCombinedArgs args = new OnItemsCombinedArgs(__instance, otherItem, myAgent);
-				InventoryEvents.Global.onItemsCombined.Raise(args);
-				__instance.database.GetEvents().onItemsCombined.Raise(args);
 			}
 			return false;
 		}
-		/// <summary>
-		///   <para><b>Prefix-patch (complete override).</b> Makes use of the complicated item targeting system.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="InvItem"/>.</param>
-		/// <param name="otherObject">Object that the current item is being used on.</param>
-		/// <param name="combineType">Combine type.</param>
-		/// <param name="__result">Return value of the method.</param>
-		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool InvItem_TargetObject(InvItem __instance, PlayfieldObject otherObject, string combineType, ref bool __result)
 		{
-			if (otherObject == null) RogueLibsInternals.Logger.LogError($"otherObject can be null! {__instance.invItemName} {combineType}");
 			CustomItem custom = __instance.GetHook<CustomItem>();
 
-			if (!__instance.IgnoresTargetFilterCheck("Nothing"))
-			{
-				if (otherObject is null)
-				{
-					__result = false;
-					return false;
-				}
-			}
-			else
-			{
-				// utilize InvInterface.TargetAnywhere
-				throw new NotImplementedException();
-			}
-
-			if (!__instance.IgnoresTargetFilterCheck("Distance") && Vector2.Distance(__instance.agent.curPosition, otherObject.curPosition) > 15f)
+			if (Vector2.Distance(__instance.agent.curPosition, otherObject.curPosition) > 15f)
 			{
 				__result = false;
 				return false;
 			}
-			if (!__instance.IgnoresTargetFilterCheck("ButlerBot") && (otherObject as Agent)?.butlerBot == true)
+			if ((otherObject as Agent)?.butlerBot == true)
 			{
 				__result = false;
 				return false;
 			}
-			if (!__instance.IgnoresTargetFilterCheck("EmptyMech") && (otherObject as Agent)?.mechEmpty == true)
+			if ((otherObject as Agent)?.mechEmpty == true)
 			{
 				__result = false;
 				return false;
@@ -358,74 +281,61 @@ namespace RogueLibsCore
 				? combinable.TargetFilter(otherObject)
 				: new ItemFunctions().TargetObject(__instance, __instance.agent, otherObject, string.Empty);
 
-			__result = firstCheck && InventoryEvents.onItemTargetCheck.Raise(new OnItemTargetedArgs(__instance, otherObject, __instance.agent));
+			OnItemTargetedArgs args = new OnItemTargetedArgs(__instance, otherObject, __instance.agent);
+			__result = firstCheck && InventoryEvents.onItemTargeting.Raise(args);
 
 			if (__result && combineType == "Combine")
 			{
-				if (custom is IItemTargetable combinable2) combinable2.TargetObject(otherObject);
-				else new ItemFunctions().TargetObject(__instance, __instance.agent, otherObject, "Combine");
-
-				if (!__instance.IgnoresTargetObjectCheck("StopOnZero")
-					&& (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance)))
+				otherObject = args.Target;
+				using (AgentSwapper swapper = new AgentSwapper(__instance, args.User))
 				{
-					__instance.agent.mainGUI.invInterface.HideDraggedItem();
-					__instance.agent.mainGUI.invInterface.HideTarget();
+					if (custom is IItemTargetable combinable2) combinable2.TargetObject(otherObject);
+					else new ItemFunctions().TargetObject(__instance, __instance.agent, otherObject, "Combine");
+
+					if (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance))
+					{
+						__instance.agent.mainGUI.invInterface.HideDraggedItem();
+						__instance.agent.mainGUI.invInterface.HideTarget();
+					}
 				}
 
-				OnItemTargetedArgs args = new OnItemTargetedArgs(__instance, otherObject, __instance.agent);
-				InventoryEvents.Global.onItemTargeted.Raise(args);
-				__instance.database.GetEvents().onItemTargeted.Raise(args);
 			}
 			return false;
 		}
 		private static Color? targetTextColor;
 
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Sets the item's targeting tooltip for the highlighted object.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="InvInterface"/>.</param>
-		/// <param name="item">Item that is being used.</param>
 		public static void InvInterface_ShowTarget(InvInterface __instance, InvItem item)
 		{
 			if (item.itemType != "Combine")
 			{
-				if (targetTextColor == null) targetTextColor = __instance.cursorTextString3.color;
+				if (targetTextColor is null) targetTextColor = __instance.cursorTextString3.color;
 				CustomItem custom = item.GetHook<CustomItem>();
 				if (custom is IItemTargetable targetable)
 				{
-					CustomTooltip tooltip = targetable.TargetTooltip(item.agent.target.playfieldObject);
+					CustomTooltip tooltip = targetable.TargetCursorText(item.agent.target.playfieldObject);
 					__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
 					__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
 				}
 			}
 		}
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Updates the item's targeting tooltip for the highlighted object.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="InvInterface"/>.</param>
-		/// <param name="myPlayfieldObject">Highlighted object.</param>
 		public static void InvInterface_ShowCursorText(InvInterface __instance, PlayfieldObject myPlayfieldObject)
 		{
 			CustomItem custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
 			if (custom is IItemTargetable targetable)
 			{
-				CustomTooltip tooltip = targetable.TargetTooltip(myPlayfieldObject);
+				CustomTooltip tooltip = targetable.TargetCursorText(myPlayfieldObject);
 				__instance.cursorTextCanvas3.enabled = true;
 				__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
 				__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
 				if (string.IsNullOrEmpty(tooltip.Text)) __instance.cursorTextCanvas3.enabled = false;
 			}
 		}
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Sets the item's targeting tooltip to the default one.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="InvInterface"/>.</param>
 		public static void InvInterface_HideCursorText(InvInterface __instance)
 		{
 			CustomItem custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
 			if (custom is IItemTargetable targetable)
 			{
-				CustomTooltip tooltip = targetable.TargetTooltip(null);
+				CustomTooltip tooltip = targetable.TargetCursorText(null);
 				__instance.cursorTextCanvas3.enabled = true;
 				__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
 				__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
@@ -433,14 +343,10 @@ namespace RogueLibsCore
 			}
 		}
 
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Sets the inventory slot's short combining tooltip.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="InvSlot"/>.</param>
 		public static void InvSlot_SetColor(InvSlot __instance)
 		{
 			InvItem combiner = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
-			if (combiner == null) return;
+			if (combiner is null) return;
 			InvItem combinee = __instance.curItemList[__instance.slotNumber];
 
 			CustomItem custom = combiner.GetHook<CustomItem>();
@@ -455,33 +361,22 @@ namespace RogueLibsCore
 						__instance.myImage.color = new Color32(0, __instance.br, __instance.br, __instance.standardAlpha);
 						__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
 						__instance.myImage.sprite = __instance.invBoxCanUse;
-
-						if (__instance.slotType != "NPCChest" && __instance.slotType != "Chest")
-						{
-							if (combineTextColor == null) combineTextColor = __instance.toolbarNumText.color;
-							CustomTooltip tooltip = combinable.CombineTooltip(combinee);
-							__instance.toolbarNumTextGo.SetActive(true);
-							__instance.toolbarNumText.text = tooltip.Text ?? string.Empty;
-							__instance.toolbarNumText.color = tooltip.Color ?? combineTextColor.Value;
-						}
 					}
-					else
+					else if ((__instance.slotType != "Toolbar" || __instance.mainGUI.openedInventory) && __instance.slotType != "NPCChest")
 					{
-						if (combiner.IgnoresCombineTooltipCheck("CombineFilter") && __instance.slotType != "NPCChest" && __instance.slotType != "Chest")
-						{
-							if (combineTextColor == null) combineTextColor = __instance.toolbarNumText.color;
-							CustomTooltip tooltip = combinable.CombineTooltip(combinee);
-							__instance.toolbarNumTextGo.SetActive(true);
-							__instance.toolbarNumText.text = tooltip.Text ?? string.Empty;
-							__instance.toolbarNumText.color = tooltip.Color ?? combineTextColor.Value;
-						}
-						if ((__instance.slotType != "Toolbar" || __instance.mainGUI.openedInventory) && __instance.slotType != "NPCChest")
-						{
-							__instance.myImage.color = new Color32(__instance.br, 0, __instance.br, __instance.standardAlpha);
-							__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, __instance.fadedItemAlpha);
-							__instance.myImage.sprite = __instance.invBoxNormal;
-							__instance.toolbarNumTextGo.SetActive(false);
-						}
+						__instance.myImage.color = new Color32(__instance.br, 0, __instance.br, __instance.standardAlpha);
+						__instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, __instance.fadedItemAlpha);
+						__instance.myImage.sprite = __instance.invBoxNormal;
+						__instance.toolbarNumTextGo.SetActive(false);
+					}
+
+					if (__instance.slotType != "NPCChest" && __instance.slotType != "Chest")
+					{
+						if (combineTextColor is null) combineTextColor = __instance.toolbarNumText.color;
+						CustomTooltip tooltip = combinable.CombineTooltip(combinee);
+						__instance.toolbarNumTextGo.SetActive(true);
+						__instance.toolbarNumText.text = tooltip.Text ?? string.Empty;
+						__instance.toolbarNumText.color = tooltip.Color ?? combineTextColor.Value;
 					}
 				}
 				else if (__instance.slotType != "NPCChest" && (combinee.invItemName != null || combiner.itemType != "Combine"))
@@ -501,21 +396,52 @@ namespace RogueLibsCore
 		}
 		private static Color? combineTextColor;
 
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Sets the inventory slot's item count text.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="InvSlot"/>.</param>
-		/// <param name="___itemText">Private field that holds the inventory slot's item count text.</param>
 		public static void InvSlot_UpdateInvSlot(InvSlot __instance, Text ___itemText)
 		{
 			CustomItem custom = __instance.item?.GetHook<CustomItem>();
-			if (custom is IItemCustomCount customCount)
+
+			CustomTooltip tooltip = custom.GetCountString();
+			if (tooltip.Text != null)
 			{
 				___itemText.enabled = true;
-				CustomTooltip tooltip = customCount.GetCount();
 				___itemText.text = tooltip.Text;
-				___itemText.color = tooltip.Color ?? __instance.whiteVisible;
 			}
+			if (tooltip.Color != null)
+				___itemText.color = tooltip.Color.Value;
+		}
+
+		public static void InvInterface_TargetAnywhere(InvInterface __instance, Vector2 myPos, bool pressedButton)
+		{
+			if (__instance.mainGUI.targetItem != null)
+			{
+				CustomItem custom = __instance.mainGUI.targetItem.GetHook<CustomItem>();
+				__instance.cursorHighlightTargetObjects = custom is IItemTargetable;
+				if (custom is IItemTargetableAnywhere targetable)
+				{
+					bool filter = targetable.TargetFilter(myPos);
+					__instance.cursorHighlight = filter;
+					__instance.cursorHighlightTargetAnywhere = filter;
+					__instance.mainGUI.agent.targetImage.tr.localScale = Vector3.one;
+
+					if (pressedButton)
+					{
+						targetable.TargetPosition(myPos);
+						__instance.HideTarget();
+					}
+				}
+			}
+		}
+		private class AgentSwapper : IDisposable
+		{
+			public AgentSwapper(InvItem item, Agent targetAgent)
+			{
+				Item = item;
+				OriginalAgent = item.agent;
+				item.agent = targetAgent;
+			}
+			public InvItem Item;
+			public Agent OriginalAgent;
+			public void Dispose() => Item.agent = OriginalAgent;
 		}
 	}
 }

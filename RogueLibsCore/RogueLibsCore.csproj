@@ -111,22 +111,19 @@
     <Compile Include="Hooks\Unlocks\UnlockWrapper.cs" />
     <Compile Include="CustomName.cs" />
     <Compile Include="Events\InventoryEvents.cs" />
-    <Compile Include="Events\RogueEvent.cs" />
-    <Compile Include="Events\RogueEventArgs.cs" />
-    <Compile Include="Events\RogueEventSubscriber.cs" />
     <Compile Include="Hooks\IHook.cs" />
     <Compile Include="Hooks\IHookController.cs" />
     <Compile Include="Hooks\IHookFactory.cs" />
     <Compile Include="Hooks\IUpdate.cs" />
     <Compile Include="RogueCategories.cs" />
     <Compile Include="RogueExtensions.cs" />
+    <Compile Include="RogueFramework.cs" />
     <Compile Include="RogueLibs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RogueLibsPlugin.cs" />
     <Compile Include="RoguePatcher.cs" />
     <Compile Include="RogueSprite.cs" />
     <Compile Include="RogueUtilities.cs" />
-    <Compile Include="VanillaStrings.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

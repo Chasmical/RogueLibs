@@ -13,9 +13,6 @@ namespace RogueLibsCore
 {
 	public partial class RogueLibsPlugin
 	{
-		/// <summary>
-		///   <para>Applies the patches to <see cref="SpawnerMain"/> and stuff to set up the custom sprites.</para>
-		/// </summary>
 		public void PatchSprites()
 		{
 			// define RogueSprites in the RogueSprite.addOnGCAwakeList
@@ -29,16 +26,13 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(ObjectReal), nameof(ObjectReal.RefreshShader));
 			Patcher.Postfix(typeof(ObjectSprite), nameof(ObjectSprite.SetObjectHighlight));
 			Patcher.Postfix(typeof(ObjectSprite), nameof(ObjectSprite.SetAgentOff));
+
 			Patcher.Postfix(typeof(InvDatabase), nameof(InvDatabase.ThrowWeapon));
 			Patcher.Postfix(typeof(Item), nameof(Item.DestroyMe2));
 			Patcher.Postfix(typeof(Item), nameof(Item.FakeStart));
 			Patcher.Postfix(typeof(Melee), nameof(Melee.MeleeLateUpdate));
 		}
 
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Defines the custom sprites from <see cref="RogueSprite.prepared"/>.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="GameController"/>.</param>
 		public static void GameController_Awake(GameController __instance)
 		{
 			RogueSprite.DefinePrepared(__instance.spawnerMain.itemSprites, SpriteScope.Items);
@@ -46,14 +40,6 @@ namespace RogueLibsCore
 			RogueSprite.DefinePrepared(__instance.spawnerMain.floorSprites, SpriteScope.Floors);
 		}
 
-		/// <summary>
-		///   <para><b>Prefix-patch (complete override).</b> Sets the dropped item's sprite and sets its materials and shaders.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="SpawnerMain"/>.</param>
-		/// <param name="item">Dropped item as an <see cref="InvItem"/>.</param>
-		/// <param name="itemImage"><see cref="tk2dSprite"/> with the item's sprite.</param>
-		/// <param name="newItem">Dropped item as an <see cref="Item"/>.</param>
-		/// <returns><see langword="false"/>. Completely overrides the original method.</returns>
 		public static bool SpawnerMain_SpawnItemSprite(SpawnerMain __instance, InvItem item, tk2dSprite itemImage, Item newItem)
 		{
 			try { itemImage.SetSprite(__instance.gc.spawnerMain.itemSprites, item.spriteName); } catch { }
@@ -89,7 +75,7 @@ namespace RogueLibsCore
 			}
 			if (item.invItemName == "Money")
 			{
-				if (item.invItemCount == 1)
+				if (item.invItemCount is 1)
 				{
 					itemImage.SetSprite(itemImage.GetSpriteIdByName("MoneyA"));
 					item.shadowOffset = 6;
@@ -109,10 +95,6 @@ namespace RogueLibsCore
 
 			return false;
 		}
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Sets the renderer's material.</para>
-		/// </summary>
-		/// <param name="__result">Created item.</param>
 		public static void SpawnerMain_SpawnItemWeapon(Item __result)
 		{
 			try
@@ -121,12 +103,7 @@ namespace RogueLibsCore
 				itemImage.GetComponent<Renderer>().sharedMaterial = ((RogueSprite)itemImage.CurrentSprite.__RogueLibsCustom).Material;
 			} catch { }
 		}
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Sets the renderer's material.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="SpawnerMain"/>.</param>
-		/// <param name="myObject">Object with a renderer with an incorrect material.</param>
-		public static void SpawnerMain_SetLighting2(SpawnerMain __instance, PlayfieldObject myObject)
+		public static void SpawnerMain_SetLighting2(PlayfieldObject myObject)
 		{
 			if (myObject.CompareTag("ObjectReal"))
 			{
@@ -201,6 +178,7 @@ namespace RogueLibsCore
 			RogueSprite gunSpr = (RogueSprite)__instance.agent.gun.gunSprite.CurrentSprite.__RogueLibsCustom;
 			if (gunSpr != null) __instance.agent.gun.gunSpriteRenderer.sharedMaterial = gunSpr.Material;
 		}
+
 		public static void InvDatabase_ThrowWeapon(InvDatabase __instance)
 		{
 			RogueSprite sprite = (RogueSprite)__instance.agent?.agentHitboxScript?.heldItem2?.CurrentSprite?.__RogueLibsCustom;

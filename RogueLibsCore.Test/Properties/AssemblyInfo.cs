@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("aTonOfMutators")]
+[assembly: AssemblyTitle("RogueLibsCore.Test")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("aTonOfMutators")]
+[assembly: AssemblyProduct("RogueLibsCore.Test")]
 [assembly: AssemblyCopyright("Copyright ©  2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("3b1501b6-7c4d-4fac-bb05-90ce176a8b0c")]
+[assembly: Guid("99ed3605-22dc-4e91-a9f0-790209cfe9e8")]
 
 // Version information for an assembly consists of the following four values:
 //

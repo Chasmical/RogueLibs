@@ -13,9 +13,6 @@ namespace RogueLibsCore
 {
 	public partial class RogueLibsPlugin
 	{
-		/// <summary>
-		///   <para>Applies the patches to <see cref="StatusEffects"/>.</para>
-		/// </summary>
 		public void PatchTraitsAndStatusEffects()
 		{
 #pragma warning disable CS0618 // NetworkInstanceId is obsolete
@@ -44,11 +41,6 @@ namespace RogueLibsCore
 			// Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.UpdateTrait));
 		}
 
-		/// <summary>
-		///   <para><b>Transpiler-patch.</b> Adds a <see cref="SetupEffectHook(StatusEffect, StatusEffects)"/> call right after initializing a new instance of <see cref="StatusEffect"/>.</para>
-		/// </summary>
-		/// <param name="codeEnumerable">Original method's code.</param>
-		/// <returns>Modified code, with an added <see cref="SetupEffectHook(StatusEffect, StatusEffects)"/> call.</returns>
 		public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> codeEnumerable)
 			=> codeEnumerable.ReplaceRegion(
 				new Func<CodeInstruction, bool>[]
@@ -79,26 +71,16 @@ namespace RogueLibsCore
 					_ => new CodeInstruction(OpCodes.Ldarg_0),
 					_ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook)))
 				});
-		/// <summary>
-		///   <para>Sets up and initializes <see cref="StatusEffect"/>'s hooks.</para>
-		/// </summary>
-		/// <param name="effect">The status effect to set up and initialize hooks for.</param>
-		/// <param name="parent">The <see cref="StatusEffects"/> that contains the <paramref name="effect"/> object.</param>
 		public static void SetupEffectHook(StatusEffect effect, StatusEffects parent)
 		{
 			effect.__RogueLibsContainer = parent;
-			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories)
+			foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
 				if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
 				{
 					effect.AddHook(hook);
 					hook.Initialize();
 				}
 		}
-		/// <summary>
-		///   <para>Refreshes the custom status effect.</para>
-		/// </summary>
-		/// <param name="effect">The status effect to refresh.</param>
-		/// <param name="newTime">The status effect's new time.</param>
 		public static void RefreshEffect(StatusEffect effect, int newTime)
 		{
 			CustomEffect custom = effect.GetHook<CustomEffect>();
@@ -106,11 +88,6 @@ namespace RogueLibsCore
 			else custom.OnRefreshed();
 		}
 
-		/// <summary>
-		///   <para><b>Transpiler-patch.</b> Adds a <see cref="SetupTraitHook(Trait, StatusEffects)"/> call right after initializing a new instance of <see cref="Trait"/>.</para>
-		/// </summary>
-		/// <param name="codeEnumerable">Original method's code.</param>
-		/// <returns>Modified code, with an added <see cref="SetupTraitHook(Trait, StatusEffects)"/> call.</returns>
 		public static IEnumerable<CodeInstruction> StatusEffects_AddTrait(IEnumerable<CodeInstruction> codeEnumerable)
 			=> codeEnumerable.AddRegionAfter(
 				new Func<CodeInstruction, bool>[]
@@ -125,15 +102,10 @@ namespace RogueLibsCore
 					_ => new CodeInstruction(OpCodes.Ldarg_0),
 					_ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupTraitHook)))
 				});
-		/// <summary>
-		///   <para>Sets up and initializes <see cref="Trait"/>'s hooks.</para>
-		/// </summary>
-		/// <param name="trait">Trait to set up and initialize hooks for.</param>
-		/// <param name="parent"><see cref="StatusEffects"/> that contains the <paramref name="trait"/> object.</param>
 		public static void SetupTraitHook(Trait trait, StatusEffects parent)
 		{
 			trait.__RogueLibsContainer = parent;
-			foreach (IHookFactory<Trait> factory in RogueLibsInternals.TraitFactories)
+			foreach (IHookFactory<Trait> factory in RogueFramework.TraitFactories)
 				if (factory.TryCreate(trait, out IHook<Trait> hook))
 				{
 					trait.AddHook(hook);
@@ -141,52 +113,27 @@ namespace RogueLibsCore
 				}
 		}
 
-		/// <summary>
-		///   <para><b>Prefix-patch.</b> Stores the removed trait in <paramref name="__state"/>.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="StatusEffects"/>.</param>
-		/// <param name="traitName">Name of the trait that will be removed.</param>
-		/// <param name="__state">Trait that will be removed.</param>
 		public static void StatusEffects_RemoveTrait_Prefix(StatusEffects __instance, string traitName, ref Trait __state)
 			=> __state = __instance.TraitList?.Find(t => t.traitName == traitName);
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Invokes the <see cref="CustomTrait.OnRemoved"/> method.</para>
-		/// </summary>
-		/// <param name="__state">Trait that will be removed.</param>
 		public static void StatusEffects_RemoveTrait(Trait __state)
 		{
 			CustomTrait trait = __state?.GetHook<CustomTrait>();
 			trait?.OnRemoved();
 		}
 
-		/// <summary>
-		///   <para><b>Prefix-patch.</b> Stores the removed status effect in <paramref name="__state"/>.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="StatusEffects"/>.</param>
-		/// <param name="statusEffectName">Name of the status effect that will be removed.</param>
-		/// <param name="__state">Status effect that will be removed.</param>
 		public static void StatusEffects_RemoveStatusEffect_Prefix(StatusEffects __instance, string statusEffectName, ref StatusEffect __state)
 			=> __state = __instance.StatusEffectList?.Find(t => t.statusEffectName == statusEffectName);
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Invokes the <see cref="CustomEffect.OnRemoved"/> method.</para>
-		/// </summary>
-		/// <param name="__state">Status effect that will be removed.</param>
 		public static void StatusEffects_RemoveStatusEffect(StatusEffect __state)
 		{
 			CustomEffect effect = __state?.GetHook<CustomEffect>();
 			effect?.OnRemoved();
 		}
 
-		/// <summary>
-		///   <para><b>Transpiler-patch.</b> Replaces a region of the code with <c>default:</c> case with <see cref="GetStatusEffectTime(StatusEffects, string)"/> call.</para>
-		/// </summary>
-		/// <param name="codeEnumerable">Original method's code.</param>
-		/// <returns>Modified code, with an added <see cref="GetStatusEffectTime(StatusEffects, string)"/> call.</returns>
 		public static IEnumerable<CodeInstruction> StatusEffects_GetStatusEffectTime(IEnumerable<CodeInstruction> codeEnumerable)
 			=> codeEnumerable.ReplaceRegion(
 				new Func<CodeInstruction, bool>[]
 				{
-					i => i.opcode == OpCodes.Ldc_I4 && (int)i.operand == 9999,
+					i => i.opcode == OpCodes.Ldc_I4 && (int)i.operand is 9999,
 					i => i.IsStloc(),
 					i => i.opcode == OpCodes.Ldarg_0
 				},
@@ -198,18 +145,12 @@ namespace RogueLibsCore
 					a => a[1],
 					a => a[2]
 				});
-		/// <summary>
-		///   <para>Gets the custom status effect's time.</para>
-		/// </summary>
-		/// <param name="instance">Instance of <see cref="StatusEffects"/>.</param>
-		/// <param name="name">Name of the status effect to get time for.</param>
-		/// <returns>Custom status effect's time, or 9999, if it's not a custom status effect.</returns>
 		public static int GetStatusEffectTime(StatusEffects instance, string name)
 		{
 			StatusEffect effect = new StatusEffect { statusEffectName = name, __RogueLibsContainer = instance };
 
 			CustomEffect custom = null;
-			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories)
+			foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
 				if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
 				{
 					if (hook is CustomEffect custom2)
@@ -217,18 +158,12 @@ namespace RogueLibsCore
 				}
 			return custom?.GetEffectTime() ?? 9999;
 		}
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Changes the <paramref name="__result"/> to the custom effect's hate factor.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="StatusEffects"/>.</param>
-		/// <param name="statusEffectName">Name of the status effect to get hate factor for.</param>
-		/// <param name="__result">The method' return value.</param>
 		public static void StatusEffects_GetStatusEffectHate(StatusEffects __instance, string statusEffectName, ref int __result)
 		{
 			StatusEffect effect = new StatusEffect { statusEffectName = statusEffectName, __RogueLibsContainer = __instance };
 
 			CustomEffect custom = null;
-			foreach (IHookFactory<StatusEffect> factory in RogueLibsInternals.EffectFactories)
+			foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
 				if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
 				{
 					if (hook is CustomEffect custom2)
@@ -237,7 +172,7 @@ namespace RogueLibsCore
 			if (custom != null)
 			{
 				__result = custom.GetEffectHate();
-				__instance.agent.dontHate = __result == 0;
+				__instance.agent.dontHate = __result is 0;
 			}
 		}
 

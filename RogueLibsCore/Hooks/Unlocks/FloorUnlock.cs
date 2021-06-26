@@ -8,30 +8,17 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	/// <summary>
-	///   <para>Floor unlock wrapper.</para>
-	/// </summary>
 	public class FloorUnlock : DisplayedUnlock
 	{
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="FloorUnlock"/> class.</para>
-		/// </summary>
 		public FloorUnlock() : this(null, false) { }
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="FloorUnlock"/> with the specified <paramref name="name"/>.</para>
-		/// </summary>
-		/// <param name="name">Unlock's name/id.</param>
-		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		public FloorUnlock(string name, bool unlockedFromStart = false) : base(name, "Floor", unlockedFromStart) { }
 		internal FloorUnlock(Unlock unlock) : base(unlock) { }
 
-		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
-		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -44,13 +31,11 @@ namespace RogueLibsCore
 			}
 		}
 
-		/// <inheritdoc/>
 		public override void UpdateButton()
 		{
 			if (Menu.Type == UnlocksMenuType.FloorsMenu)
 				UpdateButton(false);
 		}
-		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			if (IsUnlocked)
@@ -76,9 +61,7 @@ namespace RogueLibsCore
 			else PlaySound("CantDo");
 		}
 
-		/// <inheritdoc/>
 		public override string GetName() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name + "Name", Unlock.unlockNameType) : "?????";
-		/// <inheritdoc/>
 		public override string GetDescription()
 		{
 			if (IsUnlocked || Unlock.nowAvailable)

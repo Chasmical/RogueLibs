@@ -8,30 +8,17 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	/// <summary>
-	///   <para>Unused Home Base unlock wrapper.</para>
-	/// </summary>
 	public class HomeBaseUnlock : UnlockWrapper
 	{
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="HomeBaseUnlock"/> class.</para>
-		/// </summary>
 		public HomeBaseUnlock() : this(null, false) { }
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="HomeBaseUnlock"/> with the specified <paramref name="name"/>.</para>
-		/// </summary>
-		/// <param name="name">Unlock's name/id.</param>
-		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		public HomeBaseUnlock(string name, bool unlockedFromStart = false) : base(name, "HomeBase", unlockedFromStart) { }
 		internal HomeBaseUnlock(Unlock unlock) : base(unlock) { }
 
-		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
-		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -44,30 +31,17 @@ namespace RogueLibsCore
 			}
 		}
 	}
-	/// <summary>
-	///   <para>Unused extra unlock wrapper.</para>
-	/// </summary>
 	public class ExtraUnlock : UnlockWrapper
 	{
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="ExtraUnlock"/> class.</para>
-		/// </summary>
 		public ExtraUnlock() : this(null, false) { }
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="ExtraUnlock"/> with the specified <paramref name="name"/>.</para>
-		/// </summary>
-		/// <param name="name">Unlock's name/id.</param>
-		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		public ExtraUnlock(string name, bool unlockedFromStart = false) : base(name, "Extra", unlockedFromStart) { }
 		internal ExtraUnlock(Unlock unlock) : base(unlock) { }
 
-		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
-		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -80,30 +54,17 @@ namespace RogueLibsCore
 			}
 		}
 	}
-	/// <summary>
-	///   <para>Unused loadout unlock wrapper.</para>
-	/// </summary>
 	public class LoadoutUnlock : UnlockWrapper
 	{
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="LoadoutUnlock"/> class.</para>
-		/// </summary>
 		public LoadoutUnlock() : this(null, false) { }
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="LoadoutUnlock"/> with the specified <paramref name="name"/>.</para>
-		/// </summary>
-		/// <param name="name">Unlock's name/id.</param>
-		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		public LoadoutUnlock(string name, bool unlockedFromStart = false) : base(name, "Loadout", unlockedFromStart) { }
 		internal LoadoutUnlock(Unlock unlock) : base(unlock) { }
 
-		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
-		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -116,30 +77,17 @@ namespace RogueLibsCore
 			}
 		}
 	}
-	/// <summary>
-	///   <para>Agent unlock wrapper.</para>
-	/// </summary>
 	public class AgentUnlock : UnlockWrapper
 	{
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="AgentUnlock"/> class.</para>
-		/// </summary>
 		public AgentUnlock() : this(null, false) { }
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="AgentUnlock"/> with the specified <paramref name="name"/>.</para>
-		/// </summary>
-		/// <param name="name">Unlock's name/id.</param>
-		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		public AgentUnlock(string name, bool unlockedFromStart = false) : base(name, "Agent", unlockedFromStart) { }
 		internal AgentUnlock(Unlock unlock) : base(unlock) { }
 
-		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
-		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;

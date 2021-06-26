@@ -8,31 +8,21 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	/// <summary>
-	///   <para>Unlock class for the "Re-Roll Items" button in the Loadouts Menu.</para>
-	/// </summary>
 	public class ReRollLoadoutsUnlock : MutatorUnlock
 	{
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="ReRollLoadoutsUnlock"/>.</para>
-		/// </summary>
 		public ReRollLoadoutsUnlock() : base("ReRollLoadouts", true) { }
-		/// <inheritdoc/>
 		public override bool IsAvailable { get; set; } = true;
-		/// <inheritdoc/>
 		public override bool IsEnabled { get => false; set { } }
 
 		private static readonly FieldInfo loadoutListField = AccessTools.Field(typeof(ScrollingMenu), "loadoutList");
 		private static readonly FieldInfo listUnlocksField = AccessTools.Field(typeof(ScrollingMenu), "listUnlocks");
 
-		/// <inheritdoc/>
 		public override void UpdateButton()
 		{
 			UpdateButton(false);
 			ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
 			Text += $" - ${menu.reRollCost}";
 		}
-		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
@@ -51,13 +41,13 @@ namespace RogueLibsCore
 				gc.unlocks.AddNuggets(gc.sessionDataBig.loadoutNuggetsSpent);
 				gc.sessionDataBig.loadoutNuggetsSpent = 0;
 
-				if (menu.agent.isPlayer == 1)
+				if (menu.agent.isPlayer is 1)
 					gc.sessionDataBig.loadouts1.Clear();
-				else if (menu.agent.isPlayer == 2)
+				else if (menu.agent.isPlayer is 2)
 					gc.sessionDataBig.loadouts2.Clear();
-				else if (menu.agent.isPlayer == 3)
+				else if (menu.agent.isPlayer is 3)
 					gc.sessionDataBig.loadouts3.Clear();
-				else if (menu.agent.isPlayer == 4)
+				else if (menu.agent.isPlayer is 4)
 					gc.sessionDataBig.loadouts4.Clear();
 
 				PlaySound("BuyItem");

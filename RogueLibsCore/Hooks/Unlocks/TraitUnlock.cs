@@ -8,30 +8,17 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	/// <summary>
-	///   <para>Trait unlock wrapper.</para>
-	/// </summary>
 	public class TraitUnlock : DisplayedUnlock, IUnlockInCC
 	{
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="TraitUnlock"/> class.</para>
-		/// </summary>
 		public TraitUnlock() : this(null, false) { }
-		/// <summary>
-		///   <para>Initializes a new instance of <see cref="TraitUnlock"/> with the specified <paramref name="name"/>.</para>
-		/// </summary>
-		/// <param name="name">Unlock's name/id.</param>
-		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked from the start.</param>
 		public TraitUnlock(string name, bool unlockedFromStart = false) : base(name, "Trait", unlockedFromStart) => IsAvailableInCC = true;
 		internal TraitUnlock(Unlock unlock) : base(unlock) { }
 
-		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
-		/// <inheritdoc/>
 		public bool IsAddedToCC
 		{
 			get => ((CustomCharacterCreation)Menu).CC.traitsChosen.Contains(Unlock);
@@ -44,7 +31,6 @@ namespace RogueLibsCore
 			}
 		}
 
-		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -56,7 +42,6 @@ namespace RogueLibsCore
 				else if (cur == false && value) { gc.sessionDataBig.traitUnlocks.Add(Unlock); Unlock.traitCount++; }
 			}
 		}
-		/// <inheritdoc/>
 		public bool IsAvailableInCC
 		{
 			get => Unlock.onlyInCharacterCreation;
@@ -69,23 +54,10 @@ namespace RogueLibsCore
 			}
 		}
 
-		/// <summary>
-		///   <para>Returns the upgrade cost of the trait = Character Creation Cost * 75.</para>
-		/// </summary>
-		/// <returns>Upgrade cost of the trait.</returns>
 		public virtual int GetUpgradeCost() => Mathf.Abs((gc.unlocks.GetUnlock(Unlock.upgrade, "Trait")?.cost3 ?? CharacterCreationCost) * ((CustomScrollingMenu)Menu).Menu.upgradeTraitAdjust);
-		/// <summary>
-		///   <para>Returns the removal cost of the trait = Character Creation Cost * 150.</para>
-		/// </summary>
-		/// <returns>Removal cost of the trait.</returns>
 		public virtual int GetRemovalCost() => Mathf.Abs(CharacterCreationCost * ((CustomScrollingMenu)Menu).Menu.removeTraitAdjust);
-		/// <summary>
-		///   <para>Returns the swap cost of the trait = Character Creation Cost * (35, if it's a positive trait; otherwise, 75).</para>
-		/// </summary>
-		/// <returns>Swap cost of the trait.</returns>
 		public virtual int GetSwapCost() => Mathf.Abs(CharacterCreationCost * (CharacterCreationCost < 0 ? ((CustomScrollingMenu)Menu).Menu.changeTraitRandomAdjustNegativeTrait : ((CustomScrollingMenu)Menu).Menu.changeTraitRandomAdjustPositiveTrait));
 
-		/// <inheritdoc/>
 		public override void UpdateButton()
 		{
 			if (Menu.Type == UnlocksMenuType.TraitsMenu)
@@ -101,7 +73,6 @@ namespace RogueLibsCore
 			else if (Menu.Type == UnlocksMenuType.AB_SwapTrait)
 				Text = $"{GetName()} | ${GetSwapCost()}";
 		}
-		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			if (IsUnlocked)
@@ -173,13 +144,13 @@ namespace RogueLibsCore
 					PlaySound("AddTrait");
 					Menu.Agent.objectMult.SendChatAnnouncement("ChoseTrait", Name, "");
 					menu.canPressButtons = false;
-					if (Menu.Agent.skillPoints.levelsGained == 0)
+					if (Menu.Agent.skillPoints.levelsGained is 0)
 					{
 						if (gc.fourPlayerMode || gc.coopMode)
 						{
 							menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("PersonalMenuDelay").Invoke(menu, new object[0]));
 						}
-						else if (gc.levelFeelingsScript.DoesNextLevelHaveFeeling(false) && (gc.sessionDataBig.twitchOn || gc.twitchMode) && (gc.sessionDataBig.twitchLevelFeelings || gc.twitchMode) && (gc.sessionData.nextLevelFeeling?.Length == 0 || gc.sessionData.nextLevelFeeling == null) && !gc.challenges.Contains("NoLevelFeelings") && !gc.levelFeelingsScript.CanceledAllLevelFeelings() && gc.serverPlayer && gc.levelFeelingsScript.GetLevelFeeling() != "")
+						else if (gc.levelFeelingsScript.DoesNextLevelHaveFeeling(false) && (gc.sessionDataBig.twitchOn || gc.twitchMode) && (gc.sessionDataBig.twitchLevelFeelings || gc.twitchMode) && (gc.sessionData.nextLevelFeeling?.Length is 0 || gc.sessionData.nextLevelFeeling is null) && !gc.challenges.Contains("NoLevelFeelings") && !gc.levelFeelingsScript.CanceledAllLevelFeelings() && gc.serverPlayer && gc.levelFeelingsScript.GetLevelFeeling() != "")
 						{
 							menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("ShowMenuDelay").Invoke(menu, new object[2] { "LevelFeelings", Menu.Agent }));
 						}
@@ -226,9 +197,9 @@ namespace RogueLibsCore
 					List<Unlock> list = Unlock.isUpgrade
 						? gc.sessionDataBig.unlocks.FindAll(u => u.isUpgrade && Unlock.isUpgrade && !Menu.Agent.statusEffects.hasTrait(u.unlockName) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)))
 						: CharacterCreationCost < 0
-                            ? gc.sessionDataBig.traitUnlocksCharacterCreation.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)) && u.recommendations.Count == 0)
+                            ? gc.sessionDataBig.traitUnlocksCharacterCreation.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)) && u.recommendations.Count is 0)
                             : gc.sessionDataBig.traitUnlocks.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)));
-					if (list.Count == 0)
+					if (list.Count is 0)
 					{
 						Menu.Agent.SayDialogue("CantChangeTraitRandomEquivalent");
 						PlaySound("CantDo");

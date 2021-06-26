@@ -13,9 +13,6 @@ namespace RogueLibsCore
 {
 	public partial class RogueLibsPlugin
 	{
-		/// <summary>
-		///   <para>Applies the patches to <see cref="Unlocks"/>.</para>
-		/// </summary>
 		public void PatchUnlocks()
 		{
 			// synchronize some fields
@@ -32,11 +29,6 @@ namespace RogueLibsCore
 			});
 		}
 
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Synchronizes some of the fields.</para>
-		/// </summary>
-		/// <param name="createdUnlock">Unlock created with up-to-date information.</param>
-		/// <param name="__result">Unlock loaded with potentially outdated information.</param>
 		public static void Unlocks_AddUnlock(Unlock createdUnlock, Unlock __result)
 		{
 			if (createdUnlock != null)
@@ -50,18 +42,13 @@ namespace RogueLibsCore
 		public static void Unlocks_LoadInitialUnlocks_Prefix(bool ___loadedInitialUnlocks)
 		{
 			if (___loadedInitialUnlocks) return;
-			RogueLibsInternals.Unlocks.Clear();
-			foreach (UnlockWrapper wrapper in RogueLibsInternals.CustomUnlocks)
+			RogueFramework.Unlocks.Clear();
+			foreach (UnlockWrapper wrapper in RogueFramework.CustomUnlocks)
 			{
-				RogueLibsInternals.Unlocks.Add(wrapper);
+				RogueFramework.Unlocks.Add(wrapper);
 				AddUnlockFull(wrapper);
 			}
 		}
-		/// <summary>
-		///   <para><b>Transpiler-patch.</b> Replaces the entire foreach loop in the end with <see cref="LoadUnlockWrappersAndCategorize"/> method call.</para>
-		/// </summary>
-		/// <param name="codeEnumerable">Original method's code.</param>
-		/// <returns>Modified code, with the foreach loop in the end replaced with the <see cref="LoadUnlockWrappersAndCategorize"/> method call.</returns>
 		public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
 			=> codeEnumerable.ReplaceRegion(
 				new Func<CodeInstruction, bool>[]
@@ -78,20 +65,17 @@ namespace RogueLibsCore
 					new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)))
 				}
 			);
-		/// <summary>
-		///   <para>Initializes and sets up the unlock wrappers, both original and custom.</para>
-		/// </summary>
 		public static void LoadUnlockWrappersAndCategorize()
 		{
 			GameController gc = GameController.gameController;
 			SessionDataBig sdb = gc.sessionDataBig;
 
-			sdb.unlocks.AddRange(RogueLibsInternals.Unlocks.Select(w => w.Unlock));
+			sdb.unlocks.AddRange(RogueFramework.Unlocks.Select(w => w.Unlock));
 			foreach (Unlock unlock in sdb.unlocks.ToList())
 			{
 				// wrapping original unlocks
 				if (gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock) != "") unlock.cost = -2;
-				UnlockWrapper wrapper = RogueLibsInternals.Unlocks.Find(u => u.Name == unlock.unlockName && u.Type == unlock.unlockType);
+				UnlockWrapper wrapper = RogueFramework.Unlocks.Find(u => u.Name == unlock.unlockName && u.Type == unlock.unlockType);
 				if (wrapper != null)
 					AddUnlockFull(wrapper);
 				else
@@ -126,7 +110,7 @@ namespace RogueLibsCore
 					else if (unlock.unlockType == "Loadout") wrapper = new LoadoutUnlock(unlock);
 					else
 					{
-						RogueLibsInternals.Logger.LogError("Unknown unlock type!\n" +
+						RogueFramework.Logger.LogError("Unknown unlock type!\n" +
 							$"unlockName: {unlock.unlockName}\n" +
 							$"unlockType: {unlock.unlockType}\n" +
 							$"unlocked:   {unlock.unlocked}");
@@ -134,16 +118,11 @@ namespace RogueLibsCore
 						continue;
 					}
 					if (wrapper is IUnlockInCC inCC && !inCC.IsAvailableInCC) inCC.IsAvailableInCC = wrapper.IsAvailable;
-					RogueLibsInternals.Unlocks.Add(wrapper);
+					RogueFramework.Unlocks.Add(wrapper);
 					AddUnlockFull(wrapper, true);
 				}
 			}
 		}
-		/// <summary>
-		///   <para>Integrates the specified unlock <paramref name="wrapper"/> into the game.</para>
-		/// </summary>
-		/// <param name="wrapper">Unlock's wrapper.</param>
-		/// <param name="alreadyLoaded">Determines whether the unlock was already loaded from a save file.</param>
 		public static void AddUnlockFull(UnlockWrapper wrapper, bool alreadyLoaded = false)
 		{
 			// integrating custom unlocks

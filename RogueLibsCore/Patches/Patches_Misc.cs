@@ -13,9 +13,6 @@ namespace RogueLibsCore
 {
 	public partial class RogueLibsPlugin
 	{
-		/// <summary>
-		///   <para>Applies the patches to <see cref="NameDB"/> and <see cref="Updater"/>.</para>
-		/// </summary>
 		public void PatchMisc()
 		{
 			// get and set the current game language as a LanguageCode
@@ -29,38 +26,25 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(Updater), nameof(Updater.FixedUpdate));
 		}
 
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Saves the current language as a <see cref="LanguageCode"/> value.</para>
-		/// </summary>
-		/// <param name="__instance">Instance of <see cref="NameDB"/>.</param>
 		public static void NameDB_RealAwake(NameDB __instance)
 		{
 			if (!CustomName.Languages.TryGetValue(__instance.language, out LanguageCode code))
 				code = LanguageCode.English;
-			currentLanguageCode = code;
 
-			foreach (INameProvider provider in RogueLibsInternals.NameProviders)
-			{
-				provider.NameDB = __instance;
-				provider.Language = code;
-			}
+			LanguageService.NameDB = __instance;
+			LanguageService.Current = code;
 		}
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Makes the original method return the appropriate <see cref="ICustomName"/>'s translation, if the original returned a string starting with <c>"E_"</c>.</para>
-		/// </summary>
-		/// <param name="myName">Custom name's name/id.</param>
-		/// <param name="type">Custom name's type.</param>
-		/// <param name="__result">Return value of the method.</param>
 		public static void NameDB_GetName(string myName, string type, ref string __result)
 		{
-			foreach (INameProvider provider in RogueLibsInternals.NameProviders)
-				provider.GetName(myName, type, ref __result);
-		}
-		internal static LanguageCode currentLanguageCode;
+			string orig = __result;
+			if (__result.StartsWith("E_")) __result = null;
 
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Invokes <see cref="IDoUpdate.Update"/> of all custom hooks, attached to the game's agents, the items in their inventory, their traits and status effects, the dropped items and the placed objects.</para>
-		/// </summary>
+			foreach (INameProvider provider in RogueFramework.NameProviders)
+				provider.GetName(myName, type, ref __result);
+
+			if (__result is null) __result = orig;
+		}
+
 		public static void Updater_Update()
 		{
 			List<Agent> agents = GameController.gameController.agentList;
@@ -71,8 +55,8 @@ namespace RogueLibsCore
 					try { obj.Update(); }
 					catch (Exception e)
 					{
-						RogueLibsInternals.Logger.LogError($"Error updating {obj} in {agent.agentName}");
-						RogueLibsInternals.Logger.LogError(e);
+						RogueFramework.Logger.LogError($"Error updating {obj} in {agent.agentName}");
+						RogueFramework.Logger.LogError(e);
 					}
 
 				for (int j = 0; j < agent.inventory.InvItemList.Count; j++)
@@ -82,8 +66,8 @@ namespace RogueLibsCore
 						try { obj.Update(); }
 						catch (Exception e)
 						{
-							RogueLibsInternals.Logger.LogError($"Error updating {obj} in {item.invItemName} ({agent.agentName})");
-							RogueLibsInternals.Logger.LogError(e);
+							RogueFramework.Logger.LogError($"Error updating {obj} in {item.invItemName} ({agent.agentName})");
+							RogueFramework.Logger.LogError(e);
 						}
 				}
 
@@ -94,8 +78,8 @@ namespace RogueLibsCore
 						try { obj.Update(); }
 						catch (Exception e)
 						{
-							RogueLibsInternals.Logger.LogError($"Error updating {obj} in {effect.statusEffectName} ({agent.agentName})");
-							RogueLibsInternals.Logger.LogError(e);
+							RogueFramework.Logger.LogError($"Error updating {obj} in {effect.statusEffectName} ({agent.agentName})");
+							RogueFramework.Logger.LogError(e);
 						}
 				}
 
@@ -106,8 +90,8 @@ namespace RogueLibsCore
 						try { obj.Update(); }
 						catch (Exception e)
 						{
-							RogueLibsInternals.Logger.LogError($"Error updating {obj} in {trait.traitName} ({agent.agentName})");
-							RogueLibsInternals.Logger.LogError(e);
+							RogueFramework.Logger.LogError($"Error updating {obj} in {trait.traitName} ({agent.agentName})");
+							RogueFramework.Logger.LogError(e);
 						}
 				}
 			}
@@ -119,8 +103,8 @@ namespace RogueLibsCore
 					try { obj.Update(); }
 					catch (Exception e)
 					{
-						RogueLibsInternals.Logger.LogError($"Error updating {obj} in {items[i]}");
-						RogueLibsInternals.Logger.LogError(e);
+						RogueFramework.Logger.LogError($"Error updating {obj} in {items[i]}");
+						RogueFramework.Logger.LogError(e);
 					}
 			}
 
@@ -131,14 +115,11 @@ namespace RogueLibsCore
 					try { obj.Update(); }
 					catch (Exception e)
 					{
-						RogueLibsInternals.Logger.LogError($"Error updating {obj} in {objects[i].objectName}");
-						RogueLibsInternals.Logger.LogError(e);
+						RogueFramework.Logger.LogError($"Error updating {obj} in {objects[i].objectName}");
+						RogueFramework.Logger.LogError(e);
 					}
 			}
 		}
-		/// <summary>
-		///   <para><b>Postfix-patch.</b> Invokes <see cref="IDoFixedUpdate.FixedUpdate"/> of all custom hooks, attached to the game's agents, the items in their inventory, their traits and status effects, the dropped items and the placed objects.</para>
-		/// </summary>
 		public static void Updater_FixedUpdate()
 		{
 			List<Agent> agents = GameController.gameController.agentList;
@@ -149,8 +130,8 @@ namespace RogueLibsCore
 					try { obj.FixedUpdate(); }
 					catch (Exception e)
 					{
-						RogueLibsInternals.Logger.LogError($"Error updating {obj} in {agent.agentName}");
-						RogueLibsInternals.Logger.LogError(e);
+						RogueFramework.Logger.LogError($"Error updating {obj} in {agent.agentName}");
+						RogueFramework.Logger.LogError(e);
 					}
 
 				for (int j = 0; j < agent.inventory.InvItemList.Count; j++)
@@ -160,8 +141,8 @@ namespace RogueLibsCore
 						try { obj.FixedUpdate(); }
 						catch (Exception e)
 						{
-							RogueLibsInternals.Logger.LogError($"Error updating {obj} in {item.invItemName} ({agent.agentName})");
-							RogueLibsInternals.Logger.LogError(e);
+							RogueFramework.Logger.LogError($"Error updating {obj} in {item.invItemName} ({agent.agentName})");
+							RogueFramework.Logger.LogError(e);
 						}
 				}
 
@@ -172,8 +153,8 @@ namespace RogueLibsCore
 						try { obj.FixedUpdate(); }
 						catch (Exception e)
 						{
-							RogueLibsInternals.Logger.LogError($"Error updating {obj} in {effect.statusEffectName} ({agent.agentName})");
-							RogueLibsInternals.Logger.LogError(e);
+							RogueFramework.Logger.LogError($"Error updating {obj} in {effect.statusEffectName} ({agent.agentName})");
+							RogueFramework.Logger.LogError(e);
 						}
 				}
 
@@ -184,8 +165,8 @@ namespace RogueLibsCore
 						try { obj.FixedUpdate(); }
 						catch (Exception e)
 						{
-							RogueLibsInternals.Logger.LogError($"Error updating {obj} in {trait.traitName} ({agent.agentName})");
-							RogueLibsInternals.Logger.LogError(e);
+							RogueFramework.Logger.LogError($"Error updating {obj} in {trait.traitName} ({agent.agentName})");
+							RogueFramework.Logger.LogError(e);
 						}
 				}
 			}
@@ -197,8 +178,8 @@ namespace RogueLibsCore
 					try { obj.FixedUpdate(); }
 					catch (Exception e)
 					{
-						RogueLibsInternals.Logger.LogError($"Error updating {obj} in {items[i]}");
-						RogueLibsInternals.Logger.LogError(e);
+						RogueFramework.Logger.LogError($"Error updating {obj} in {items[i]}");
+						RogueFramework.Logger.LogError(e);
 					}
 			}
 
@@ -209,8 +190,8 @@ namespace RogueLibsCore
 					try { obj.FixedUpdate(); }
 					catch (Exception e)
 					{
-						RogueLibsInternals.Logger.LogError($"Error updating {obj} in {objects[i].objectName}");
-						RogueLibsInternals.Logger.LogError(e);
+						RogueFramework.Logger.LogError($"Error updating {obj} in {objects[i].objectName}");
+						RogueFramework.Logger.LogError(e);
 					}
 			}
 		}

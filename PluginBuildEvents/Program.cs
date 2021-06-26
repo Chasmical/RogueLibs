@@ -82,7 +82,7 @@ namespace PluginBuildEvents
 			else if (!args[1].Contains('\\'))
 			{
 				string steam = GetSteamPath();
-				if (steam == null) throw new InvalidOperationException("Steam was not found on the computer! You'll have to specify the game's directory manually!");
+				if (steam is null) throw new InvalidOperationException("Steam was not found on the computer! You'll have to specify the game's directory manually!");
 				plugins = Path.GetFullPath(Path.Combine(steam, "SteamApps", "common", args[1], "BepInEx", "plugins"));
 			}
 			else throw new ArgumentException("The specified folder was not found!");

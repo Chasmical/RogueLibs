@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace aTonOfItems.Properties {
+namespace RogueLibsCore.Test.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace aTonOfItems.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("aTonOfItems.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RogueLibsCore.Test.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -57,26 +57,6 @@ namespace aTonOfItems.Properties {
             }
             set {
                 resourceCulture = value;
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] VoodooActive {
-            get {
-                object obj = ResourceManager.GetObject("VoodooActive", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] VoodooBlank {
-            get {
-                object obj = ResourceManager.GetObject("VoodooBlank", resourceCulture);
-                return ((byte[])(obj));
             }
         }
     }

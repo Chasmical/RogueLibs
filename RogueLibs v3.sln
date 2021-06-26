@@ -9,11 +9,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RogueLibsPatcher", "RogueLi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RogueLibsPatcher.Console", "RogueLibsPatcher.Console\RogueLibsPatcher.Console.csproj", "{8EB3754B-5E2C-4933-8D3B-188EDE2A8CCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aTonOfItems", "aTonOfItems\aTonOfItems.csproj", "{3A1A66D2-41C1-45BF-8514-0CE67A28D9D0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "aTonOfMutators", "aTonOfMutators\aTonOfMutators.csproj", "{3B1501B6-7C4D-4FAC-BB05-90CE176A8B0C}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginBuildEvents", "PluginBuildEvents\PluginBuildEvents.csproj", "{9DC48356-328C-46AE-9F0C-107F09BAD5A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RogueLibsCore.Test", "RogueLibsCore.Test\RogueLibsCore.Test.csproj", "{99ED3605-22DC-4E91-A9F0-790209CFE9E8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,18 +31,14 @@ Global
 		{8EB3754B-5E2C-4933-8D3B-188EDE2A8CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8EB3754B-5E2C-4933-8D3B-188EDE2A8CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8EB3754B-5E2C-4933-8D3B-188EDE2A8CCD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3A1A66D2-41C1-45BF-8514-0CE67A28D9D0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3A1A66D2-41C1-45BF-8514-0CE67A28D9D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3A1A66D2-41C1-45BF-8514-0CE67A28D9D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3A1A66D2-41C1-45BF-8514-0CE67A28D9D0}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3B1501B6-7C4D-4FAC-BB05-90CE176A8B0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3B1501B6-7C4D-4FAC-BB05-90CE176A8B0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3B1501B6-7C4D-4FAC-BB05-90CE176A8B0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3B1501B6-7C4D-4FAC-BB05-90CE176A8B0C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9DC48356-328C-46AE-9F0C-107F09BAD5A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9DC48356-328C-46AE-9F0C-107F09BAD5A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DC48356-328C-46AE-9F0C-107F09BAD5A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DC48356-328C-46AE-9F0C-107F09BAD5A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99ED3605-22DC-4E91-A9F0-790209CFE9E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99ED3605-22DC-4E91-A9F0-790209CFE9E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99ED3605-22DC-4E91-A9F0-790209CFE9E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99ED3605-22DC-4E91-A9F0-790209CFE9E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
