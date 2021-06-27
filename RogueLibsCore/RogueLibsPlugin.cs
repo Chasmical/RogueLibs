@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 using BepInEx;
 using HarmonyLib;
@@ -15,6 +16,9 @@ namespace RogueLibsCore
 		public RoguePatcher Patcher;
 		public void Awake()
 		{
+			Stopwatch sw = new Stopwatch();
+			sw.Start();
+
 			RogueFramework.Plugin = this;
 			RogueFramework.Logger = Logger;
 
@@ -27,6 +31,9 @@ namespace RogueLibsCore
 			PatchScrollingMenu();
 			PatchCharacterCreation();
 			PatchSprites();
+
+			sw.Stop();
+			Logger.LogDebug($"RogueLibs took {sw.ElapsedMilliseconds} ms to load.");
 		}
 	}
 }

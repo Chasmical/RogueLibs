@@ -38,9 +38,6 @@ namespace RogueLibsPatcher
             PatchHooks(trait);
             PatchContainer(trait);
 
-            TypeDefinition invDatabase = module.GetType("InvDatabase");
-            PatchEvents(invDatabase);
-
             TypeDefinition buttonData = module.GetType("ButtonData");
             PatchCustom(buttonData);
 
@@ -53,7 +50,6 @@ namespace RogueLibsPatcher
 
         public static void PatchHooks(TypeDefinition type) => Patch(type, "__RogueLibsHooks");
         public static void PatchContainer(TypeDefinition type) => Patch(type, "__RogueLibsContainer");
-        public static void PatchEvents(TypeDefinition type) => Patch(type, "__RogueLibsEvents");
         public static void PatchCustom(TypeDefinition type) => Patch(type, "__RogueLibsCustom");
         public static void Patch(TypeDefinition type, string fieldName)
         {

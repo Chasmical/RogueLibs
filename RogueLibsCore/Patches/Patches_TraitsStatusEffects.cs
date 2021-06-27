@@ -49,7 +49,7 @@ namespace RogueLibsCore
 					i => i.IsStloc(),
 					i => i.IsLdloc(),
 					i => i.IsLdloc(),
-					i => i.StoresField(typeof(StatusEffect).GetField(nameof(StatusEffect.curTime)))
+					i => i.StoresField(StatusEffect_curTime)
 				},
 				new Func<CodeInstruction[], CodeInstruction>[]
 				{
@@ -63,7 +63,7 @@ namespace RogueLibsCore
 				{
 					i => i.IsLdloc(),
 					i => i.opcode == OpCodes.Ldarg_3,
-					i => i.opcode == OpCodes.Stfld && i.StoresField(typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent)))
+					i => i.opcode == OpCodes.Stfld && i.StoresField(StatusEffect_causingAgent)
 				},
 				new Func<CodeInstruction[], CodeInstruction>[]
 				{
@@ -71,6 +71,8 @@ namespace RogueLibsCore
 					_ => new CodeInstruction(OpCodes.Ldarg_0),
 					_ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook)))
 				});
+		private static readonly FieldInfo StatusEffect_curTime = typeof(StatusEffect).GetField(nameof(StatusEffect.curTime));
+		private static readonly FieldInfo StatusEffect_causingAgent = typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent));
 		public static void SetupEffectHook(StatusEffect effect, StatusEffects parent)
 		{
 			effect.__RogueLibsContainer = parent;
@@ -94,7 +96,7 @@ namespace RogueLibsCore
 				{
 					i => i.IsLdloc(),
 					i => i.opcode == OpCodes.Ldarg_1,
-					i => i.opcode == OpCodes.Stfld && i.StoresField(typeof(Trait).GetField(nameof(Trait.traitName)))
+					i => i.opcode == OpCodes.Stfld && i.StoresField(Trait_traitName)
 				},
 				new Func<CodeInstruction[], CodeInstruction>[]
 				{
@@ -102,6 +104,7 @@ namespace RogueLibsCore
 					_ => new CodeInstruction(OpCodes.Ldarg_0),
 					_ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupTraitHook)))
 				});
+		private static readonly FieldInfo Trait_traitName = typeof(Trait).GetField(nameof(Trait.traitName));
 		public static void SetupTraitHook(Trait trait, StatusEffects parent)
 		{
 			trait.__RogueLibsContainer = parent;
@@ -223,5 +226,9 @@ namespace RogueLibsCore
 				}
 			}
 		}
+
+
+
+
 	}
 }

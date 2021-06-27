@@ -16,7 +16,8 @@ namespace RogueLibsCore
 		public void PatchUnlocks()
 		{
 			// synchronize some fields
-			Patcher.Postfix(typeof(Unlocks), nameof(Unlocks.AddUnlock), new Type[] { typeof(string), typeof(string), typeof(bool), typeof(int), typeof(int), typeof(int), typeof(Unlock) });
+			Patcher.Postfix(typeof(Unlocks), nameof(Unlocks.AddUnlock),
+				new Type[] { typeof(string), typeof(string), typeof(bool), typeof(int), typeof(int), typeof(int), typeof(Unlock) });
 
 			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks), nameof(Unlocks_LoadInitialUnlocks_Prefix));
 			// replace the entire foreach loop in the end
@@ -53,7 +54,7 @@ namespace RogueLibsCore
 			=> codeEnumerable.ReplaceRegion(
 				new Func<CodeInstruction, bool>[]
 				{
-					i => i.opcode == OpCodes.Callvirt && i.Calls(typeof(List<Unlock>).GetMethod("GetEnumerator"))
+					i => i.opcode == OpCodes.Callvirt && i.Calls(List_Unlock_GetEnumerator)
 				},
 				new Func<CodeInstruction, bool>[]
 				{
@@ -65,6 +66,7 @@ namespace RogueLibsCore
 					new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)))
 				}
 			);
+		private static readonly MethodInfo List_Unlock_GetEnumerator = typeof(List<Unlock>).GetMethod("GetEnumerator");
 		public static void LoadUnlockWrappersAndCategorize()
 		{
 			GameController gc = GameController.gameController;

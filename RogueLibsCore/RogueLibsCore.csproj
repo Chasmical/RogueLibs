@@ -83,6 +83,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HookExtensions.cs" />
     <Compile Include="Hooks\CustomEffect.cs" />
     <Compile Include="Hooks\EffectInfo.cs" />
     <Compile Include="Hooks\CustomTrait.cs" />
@@ -110,7 +111,7 @@
     <Compile Include="Patches\Patches_Unlocks.cs" />
     <Compile Include="Hooks\Unlocks\UnlockWrapper.cs" />
     <Compile Include="CustomName.cs" />
-    <Compile Include="Events\InventoryEvents.cs" />
+    <Compile Include="Events\InventoryChecks.cs" />
     <Compile Include="Hooks\IHook.cs" />
     <Compile Include="Hooks\IHookController.cs" />
     <Compile Include="Hooks\IHookFactory.cs" />

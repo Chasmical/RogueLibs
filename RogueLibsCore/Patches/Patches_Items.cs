@@ -43,7 +43,7 @@ namespace RogueLibsCore
 		}
 		private void SubscribeDefaultChecks()
 		{
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.ghost)
 				{
@@ -51,7 +51,7 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.HasTrait("CantInteract") && e.Item.itemType != ItemTypes.Food)
 				{
@@ -61,7 +61,7 @@ namespace RogueLibsCore
 				}
 			};
 
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.HasTrait("OilRestoresHealth") && e.Item.itemType == ItemTypes.Food
 					&& (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol")))
@@ -71,7 +71,7 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.HasTrait("OilRestoresHealth")
 					&& e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
@@ -81,7 +81,7 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.HasTrait("BloodRestoresHealth") && e.Item.itemType == ItemTypes.Food
 					&& (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol")))
@@ -91,7 +91,7 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.HasTrait("BloodRestoresHealth")
 					&& e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
@@ -101,7 +101,7 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.electronic && e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food"))
 				{
@@ -110,7 +110,7 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.electronic && e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
 				{
@@ -119,7 +119,7 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.HasTrait("CannibalizeRestoresHealth")
 					&& e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food"))
@@ -129,7 +129,7 @@ namespace RogueLibsCore
 					e.Cancel = e.Handled = true;
 				}
 			};
-			InventoryEvents.OnItemUsing += e =>
+			InventoryChecks.OnItemUsing += e =>
 			{
 				if (e.User.health == e.User.healthMax && e.Item.healthChange > 0)
 				{
@@ -172,8 +172,8 @@ namespace RogueLibsCore
 				return false;
 			}
 
-			OnItemUsedArgs args = new OnItemUsedArgs(item, agent);
-			if (InventoryEvents.onItemUsing.Raise(args))
+			OnItemUsingArgs args = new OnItemUsingArgs(item, agent);
+			if (InventoryChecks.onItemUsing.Raise(args))
 			{
 				agent = args.User;
 				// in case an inventory check redirected the use of an item on someone else
@@ -234,8 +234,8 @@ namespace RogueLibsCore
 			}
 			else filterResult = new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, string.Empty);
 
-			OnItemsCombinedArgs args = new OnItemsCombinedArgs(__instance, otherItem, myAgent);
-			__result = filterResult && InventoryEvents.onItemsCombining.Raise(args);
+			OnItemsCombiningArgs args = new OnItemsCombiningArgs(__instance, otherItem, myAgent);
+			__result = filterResult && InventoryChecks.onItemsCombining.Raise(args);
 
 			if (__result && combineType == "Combine")
 			{
@@ -284,8 +284,8 @@ namespace RogueLibsCore
 				? combinable.TargetFilter(otherObject)
 				: new ItemFunctions().TargetObject(__instance, __instance.agent, otherObject, string.Empty);
 
-			OnItemTargetedArgs args = new OnItemTargetedArgs(__instance, otherObject, __instance.agent);
-			__result = firstCheck && InventoryEvents.onItemTargeting.Raise(args);
+			OnItemTargetingArgs args = new OnItemTargetingArgs(__instance, otherObject, __instance.agent);
+			__result = firstCheck && InventoryChecks.onItemTargeting.Raise(args);
 
 			if (__result && combineType == "Combine")
 			{

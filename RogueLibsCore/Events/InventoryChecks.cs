@@ -6,30 +6,30 @@ using System.Threading.Tasks;
 
 namespace RogueLibsCore
 {
-	public static class InventoryEvents
+	public static class InventoryChecks
 	{
-		internal static readonly RogueEvent<OnItemUsedArgs> onItemUsing = new RogueEvent<OnItemUsedArgs>();
-		public static event RogueEventHandler<OnItemUsedArgs> OnItemUsing
+		internal static readonly RogueEvent<OnItemUsingArgs> onItemUsing = new RogueEvent<OnItemUsingArgs>();
+		public static event RogueEventHandler<OnItemUsingArgs> OnItemUsing
 		{
 			add => onItemUsing.Subscribe(value);
 			remove => onItemUsing.Unsubscribe(value);
 		}
-		internal static readonly RogueEvent<OnItemsCombinedArgs> onItemsCombining = new RogueEvent<OnItemsCombinedArgs>();
-		public static event RogueEventHandler<OnItemsCombinedArgs> OnItemsCombining
+		internal static readonly RogueEvent<OnItemsCombiningArgs> onItemsCombining = new RogueEvent<OnItemsCombiningArgs>();
+		public static event RogueEventHandler<OnItemsCombiningArgs> OnItemsCombining
 		{
 			add => onItemsCombining.Subscribe(value);
 			remove => onItemsCombining.Unsubscribe(value);
 		}
-		internal static readonly RogueEvent<OnItemTargetedArgs> onItemTargeting = new RogueEvent<OnItemTargetedArgs>();
-		public static event RogueEventHandler<OnItemTargetedArgs> OnItemTargeting
+		internal static readonly RogueEvent<OnItemTargetingArgs> onItemTargeting = new RogueEvent<OnItemTargetingArgs>();
+		public static event RogueEventHandler<OnItemTargetingArgs> OnItemTargeting
 		{
 			add => onItemTargeting.Subscribe(value);
 			remove => onItemTargeting.Unsubscribe(value);
 		}
 	}
-	public class OnItemUsedArgs : RogueEventArgs
+	public class OnItemUsingArgs : RogueEventArgs
 	{
-		public OnItemUsedArgs(InvItem item, Agent user)
+		public OnItemUsingArgs(InvItem item, Agent user)
 		{
 			Item = item;
 			User = user;
@@ -38,9 +38,9 @@ namespace RogueLibsCore
 		public InvItem Item { get; }
 		public Agent User { get; set; }
 	}
-	public class OnItemsCombinedArgs : RogueEventArgs
+	public class OnItemsCombiningArgs : RogueEventArgs
 	{
-		public OnItemsCombinedArgs(InvItem item, InvItem otherItem, Agent combiner)
+		public OnItemsCombiningArgs(InvItem item, InvItem otherItem, Agent combiner)
 		{
 			Item = item;
 			OtherItem = otherItem;
@@ -51,9 +51,9 @@ namespace RogueLibsCore
 		public InvItem OtherItem { get; set; }
 		public Agent Combiner { get; set; }
 	}
-	public class OnItemTargetedArgs : RogueEventArgs
+	public class OnItemTargetingArgs : RogueEventArgs
 	{
-		public OnItemTargetedArgs(InvItem item, PlayfieldObject targetObject, Agent user)
+		public OnItemTargetingArgs(InvItem item, PlayfieldObject targetObject, Agent user)
 		{
 			Item = item;
 			Target = targetObject;
