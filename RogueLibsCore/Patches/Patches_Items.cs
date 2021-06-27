@@ -36,6 +36,9 @@ namespace RogueLibsCore
 			// CustomItem.GetCount(.) patch
 			Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.UpdateInvSlot));
 
+			// CustomItem, IItemTargetableAnywhere patches
+			Patcher.Postfix(typeof(InvInterface), nameof(InvInterface.TargetAnywhere));
+
 			SubscribeDefaultChecks();
 		}
 		private void SubscribeDefaultChecks()
@@ -399,15 +402,17 @@ namespace RogueLibsCore
 		public static void InvSlot_UpdateInvSlot(InvSlot __instance, Text ___itemText)
 		{
 			CustomItem custom = __instance.item?.GetHook<CustomItem>();
-
-			CustomTooltip tooltip = custom.GetCountString();
-			if (tooltip.Text != null)
+			if (custom != null)
 			{
-				___itemText.enabled = true;
-				___itemText.text = tooltip.Text;
+				CustomTooltip tooltip = custom.GetCountString();
+				if (tooltip.Text != null)
+				{
+					___itemText.enabled = true;
+					___itemText.text = tooltip.Text;
+				}
+				if (tooltip.Color != null)
+					___itemText.color = tooltip.Color.Value;
 			}
-			if (tooltip.Color != null)
-				___itemText.color = tooltip.Color.Value;
 		}
 
 		public static void InvInterface_TargetAnywhere(InvInterface __instance, Vector2 myPos, bool pressedButton)

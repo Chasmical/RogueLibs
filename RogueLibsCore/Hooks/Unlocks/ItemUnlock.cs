@@ -131,15 +131,15 @@ namespace RogueLibsCore
 					invItem.SetupDetails(false);
 					invItem.invItemCount = invItem.initCount;
 					Menu.Agent.inventory.DontPlayPickupSounds(true);
-					Menu.Agent.agentInvDatabase.AddItemOrDrop(invItem);
+					Menu.Agent.inventory.AddItemOrDrop(invItem);
 					Menu.Agent.inventory.DontPlayPickupSounds(false);
-					if (invItem.invItemName == "BombMaker" && !Menu.Agent.agentInvDatabase.HasItem("BombTrigger"))
+					if (invItem.invItemName == "BombMaker" && !Menu.Agent.inventory.HasItem("BombTrigger"))
 					{
 						invItem = new InvItem() { invItemName = "BombTrigger" };
 						invItem.SetupDetails(false);
 						invItem.invItemCount = invItem.initCount;
 						Menu.Agent.inventory.DontPlayPickupSounds(true);
-						Menu.Agent.agentInvDatabase.AddItemOrDrop(invItem);
+						Menu.Agent.inventory.AddItemOrDrop(invItem);
 						Menu.Agent.inventory.DontPlayPickupSounds(false);
 					}
 				}

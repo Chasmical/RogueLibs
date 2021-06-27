@@ -59,5 +59,25 @@ namespace RogueLibsCore.Test.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] NuclearBriefcase {
+            get {
+                object obj = ResourceManager.GetObject("NuclearBriefcase", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] OpenNuclearBriefcase {
+            get {
+                object obj = ResourceManager.GetObject("OpenNuclearBriefcase", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }
