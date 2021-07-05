@@ -38,7 +38,7 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.GetStatusEffectHate));
 
 			Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.UpdateStatusEffect));
-			// Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.UpdateTrait));
+			Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.UpdateTrait));
 		}
 
 		public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> codeEnumerable)
@@ -107,13 +107,21 @@ namespace RogueLibsCore
 		private static readonly FieldInfo Trait_traitName = typeof(Trait).GetField(nameof(Trait.traitName));
 		public static void SetupTraitHook(Trait trait, StatusEffects parent)
 		{
+			bool any = false;
 			trait.__RogueLibsContainer = parent;
 			foreach (IHookFactory<Trait> factory in RogueFramework.TraitFactories)
 				if (factory.TryCreate(trait, out IHook<Trait> hook))
 				{
 					trait.AddHook(hook);
 					hook.Initialize();
+					any = true;
 				}
+
+			if (any && parent.agent.name != "DummyAgent" && !parent.agent.name.Contains("Backup"))
+			{
+				parent.StartCoroutine(parent.UpdateTrait(trait));
+				trait.requiresUpdates = true;
+			}
 		}
 
 		public static void StatusEffects_RemoveTrait_Prefix(StatusEffects __instance, string traitName, ref Trait __state)
@@ -227,8 +235,34 @@ namespace RogueLibsCore
 			}
 		}
 
-
-
+		public static bool StatusEffects_UpdateTrait(StatusEffects __instance, Trait myTrait, ref IEnumerator __result)
+		{
+			CustomTrait custom = myTrait.GetHook<CustomTrait>();
+			if (custom is null) return true;
+			__result = TraitUpdateEnumerator(__instance, custom);
+			return false;
+		}
+		public static IEnumerator TraitUpdateEnumerator(StatusEffects __instance, CustomTrait customTrait)
+		{
+			yield return null;
+			float countSpeed = 1f;
+			if (!GameController.gameController.multiplayerMode || (!GameController.gameController.serverPlayer || __instance.agent.isPlayer <= 0 || __instance.agent.localPlayer) && (GameController.gameController.serverPlayer || __instance.agent.localPlayer))
+			{
+				if (__instance.TraitList != null)
+				{
+					while (__instance.TraitList.Contains(customTrait.Trait))
+					{
+						if (GameController.gameController.loadComplete && !GameController.gameController.mainGUI.questNotification.gameIsOver && !__instance.agent.disappearedArcade)
+						{
+							TraitUpdatedArgs e = new TraitUpdatedArgs { UpdateDelay = countSpeed };
+							customTrait.OnUpdated(e);
+							countSpeed = e.UpdateDelay;
+						}
+						yield return new WaitForSeconds(countSpeed);
+					}
+				}
+			}
+		}
 
 	}
 }

@@ -27,6 +27,8 @@ namespace RogueLibsCore.Test
 			Converter.Test();
 			Duplicator.Test();
 			NuclearBriefcase.Test();
+
+			Smoker.Test();
 		}
 	}
 }
