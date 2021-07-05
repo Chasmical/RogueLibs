@@ -428,9 +428,18 @@ namespace RogueLibsCore
 					__instance.cursorHighlightTargetAnywhere = filter;
 					__instance.mainGUI.agent.targetImage.tr.localScale = Vector3.one;
 
+					CustomTooltip tooltip = targetable.TargetCursorText(myPos);
+					__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
+					__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
+
 					if (pressedButton)
 					{
 						targetable.TargetPosition(myPos);
+						if (custom.Count < 1 || !custom.Inventory.InvItemList.Contains(custom.Item))
+						{
+							__instance.HideDraggedItem();
+							__instance.HideTarget();
+						}
 						__instance.HideTarget();
 					}
 				}

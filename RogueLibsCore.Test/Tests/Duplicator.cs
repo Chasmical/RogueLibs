@@ -13,6 +13,7 @@ namespace RogueLibsCore.Test
 			RogueLibs.CreateCustomItem<Duplicator>()
 				.WithName(new CustomNameInfo("Duplicator"))
 				.WithDescription(new CustomNameInfo("Duplicates anything. Yep, definitely overpowered."))
+				.WithSprite(Properties.Resources.Duplicator)
 				.WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 5, LoadoutCost = 5 });
 			RogueLibs.CreateCustomName("Duplicate", "Interface", new CustomNameInfo("Duplicate"));
 		}
@@ -33,7 +34,7 @@ namespace RogueLibsCore.Test
 		{
 			if (!TargetFilter(obj)) return false;
 
-			Vector2 offset = UnityEngine.Random.insideUnitCircle * 0.32f;
+			Vector2 offset = UnityEngine.Random.insideUnitCircle;
 			PlayfieldObject cloneObj = null;
 			if (obj is Agent agent)
 			{

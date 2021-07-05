@@ -15,6 +15,7 @@ namespace RogueLibsCore
 			RogueFramework.TraitFactories.Add(TraitFactory);
 			RogueFramework.EffectFactories.Add(EffectFactory);
 			RogueFramework.NameProviders.Add(NameProvider);
+			RogueFramework.NameProviders.Add(new DialogueNameProvider());
 		}
 
 		public const string GUID = "abbysssal.streetsofrogue.roguelibscore";

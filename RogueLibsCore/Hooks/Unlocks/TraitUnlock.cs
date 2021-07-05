@@ -222,7 +222,7 @@ namespace RogueLibsCore
 			{
 				PlaySound("BuyUnlock");
 				gc.unlocks.SubtractNuggets(UnlockCost);
-				gc.unlocks.DoUnlock(Name, Type);
+				gc.unlocks.DoUnlockForced(Name, Type);
 				UpdateAllUnlocks();
 				UpdateMenu();
 			}

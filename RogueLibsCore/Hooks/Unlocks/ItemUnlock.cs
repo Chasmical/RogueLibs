@@ -81,7 +81,8 @@ namespace RogueLibsCore
 			}
 		}
 
-		private List<string> GetMyLoadouts() => Menu.Agent.isPlayer is 1 ? gc.sessionDataBig.loadouts1
+		private List<string> GetMyLoadouts()
+			=> Menu.Agent.isPlayer is 1 ? gc.sessionDataBig.loadouts1
 			: Menu.Agent.isPlayer is 2 ? gc.sessionDataBig.loadouts2
 			: Menu.Agent.isPlayer is 3 ? gc.sessionDataBig.loadouts3
 			: gc.sessionDataBig.loadouts4;
@@ -165,6 +166,7 @@ namespace RogueLibsCore
 							{
 								gc.sessionDataBig.nuggets += selected.LoadoutCost;
 								selected.IsSelectedLoadout = false;
+								selected.UpdateButton();
 							}
 							gc.unlocks.SubtractNuggets(LoadoutCost);
 							gc.sessionDataBig.loadoutNuggetsSpent = LoadoutCost;
@@ -190,7 +192,7 @@ namespace RogueLibsCore
 			{
 				PlaySound("BuyUnlock");
 				gc.unlocks.SubtractNuggets(UnlockCost);
-				gc.unlocks.DoUnlock(Name, Type);
+				gc.unlocks.DoUnlockForced(Name, Type);
 				UpdateAllUnlocks();
 				UpdateMenu();
 			}

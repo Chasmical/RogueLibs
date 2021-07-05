@@ -15,6 +15,10 @@ namespace RogueLibsCore.Test
 				.WithName(new CustomNameInfo("Loot Box"))
 				.WithDescription(new CustomNameInfo("Gives you a random item."))
 				.WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 3, LoadoutCost = 3 });
+
+			RogueLibs.CreateCustomSprite("LootBox1", SpriteScope.Items, Properties.Resources.LootBox1);
+			RogueLibs.CreateCustomSprite("LootBox2", SpriteScope.Items, Properties.Resources.LootBox2);
+			RogueLibs.CreateCustomSprite("LootBox3", SpriteScope.Items, Properties.Resources.LootBox3);
 		}
 
 		public override void SetupDetails()
@@ -26,6 +30,9 @@ namespace RogueLibsCore.Test
 			Item.stackable = true;
 			Item.goesInToolbar = true;
 			Item.cantBeCloned = true;
+
+			int rnd = new Random().Next(3) + 1;
+			Item.LoadItemSprite($"LootBox{rnd}");
 		}
 		public bool UseItem()
 		{
@@ -35,16 +42,31 @@ namespace RogueLibsCore.Test
 			Random rnd = new Random();
 			for (int i = 0; i < 3; i++)
 			{
-				Unlock u = unlockPool[rnd.Next(unlockPool.Count)];
-				InvItem item = new InvItem { invItemName = u.unlockName };
-				item.SetupDetails(false);
+				Unlock u;
+				InvItem item;
+				do
+				{
+					u = unlockPool[rnd.Next(unlockPool.Count)];
+					item = new InvItem { invItemName = u.unlockName };
+					item.SetupDetails(false);
+				}
+				while (item.itemValue < 1 || item.initCount == 0);
+
+				item.invItemCount = item.initCount;
 				pool.Add(item);
 			}
 
 			InvItem selected = pool[0];
+			int selectedCost = Owner.determineMoneyCost(selected, selected.itemValue, "");
 			for (int i = 1; i < pool.Count; i++)
-				if (pool[i].itemValue < selected.itemValue)
+			{
+				int cost = Owner.determineMoneyCost(pool[i], pool[i].itemValue, "");
+				if (cost < selectedCost)
+				{
 					selected = pool[i];
+					selectedCost = cost;
+				}
+			}
 
 			Count--;
 			Inventory.AddItem(selected);

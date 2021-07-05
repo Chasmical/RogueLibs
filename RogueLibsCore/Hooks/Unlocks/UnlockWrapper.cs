@@ -80,7 +80,7 @@ namespace RogueLibsCore
 				description += $"\n\n<color=orange>{gc.nameDB.GetName("Cancels", "Interface")}:</color>\n" +
 					string.Join(", ", Unlock.cancellations.ConvertAll(unlockName =>
 					{
-						DisplayedUnlock unlock = (DisplayedUnlock)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+						UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
 						return unlock?.GetName();
 					}));
 			}
@@ -92,7 +92,7 @@ namespace RogueLibsCore
 				description += $"\n\n<color=cyan>{gc.nameDB.GetName("Recommends", "Interface")}:</color>\n" +
 					string.Join(", ", Unlock.recommendations.ConvertAll(unlockName =>
 					{
-						DisplayedUnlock unlock = (DisplayedUnlock)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+						UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
 						return unlock?.GetName();
 					}));
 			}
@@ -100,18 +100,18 @@ namespace RogueLibsCore
 		protected void AddPrerequisitesTo(ref string description)
 		{
 			List<string> prereqs = new List<string>();
-			if (Unlock.prerequisites.Count > 0 || UnlockCost != 0)
+			if (Unlock.prerequisites.Count > 0)
 			{
 				prereqs.Add(string.Join(", ", Unlock.prerequisites.ConvertAll(unlockName =>
 				{
-					Unlock un = gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName);
-					if (un.__RogueLibsCustom is UnlockWrapper unlock)
+					UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+					if (unlock != null)
 					{
 						string name = unlock.GetName();
 						if (unlock.IsUnlocked) name = $"<color=#EEEEEE55>{name}</color>";
 						return name;
 					}
-					else return "?????";
+					return unlockName;
 				})));
 			}
 			if (Unlock.cost is -2)
@@ -124,7 +124,7 @@ namespace RogueLibsCore
 				prereqs.Add($"{gc.nameDB.GetName("UnlockFor", "Unlock")} <color={costColor}>${Unlock.cost}</color>");
 			}
 			if (prereqs.Count > 0)
-				description += $"\n<color=cyan>{gc.nameDB.GetName("Prerequisites", "Unlock")}:</color>\n" + string.Join("\n", prereqs);
+				description += $"\n\n<color=cyan>{gc.nameDB.GetName("Prerequisites", "Unlock")}:</color>\n" + string.Join("\n", prereqs);
 		}
 
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]

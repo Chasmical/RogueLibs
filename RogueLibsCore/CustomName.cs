@@ -160,4 +160,16 @@ namespace RogueLibsCore
 			return customName;
 		}
 	}
+	public class DialogueNameProvider : INameProvider
+	{
+		public void GetName(string name, string type, ref string result)
+		{
+			if (result is null && type == "Dialogue" && name.StartsWith("NA_"))
+			{
+				string sub = name.Substring("NA_".Length);
+				string newResult = LanguageService.NameDB.GetName(sub, type);
+				if (!newResult.StartsWith("E_")) result = newResult;
+			}
+		}
+	}
 }

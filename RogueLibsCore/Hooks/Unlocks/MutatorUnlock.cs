@@ -68,7 +68,7 @@ namespace RogueLibsCore
 			{
 				PlaySound("BuyUnlock");
 				gc.unlocks.SubtractNuggets(UnlockCost);
-				gc.unlocks.DoUnlock(Name, Type);
+				gc.unlocks.DoUnlockForced(Name, Type);
 				UpdateAllUnlocks();
 				UpdateMenu();
 			}
@@ -88,7 +88,9 @@ namespace RogueLibsCore
 		{
 			if (IsUnlocked || Unlock.nowAvailable)
 			{
-				string text = gc.nameDB.GetName("D_" + Name, Unlock.unlockDescriptionType);
+				string text = !Name.Contains("NoD_")
+					? gc.nameDB.GetName("D_" + Name, Unlock.unlockDescriptionType)
+					: gc.nameDB.GetName("NoDisasterDescription", "Unlock");
 				AddCancellationsTo(ref text);
 				AddRecommendationsTo(ref text);
 				if (!IsUnlocked) AddPrerequisitesTo(ref text);

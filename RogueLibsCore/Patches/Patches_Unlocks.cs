@@ -23,6 +23,8 @@ namespace RogueLibsCore
 			// replace the entire foreach loop in the end
 			Patcher.Transpiler(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks));
 
+			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.CanDoUnlocks));
+
 			RogueLibs.CreateCustomName("UnlockFor", "Unlock", new CustomNameInfo
 			{
 				English = "Unlock for",
@@ -44,11 +46,6 @@ namespace RogueLibsCore
 		{
 			if (___loadedInitialUnlocks) return;
 			RogueFramework.Unlocks.Clear();
-			foreach (UnlockWrapper wrapper in RogueFramework.CustomUnlocks)
-			{
-				RogueFramework.Unlocks.Add(wrapper);
-				AddUnlockFull(wrapper);
-			}
 		}
 		public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
 			=> codeEnumerable.ReplaceRegion(
@@ -72,12 +69,11 @@ namespace RogueLibsCore
 			GameController gc = GameController.gameController;
 			SessionDataBig sdb = gc.sessionDataBig;
 
-			sdb.unlocks.AddRange(RogueFramework.Unlocks.Select(w => w.Unlock));
 			foreach (Unlock unlock in sdb.unlocks.ToList())
 			{
 				// wrapping original unlocks
 				if (gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock) != "") unlock.cost = -2;
-				UnlockWrapper wrapper = RogueFramework.Unlocks.Find(u => u.Name == unlock.unlockName && u.Type == unlock.unlockType);
+				UnlockWrapper wrapper = RogueFramework.CustomUnlocks.Find(u => u.Name == unlock.unlockName && u.Type == unlock.unlockType);
 				if (wrapper != null)
 					AddUnlockFull(wrapper);
 				else
@@ -124,6 +120,11 @@ namespace RogueLibsCore
 					AddUnlockFull(wrapper, true);
 				}
 			}
+			foreach (UnlockWrapper wrapper in RogueFramework.CustomUnlocks)
+			{
+				RogueFramework.Unlocks.Add(wrapper);
+				AddUnlockFull(wrapper);
+			}
 		}
 		public static void AddUnlockFull(UnlockWrapper wrapper, bool alreadyLoaded = false)
 		{
@@ -135,12 +136,34 @@ namespace RogueLibsCore
 				list.Remove(result);
 				list.Add(wrapper.Unlock);
 				wrapper.IsUnlocked = result.unlocked;
+				wrapper.IsEnabled = !result.notActive;
 			}
 			wrapper.IsAvailable = wrapper.IsAvailable;
 			if (wrapper is IUnlockInCC inCC) inCC.IsAvailableInCC = inCC.IsAvailableInCC;
 			if (wrapper is ItemUnlock item) item.IsAvailableInItemTeleporter = item.IsAvailableInItemTeleporter;
 			// make sure that the Unlocks are in their appropriate lists
 			wrapper.SetupUnlock();
+		}
+
+		public static bool Unlocks_CanDoUnlocks(ref bool __result)
+		{
+			if (UnlocksExtensions.AllowUnlocksAnyway)
+			{
+				__result = true;
+				return false;
+			}
+			return true;
+		}
+	}
+	public static class UnlocksExtensions
+	{
+		public static bool AllowUnlocksAnyway { get; set; }
+		public static void DoUnlockForced(this Unlocks unlocks, string unlockName, string unlockType)
+		{
+			bool prev = AllowUnlocksAnyway;
+			AllowUnlocksAnyway = true;
+			unlocks.DoUnlock(unlockName, unlockType);
+			AllowUnlocksAnyway = prev;
 		}
 	}
 }

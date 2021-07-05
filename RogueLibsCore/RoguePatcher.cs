@@ -12,7 +12,7 @@ namespace RogueLibsCore
 		{
 			if (myPlugin is null) throw new ArgumentNullException(nameof(myPlugin));
 			log = (ManualLogSource)loggerProperty.GetValue(myPlugin);
-			guid = myPlugin.Info.Metadata.GUID;
+			harmony = new Harmony(myPlugin.Info.Metadata.GUID);
 			TypeWithPatches = myPlugin.GetType();
 		}
 		public RoguePatcher(BaseUnityPlugin myPlugin, Type typeWithPatches)
@@ -20,12 +20,12 @@ namespace RogueLibsCore
 			if (myPlugin is null) throw new ArgumentNullException(nameof(myPlugin));
 			if (typeWithPatches is null) throw new ArgumentNullException(nameof(typeWithPatches));
 			log = (ManualLogSource)loggerProperty.GetValue(myPlugin);
-			guid = myPlugin.Info.Metadata.GUID;
+			harmony = new Harmony(myPlugin.Info.Metadata.GUID);
 			TypeWithPatches = typeWithPatches;
 		}
 
 		private static readonly PropertyInfo loggerProperty = AccessTools.Property(typeof(BaseUnityPlugin), "Logger");
-		private readonly string guid;
+		private readonly Harmony harmony;
 		private readonly ManualLogSource log;
 		private Type typeWithPatches;
 		public Type TypeWithPatches
@@ -51,7 +51,7 @@ namespace RogueLibsCore
 				if (original is null) throw new MemberNotFoundException($"Original method {type.FullName}.{originalMethod} could not be found.");
 				MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod);
 				if (patch is null) throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-				new Harmony(guid).Patch(original, new HarmonyMethod(patch));
+				harmony.Patch(original, new HarmonyMethod(patch));
 				return true;
 			}
 			catch (Exception e)
@@ -78,7 +78,7 @@ namespace RogueLibsCore
 				if (original is null) throw new MemberNotFoundException($"Original method {type.FullName}.{originalMethod} could not be found.");
 				MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod);
 				if (patch is null) throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-				new Harmony(guid).Patch(original, null, new HarmonyMethod(patch));
+				harmony.Patch(original, null, new HarmonyMethod(patch));
 				return true;
 			}
 			catch (Exception e)
@@ -105,7 +105,34 @@ namespace RogueLibsCore
 				if (original is null) throw new MemberNotFoundException($"Original method {type.FullName}.{originalMethod} could not be found.");
 				MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod);
 				if (patch is null) throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-				new Harmony(guid).Patch(original, null, null, new HarmonyMethod(patch));
+				harmony.Patch(original, null, null, new HarmonyMethod(patch));
+				return true;
+			}
+			catch (Exception e)
+			{
+				log.LogError(e);
+				return false;
+			}
+		}
+
+		public bool Finalizer(Type type, string originalMethod, Type[] parameterTypes = null)
+		{
+			if (type is null) throw new ArgumentNullException(nameof(type));
+			if (originalMethod is null) throw new ArgumentNullException(nameof(originalMethod));
+			return Finalizer(type, originalMethod, $"{type.Name}_{originalMethod}", parameterTypes);
+		}
+		public bool Finalizer(Type type, string originalMethod, string patchMethod, Type[] parameterTypes = null)
+		{
+			if (type is null) throw new ArgumentNullException(nameof(type));
+			if (originalMethod is null) throw new ArgumentNullException(nameof(originalMethod));
+			if (patchMethod is null) throw new ArgumentNullException(nameof(patchMethod));
+			try
+			{
+				MethodInfo original = AccessTools.Method(type, originalMethod, parameterTypes);
+				if (original is null) throw new MemberNotFoundException($"Original method {type.FullName}.{originalMethod} could not be found.");
+				MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod);
+				if (patch is null) throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
+				harmony.Patch(original, null, null, null, new HarmonyMethod(patch));
 				return true;
 			}
 			catch (Exception e)
