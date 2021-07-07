@@ -46,18 +46,9 @@ namespace RogueLibsCore
 		protected void UpdateButton(bool isEnabledOrSelected, UnlockButtonState selected, UnlockButtonState normal)
 		{
 			Text = GetFancyName();
-			if (IsUnlocked)
-			{
-				State = isEnabledOrSelected ? selected : normal;
-				if (Menu.Type == UnlocksMenuType.CharacterCreation && CharacterCreationCost != 0)
-					Text += $" | <color={(CharacterCreationCost < 0 ? "lime" : "orange")}>{CharacterCreationCost}</color>";
-			}
-			else if (Unlock.nowAvailable && UnlockCost > -1)
-			{
-				State = UnlockButtonState.Purchasable;
-				Text += $" - ${UnlockCost}";
-			}
-			else State = UnlockButtonState.Locked;
+			State = IsUnlocked ? isEnabledOrSelected ? selected : normal
+				: Unlock.nowAvailable && UnlockCost > -1 ? UnlockButtonState.Purchasable
+				: UnlockButtonState.Locked;
 		}
 
 		public abstract void OnPushedButton();
@@ -80,7 +71,7 @@ namespace RogueLibsCore
 						: Menu.Agent.isPlayer is 3 ? gc.twitchFunctions.voteCount[num + 10]
                         : Menu.Agent.isPlayer is 4 ? gc.twitchFunctions.voteCount[num + 15]
 						: gc.twitchFunctions.voteCount[num];
-					Text = $"{Text} <color=yellow>#{num + 1 + (Menu.Agent.isPlayer - 1) * 5}</color> <color=cyan>({votes})</color>";
+					name = $"{name} <color=yellow>#{num + 1 + (Menu.Agent.isPlayer - 1) * 5}</color> <color=cyan>({votes})</color>";
 				}
 			}
 			else if (Menu.Type == UnlocksMenuType.TwitchRewards)
@@ -88,7 +79,7 @@ namespace RogueLibsCore
 				if (gc.twitchMode || gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchRewards)
 				{
 					int num = Menu.Unlocks.IndexOf(this);
-					Text = $"{Text} <color=yellow>#{num + 1}</color> <color=cyan>({gc.twitchFunctions.voteCount[num]})</color>";
+					name = $"{name} <color=yellow>#{num + 1}</color> <color=cyan>({gc.twitchFunctions.voteCount[num]})</color>";
 				}
 			}
 			else if (Menu.Type == UnlocksMenuType.TwitchDisasters)
@@ -96,13 +87,25 @@ namespace RogueLibsCore
 				if (gc.twitchMode || gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchRewards)
 				{
 					int num = Menu.Unlocks.IndexOf(this);
-					Text = $"{Text} <color=yellow>#{num + 1}</color> <color=cyan>({gc.twitchFunctions.voteCount[num]})</color>";
+					name = $"{name} <color=yellow>#{num + 1}</color> <color=cyan>({gc.twitchFunctions.voteCount[num]})</color>";
+				}
+			}
+			else
+			{
+				if (Menu.Type == UnlocksMenuType.CharacterCreation)
+				{
+					if (CharacterCreationCost != 0)
+						name += $" | <color={(CharacterCreationCost < 0 ? "lime" : "orange")}>{CharacterCreationCost}</color>";
+				}
+				if (Unlock.nowAvailable && UnlockCost > -1)
+				{
+					name += $" - ${UnlockCost}";
 				}
 			}
 			return name;
 		}
 
-		protected void PlaySound(string clipName) => gc.audioHandler.Play(Menu.Agent, clipName);
+		protected void PlaySound(string clipName) => Menu.PlaySound(clipName);
 		protected void SendAnnouncementInChat(string msg1, string msg2 = null, string msg3 = null)
 		{
 			if (gc.serverPlayer && gc.multiplayerMode)

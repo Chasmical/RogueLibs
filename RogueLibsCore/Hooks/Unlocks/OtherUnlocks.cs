@@ -11,7 +11,9 @@ namespace RogueLibsCore
 	public class HomeBaseUnlock : UnlockWrapper
 	{
 		public HomeBaseUnlock() : this(null, false) { }
-		public HomeBaseUnlock(string name, bool unlockedFromStart = false) : base(name, "HomeBase", unlockedFromStart) { }
+		public HomeBaseUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public HomeBaseUnlock(string name) : this(name, false) { }
+		public HomeBaseUnlock(string name, bool unlockedFromStart) : base(name, "HomeBase", unlockedFromStart) { }
 		internal HomeBaseUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled
@@ -34,7 +36,9 @@ namespace RogueLibsCore
 	public class ExtraUnlock : UnlockWrapper
 	{
 		public ExtraUnlock() : this(null, false) { }
-		public ExtraUnlock(string name, bool unlockedFromStart = false) : base(name, "Extra", unlockedFromStart) { }
+		public ExtraUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public ExtraUnlock(string name) : this(name, false) { }
+		public ExtraUnlock(string name, bool unlockedFromStart) : base(name, "Extra", unlockedFromStart) { }
 		internal ExtraUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled
@@ -56,8 +60,10 @@ namespace RogueLibsCore
 	}
 	public class LoadoutUnlock : UnlockWrapper
 	{
+		public LoadoutUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public LoadoutUnlock(string name) : this(name, false) { }
 		public LoadoutUnlock() : this(null, false) { }
-		public LoadoutUnlock(string name, bool unlockedFromStart = false) : base(name, "Loadout", unlockedFromStart) { }
+		public LoadoutUnlock(string name, bool unlockedFromStart) : base(name, "Loadout", unlockedFromStart) { }
 		internal LoadoutUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled
@@ -80,7 +86,9 @@ namespace RogueLibsCore
 	public class AgentUnlock : UnlockWrapper
 	{
 		public AgentUnlock() : this(null, false) { }
-		public AgentUnlock(string name, bool unlockedFromStart = false) : base(name, "Agent", unlockedFromStart) { }
+		public AgentUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public AgentUnlock(string name) : this(name, false) { }
+		public AgentUnlock(string name, bool unlockedFromStart) : base(name, "Agent", unlockedFromStart) { }
 		internal AgentUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled

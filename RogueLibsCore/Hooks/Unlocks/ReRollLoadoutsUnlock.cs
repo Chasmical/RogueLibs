@@ -37,8 +37,8 @@ namespace RogueLibsCore
 				for (int j = 1; j < menu.buttonsData.Count; j++)
 					menu.SetupLoadouts(menu.buttonsData[j], listUnlocks[j]);
 
-				gc.unlocks.SubtractNuggets(menu.reRollCost);
-				gc.unlocks.AddNuggets(gc.sessionDataBig.loadoutNuggetsSpent);
+				gc.sessionDataBig.nuggets -= menu.reRollCost;
+				gc.sessionDataBig.nuggets += gc.sessionDataBig.loadoutNuggetsSpent;
 				gc.sessionDataBig.loadoutNuggetsSpent = 0;
 
 				if (menu.agent.isPlayer is 1)

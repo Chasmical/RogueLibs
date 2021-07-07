@@ -11,7 +11,9 @@ namespace RogueLibsCore
 	public class FloorUnlock : DisplayedUnlock
 	{
 		public FloorUnlock() : this(null, false) { }
-		public FloorUnlock(string name, bool unlockedFromStart = false) : base(name, "Floor", unlockedFromStart) { }
+		public FloorUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public FloorUnlock(string name) : this(name, false) { }
+		public FloorUnlock(string name, bool unlockedFromStart) : base(name, "Floor", unlockedFromStart) { }
 		internal FloorUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled

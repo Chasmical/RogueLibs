@@ -36,8 +36,6 @@ namespace RogueLibsCore
 		}
 		public abstract void SetupDetails();
 		public virtual string GetCountString() => null;
-
-		protected void UseItemAnim() => new ItemFunctions().UseItemAnim(Item, Owner);
 	}
 	public interface IItemUsable
 	{
@@ -87,6 +85,7 @@ namespace RogueLibsCore
 		public static implicit operator CustomTooltip(int number) => new CustomTooltip(number.ToString());
 		public static implicit operator CustomTooltip(float number) => new CustomTooltip(number.ToString());
 		public static implicit operator CustomTooltip(CustomName name) => new CustomTooltip(name);
+		public static implicit operator CustomTooltip(CustomNameInfo nameInfo) => new CustomTooltip(nameInfo);
 	}
 	public sealed class CustomItemFactory : HookFactoryBase<InvItem>
 	{

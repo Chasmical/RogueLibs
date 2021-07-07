@@ -11,7 +11,9 @@ namespace RogueLibsCore
 	public class MutatorUnlock : DisplayedUnlock
 	{
 		public MutatorUnlock() : this(null, false) { }
-		public MutatorUnlock(string name, bool unlockedFromStart = false) : base(name, "Challenge", unlockedFromStart) { }
+		public MutatorUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public MutatorUnlock(string name) : this(name, false) { }
+		public MutatorUnlock(string name, bool unlockedFromStart) : base(name, "Challenge", unlockedFromStart) { }
 		internal MutatorUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled

@@ -11,7 +11,9 @@ namespace RogueLibsCore
 	public class BigQuestUnlock : DisplayedUnlock, IUnlockInCC
 	{
 		public BigQuestUnlock() : this(null, false) { }
-		public BigQuestUnlock(string name, bool unlockedFromStart = false) : base(name, "BigQuest", unlockedFromStart) => IsAvailableInCC = true;
+		public BigQuestUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public BigQuestUnlock(string name) : this(name, false) { }
+		public BigQuestUnlock(string name, bool unlockedFromStart) : base(name, "BigQuest", unlockedFromStart) => IsAvailableInCC = true;
 		internal BigQuestUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled

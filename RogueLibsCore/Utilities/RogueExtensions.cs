@@ -7,36 +7,42 @@ namespace RogueLibsCore
 {
 	public static class RogueExtensions
 	{
-		public static T AddItem<T>(this InvDatabase inventory, int amount)
-			where T : CustomItem
+		public static T AddItem<T>(this InvDatabase inventory, int amount) where T : CustomItem
 		{
 			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
 			if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), amount, $"{nameof(amount)} must be greater than 0.");
 			InvItem item = inventory.AddItem(ItemInfo.Get<T>().Name, amount);
 			return item.GetHook<T>();
 		}
-		public static T GetItem<T>(this InvDatabase inventory)
-			where T : CustomItem
+		public static T GetItem<T>(this InvDatabase inventory) where T : CustomItem
 		{
 			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
 			InvItem item = inventory.FindItem(ItemInfo.Get<T>().Name);
 			return item?.GetHook<T>();
 		}
-		public static bool HasItem<T>(this InvDatabase inventory)
-			where T : CustomItem
+		public static bool HasItem<T>(this InvDatabase inventory) where T : CustomItem
 		{
 			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
 			InvItem item = inventory.FindItem(ItemInfo.Get<T>().Name);
 			return item != null;
 		}
-		public static bool HasItem<T>(this InvDatabase inventory, int amount)
-			where T : CustomItem
+		public static bool HasItem<T>(this InvDatabase inventory, int amount) where T : CustomItem
 		{
 			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
 			string itemName = ItemInfo.Get<T>().Name;
 			List<InvItem> items = inventory.InvItemList.FindAll(i => i.invItemName == itemName);
 			return items.Sum(i => i.invItemCount) >= amount;
 		}
+
+		public static T GiveAbility<T>(this Agent agent) where T : CustomAbility
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			string abilityName = ItemInfo.Get<T>().Name;
+			agent.statusEffects.GiveSpecialAbility(abilityName);
+			return agent.inventory.equippedSpecialAbility.GetHook<T>();
+		}
+		public static CustomAbility GetAbility(this Agent agent) => agent.inventory.equippedSpecialAbility?.GetHook<CustomAbility>();
+		public static T GetAbility<T>(this Agent agent) where T : CustomAbility => GetAbility(agent) as T;
 
 		public static UnlockButtonState GetState(this ButtonData buttonData)
 		{
@@ -65,16 +71,14 @@ namespace RogueLibsCore
 				: buttonData.scrollingMenu?.solidObjectButton ?? buttonData.characterCreation.solidObjectButton;
 		}
 
-		public static T AddTrait<T>(this Agent agent)
-			where T : CustomTrait
+		public static T AddTrait<T>(this Agent agent) where T : CustomTrait
 		{
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
 			string traitName = TraitInfo.Get<T>().Name;
 			agent.statusEffects.AddTrait(traitName);
 			return agent.statusEffects.TraitList.Find(t => t.traitName == traitName)?.GetHook<T>();
 		}
-		public static T GetTrait<T>(this Agent agent)
-			where T : CustomTrait
+		public static T GetTrait<T>(this Agent agent) where T : CustomTrait
 		{
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
 			string traitName = TraitInfo.Get<T>().Name;
@@ -102,5 +106,6 @@ namespace RogueLibsCore
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
 			return agent.statusEffects.hasTrait(traitName);
 		}
+
 	}
 }

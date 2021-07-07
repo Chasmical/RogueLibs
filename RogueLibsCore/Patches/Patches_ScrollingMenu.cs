@@ -38,6 +38,9 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.RefreshLoadouts));
 
 			Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.CanHaveTrait));
+
+			RogueLibs.CreateCustomName("GiveNuggetsDebug", "Unlock", new CustomNameInfo("[DEBUG] +10 Nuggets"));
+			RogueLibs.CreateCustomName("D_GiveNuggetsDebug", "Unlock", new CustomNameInfo("A debug-build feature that gives you 10 nuggets."));
 		}
 
 		public static void ScrollingMenu_OpenScrollingMenu_Prefix(ScrollingMenu __instance, out float __state)
@@ -154,6 +157,7 @@ namespace RogueLibsCore
 		public static readonly ClearAllItemsUnlock clearAllItems = new ClearAllItemsUnlock();
 		public static readonly ClearAllTraitsUnlock clearAllTraits = new ClearAllTraitsUnlock();
 		public static readonly ReRollLoadoutsUnlock reRollLoadouts = new ReRollLoadoutsUnlock();
+		private static readonly GiveNuggetsButton giveNuggets = new GiveNuggetsButton();
 
 		public static bool ScrollingMenu_SortUnlocks(ScrollingMenu __instance, List<Unlock> myUnlockList, List<Unlock> ___listUnlocks)
 		{
@@ -174,6 +178,11 @@ namespace RogueLibsCore
 			{
 				reRollLoadouts.Menu = menu;
 				___listUnlocks.Insert(0, reRollLoadouts.Unlock);
+				if (RogueFramework.IsDebugEnabled(DebugFlags.EnableTools))
+				{
+					giveNuggets.Menu = menu;
+					___listUnlocks.Insert(0, giveNuggets.Unlock);
+				}
 			}
 			if (menu.Type == UnlocksMenuType.MutatorMenu)
 			{
@@ -206,7 +215,15 @@ namespace RogueLibsCore
 			ButtonData buttonData = __instance.buttonsData[myButton.scrollingButtonNum];
 			DisplayedUnlock du = (DisplayedUnlock)buttonData.__RogueLibsCustom;
 
-			du.OnPushedButton();
+			try
+			{
+				du.OnPushedButton();
+			}
+			catch (Exception e)
+			{
+				RogueFramework.Logger.LogError($"An error updating {du?.Name} ({du?.Type}) button.");
+				RogueFramework.Logger.LogError(e);
+			}
 			return false;
 		}
 
@@ -224,7 +241,20 @@ namespace RogueLibsCore
 			return false;
 		}
 
-		public static void ScrollingMenu_RefreshLoadouts(List<Unlock> ___loadoutList) => ___loadoutList.RemoveAt(0);
+		public static void ScrollingMenu_RefreshLoadouts(List<Unlock> ___loadoutList)
+		{
+			___loadoutList.RemoveAt(0);
+			for (int i = 0; i < ___loadoutList.Count; i++)
+			{
+				Unlock unlock = ___loadoutList[i];
+				if (unlock.__RogueLibsCustom is null)
+				{
+					Unlock normalized = GameController.gameController.sessionDataBig.unlocks
+						.Find(u => u.unlockName == unlock.unlockName && u.unlockType == unlock.unlockType);
+					unlock.__RogueLibsCustom = normalized.__RogueLibsCustom;
+				}
+			}
+		}
 
 		public static void ScrollingMenu_CanHaveTrait(ScrollingMenu __instance, Unlock myUnlock, ref bool __result)
 		{
@@ -245,6 +275,19 @@ namespace RogueLibsCore
 					}
 				}
 			}
+		}
+	}
+	internal class GiveNuggetsButton : MutatorUnlock
+	{
+		public GiveNuggetsButton() : base("GiveNuggetsDebug", true) { }
+
+		public override string GetFancyName() => $"<color=cyan>{GetName()}</color>";
+		public override void OnPushedButton()
+		{
+			gc.unlocks.AddNuggets(10);
+			PlaySound("BuyItem");
+			gc.unlocks.SaveUnlockData(true);
+			UpdateMenu();
 		}
 	}
 }

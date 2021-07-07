@@ -10,9 +10,9 @@ namespace RogueLibsCore
 	{
 		public string Name { get; }
 		public EffectLimitations Limitations { get; }
-		public bool RemoveOnDeath => (Limitations & EffectLimitations.RemoveOnDeath) != 0;
-		public bool RemoveOnKnockOut => (Limitations & EffectLimitations.RemoveOnKnockOut) != 0;
-		public bool RemoveOnNextLevel => (Limitations & EffectLimitations.RemoveOnNextLevel) != 0;
+		public bool RemoveOnDeath { get; }
+		public bool RemoveOnKnockOut { get; }
+		public bool RemoveOnNextLevel { get; }
 
 		private static readonly Dictionary<Type, EffectInfo> infos = new Dictionary<Type, EffectInfo>();
 		public static EffectInfo Get(Type type) => infos.TryGetValue(type, out EffectInfo info) ? info : (infos[type] = new EffectInfo(type));
@@ -22,8 +22,15 @@ namespace RogueLibsCore
 		{
 			if (!typeof(CustomEffect).IsAssignableFrom(type))
 				throw new ArgumentException($"The specified {nameof(type)} is not a {nameof(CustomEffect)}!", nameof(type));
-			EffectNameAttribute attr = type.GetCustomAttribute<EffectNameAttribute>();
+
+			EffectNameAttribute attr = type.GetCustomAttributes<EffectNameAttribute>().FirstOrDefault();
 			Name = attr?.Name ?? type.Name;
+
+			EffectParametersAttribute parsAttr = type.GetCustomAttributes<EffectParametersAttribute>().FirstOrDefault();
+			Limitations = parsAttr?.Limitations ?? EffectLimitations.Default;
+			RemoveOnDeath = (Limitations & EffectLimitations.RemoveOnDeath) != 0;
+			RemoveOnKnockOut = (Limitations & EffectLimitations.RemoveOnKnockOut) != 0;
+			RemoveOnNextLevel = (Limitations & EffectLimitations.RemoveOnNextLevel) != 0;
 		}
 	}
 	[AttributeUsage(AttributeTargets.Class)]
@@ -36,7 +43,7 @@ namespace RogueLibsCore
 	public class EffectParametersAttribute : Attribute
 	{
 		public EffectLimitations Limitations { get; }
-		public EffectParametersAttribute(EffectLimitations limitations = EffectLimitations.RemoveOnDeath) => Limitations = limitations;
+		public EffectParametersAttribute(EffectLimitations limitations = EffectLimitations.Default) => Limitations = limitations;
 	}
 	[Flags]
 	public enum EffectLimitations
@@ -47,6 +54,6 @@ namespace RogueLibsCore
 		RemoveOnKnockOut  = 1 << 1,
 		RemoveOnNextLevel = 1 << 2,
 
-		Default = RemoveOnDeath
+		Default = RemoveOnDeath,
 	}
 }

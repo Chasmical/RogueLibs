@@ -12,7 +12,6 @@ namespace RogueLibsCore
 	}
 	public class CustomName : IName
 	{
-		static CustomName() => Languages = new ReadOnlyDictionary<string, LanguageCode>(languages);
 		internal CustomName(string name, string type, string english)
 		{
 			Name = name;
@@ -56,27 +55,6 @@ namespace RogueLibsCore
 
 		public IEnumerator<KeyValuePair<LanguageCode, string>> GetEnumerator() => translations.GetEnumerator();
 		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
-
-		private static readonly Dictionary<string, LanguageCode> languages = new Dictionary<string, LanguageCode>
-		{
-			["english"] = LanguageCode.English,
-			["spanish"] = LanguageCode.Spanish,
-			["schinese"] = LanguageCode.Chinese,
-			["german"] = LanguageCode.German,
-			["brazilian"] = LanguageCode.Brazilian,
-			["french"] = LanguageCode.French,
-			["russian"] = LanguageCode.Russian,
-			["koreana"] = LanguageCode.Korean,
-		};
-		public static ReadOnlyDictionary<string, LanguageCode> Languages { get; }
-		public static void RegisterLanguageCode(string languageId, LanguageCode code)
-		{
-			if (languageId is null) throw new ArgumentNullException(nameof(languageId));
-			if (languages.ContainsKey(languageId))
-				throw new ArgumentException($"The specified {nameof(languageId)} is already taken.", nameof(languageId));
-			RogueFramework.Logger.LogDebug($"Registered \"{languageId}\" language id ({(int)code})");
-			languages.Add(languageId, code);
-		}
 	}
 	public struct CustomNameInfo : IName
 	{
@@ -132,9 +110,43 @@ namespace RogueLibsCore
 	}
 	public static class LanguageService
 	{
+		static LanguageService()
+		{
+			Languages = new ReadOnlyDictionary<string, LanguageCode>(languages);
+			languageNames = languages.ToDictionary(e => e.Value, e => e.Key);
+		}
 		public static NameDB NameDB { get; internal set; }
 		public static LanguageCode Current { get; internal set; }
-		public static LanguageCode FallBack { get; internal set; }
+		public static LanguageCode FallBack { get; set; }
+
+		private static readonly Dictionary<string, LanguageCode> languages = new Dictionary<string, LanguageCode>
+		{
+			["english"]   = LanguageCode.English,
+			["spanish"]   = LanguageCode.Spanish,
+			["schinese"]  = LanguageCode.Chinese,
+			["german"]    = LanguageCode.German,
+			["brazilian"] = LanguageCode.Brazilian,
+			["french"]    = LanguageCode.French,
+			["russian"]   = LanguageCode.Russian,
+			["koreana"]   = LanguageCode.Korean,
+		};
+		private static readonly Dictionary<LanguageCode, string> languageNames;
+		public static ReadOnlyDictionary<string, LanguageCode> Languages { get; }
+
+		public static string GetLanguageName(LanguageCode code)
+			=> languageNames.TryGetValue(code, out string name) ? name : null;
+		public static void RegisterLanguageCode(string languageName, LanguageCode code)
+		{
+			if (languageName is null) throw new ArgumentNullException(nameof(languageName));
+			if (languages.ContainsKey(languageName))
+				throw new ArgumentException($"The specified {nameof(languageName)} is already taken.", nameof(languageName));
+			RogueFramework.Logger.LogDebug($"Registered \"{languageName}\" language ({(int)code})");
+			languages.Add(languageName, code);
+			languageNames.Add(code, languageName);
+		}
+
+		public static string GetCurrent(this IName name) => name[Current];
+		public static string GetCurrentOrDefault(this IName name) => name[Current] ?? name[FallBack];
 	}
 	public interface INameProvider
 	{
@@ -149,7 +161,7 @@ namespace RogueLibsCore
 			if (name != null && type != null
 				&& CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category)
 				&& category.TryGetValue(name, out CustomName customName))
-				result = customName[LanguageService.Current] ?? customName[LanguageService.FallBack];
+				result = customName.GetCurrentOrDefault();
 		}
 		public CustomName AddName(string name, string type, CustomNameInfo info)
 		{

@@ -16,17 +16,17 @@ namespace RogueLibsCore
 
 		private TraitInfo(Type type)
 		{
-			if (!typeof(CustomTrait).IsAssignableFrom(type)) throw new ArgumentException($"The specified type is not a {nameof(CustomTrait)}!", nameof(type));
-			TraitNameAttribute attr = type.GetCustomAttribute<TraitNameAttribute>();
+			if (!typeof(CustomTrait).IsAssignableFrom(type))
+				throw new ArgumentException($"The specified type is not a {nameof(CustomTrait)}!", nameof(type));
 
-			Name = attr?.Name ?? type.Name;
+			TraitNameAttribute nameAttr = type.GetCustomAttributes<TraitNameAttribute>().FirstOrDefault();
+			Name = nameAttr?.Name ?? type.Name;
 		}
 	}
 	[AttributeUsage(AttributeTargets.Class)]
 	public class TraitNameAttribute : Attribute
 	{
 		public string Name { get; }
-		public TraitNameAttribute() { }
 		public TraitNameAttribute(string name) => Name = name ?? throw new ArgumentNullException(nameof(name));
 	}
 }

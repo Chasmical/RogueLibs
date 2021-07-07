@@ -11,7 +11,9 @@ namespace RogueLibsCore
 	public class AchievementUnlock : DisplayedUnlock
 	{
 		public AchievementUnlock() : this(null, false) { }
-		public AchievementUnlock(string name, bool unlockedFromStart = false) : base(name, "Achievement", unlockedFromStart) { }
+		public AchievementUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public AchievementUnlock(string name) : this(name, false) { }
+		public AchievementUnlock(string name, bool unlockedFromStart) : base(name, "Achievement", unlockedFromStart) { }
 		internal AchievementUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled

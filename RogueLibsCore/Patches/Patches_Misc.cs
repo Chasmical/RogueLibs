@@ -28,7 +28,7 @@ namespace RogueLibsCore
 
 		public static void NameDB_RealAwake(NameDB __instance)
 		{
-			if (!CustomName.Languages.TryGetValue(__instance.language, out LanguageCode code))
+			if (!LanguageService.Languages.TryGetValue(__instance.language, out LanguageCode code))
 				code = LanguageCode.English;
 
 			LanguageService.NameDB = __instance;

@@ -11,7 +11,9 @@ namespace RogueLibsCore
 	public class AbilityUnlock : DisplayedUnlock, IUnlockInCC
 	{
 		public AbilityUnlock() : this(null, false) { }
-		public AbilityUnlock(string name, bool unlockedFromStart = false) : base(name, "Ability", unlockedFromStart) => IsAvailableInCC = true;
+		public AbilityUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public AbilityUnlock(string name) : this(name, false) { }
+		public AbilityUnlock(string name, bool unlockedFromStart) : base(name, "Ability", unlockedFromStart) => IsAvailableInCC = true;
 		internal AbilityUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled

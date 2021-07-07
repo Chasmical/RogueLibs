@@ -11,11 +11,15 @@ namespace RogueLibsCore
 	public class ItemUnlock : DisplayedUnlock, IUnlockInCC
 	{
 		public ItemUnlock() : this(null, false) { }
-		public ItemUnlock(string name, bool unlockedFromStart = false)
+		public ItemUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public ItemUnlock(string name) : this(name, false) { }
+		public ItemUnlock(string name, bool unlockedFromStart)
 			: base(name, "Item", unlockedFromStart)
 		{
 			IsAvailableInCC = true;
 			IsAvailableInItemTeleporter = true;
+			CharacterCreationCost = 1;
+			LoadoutCost = 1;
 		}
 		internal ItemUnlock(Unlock unlock) : base(unlock) { }
 
@@ -121,6 +125,7 @@ namespace RogueLibsCore
 					{
 						PlaySound("ClickButton");
 						IsEnabled = !IsEnabled;
+						gc.unlocks.SaveUnlockData(true);
 						UpdateButton();
 						UpdateMenu();
 					}
@@ -149,9 +154,9 @@ namespace RogueLibsCore
 					if (IsSelectedLoadout)
 					{
 						PlaySound("BuyItem");
-						gc.unlocks.AddNuggets(LoadoutCost);
 						gc.sessionDataBig.loadoutNuggetsSpent = 0;
 						IsSelectedLoadout = false;
+						gc.unlocks.AddNuggets(LoadoutCost);
 						UpdateButton();
 						UpdateMenu();
 					}
@@ -168,9 +173,9 @@ namespace RogueLibsCore
 								selected.IsSelectedLoadout = false;
 								selected.UpdateButton();
 							}
-							gc.unlocks.SubtractNuggets(LoadoutCost);
 							gc.sessionDataBig.loadoutNuggetsSpent = LoadoutCost;
 							IsSelectedLoadout = true;
+							gc.unlocks.SubtractNuggets(LoadoutCost);
 							PlaySound("BuyItem");
 							UpdateButton();
 							UpdateMenu();

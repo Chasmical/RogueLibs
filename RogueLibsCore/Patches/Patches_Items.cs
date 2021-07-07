@@ -39,118 +39,7 @@ namespace RogueLibsCore
 			// CustomItem, IItemTargetableAnywhere patches
 			Patcher.Postfix(typeof(InvInterface), nameof(InvInterface.TargetAnywhere));
 
-			SubscribeDefaultChecks();
-		}
-		private void SubscribeDefaultChecks()
-		{
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.ghost)
-				{
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.HasTrait("CantInteract") && e.Item.itemType != ItemTypes.Food)
-				{
-					e.User.SayDialogue("CantInteract");
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.HasTrait("OilRestoresHealth") && e.Item.itemType == ItemTypes.Food
-					&& (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol")))
-				{
-					e.User.SayDialogue("OnlyOilGivesHealth");
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.HasTrait("OilRestoresHealth")
-					&& e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
-				{
-					e.User.SayDialogue("OnlyOilGivesHealth");
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.HasTrait("BloodRestoresHealth") && e.Item.itemType == ItemTypes.Food
-					&& (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol")))
-				{
-					e.User.SayDialogue("OnlyBloodGivesHealth");
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.HasTrait("BloodRestoresHealth")
-					&& e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
-				{
-					e.User.SayDialogue("OnlyBloodGivesHealth2");
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.electronic && e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food"))
-				{
-					e.User.SayDialogue("OnlyChargeGivesHealth");
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.electronic && e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
-				{
-					e.User.SayDialogue("OnlyChargeGivesHealth");
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.HasTrait("CannibalizeRestoresHealth")
-					&& e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food"))
-				{
-					e.User.SayDialogue("OnlyCannibalizeGivesHealth");
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-			InventoryChecks.OnItemUsing += e =>
-			{
-				if (e.User.health == e.User.healthMax && e.Item.healthChange > 0)
-				{
-					e.User.SayDialogue("HealthFullCantUseItem");
-					e.User.gc.audioHandler.Play(e.User, "CantDo");
-					e.Cancel = e.Handled = true;
-				}
-			};
-
-
-
-
-
-
-
-
-
-
-
-
-
+			DefaultInventoryChecks.SubscribeChecks();
 		}
 
 		public static void InvItem_SetupDetails(InvItem __instance)
@@ -172,8 +61,9 @@ namespace RogueLibsCore
 				return false;
 			}
 
+			Agent originalAgent = agent;
 			OnItemUsingArgs args = new OnItemUsingArgs(item, agent);
-			if (InventoryChecks.onItemUsing.Raise(args))
+			if (InventoryChecks.onItemUsing.Raise(args, custom?.ItemInfo.IgnoredChecks))
 			{
 				agent = args.User;
 				// in case an inventory check redirected the use of an item on someone else
@@ -181,9 +71,10 @@ namespace RogueLibsCore
 				{
 					if (agent.localPlayer)
 					{
-						if (!agent.inventory.HasItem(item.invItemName) && agent.inventory.equippedSpecialAbility?.invItemName != item.invItemName)
+						if (!originalAgent.inventory.HasItem(item.invItemName)
+							&& originalAgent.inventory.equippedSpecialAbility?.invItemName != item.invItemName)
 							return false;
-						else if ((item.Categories.Contains("Usable") || item.itemType == "Consumable") && !item.used)
+						else if (!item.used && (item.Categories.Contains("Usable") || item.itemType == "Consumable"))
 						{
 							item.used = true;
 							if (agent.isPlayer > 0) agent.gc.sessionData.endStats[agent.isPlayer].itemsUsed++;
@@ -204,26 +95,22 @@ namespace RogueLibsCore
 		{
 			CustomItem custom = __instance.GetHook<CustomItem>();
 
-			if (true)
+			if (__instance.stackable && __instance.invItemName == otherItem.invItemName
+				&& InventoryChecks.IsCheckAllowed(custom, "AutoStacking"))
 			{
-				if (__instance.invItemName == otherItem.invItemName && __instance.stackable)
+				if (__instance.invItemName == "Syringe" && __instance.contents[0] != otherItem.contents[0])
 				{
-					if (__instance.invItemName == "Syringe" && __instance.contents[0] != otherItem.contents[0])
-					{
-						__result = false;
-						return false;
-					}
-					if (combineType == "Combine")
-					{
-						if (myAgent.controllerType != "Keyboard")
-						{
-							myAgent.gc.audioHandler.Play(myAgent, "BeginCombine");
-						}
-						otherItem.agent.mainGUI.invInterface.PutDraggedItemBack();
-					}
-					__result = true;
+					__result = false;
 					return false;
 				}
+				if (combineType == "Combine")
+				{
+					if (myAgent.controllerType != "Keyboard")
+						myAgent.gc.audioHandler.Play(myAgent, "BeginCombine");
+					otherItem.agent.mainGUI.invInterface.PutDraggedItemBack();
+				}
+				__result = true;
+				return false;
 			}
 
 			bool filterResult;
@@ -235,7 +122,7 @@ namespace RogueLibsCore
 			else filterResult = new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, string.Empty);
 
 			OnItemsCombiningArgs args = new OnItemsCombiningArgs(__instance, otherItem, myAgent);
-			__result = filterResult && InventoryChecks.onItemsCombining.Raise(args);
+			__result = filterResult && InventoryChecks.onItemsCombining.Raise(args, custom?.ItemInfo.IgnoredChecks);
 
 			if (__result && combineType == "Combine")
 			{
@@ -251,12 +138,12 @@ namespace RogueLibsCore
 				}
 				else new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, "Combine");
 
-				if (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance))
+				if (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance)
+					&& InventoryChecks.IsCheckAllowed(custom, "StopOnZero"))
 				{
 					myAgent.mainGUI.invInterface.HideDraggedItem();
 					myAgent.mainGUI.invInterface.HideTarget();
 				}
-
 			}
 			return false;
 		}
@@ -264,54 +151,56 @@ namespace RogueLibsCore
 		{
 			CustomItem custom = __instance.GetHook<CustomItem>();
 
-			if (Vector2.Distance(__instance.agent.curPosition, otherObject.curPosition) > 15f)
+			if (Vector2.Distance(__instance.agent.curPosition, otherObject.curPosition) > 15f
+				&& InventoryChecks.IsCheckAllowed(custom, "Distance"))
 			{
 				__result = false;
 				return false;
 			}
-			if ((otherObject as Agent)?.butlerBot == true)
+			if ((otherObject as Agent)?.butlerBot == true && InventoryChecks.IsCheckAllowed(custom, "ButlerBot"))
 			{
 				__result = false;
 				return false;
 			}
-			if ((otherObject as Agent)?.mechEmpty == true)
+			if ((otherObject as Agent)?.mechEmpty == true && InventoryChecks.IsCheckAllowed(custom, "EmptyMech"))
 			{
 				__result = false;
 				return false;
 			}
 
-			bool firstCheck = custom is IItemTargetable combinable
-				? combinable.TargetFilter(otherObject)
+			bool firstCheck = custom is IItemTargetable targetable
+				? targetable.TargetFilter(otherObject)
 				: new ItemFunctions().TargetObject(__instance, __instance.agent, otherObject, string.Empty);
 
 			OnItemTargetingArgs args = new OnItemTargetingArgs(__instance, otherObject, __instance.agent);
-			__result = firstCheck && InventoryChecks.onItemTargeting.Raise(args);
+			__result = firstCheck && InventoryChecks.onItemTargeting.Raise(args, custom?.ItemInfo.IgnoredChecks);
 
 			if (__result && combineType == "Combine")
 			{
 				otherObject = args.Target;
 				using (AgentSwapper swapper = new AgentSwapper(__instance, args.User))
 				{
-					if (custom is IItemTargetable combinable2) combinable2.TargetObject(otherObject);
+					if (custom is IItemTargetable targetable2) targetable2.TargetObject(otherObject);
 					else new ItemFunctions().TargetObject(__instance, __instance.agent, otherObject, "Combine");
 
-					if (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance))
+					if (__instance.invItemCount < 1 || !__instance.database.InvItemList.Contains(__instance)
+						&& InventoryChecks.IsCheckAllowed(custom, "StopOnZero"))
 					{
 						__instance.agent.mainGUI.invInterface.HideDraggedItem();
 						__instance.agent.mainGUI.invInterface.HideTarget();
 					}
 				}
-
 			}
 			return false;
 		}
-		private static Color? targetTextColor;
 
+		private static Color? targetTextColor;
 		public static void InvInterface_ShowTarget(InvInterface __instance, InvItem item)
 		{
 			if (item.itemType != "Combine")
 			{
 				if (targetTextColor is null) targetTextColor = __instance.cursorTextString3.color;
+
 				CustomItem custom = item.GetHook<CustomItem>();
 				if (custom is IItemTargetable targetable)
 				{
@@ -326,6 +215,8 @@ namespace RogueLibsCore
 			CustomItem custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
 			if (custom is IItemTargetable targetable)
 			{
+				if (targetTextColor is null) targetTextColor = __instance.cursorTextString3.color;
+
 				CustomTooltip tooltip = targetable.TargetCursorText(myPlayfieldObject);
 				__instance.cursorTextCanvas3.enabled = true;
 				__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
@@ -346,6 +237,7 @@ namespace RogueLibsCore
 			}
 		}
 
+		private static Color? combineTextColor;
 		public static void InvSlot_SetColor(InvSlot __instance)
 		{
 			InvItem combiner = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
@@ -376,6 +268,7 @@ namespace RogueLibsCore
 					if (__instance.slotType != "NPCChest" && __instance.slotType != "Chest")
 					{
 						if (combineTextColor is null) combineTextColor = __instance.toolbarNumText.color;
+
 						CustomTooltip tooltip = combinable.CombineTooltip(combinee);
 						__instance.toolbarNumTextGo.SetActive(true);
 						__instance.toolbarNumText.text = tooltip.Text ?? string.Empty;
@@ -397,21 +290,22 @@ namespace RogueLibsCore
 					__instance.invInterface.OnSelectionBox(__instance.slotType, __instance.tr.position);
 			}
 		}
-		private static Color? combineTextColor;
 
+		private static Color? countTextColor;
 		public static void InvSlot_UpdateInvSlot(InvSlot __instance, Text ___itemText)
 		{
 			CustomItem custom = __instance.item?.GetHook<CustomItem>();
 			if (custom != null)
 			{
+				if (countTextColor is null) countTextColor = ___itemText.color;
+
 				CustomTooltip tooltip = custom.GetCountString();
 				if (tooltip.Text != null)
 				{
 					___itemText.enabled = true;
 					___itemText.text = tooltip.Text;
+					___itemText.color = tooltip.Color ?? countTextColor.Value;
 				}
-				if (tooltip.Color != null)
-					___itemText.color = tooltip.Color.Value;
 			}
 		}
 
@@ -423,6 +317,8 @@ namespace RogueLibsCore
 				__instance.cursorHighlightTargetObjects = custom is IItemTargetable;
 				if (custom is IItemTargetableAnywhere targetable)
 				{
+					if (targetTextColor is null) targetTextColor = __instance.cursorTextString3.color;
+
 					bool filter = targetable.TargetFilter(myPos);
 					__instance.cursorHighlight = filter;
 					__instance.cursorHighlightTargetAnywhere = filter;
@@ -445,6 +341,7 @@ namespace RogueLibsCore
 				}
 			}
 		}
+
 		private class AgentSwapper : IDisposable
 		{
 			public AgentSwapper(InvItem item, Agent targetAgent)
@@ -456,6 +353,117 @@ namespace RogueLibsCore
 			public InvItem Item;
 			public Agent OriginalAgent;
 			public void Dispose() => Item.agent = OriginalAgent;
+		}
+	}
+	public static class DefaultInventoryChecks
+	{
+		internal static void SubscribeChecks()
+		{
+			InventoryChecks.AddItemUsingCheck("Ghost", GhostCheck);
+			InventoryChecks.AddItemUsingCheck("PeaBrained", PeaBrainedCheck);
+			InventoryChecks.AddItemUsingCheck("OnlyOil", OnlyOilCheck);
+			InventoryChecks.AddItemUsingCheck("OnlyOilMedicine", OnlyOilMedicineCheck);
+			InventoryChecks.AddItemUsingCheck("OnlyBlood", OnlyBloodCheck);
+			InventoryChecks.AddItemUsingCheck("OnlyBloodMedicine", OnlyBloodMedicineCheck);
+			InventoryChecks.AddItemUsingCheck("OnlyCharge", OnlyChargeCheck);
+			InventoryChecks.AddItemUsingCheck("OnlyChargeMedicine", OnlyChargeMedicineCheck);
+			InventoryChecks.AddItemUsingCheck("OnlyHumanFlesh", OnlyHumanFleshCheck);
+			InventoryChecks.AddItemUsingCheck("FullHealth", FullHealthCheck);
+		}
+
+		public static void GhostCheck(OnItemUsingArgs e)
+		{
+			if (e.User.ghost)
+			{
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
+		}
+		public static void PeaBrainedCheck(OnItemUsingArgs e)
+		{
+			if (e.Item.itemType != ItemTypes.Food && e.User.HasTrait("CantInteract"))
+			{
+				e.User.SayDialogue("CantInteract");
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
+		}
+		public static void OnlyOilCheck(OnItemUsingArgs e)
+		{
+			if (e.Item.itemType == ItemTypes.Food && (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol"))
+				&& e.User.HasTrait("OilRestoresHealth"))
+			{
+				e.User.SayDialogue("OnlyOilGivesHealth");
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
+		}
+		public static void OnlyOilMedicineCheck(OnItemUsingArgs e)
+		{
+			if (e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health")
+				&& e.User.HasTrait("OilRestoresHealth"))
+			{
+				e.User.SayDialogue("OnlyOilGivesHealth");
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
+		}
+		public static void OnlyBloodCheck(OnItemUsingArgs e)
+		{
+			if (e.Item.itemType == ItemTypes.Food && (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol"))
+				&& e.User.HasTrait("BloodRestoresHealth"))
+			{
+				e.User.SayDialogue("OnlyBloodGivesHealth");
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
+		}
+		public static void OnlyBloodMedicineCheck(OnItemUsingArgs e)
+		{
+			if (e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health")
+				&& e.User.HasTrait("BloodRestoresHealth"))
+			{
+				e.User.SayDialogue("OnlyBloodGivesHealth2");
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
+		}
+		public static void OnlyChargeCheck(OnItemUsingArgs e)
+		{
+			if (e.User.electronic && e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food"))
+			{
+				e.User.SayDialogue("OnlyChargeGivesHealth");
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
+		}
+		public static void OnlyChargeMedicineCheck(OnItemUsingArgs e)
+		{
+			if (e.User.electronic && e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
+			{
+				e.User.SayDialogue("OnlyChargeGivesHealth");
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
+		}
+		public static void OnlyHumanFleshCheck(OnItemUsingArgs e)
+		{
+			if (e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food")
+				&& e.User.HasTrait("CannibalizeRestoresHealth"))
+			{
+				e.User.SayDialogue("OnlyCannibalizeGivesHealth");
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
+		}
+		public static void FullHealthCheck(OnItemUsingArgs e)
+		{
+			if (e.Item.healthChange > 0 && e.User.health == e.User.healthMax)
+			{
+				e.User.SayDialogue("HealthFullCantUseItem");
+				e.User.gc.audioHandler.Play(e.User, "CantDo");
+				e.Cancel = e.Handled = true;
+			}
 		}
 	}
 }

@@ -12,16 +12,24 @@ namespace RogueLibsCore.Test
 		{
 			RogueLibs.CreateCustomTrait<Smoker>()
 				.WithName(new CustomNameInfo("Smoker"))
-				.WithDescription(new CustomNameInfo("Cough randomly, alerting any nearby enemies"))
-				.WithUnlock(new TraitUnlock { CharacterCreationCost = -3, });
+				.WithDescription(new CustomNameInfo("Randomly cough, alerting enemies"))
+				.WithUnlock(new TraitUnlock { CharacterCreationCost = -4, });
 
 			RogueLibs.CreateCustomName("Smoker_Cough1", "Dialogue", new CustomNameInfo("*Cough*"));
 			RogueLibs.CreateCustomName("Smoker_Cough2", "Dialogue", new CustomNameInfo("*Cough* *CouGH*"));
 			RogueLibs.CreateCustomName("Smoker_Cough3", "Dialogue", new CustomNameInfo("*coUGH* *COUgh*"));
 		}
 
-		public override void OnAdded() { }
-		public override void OnRemoved() { }
+		public override void OnAdded()
+		{
+			Owner.SetEndurance(Owner.enduranceStatMod - 1);
+			Owner.SetSpeed(Owner.speedStatMod - 1);
+		}
+		public override void OnRemoved()
+		{
+			Owner.SetEndurance(Owner.enduranceStatMod + 1);
+			Owner.SetSpeed(Owner.speedStatMod + 1);
+		}
 		public override void OnUpdated(TraitUpdatedArgs e)
 		{
 			e.UpdateDelay = 5f;

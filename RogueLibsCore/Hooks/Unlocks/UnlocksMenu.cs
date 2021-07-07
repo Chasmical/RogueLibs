@@ -14,8 +14,10 @@ namespace RogueLibsCore
 
 		public UnlocksMenuType Type { get; protected set; }
 		public List<DisplayedUnlock> Unlocks { get; }
-		public abstract void UpdateMenu();
 		public abstract Agent Agent { get; }
+
+		public abstract void PlaySound(string clipName);
+		public abstract void UpdateMenu();
 	}
 	public class CustomScrollingMenu : UnlocksMenu
 	{
@@ -45,6 +47,7 @@ namespace RogueLibsCore
 		public ScrollingMenu Menu { get; }
 		public override Agent Agent => Menu.agent;
 
+		public override void PlaySound(string clipName) => GameController.gameController.audioHandler.Play(Agent, clipName);
 		public override void UpdateMenu()
 		{
 			if (Type == UnlocksMenuType.MutatorMenu)
@@ -72,6 +75,7 @@ namespace RogueLibsCore
 		public CharacterCreation CC { get; }
 		public override Agent Agent => CC.agent;
 
+		public override void PlaySound(string clipName) => GameController.gameController.audioHandler.PlayMust(Agent, clipName);
 		public override void UpdateMenu()
 		{
 			(CC.selectedSpace == "Items" ? CC.scrollerControllerItems

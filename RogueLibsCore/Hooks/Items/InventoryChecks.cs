@@ -9,23 +9,19 @@ namespace RogueLibsCore
 	public static class InventoryChecks
 	{
 		internal static readonly RogueEvent<OnItemUsingArgs> onItemUsing = new RogueEvent<OnItemUsingArgs>();
-		public static event RogueEventHandler<OnItemUsingArgs> OnItemUsing
-		{
-			add => onItemUsing.Subscribe(value);
-			remove => onItemUsing.Unsubscribe(value);
-		}
 		internal static readonly RogueEvent<OnItemsCombiningArgs> onItemsCombining = new RogueEvent<OnItemsCombiningArgs>();
-		public static event RogueEventHandler<OnItemsCombiningArgs> OnItemsCombining
-		{
-			add => onItemsCombining.Subscribe(value);
-			remove => onItemsCombining.Unsubscribe(value);
-		}
 		internal static readonly RogueEvent<OnItemTargetingArgs> onItemTargeting = new RogueEvent<OnItemTargetingArgs>();
-		public static event RogueEventHandler<OnItemTargetingArgs> OnItemTargeting
-		{
-			add => onItemTargeting.Subscribe(value);
-			remove => onItemTargeting.Unsubscribe(value);
-		}
+
+		public static void AddItemUsingCheck(string name, RogueEventHandler<OnItemUsingArgs> check)
+			=> onItemUsing.Subscribe(name, check);
+		public static void AddItemsCombiningCheck(string name, RogueEventHandler<OnItemsCombiningArgs> check)
+			=> onItemsCombining.Subscribe(name, check);
+		public static void AddItemTargetingCheck(string name, RogueEventHandler<OnItemTargetingArgs> check)
+			=> onItemTargeting.Subscribe(name, check);
+
+		public static bool IsCheckAllowed(InvItem item, string checkName) => IsCheckAllowed(item?.GetHook<CustomItem>(), checkName);
+		public static bool IsCheckAllowed(CustomItem customItem, string checkName)
+			=> customItem?.ItemInfo.IgnoredChecks.Contains(checkName) != true;
 	}
 	public class OnItemUsingArgs : RogueEventArgs
 	{
@@ -66,22 +62,32 @@ namespace RogueLibsCore
 	}
 	public class RogueEvent<TArgs> where TArgs : RogueEventArgs
 	{
-		private readonly List<RogueEventHandler<TArgs>> list = new List<RogueEventHandler<TArgs>>(0);
+		private readonly List<RogueEventSubscriber<TArgs>> list = new List<RogueEventSubscriber<TArgs>>(0);
 
-		public void Subscribe(RogueEventHandler<TArgs> handler)
+		public void Subscribe(RogueEventHandler<TArgs> handler) => Subscribe(null, handler);
+		public void Subscribe(string name, RogueEventHandler<TArgs> handler)
 		{
 			list.Capacity++;
-			list.Add(handler);
+			list.Add(new RogueEventSubscriber<TArgs>(name, handler));
 		}
 		public void Unsubscribe(RogueEventHandler<TArgs> handler)
 		{
-			if (list.Remove(handler))
-				list.Capacity--;
+			int removed = list.RemoveAll(h => h.Handler == handler);
+			if (removed > 0) list.Capacity -= removed;
 		}
-		public bool Raise(TArgs args)
+		public void Unsubscribe(string name)
+		{
+			int removed = list.RemoveAll(h => h.Name == name);
+			if (removed > 0) list.Capacity -= removed;
+		}
+		public bool Raise(TArgs args, IEnumerable<string> ignoreList)
 		{
 			for (int i = 0; i < list.Count && !args.Handled; i++)
-				list[i](args);
+			{
+				RogueEventSubscriber<TArgs> sub = list[i];
+				if (sub.Name != null && ignoreList?.Contains(sub.Name) == true) continue;
+				list[i].Handler(args);
+			}
 			return !args.Cancel;
 		}
 	}
@@ -89,6 +95,16 @@ namespace RogueLibsCore
 	{
 		public bool Handled { get; set; }
 		public bool Cancel { get; set; }
+	}
+	public class RogueEventSubscriber<TArgs> where TArgs : RogueEventArgs
+	{
+		public RogueEventSubscriber(string name, RogueEventHandler<TArgs> handler)
+		{
+			Name = name;
+			Handler = handler;
+		}
+		public string Name { get; }
+		public RogueEventHandler<TArgs> Handler { get; }
 	}
 	public delegate void RogueEventHandler<TArgs>(TArgs args) where TArgs : RogueEventArgs;
 }

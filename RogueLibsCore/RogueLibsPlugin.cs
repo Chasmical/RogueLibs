@@ -22,7 +22,7 @@ namespace RogueLibsCore
 			RogueFramework.Plugin = this;
 			RogueFramework.Logger = Logger;
 
-			Patcher = new RoguePatcher(this);
+			Patcher = new RoguePatcher(this) { EnableStopwatch = true };
 
 			PatchItems();
 			PatchTraitsAndStatusEffects();
@@ -31,9 +31,12 @@ namespace RogueLibsCore
 			PatchScrollingMenu();
 			PatchCharacterCreation();
 			PatchSprites();
+			PatchAbilities();
+
+			Patcher.LogResults();
 
 			sw.Stop();
-			Logger.LogDebug($"RogueLibs took {sw.ElapsedMilliseconds} ms to load.");
+			Logger.LogDebug($"RogueLibs took {sw.ElapsedMilliseconds,5:#####} ms to load.");
 		}
 	}
 }

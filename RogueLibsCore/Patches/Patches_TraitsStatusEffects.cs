@@ -223,7 +223,9 @@ namespace RogueLibsCore
 						if (__instance.agent.isPlayer > 0 && __instance.agent.localPlayer && !customEffect.Effect.infiniteTime)
 							__instance.myStatusEffectDisplay.RefreshStatusEffectText();
 						firstTick = false;
-						if (customEffect.CurrentTime > 0) yield return new WaitForSeconds(countSpeed);
+
+						if (customEffect.CurrentTime > 0)
+							yield return countSpeed > 0 ? new WaitForSeconds(countSpeed) : null;
 					}
 					if (!customEffect.Effect.infiniteTime && (!__instance.agent.disappeared || __instance.agent.FellInHole() || __instance.agent.teleporting) && (!__instance.agent.dead || customEffect.EffectInfo.Name != "Resurrection"))
 					{
@@ -258,7 +260,7 @@ namespace RogueLibsCore
 							customTrait.OnUpdated(e);
 							countSpeed = e.UpdateDelay;
 						}
-						yield return new WaitForSeconds(countSpeed);
+						yield return countSpeed > 0 ? new WaitForSeconds(countSpeed) : null;
 					}
 				}
 			}

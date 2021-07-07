@@ -44,10 +44,10 @@ namespace RogueLibsCore
 	}
 	public sealed class CustomEffectFactory : HookFactoryBase<StatusEffect>
 	{
-		private readonly Dictionary<string, ItemEntry> effectsDict = new Dictionary<string, ItemEntry>();
+		private readonly Dictionary<string, EffectEntry> effectsDict = new Dictionary<string, EffectEntry>();
 		public override bool TryCreate(StatusEffect instance, out IHook<StatusEffect> hook)
 		{
-			if (instance != null && effectsDict.TryGetValue(instance.statusEffectName, out ItemEntry entry))
+			if (instance != null && effectsDict.TryGetValue(instance.statusEffectName, out EffectEntry entry))
 			{
 				hook = entry.Initializer();
 				if (hook is CustomEffect custom)
@@ -61,11 +61,11 @@ namespace RogueLibsCore
 		public EffectInfo AddEffect<T>() where T : CustomEffect, new()
 		{
 			EffectInfo info = EffectInfo.Get<T>();
-			effectsDict.Add(info.Name, new ItemEntry { Initializer = () => new T(), EffectInfo = info });
+			effectsDict.Add(info.Name, new EffectEntry { Initializer = () => new T(), EffectInfo = info });
 			return info;
 		}
 
-		private struct ItemEntry
+		private struct EffectEntry
 		{
 			public Func<IHook<StatusEffect>> Initializer;
 			public EffectInfo EffectInfo;

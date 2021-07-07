@@ -11,7 +11,9 @@ namespace RogueLibsCore
 	public class TraitUnlock : DisplayedUnlock, IUnlockInCC
 	{
 		public TraitUnlock() : this(null, false) { }
-		public TraitUnlock(string name, bool unlockedFromStart = false) : base(name, "Trait", unlockedFromStart) => IsAvailableInCC = true;
+		public TraitUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		public TraitUnlock(string name) : this(name, false) { }
+		public TraitUnlock(string name, bool unlockedFromStart) : base(name, "Trait", unlockedFromStart) => IsAvailableInCC = true;
 		internal TraitUnlock(Unlock unlock) : base(unlock) { }
 
 		public override bool IsEnabled
@@ -89,6 +91,7 @@ namespace RogueLibsCore
 					{
 						PlaySound("ClickButton");
 						IsEnabled = !IsEnabled;
+						gc.unlocks.SaveUnlockData(true);
 						UpdateButton();
 						UpdateMenu();
 					}
@@ -172,7 +175,6 @@ namespace RogueLibsCore
 					{
 						Menu.Agent.usingAugmentationBooth = true;
 						Menu.Agent.statusEffects.AddTrait(Unlock.upgrade);
-						Debug.Log("UpgradeTrait: " + Name + " - " + Unlock.upgrade);
 						PlaySound("AddTrait");
 						Menu.Agent.mainGUI.HideScrollingMenuPersonal();
 						Menu.Agent.usingAugmentationBooth = false;
@@ -185,7 +187,6 @@ namespace RogueLibsCore
 					{
 						Menu.Agent.usingAugmentationBooth = true;
 						Menu.Agent.statusEffects.RemoveTrait(Name);
-						Debug.Log("RemoveTrait: " + Name);
 						Menu.Agent.mainGUI.HideScrollingMenuPersonal();
 						Menu.Agent.usingAugmentationBooth = false;
 					}
@@ -210,7 +211,6 @@ namespace RogueLibsCore
 						Unlock unlock6 = list[UnityEngine.Random.Range(0, list.Count)];
 						Menu.Agent.statusEffects.RemoveTrait(Name);
 						Menu.Agent.statusEffects.AddTrait(unlock6.unlockName);
-						Debug.Log("ChangeTrait: " + Name + " - " + unlock6.unlockName);
 						PlaySound("AddTrait");
 						Menu.Agent.mainGUI.HideScrollingMenuPersonal();
 						Menu.Agent.usingAugmentationBooth = false;
