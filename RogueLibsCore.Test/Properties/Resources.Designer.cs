@@ -93,9 +93,9 @@ namespace RogueLibsCore.Test.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] LootBox1 {
+        internal static byte[] LootBox {
             get {
-                object obj = ResourceManager.GetObject("LootBox1", resourceCulture);
+                object obj = ResourceManager.GetObject("LootBox", resourceCulture);
                 return ((byte[])(obj));
             }
         }

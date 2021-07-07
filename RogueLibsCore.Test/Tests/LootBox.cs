@@ -14,9 +14,9 @@ namespace RogueLibsCore.Test
 			RogueLibs.CreateCustomItem<LootBox>()
 				.WithName(new CustomNameInfo("Loot Box"))
 				.WithDescription(new CustomNameInfo("Gives you a random item."))
+				.WithSprite(Properties.Resources.LootBox)
 				.WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 3, LoadoutCost = 3 });
 
-			RogueLibs.CreateCustomSprite("LootBox1", SpriteScope.Items, Properties.Resources.LootBox1);
 			RogueLibs.CreateCustomSprite("LootBox2", SpriteScope.Items, Properties.Resources.LootBox2);
 			RogueLibs.CreateCustomSprite("LootBox3", SpriteScope.Items, Properties.Resources.LootBox3);
 		}
@@ -32,7 +32,8 @@ namespace RogueLibsCore.Test
 			Item.cantBeCloned = true;
 
 			int rnd = new Random().Next(3) + 1;
-			Item.LoadItemSprite($"LootBox{rnd}");
+			if (rnd != 1)
+				Item.LoadItemSprite($"LootBox{rnd}");
 		}
 		public bool UseItem()
 		{

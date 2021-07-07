@@ -52,7 +52,7 @@ namespace RogueLibsCore
 					$" | {time.Elapsed.TotalMilliseconds,4:####}ms |");
 				total += time.Elapsed;
 			}
-			log.LogDebug("Total: {total,5:#####}ms");
+			log.LogDebug($"Total: {total,5:#####}ms");
 		}
 
 		public bool Prefix(Type targetType, string targetMethod, Type[] targetParameterTypes = null)

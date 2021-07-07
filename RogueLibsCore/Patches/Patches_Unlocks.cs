@@ -21,8 +21,7 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(Unlocks), nameof(Unlocks.AddUnlock),
 				new Type[] { typeof(string), typeof(string), typeof(bool), typeof(int), typeof(int), typeof(int), typeof(Unlock) });
 
-			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks), nameof(Unlocks_LoadInitialUnlocks_Prefix));
-			// replace the entire foreach loop in the end
+			// pseudo-prefix + replace the entire foreach loop in the end
 			Patcher.Transpiler(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks));
 
 			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.CanDoUnlocks));
@@ -33,7 +32,7 @@ namespace RogueLibsCore
 			RogueLibs.CreateCustomName("UnlockFor", "Unlock", new CustomNameInfo
 			{
 				English = "Unlock for",
-				Russian = "Разблокировать за"
+				Russian = "Разблокировать за",
 			});
 		}
 
@@ -47,13 +46,19 @@ namespace RogueLibsCore
 			}
 		}
 
-		public static void Unlocks_LoadInitialUnlocks_Prefix(bool ___loadedInitialUnlocks)
+		private static void UnlocksClearHelper(bool dontClear)
 		{
-			if (___loadedInitialUnlocks) return;
+			if (dontClear) return;
 			RogueFramework.Unlocks.Clear();
 		}
 		public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
-			=> codeEnumerable.ReplaceRegion(
+			=> new CodeInstruction[]
+			{
+				new CodeInstruction(OpCodes.Ldarg_0),
+				new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Unlocks), "loadedInitialUnlocks")),
+				new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RogueLibsPlugin), nameof(UnlocksClearHelper))),
+			}
+			.Concat(codeEnumerable.ReplaceRegion(
 				new Func<CodeInstruction, bool>[]
 				{
 					i => i.opcode == OpCodes.Callvirt && i.Calls(List_Unlock_GetEnumerator)
@@ -66,8 +71,7 @@ namespace RogueLibsCore
 				{
 					new CodeInstruction(OpCodes.Pop),
 					new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)))
-				}
-			);
+				}));
 		private static readonly MethodInfo List_Unlock_GetEnumerator = typeof(List<Unlock>).GetMethod("GetEnumerator");
 		public static void LoadUnlockWrappersAndCategorize()
 		{

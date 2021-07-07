@@ -84,7 +84,7 @@
     <None Include="Resources\Batteries.bin" />
     <None Include="Resources\Converter.bin" />
     <None Include="Resources\Duplicator.bin" />
-    <None Include="Resources\LootBox1.bin" />
+    <None Include="Resources\LootBox.bin" />
     <None Include="Resources\LootBox2.bin" />
     <None Include="Resources\LootBox3.bin" />
     <None Include="Resources\NuclearBriefcase.bin" />
