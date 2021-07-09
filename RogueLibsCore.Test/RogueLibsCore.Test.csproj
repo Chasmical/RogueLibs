@@ -36,7 +36,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Smoker.cs" />
+    <Compile Include="Tests\GiantAbility.cs" />
+    <Compile Include="Tests\Smoker.cs" />
     <Compile Include="TestPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\Duplicator.cs" />

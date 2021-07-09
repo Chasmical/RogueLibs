@@ -16,6 +16,7 @@ namespace RogueLibsCore
 		public RoguePatcher Patcher;
 		public void Awake()
 		{
+			Logger.LogInfo($"Running RogueLibs v{RogueLibs.CompiledSemanticVersion}.");
 			Stopwatch sw = new Stopwatch();
 			sw.Start();
 

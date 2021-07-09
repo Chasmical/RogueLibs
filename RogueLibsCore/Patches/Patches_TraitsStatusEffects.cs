@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine.Networking;
 using UnityEngine;
+using System.Diagnostics;
+using static UnityEngine.Random;
 
 namespace RogueLibsCore
 {
@@ -75,10 +77,17 @@ namespace RogueLibsCore
 		private static readonly FieldInfo StatusEffect_causingAgent = typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent));
 		public static void SetupEffectHook(StatusEffect effect, StatusEffects parent)
 		{
+			bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Effects);
 			effect.__RogueLibsContainer = parent;
 			foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
 				if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
 				{
+					if (debug)
+					{
+						if (hook is CustomEffect)
+							RogueFramework.LogDebug($"Initializing custom effect {hook} ({effect.statusEffectName}, {parent.agent.agentName}).");
+						else RogueFramework.LogDebug($"Initializing effect hook {hook} ({effect.statusEffectName}, {parent.agent.agentName}).");
+					}
 					effect.AddHook(hook);
 					hook.Initialize();
 				}
@@ -86,8 +95,11 @@ namespace RogueLibsCore
 		public static void RefreshEffect(StatusEffect effect, int newTime)
 		{
 			CustomEffect custom = effect.GetHook<CustomEffect>();
+			float oldTime = effect.curTime;
 			if (custom is null) effect.curTime = newTime;
 			else custom.OnRefreshed();
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Effects))
+				RogueFramework.LogDebug($"Refreshed {custom} ({effect.statusEffectName}, {effect.GetStatusEffects().agent.agentName}): {oldTime} > {effect.curTime}.");
 		}
 
 		public static IEnumerable<CodeInstruction> StatusEffects_AddTrait(IEnumerable<CodeInstruction> codeEnumerable)
@@ -107,11 +119,18 @@ namespace RogueLibsCore
 		private static readonly FieldInfo Trait_traitName = typeof(Trait).GetField(nameof(Trait.traitName));
 		public static void SetupTraitHook(Trait trait, StatusEffects parent)
 		{
+			bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Traits);
 			bool any = false;
 			trait.__RogueLibsContainer = parent;
 			foreach (IHookFactory<Trait> factory in RogueFramework.TraitFactories)
 				if (factory.TryCreate(trait, out IHook<Trait> hook))
 				{
+					if (debug)
+					{
+						if (hook is CustomTrait)
+							RogueFramework.LogDebug($"Initializing custom trait {hook} ({trait.traitName}, {parent.agent.agentName}).");
+						else RogueFramework.LogDebug($"Initializing trait hook {hook} ({trait.traitName}, {parent.agent.agentName}).");
+					}
 					trait.AddHook(hook);
 					hook.Initialize();
 					any = true;
@@ -129,6 +148,8 @@ namespace RogueLibsCore
 		public static void StatusEffects_RemoveTrait(Trait __state)
 		{
 			CustomTrait trait = __state?.GetHook<CustomTrait>();
+			if (__state != null && RogueFramework.IsDebugEnabled(DebugFlags.Traits))
+				RogueFramework.LogDebug($"Removing trait {trait} ({__state.traitName}, {__state.GetStatusEffects().agent.agentName}).");
 			trait?.OnRemoved();
 		}
 
@@ -137,6 +158,8 @@ namespace RogueLibsCore
 		public static void StatusEffects_RemoveStatusEffect(StatusEffect __state)
 		{
 			CustomEffect effect = __state?.GetHook<CustomEffect>();
+			if (__state != null && RogueFramework.IsDebugEnabled(DebugFlags.Effects))
+				RogueFramework.LogDebug($"Removing effect {effect} ({__state.statusEffectName}, {__state.GetStatusEffects().agent.agentName}).");
 			effect?.OnRemoved();
 		}
 
@@ -191,6 +214,8 @@ namespace RogueLibsCore
 		{
 			CustomEffect custom = myStatusEffect.GetHook<CustomEffect>();
 			if (custom is null) return true;
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Effects))
+				RogueFramework.LogDebug($"Starting {custom} update coroutine ({myStatusEffect.statusEffectName}, {myStatusEffect.GetStatusEffects().agent.agentName}).");
 			__result = StatusEffectUpdateEnumerator(__instance, custom, showTextOnRemoval);
 			return false;
 		}
@@ -241,6 +266,8 @@ namespace RogueLibsCore
 		{
 			CustomTrait custom = myTrait.GetHook<CustomTrait>();
 			if (custom is null) return true;
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Effects))
+				RogueFramework.LogDebug($"Starting {custom} update coroutine ({myTrait.traitName}, {myTrait.GetStatusEffects().agent.agentName}).");
 			__result = TraitUpdateEnumerator(__instance, custom);
 			return false;
 		}

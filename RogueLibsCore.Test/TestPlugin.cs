@@ -23,10 +23,13 @@ namespace RogueLibsCore.Test
 		{
 			Log = Logger;
 			Instance = this;
+
 			LootBox.Test();
 			Converter.Test();
 			Duplicator.Test();
 			NuclearBriefcase.Test();
+
+			GiantAbility.Test();
 
 			Smoker.Test();
 		}

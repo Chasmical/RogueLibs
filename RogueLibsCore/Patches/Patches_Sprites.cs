@@ -15,7 +15,7 @@ namespace RogueLibsCore
 	{
 		public void PatchSprites()
 		{
-			// define RogueSprites in the RogueSprite.addOnGCAwakeList
+			// define non-initialized RogueSprites
 			Patcher.Postfix(typeof(GameController), "Awake");
 
 			// set the shared material of all renderers to the one selected in the tk2dSpriteDefinition

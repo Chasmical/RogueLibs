@@ -22,6 +22,7 @@ namespace RogueLibsCore.Test
 
 		public override void OnAdded()
 		{
+			RogueFramework.LogDebug("");
 			Owner.SetEndurance(Owner.enduranceStatMod - 1);
 			Owner.SetSpeed(Owner.speedStatMod - 1);
 		}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -11,13 +12,32 @@ namespace RogueLibsCore
 		internal static readonly RogueEvent<OnItemUsingArgs> onItemUsing = new RogueEvent<OnItemUsingArgs>();
 		internal static readonly RogueEvent<OnItemsCombiningArgs> onItemsCombining = new RogueEvent<OnItemsCombiningArgs>();
 		internal static readonly RogueEvent<OnItemTargetingArgs> onItemTargeting = new RogueEvent<OnItemTargetingArgs>();
+		internal static readonly RogueEvent<OnItemTargetingAnywhereArgs> onItemTargetingAnywhere = new RogueEvent<OnItemTargetingAnywhereArgs>();
 
 		public static void AddItemUsingCheck(string name, RogueEventHandler<OnItemUsingArgs> check)
-			=> onItemUsing.Subscribe(name, check);
+		{
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
+				RogueFramework.LogDebug($"Added \"{name}\" usage inventory check.");
+			onItemUsing.Subscribe(name, check);
+		}
 		public static void AddItemsCombiningCheck(string name, RogueEventHandler<OnItemsCombiningArgs> check)
-			=> onItemsCombining.Subscribe(name, check);
+		{
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
+				RogueFramework.LogDebug($"Added \"{name}\" combining inventory check.");
+			onItemsCombining.Subscribe(name, check);
+		}
 		public static void AddItemTargetingCheck(string name, RogueEventHandler<OnItemTargetingArgs> check)
-			=> onItemTargeting.Subscribe(name, check);
+		{
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
+				RogueFramework.LogDebug($"Added \"{name}\" targeting inventory check.");
+			onItemTargeting.Subscribe(name, check);
+		}
+		public static void AddItemTargetingAnywhereCheck(string name, RogueEventHandler<OnItemTargetingAnywhereArgs> check)
+		{
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
+				RogueFramework.LogDebug($"Added \"{name}\" targeting anywhere inventory check.");
+			onItemTargetingAnywhere.Subscribe(name, check);
+		}
 
 		public static bool IsCheckAllowed(InvItem item, string checkName) => IsCheckAllowed(item?.GetHook<CustomItem>(), checkName);
 		public static bool IsCheckAllowed(CustomItem customItem, string checkName)
@@ -58,6 +78,19 @@ namespace RogueLibsCore
 		public InvDatabase Inventory => Item.database;
 		public InvItem Item { get; }
 		public PlayfieldObject Target { get; set; }
+		public Agent User { get; set; }
+	}
+	public class OnItemTargetingAnywhereArgs : RogueEventArgs
+	{
+		public OnItemTargetingAnywhereArgs(InvItem item, Vector2 position, Agent user)
+		{
+			Item = item;
+			Target = position;
+			User = user;
+		}
+		public InvDatabase Inventory => Item.database;
+		public InvItem Item { get; }
+		public Vector2 Target { get; set; }
 		public Agent User { get; set; }
 	}
 	public class RogueEvent<TArgs> where TArgs : RogueEventArgs

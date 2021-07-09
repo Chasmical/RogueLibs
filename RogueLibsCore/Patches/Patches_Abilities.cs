@@ -30,12 +30,12 @@ namespace RogueLibsCore
 			CustomAbility custom = __instance.agent.GetAbility();
 			if (custom is null) return;
 
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
+				RogueFramework.LogDebug($"Giving ability {custom} ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
+
 			try { custom.OnAdded(); }
-			catch (Exception e)
-			{
-				RogueFramework.Logger.LogError($"Error in CustomAbility.OnAdded() - {custom} ({__instance.agent.specialAbility})");
-				RogueFramework.Logger.LogError(e);
-			}
+			catch (Exception e) { RogueFramework.LogError(e, "CustomAbility.OnAdded", custom, __instance.agent); }
+
 			__instance.SpecialAbilityInterfaceCheck();
 			__instance.RechargeSpecialAbility(custom.ItemInfo.Name);
 		}
@@ -45,12 +45,11 @@ namespace RogueLibsCore
 			CustomAbility custom = __instance.agent.GetAbility();
 			if (custom is null) return;
 
-			try { custom?.OnPressed(); }
-			catch (Exception e)
-			{
-				RogueFramework.Logger.LogError($"Error in CustomAbility.OnPressed() - {custom} ({__instance.agent.specialAbility})");
-				RogueFramework.Logger.LogError(e);
-			}
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
+				RogueFramework.LogDebug($"Pressing ability ability {custom} ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
+
+			try { custom.OnPressed(); }
+			catch (Exception e) { RogueFramework.LogError(e, "CustomAbility.OnPressed", custom, __instance.agent); }
 		}
 		public static void StatusEffects_HeldSpecialAbility(StatusEffects __instance)
 		{
@@ -60,18 +59,16 @@ namespace RogueLibsCore
 			ref float held = ref GameController.gameController.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1];
 			float prevHeld = held;
 
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
+				RogueFramework.LogDebug($"Holding ability {custom} for {prevHeld}s ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
+
 			OnAbilityHeldArgs args = new OnAbilityHeldArgs { HeldTime = prevHeld };
 			try { custom.OnHeld(args); }
-			catch (Exception e)
-			{
-				RogueFramework.Logger.LogError($"Error in CustomAbility.OnHeld() - {custom} ({__instance.agent.specialAbility})");
-				RogueFramework.Logger.LogError(e);
-			}
+			catch (Exception e) { RogueFramework.LogError(e, "CustomAbility.OnHeld", custom, __instance.agent); }
 
 			held = args.HeldTime;
-			custom.lastHeld = args.HeldTime;
-
-			if (held is 0f) custom.OnReleased(new OnAbilityReleasedArgs(prevHeld));
+			custom.lastHeld = prevHeld;
+			__instance.ReleasedSpecialAbility();
 		}
 		public static void StatusEffects_ReleasedSpecialAbility(StatusEffects __instance)
 		{
@@ -81,13 +78,12 @@ namespace RogueLibsCore
 			float prevHeld = custom.lastHeld;
 			if (prevHeld is 0f) return;
 
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
+				RogueFramework.LogDebug($"Releasing ability {custom} - {prevHeld}s ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
+
 			custom.lastHeld = 0f;
 			try { custom.OnReleased(new OnAbilityReleasedArgs(prevHeld)); }
-			catch (Exception e)
-			{
-				RogueFramework.Logger.LogError($"Error in CustomAbility.OnReleased() - {custom} ({__instance.agent.specialAbility})");
-				RogueFramework.Logger.LogError(e);
-			}
+			catch (Exception e) { RogueFramework.LogError(e, "CustomAbility.OnReleased", custom, __instance.agent); }
 		}
 	}
 }

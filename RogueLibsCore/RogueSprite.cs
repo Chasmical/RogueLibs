@@ -115,11 +115,16 @@ namespace RogueLibsCore
 		internal static void DefinePrepared(tk2dSpriteCollectionData collection, SpriteScope scope)
 		{
 			if (prepared.TryGetValue(scope, out List<RogueSprite> sprites))
+			{
+				if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
+					RogueFramework.LogDebug($"Initializing ${sprites.Count} prepared sprites in scope {scope}:");
+
 				foreach (RogueSprite sprite in sprites)
 				{
 					sprite.isPrepared = false;
-					sprite.Define(collection, scope);
+					sprite.DefineInternal(collection, scope);
 				}
+			}
 		}
 
 		internal RogueSprite(string spriteName, SpriteScope spriteScope, byte[] rawData, Rect? spriteRegion, float ppu = 64f)
@@ -154,34 +159,44 @@ namespace RogueLibsCore
 			DefineScope(Scope & SpriteScope.Items);
 			DefineScope(Scope & SpriteScope.Objects);
 			DefineScope(Scope & SpriteScope.Floors);
+			DefineScope(Scope & SpriteScope.Extra);
 		}
 		private void DefineScope(SpriteScope scope)
 		{
 			if (scope == SpriteScope.None) return;
 			tk2dSpriteCollectionData coll = GetCollection(scope);
-			if (coll is null)
+			if (coll is null && scope != SpriteScope.Extra)
 			{
-				if (prepared.TryGetValue(scope, out List<RogueSprite> sprites))
-					sprites.Add(this);
 				isPrepared = true;
+				if (prepared.TryGetValue(scope, out List<RogueSprite> sprites))
+				{
+					if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
+						RogueFramework.LogDebug($"Prepared sprite \"{Name}\" for initialization.");
+					sprites.Add(this);
+				}
+				else RogueFramework.LogError($"Pseudo-prepared sprite \"{Name}\" for initialization.");
 			}
-			else Define(coll, scope);
+			else DefineInternal(coll, scope);
 		}
 
 		internal Material Material { get; private set; }
 		internal Material LightUpMaterial { get; private set; }
-		internal void Define(tk2dSpriteCollectionData coll, SpriteScope scope)
+		internal void DefineInternal(tk2dSpriteCollectionData coll, SpriteScope scope)
 		{
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
+				RogueFramework.LogDebug($"Defining \"{Name}\" sprite in scope {scope}.");
+
 			if (coll != null)
 			{
 				tk2dSpriteDefinition def = AddDefinition(coll, texture, region);
 				def.__RogueLibsCustom = this;
-				definitions.Add(new CustomTk2dDefinition(coll, def));
+				definitions.Add(new CustomTk2dDefinition(coll, def, scope));
 
 				if (Material is null) Material = def.material;
 				if (LightUpMaterial is null) LightUpMaterial = UnityEngine.Object.Instantiate(Material);
 				LightUpMaterial.shader = GameController.gameController.lightUpShader;
 			}
+			else definitions.Add(new CustomTk2dDefinition(null, null, scope));
 
 			GameResources gr = GameResources.gameResources;
 
@@ -194,23 +209,31 @@ namespace RogueLibsCore
 		{
 			if (isPrepared)
 			{
+				isPrepared = false;
 				if (prepared.TryGetValue(Scope, out List<RogueSprite> list))
 					list.Remove(this);
-				isPrepared = false;
+				else RogueFramework.LogWarning($"Undefined a pseudo-prepared sprite \"{Name}\".");
 				return;
 			}
 			if (!IsDefined) return;
 
 			foreach (CustomTk2dDefinition def in definitions)
-				RemoveDefinition(def.Collection, def.Definition);
+				UndefineInternal(def);
 			definitions = null;
+		}
+		private void UndefineInternal(CustomTk2dDefinition def)
+		{
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
+				RogueFramework.LogDebug($"Undefining sprite \"{Name}\" from scope {def.Scope}.");
+
+			if (def.Collection != null)
+				RemoveDefinition(def.Collection, def.Definition);
 
 			GameResources gr = GameResources.gameResources;
-
 			if (Scope == SpriteScope.Items) { gr.itemDic.Remove(Name); gr.itemList.Remove(Sprite); }
-			else if (Scope == SpriteScope.Objects) { gr.objectDic.Remove(Name); gr.objectList.Remove(Sprite); }
-			else if (Scope == SpriteScope.Floors) { gr.floorDic.Remove(Name); gr.floorList.Remove(Sprite); }
-			else if (Scope == SpriteScope.Extra) RogueFramework.ExtraSprites.Remove(Name);
+			if (Scope == SpriteScope.Objects) { gr.objectDic.Remove(Name); gr.objectList.Remove(Sprite); }
+			if (Scope == SpriteScope.Floors) { gr.floorDic.Remove(Name); gr.floorList.Remove(Sprite); }
+			if (Scope == SpriteScope.Extra) RogueFramework.ExtraSprites.Remove(Name);
 		}
 
 		public static tk2dSpriteDefinition CreateDefinition(Texture2D texture, Rect? region, float scale)
@@ -317,13 +340,15 @@ namespace RogueLibsCore
 
 		public class CustomTk2dDefinition
 		{
-			internal CustomTk2dDefinition(tk2dSpriteCollectionData collection, tk2dSpriteDefinition definition)
+			internal CustomTk2dDefinition(tk2dSpriteCollectionData collection, tk2dSpriteDefinition definition, SpriteScope scope)
 			{
 				Collection = collection;
 				Definition = definition;
+				Scope = scope;
 			}
 			public tk2dSpriteCollectionData Collection { get; }
 			public tk2dSpriteDefinition Definition { get; }
+			public SpriteScope Scope { get; }
 		}
 	}
 	[Flags]
@@ -335,6 +360,6 @@ namespace RogueLibsCore
 
 		Items   = 1 << 0,
 		Objects = 1 << 1,
-		Floors  = 1 << 2
+		Floors  = 1 << 2,
 	}
 }

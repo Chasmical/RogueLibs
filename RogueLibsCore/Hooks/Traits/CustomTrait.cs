@@ -46,6 +46,8 @@ namespace RogueLibsCore
 		public TraitInfo AddTrait<T>() where T : CustomTrait, new()
 		{
 			TraitInfo info = TraitInfo.Get<T>();
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Traits))
+				RogueFramework.LogDebug($"Created custom trait {typeof(T)} ({info.Name}).");
 			traitsDict.Add(info.Name, new TraitEntry { Initializer = () => new T(), TraitInfo = info });
 			return info;
 		}

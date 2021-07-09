@@ -140,7 +140,10 @@ namespace RogueLibsCore
 			if (languageName is null) throw new ArgumentNullException(nameof(languageName));
 			if (languages.ContainsKey(languageName))
 				throw new ArgumentException($"The specified {nameof(languageName)} is already taken.", nameof(languageName));
-			RogueFramework.Logger.LogDebug($"Registered \"{languageName}\" language ({(int)code})");
+
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Names))
+				RogueFramework.Logger.LogDebug($"Registered \"{languageName}\" language ({(int)code})");
+
 			languages.Add(languageName, code);
 			languageNames.Add(code, languageName);
 		}
@@ -165,6 +168,9 @@ namespace RogueLibsCore
 		}
 		public CustomName AddName(string name, string type, CustomNameInfo info)
 		{
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Names))
+				RogueFramework.LogDebug($"Added \"{name}\" name ({type}): {info.English}");
+
 			CustomName customName = new CustomName(name, type, info);
 			if (!CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category))
 				CustomNames.Add(type, category = new Dictionary<string, CustomName>());

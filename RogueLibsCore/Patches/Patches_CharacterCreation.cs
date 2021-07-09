@@ -8,6 +8,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using BepInEx;
 using HarmonyLib;
+using static UnityEngine.Random;
+using System.Diagnostics;
 
 namespace RogueLibsCore
 {
@@ -41,6 +43,8 @@ namespace RogueLibsCore
 
 			displayedList.Sort();
 			CustomCharacterCreation menu = new CustomCharacterCreation(__instance, displayedList);
+			if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
+				RogueFramework.LogDebug($"Setting up \"{menu.Type}\" menu.");
 
 			List<Unlock> listUnlocks = unlockType == "Item" ? __instance.listUnlocksItems
 				: unlockType == "Trait" ? __instance.listUnlocksTraits
@@ -72,7 +76,14 @@ namespace RogueLibsCore
 
 		public static bool CharacterCreation_PushedButton(CharacterCreation __instance, ButtonHelper myButton)
 		{
-			if (__instance.selectedSpace == "Load") return true;
+			bool debug = RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus);
+			if (__instance.selectedSpace == "Load")
+			{
+				if (debug) RogueFramework.LogDebug("Redirecting the button push to the original method.");
+				return true;
+			}
+
+			if (debug) RogueFramework.LogDebug($"Pressing \"{myButton.myText.text}\" ({myButton.scrollingButtonNum}, {myButton.scrollingButtonType}) button.");
 
 			string type = myButton.scrollingButtonUnlock.unlockType;
 			List<ButtonData> buttonsData = type == "Item" ? __instance.buttonsDataItems
@@ -83,7 +94,8 @@ namespace RogueLibsCore
 			ButtonData buttonData = buttonsData[myButton.scrollingButtonNum];
 			DisplayedUnlock du = (DisplayedUnlock)buttonData.__RogueLibsCustom;
 
-			du.OnPushedButton();
+			try { du.OnPushedButton(); }
+			catch (Exception e) { RogueFramework.LogError(e, "DisplayedUnlock.OnPushedButton", du, du.Menu); }
 			__instance.curSelectedButton = myButton;
 			__instance.curSelectedButtonNum = myButton.scrollingButtonNum;
 			return false;

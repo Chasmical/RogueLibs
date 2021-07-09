@@ -20,8 +20,13 @@ namespace RogueLibsCore
 
 		public const string GUID = "abbysssal.streetsofrogue.roguelibscore";
 		public const string Name = "RogueLibsCore";
-		public static string Version { [MethodImpl(MethodImplOptions.NoInlining)] get => CompiledVersion; }
+
 		public const string CompiledVersion = "3.0";
+		public const string CompiledSemanticVersion = "3.0.0-beta.8";
+		internal const string AssemblyVersion = "3.0.0.0";
+
+		public static string Version { [MethodImpl(MethodImplOptions.NoInlining)] get => CompiledVersion; }
+		public static string SemanticVersion { [MethodImpl(MethodImplOptions.NoInlining)] get => CompiledSemanticVersion; }
 
 		private static readonly CustomItemFactory ItemFactory = new CustomItemFactory();
 		private static readonly CustomTraitFactory TraitFactory = new CustomTraitFactory();
@@ -33,6 +38,12 @@ namespace RogueLibsCore
 		{
 			ItemInfo info = ItemFactory.AddItem<TItem>();
 			return new ItemBuilder(info);
+		}
+		public static AbilityBuilder CreateCustomAbility<TAbility>()
+			where TAbility : CustomAbility, new()
+		{
+			ItemInfo info = ItemFactory.AddItem<TAbility>();
+			return new AbilityBuilder(info);
 		}
 		public static TraitBuilder CreateCustomTrait<TTrait>()
 			where TTrait : CustomTrait, new()
@@ -122,6 +133,45 @@ namespace RogueLibsCore
 		}
 		public ItemBuilder WithUnlock() => WithUnlock(new ItemUnlock(Info.Name, true));
 		public ItemBuilder WithUnlock(ItemUnlock unlock)
+		{
+			unlock.Name = Info.Name;
+			RogueLibs.CreateCustomUnlock(unlock);
+			Unlock = unlock;
+			return this;
+		}
+	}
+	public class AbilityBuilder
+	{
+		public AbilityBuilder(ItemInfo info) => Info = info;
+		public ItemInfo Info { get; }
+
+		public CustomName Name { get; private set; }
+		public CustomName Description { get; private set; }
+		public RogueSprite Sprite { get; private set; }
+		public AbilityUnlock Unlock { get; private set; }
+
+		public AbilityBuilder WithName(CustomNameInfo name)
+		{
+			Name = RogueLibs.CreateCustomName(Info.Name, "Item", name);
+			return this;
+		}
+		public AbilityBuilder WithDescription(CustomNameInfo description)
+		{
+			Description = RogueLibs.CreateCustomName(Info.Name, "Description", description);
+			return this;
+		}
+		public AbilityBuilder WithSprite(byte[] rawData, float ppu = 64f)
+		{
+			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, ppu);
+			return this;
+		}
+		public AbilityBuilder WithSprite(byte[] rawData, Rect region, float ppu = 64f)
+		{
+			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, region, ppu);
+			return this;
+		}
+		public AbilityBuilder WithUnlock() => WithUnlock(new AbilityUnlock(Info.Name, true));
+		public AbilityBuilder WithUnlock(AbilityUnlock unlock)
 		{
 			unlock.Name = Info.Name;
 			RogueLibs.CreateCustomUnlock(unlock);

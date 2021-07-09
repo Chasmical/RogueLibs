@@ -49,6 +49,8 @@ namespace RogueLibsCore
 		private static void UnlocksClearHelper(bool dontClear)
 		{
 			if (dontClear) return;
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
+				RogueFramework.LogDebug("Reloading unlocks.");
 			RogueFramework.Unlocks.Clear();
 		}
 		public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
@@ -81,56 +83,56 @@ namespace RogueLibsCore
 			foreach (Unlock unlock in sdb.unlocks.ToList())
 			{
 				// wrapping original unlocks
-				if (gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock) != "") unlock.cost = -2;
-				UnlockWrapper wrapper = RogueFramework.CustomUnlocks.Find(u => u.Name == unlock.unlockName && u.Type == unlock.unlockType);
-				if (wrapper != null)
-					AddUnlockFull(wrapper);
+				if (gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock) != "")
+				{
+					unlock.cost = -2;
+					if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
+						RogueFramework.LogDebug($"\"{unlock.unlockName}\" ({unlock.unlockType}) has special unlock conditions.");
+				}
+
+				UnlockWrapper wrapper;
+				if (unlock.unlockType == "Challenge")
+				{
+					unlock.unavailable = false;
+					wrapper = new MutatorUnlock(unlock);
+				}
+				else if (unlock.unlockType == "Item")
+				{
+					if (!unlock.unavailable && !unlock.onlyInCharacterCreation && !unlock.freeItem)
+						unlock.onlyInCharacterCreation = unlock.freeItem = true;
+					wrapper = new ItemUnlock(unlock);
+				}
+				else if (unlock.unlockType == "Trait")
+				{
+					unlock.onlyInCharacterCreation = !unlock.unavailable;
+					wrapper = new TraitUnlock(unlock);
+				}
+				else if (unlock.unlockType == "Ability")
+				{
+					unlock.onlyInCharacterCreation = !unlock.unavailable;
+					wrapper = new AbilityUnlock(unlock);
+				}
+				else if (unlock.unlockType == "Achievement") wrapper = new AchievementUnlock(unlock);
+				else if (unlock.unlockType == "Floor") wrapper = new FloorUnlock(unlock);
+				else if (unlock.unlockType == "BigQuest") wrapper = new BigQuestUnlock(unlock);
+				else if (unlock.unlockType == "HomeBase") wrapper = new HomeBaseUnlock(unlock);
+				else if (unlock.unlockType == "Extra") wrapper = new ExtraUnlock(unlock);
+				else if (unlock.unlockType == "Agent") wrapper = new AgentUnlock(unlock);
+				else if (unlock.unlockType == "Loadout") wrapper = new LoadoutUnlock(unlock);
 				else
 				{
-					if (unlock.unlockType == "Challenge")
-					{
-						unlock.unavailable = false;
-						wrapper = new MutatorUnlock(unlock);
-					}
-					else if (unlock.unlockType == "Item")
-					{
-						if (!unlock.unavailable && !unlock.onlyInCharacterCreation && !unlock.freeItem)
-							unlock.onlyInCharacterCreation = unlock.freeItem = true;
-						wrapper = new ItemUnlock(unlock);
-					}
-					else if (unlock.unlockType == "Trait")
-					{
-						unlock.onlyInCharacterCreation = !unlock.unavailable;
-						wrapper = new TraitUnlock(unlock);
-					}
-					else if (unlock.unlockType == "Ability")
-					{
-						unlock.onlyInCharacterCreation = !unlock.unavailable;
-						wrapper = new AbilityUnlock(unlock);
-					}
-					else if (unlock.unlockType == "Achievement") wrapper = new AchievementUnlock(unlock);
-					else if (unlock.unlockType == "Floor") wrapper = new FloorUnlock(unlock);
-					else if (unlock.unlockType == "BigQuest") wrapper = new BigQuestUnlock(unlock);
-					else if (unlock.unlockType == "HomeBase") wrapper = new HomeBaseUnlock(unlock);
-					else if (unlock.unlockType == "Extra") wrapper = new ExtraUnlock(unlock);
-					else if (unlock.unlockType == "Agent") wrapper = new AgentUnlock(unlock);
-					else if (unlock.unlockType == "Loadout") wrapper = new LoadoutUnlock(unlock);
-					else
-					{
-						RogueFramework.Logger.LogError("Unknown unlock type!\n" +
-							$"unlockName: {unlock.unlockName}\n" +
-							$"unlockType: {unlock.unlockType}\n" +
-							$"unlocked:   {unlock.unlocked}");
-						sdb.unlocks.Remove(unlock);
-						continue;
-					}
-					if (wrapper is IUnlockInCC inCC && !inCC.IsAvailableInCC) inCC.IsAvailableInCC = wrapper.IsAvailable;
-					RogueFramework.Unlocks.Add(wrapper);
-					AddUnlockFull(wrapper, true);
+					RogueFramework.LogError($"Unknown unlock type \"{unlock.unlockName}\" ({unlock.unlockType})");
+					sdb.unlocks.Remove(unlock);
+					continue;
 				}
+				if (wrapper is IUnlockInCC inCC && !inCC.IsAvailableInCC) inCC.IsAvailableInCC = wrapper.IsAvailable;
+				RogueFramework.Unlocks.Add(wrapper);
+				AddUnlockFull(wrapper, true);
 			}
 			foreach (UnlockWrapper wrapper in RogueFramework.CustomUnlocks)
 			{
+				if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
+					RogueFramework.LogDebug($"Initializing custom unlock \"{wrapper.Name}\" ({wrapper.Type}).");
 				RogueFramework.Unlocks.Add(wrapper);
 				AddUnlockFull(wrapper);
 			}
@@ -143,9 +145,13 @@ namespace RogueLibsCore
 				Unlock result = alreadyLoaded ? wrapper.Unlock : GameController.gameController.unlocks.AddUnlock(wrapper.Unlock);
 				if (wrapper.Unlock != result)
 				{
+					if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
+						RogueFramework.LogDebug($"Loaded state for \"{wrapper.Name}\" ({wrapper.Type}): unlocked - {result.unlocked}, enabled - {!result.notActive}");
+
 					List<Unlock> list = GameController.gameController.sessionDataBig.unlocks;
 					list.Remove(result);
 					list.Add(wrapper.Unlock);
+
 					wrapper.IsUnlocked = result.unlocked;
 					if (!(wrapper is MutatorUnlock))
 						wrapper.IsEnabled = !result.notActive;
@@ -158,7 +164,7 @@ namespace RogueLibsCore
 			}
 			catch (Exception e)
 			{
-				RogueFramework.Logger.LogError($"An error setting up {wrapper.Unlock?.unlockName} ({wrapper.Unlock?.unlockType}) unlock.");
+				RogueFramework.Logger.LogError($"Error setting up {wrapper.Unlock?.unlockName} ({wrapper.Unlock?.unlockType}) unlock.");
 				RogueFramework.Logger.LogError(e);
 			}
 		}
@@ -614,6 +620,9 @@ namespace RogueLibsCore
 		public static bool AllowUnlocksAnyway { get; set; }
 		public static void DoUnlockForced(this Unlocks unlocks, string unlockName, string unlockType)
 		{
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
+				RogueFramework.LogDebug($"Force-unlocking \"{unlockName}\" ({unlockType})");
+
 			bool prev = AllowUnlocksAnyway;
 			AllowUnlocksAnyway = true;
 			unlocks.DoUnlock(unlockName, unlockType);

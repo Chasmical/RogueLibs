@@ -61,6 +61,8 @@ namespace RogueLibsCore
 		public EffectInfo AddEffect<T>() where T : CustomEffect, new()
 		{
 			EffectInfo info = EffectInfo.Get<T>();
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Effects))
+				RogueFramework.LogDebug($"Created custom effect {typeof(T)} ({info.Name}).");
 			effectsDict.Add(info.Name, new EffectEntry { Initializer = () => new T(), EffectInfo = info });
 			return info;
 		}

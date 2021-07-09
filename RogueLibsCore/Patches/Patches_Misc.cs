@@ -15,14 +15,14 @@ namespace RogueLibsCore
 	{
 		public void PatchMisc()
 		{
-			// get and set the current game language as a LanguageCode
+			// initialize LanguageService
 			Patcher.Postfix(typeof(NameDB), nameof(NameDB.RealAwake));
 			// CustomNames
 			Patcher.Postfix(typeof(NameDB), nameof(NameDB.GetName));
 
-			// IDoUpdate.Update()
+			// IDoUpdate.Update
 			Patcher.Postfix(typeof(Updater), "Update");
-			// IDoFixedUpdate.FixedUpdate()
+			// IDoFixedUpdate.FixedUpdate
 			Patcher.Postfix(typeof(Updater), nameof(Updater.FixedUpdate));
 		}
 
@@ -30,6 +30,8 @@ namespace RogueLibsCore
 		{
 			if (!LanguageService.Languages.TryGetValue(__instance.language, out LanguageCode code))
 				code = LanguageCode.English;
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Names))
+				RogueFramework.LogDebug($"Current language: {LanguageService.GetLanguageName(code)} ({(int)code})");
 
 			LanguageService.NameDB = __instance;
 			LanguageService.Current = code;
@@ -47,153 +49,101 @@ namespace RogueLibsCore
 
 		public static void Updater_Update()
 		{
-			List<Agent> agents = GameController.gameController.agentList;
-			for (int i = 0; i < agents.Count; i++)
+			foreach (Agent agent in GameController.gameController.agentList.ToList())
 			{
-				Agent agent = agents[i];
-				foreach (IDoUpdate obj in agents[i].GetHooks<IDoUpdate>())
+				foreach (IDoUpdate obj in agent.GetHooks<IDoUpdate>())
 					try { obj.Update(); }
-					catch (Exception e)
-					{
-						RogueFramework.Logger.LogError($"Error updating {obj} in {agent.agentName}");
-						RogueFramework.Logger.LogError(e);
-					}
+					catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj); }
 
-				for (int j = 0; j < agent.inventory.InvItemList.Count; j++)
-				{
-					InvItem item = agent.inventory.InvItemList[j];
-					foreach (IDoUpdate obj in item.GetHooks<IDoUpdate>())
+				InvItem specialAbility = agent.inventory.equippedSpecialAbility;
+				if (specialAbility != null)
+					foreach (IDoUpdate obj in specialAbility.GetHooks<IDoUpdate>())
 						try { obj.Update(); }
-						catch (Exception e)
-						{
-							RogueFramework.Logger.LogError($"Error updating {obj} in {item.invItemName} ({agent.agentName})");
-							RogueFramework.Logger.LogError(e);
-						}
-				}
+						catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
 
-				for (int j = 0; j < agent.statusEffects.StatusEffectList.Count; j++)
-				{
-					StatusEffect effect = agent.statusEffects.StatusEffectList[j];
+				foreach (InvItem item in agent.inventory.InvItemList.ToList())
+						if (item != specialAbility)
+						foreach (IDoUpdate obj in item.GetHooks<IDoUpdate>())
+							try { obj.Update(); }
+							catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
+
+				foreach (StatusEffect effect in agent.statusEffects.StatusEffectList.ToList())
 					foreach (IDoUpdate obj in effect.GetHooks<IDoUpdate>())
 						try { obj.Update(); }
-						catch (Exception e)
-						{
-							RogueFramework.Logger.LogError($"Error updating {obj} in {effect.statusEffectName} ({agent.agentName})");
-							RogueFramework.Logger.LogError(e);
-						}
-				}
+						catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
 
-				for (int j = 0; j < agent.statusEffects.TraitList.Count; j++)
-				{
-					Trait trait = agent.statusEffects.TraitList[j];
+				foreach (Trait trait in agent.statusEffects.TraitList.ToList())
 					foreach (IDoUpdate obj in trait.GetHooks<IDoUpdate>())
 						try { obj.Update(); }
-						catch (Exception e)
-						{
-							RogueFramework.Logger.LogError($"Error updating {obj} in {trait.traitName} ({agent.agentName})");
-							RogueFramework.Logger.LogError(e);
-						}
-				}
+						catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
 			}
 
-			List<Item> items = GameController.gameController.itemList;
-			for (int i = 0; i < items.Count; i++)
+			foreach (ObjectReal objectReal in GameController.gameController.objectRealListUpdate.ToList())
 			{
-				foreach (IDoUpdate obj in items[i].invItem.GetHooks<IDoUpdate>())
+				foreach (IDoUpdate obj in objectReal.GetHooks<IDoUpdate>())
 					try { obj.Update(); }
-					catch (Exception e)
-					{
-						RogueFramework.Logger.LogError($"Error updating {obj} in {items[i]}");
-						RogueFramework.Logger.LogError(e);
-					}
+					catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj); }
+
+				if (objectReal.objectInvDatabase != null)
+					foreach (InvItem item in objectReal.objectInvDatabase.InvItemList)
+						foreach (IDoUpdate obj in item.GetHooks<IDoUpdate>())
+							try { obj.Update(); }
+							catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, objectReal); }
 			}
 
-			List<ObjectReal> objects = GameController.gameController.objectRealListUpdate;
-			for (int i = 0; i < objects.Count; i++)
-			{
-				foreach (IDoUpdate obj in objects[i].GetHooks<IDoUpdate>())
+			foreach (Item item in GameController.gameController.itemList.ToList())
+				foreach (IDoUpdate obj in item.invItem.GetHooks<IDoUpdate>())
 					try { obj.Update(); }
-					catch (Exception e)
-					{
-						RogueFramework.Logger.LogError($"Error updating {obj} in {objects[i].objectName}");
-						RogueFramework.Logger.LogError(e);
-					}
-			}
+					catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, item); }
 		}
 		public static void Updater_FixedUpdate()
 		{
-			List<Agent> agents = GameController.gameController.agentList;
-			for (int i = 0; i < agents.Count; i++)
+			foreach (Agent agent in GameController.gameController.agentList.ToList())
 			{
-				Agent agent = agents[i];
-				foreach (IDoFixedUpdate obj in agents[i].GetHooks<IDoFixedUpdate>())
+				foreach (IDoFixedUpdate obj in agent.GetHooks<IDoFixedUpdate>())
 					try { obj.FixedUpdate(); }
-					catch (Exception e)
-					{
-						RogueFramework.Logger.LogError($"Error updating {obj} in {agent.agentName}");
-						RogueFramework.Logger.LogError(e);
-					}
+					catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj); }
 
-				for (int j = 0; j < agent.inventory.InvItemList.Count; j++)
-				{
-					InvItem item = agent.inventory.InvItemList[j];
-					foreach (IDoFixedUpdate obj in item.GetHooks<IDoFixedUpdate>())
+				InvItem specialAbility = agent.inventory.equippedSpecialAbility;
+				if (specialAbility != null)
+					foreach (IDoFixedUpdate obj in specialAbility.GetHooks<IDoFixedUpdate>())
 						try { obj.FixedUpdate(); }
-						catch (Exception e)
-						{
-							RogueFramework.Logger.LogError($"Error updating {obj} in {item.invItemName} ({agent.agentName})");
-							RogueFramework.Logger.LogError(e);
-						}
-				}
+						catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, agent); }
 
-				for (int j = 0; j < agent.statusEffects.StatusEffectList.Count; j++)
-				{
-					StatusEffect effect = agent.statusEffects.StatusEffectList[j];
+				foreach (InvItem item in agent.inventory.InvItemList.ToList())
+					if (item != specialAbility)
+						foreach (IDoFixedUpdate obj in item.GetHooks<IDoFixedUpdate>())
+							try { obj.FixedUpdate(); }
+							catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, agent); }
+
+				foreach (StatusEffect effect in agent.statusEffects.StatusEffectList.ToList())
 					foreach (IDoFixedUpdate obj in effect.GetHooks<IDoFixedUpdate>())
 						try { obj.FixedUpdate(); }
-						catch (Exception e)
-						{
-							RogueFramework.Logger.LogError($"Error updating {obj} in {effect.statusEffectName} ({agent.agentName})");
-							RogueFramework.Logger.LogError(e);
-						}
-				}
+						catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, agent); }
 
-				for (int j = 0; j < agent.statusEffects.TraitList.Count; j++)
-				{
-					Trait trait = agent.statusEffects.TraitList[j];
+				foreach (Trait trait in agent.statusEffects.TraitList.ToList())
 					foreach (IDoFixedUpdate obj in trait.GetHooks<IDoFixedUpdate>())
 						try { obj.FixedUpdate(); }
-						catch (Exception e)
-						{
-							RogueFramework.Logger.LogError($"Error updating {obj} in {trait.traitName} ({agent.agentName})");
-							RogueFramework.Logger.LogError(e);
-						}
-				}
+						catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, agent); }
 			}
 
-			List<Item> items = GameController.gameController.itemList;
-			for (int i = 0; i < items.Count; i++)
+			foreach (ObjectReal objectReal in GameController.gameController.objectRealListUpdate.ToList())
 			{
-				foreach (IDoFixedUpdate obj in items[i].invItem.GetHooks<IDoFixedUpdate>())
+				foreach (IDoFixedUpdate obj in objectReal.GetHooks<IDoFixedUpdate>())
 					try { obj.FixedUpdate(); }
-					catch (Exception e)
-					{
-						RogueFramework.Logger.LogError($"Error updating {obj} in {items[i]}");
-						RogueFramework.Logger.LogError(e);
-					}
+					catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj); }
+
+				if (objectReal.objectInvDatabase != null)
+					foreach (InvItem item in objectReal.objectInvDatabase.InvItemList)
+						foreach (IDoFixedUpdate obj in item.GetHooks<IDoFixedUpdate>())
+							try { obj.FixedUpdate(); }
+							catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, objectReal); }
 			}
 
-			List<ObjectReal> objects = GameController.gameController.objectRealListUpdate;
-			for (int i = 0; i < objects.Count; i++)
-			{
-				foreach (IDoFixedUpdate obj in objects[i].GetHooks<IDoFixedUpdate>())
+			foreach (Item item in GameController.gameController.itemList.ToList())
+				foreach (IDoFixedUpdate obj in item.invItem.GetHooks<IDoFixedUpdate>())
 					try { obj.FixedUpdate(); }
-					catch (Exception e)
-					{
-						RogueFramework.Logger.LogError($"Error updating {obj} in {objects[i].objectName}");
-						RogueFramework.Logger.LogError(e);
-					}
-			}
+					catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, item); }
 		}
 	}
 }
