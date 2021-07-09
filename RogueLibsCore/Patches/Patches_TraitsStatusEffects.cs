@@ -120,7 +120,7 @@ namespace RogueLibsCore
 		public static void SetupTraitHook(Trait trait, StatusEffects parent)
 		{
 			bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Traits);
-			bool any = false;
+			bool updateable = false;
 			trait.__RogueLibsContainer = parent;
 			foreach (IHookFactory<Trait> factory in RogueFramework.TraitFactories)
 				if (factory.TryCreate(trait, out IHook<Trait> hook))
@@ -133,10 +133,11 @@ namespace RogueLibsCore
 					}
 					trait.AddHook(hook);
 					hook.Initialize();
-					any = true;
+					if (hook is CustomTrait && hook is ITraitUpdateable)
+						updateable = true;
 				}
 
-			if (any && parent.agent.name != "DummyAgent" && !parent.agent.name.Contains("Backup"))
+			if (updateable && parent.agent.name != "DummyAgent" && !parent.agent.name.Contains("Backup"))
 			{
 				parent.StartCoroutine(parent.UpdateTrait(trait));
 				trait.requiresUpdates = true;
@@ -265,7 +266,7 @@ namespace RogueLibsCore
 		public static bool StatusEffects_UpdateTrait(StatusEffects __instance, Trait myTrait, ref IEnumerator __result)
 		{
 			CustomTrait custom = myTrait.GetHook<CustomTrait>();
-			if (custom is null) return true;
+			if (!(custom is ITraitUpdateable)) return true;
 			if (RogueFramework.IsDebugEnabled(DebugFlags.Effects))
 				RogueFramework.LogDebug($"Starting {custom} update coroutine ({myTrait.traitName}, {myTrait.GetStatusEffects().agent.agentName}).");
 			__result = TraitUpdateEnumerator(__instance, custom);
@@ -284,7 +285,7 @@ namespace RogueLibsCore
 						if (GameController.gameController.loadComplete && !GameController.gameController.mainGUI.questNotification.gameIsOver && !__instance.agent.disappearedArcade)
 						{
 							TraitUpdatedArgs e = new TraitUpdatedArgs { UpdateDelay = countSpeed };
-							customTrait.OnUpdated(e);
+							((ITraitUpdateable)customTrait).OnUpdated(e);
 							countSpeed = e.UpdateDelay;
 						}
 						yield return countSpeed > 0 ? new WaitForSeconds(countSpeed) : null;

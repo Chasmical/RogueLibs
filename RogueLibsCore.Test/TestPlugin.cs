@@ -30,6 +30,7 @@ namespace RogueLibsCore.Test
 			NuclearBriefcase.Test();
 
 			GiantAbility.Test();
+			Hug.Test();
 
 			Smoker.Test();
 		}

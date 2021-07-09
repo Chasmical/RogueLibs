@@ -93,6 +93,16 @@ namespace RogueLibsCore.Test.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Hug {
+            get {
+                object obj = ResourceManager.GetObject("Hug", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] LootBox {
             get {
                 object obj = ResourceManager.GetObject("LootBox", resourceCulture);

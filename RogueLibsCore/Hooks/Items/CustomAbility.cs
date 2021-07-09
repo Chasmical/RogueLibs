@@ -8,15 +8,23 @@ namespace RogueLibsCore
 {
 	public abstract class CustomAbility : CustomItem
 	{
+		public override void SetupDetails()
+		{
+			Item.stackable = true;
+			Item.initCount = 0;
+			Item.lowCountThreshold = 100;
+		}
+
 		public abstract void OnAdded();
 		public abstract void OnPressed();
-		public abstract void OnHeld(OnAbilityHeldArgs e);
-		public abstract void OnReleased(OnAbilityReleasedArgs e);
-		public abstract void OnUpdated(OnAbilityUpdatedArgs e);
 		internal float lastHeld;
 
 		public PlayfieldObject CurrentTarget { get; internal set; }
-		public abstract PlayfieldObject FindTarget();
+	}
+	public interface IAbilityChargeable
+	{
+		void OnHeld(OnAbilityHeldArgs e);
+		void OnReleased(OnAbilityReleasedArgs e);
 	}
 	public class OnAbilityHeldArgs : EventArgs
 	{
@@ -28,8 +36,16 @@ namespace RogueLibsCore
 		public OnAbilityReleasedArgs(float heldTime) => HeldTime = heldTime;
 		public float HeldTime { get; }
 	}
-	public class OnAbilityUpdatedArgs : EventArgs
+	public class OnAbilityRechargingArgs : EventArgs
 	{
-		public float NextDelay { get; set; }
+		public float UpdateDelay { get; set; }
+	}
+	public interface IAbilityRechargeable
+	{
+		void OnRecharge(OnAbilityRechargingArgs e);
+	}
+	public interface IAbilityTargetable
+	{
+		PlayfieldObject FindTarget();
 	}
 }
