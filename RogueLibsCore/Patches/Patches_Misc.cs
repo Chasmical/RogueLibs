@@ -24,6 +24,9 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(Updater), "Update");
 			// IDoFixedUpdate.FixedUpdate
 			Patcher.Postfix(typeof(Updater), nameof(Updater.FixedUpdate));
+
+			// remove 99 nuggets limit
+			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.AddNuggets));
 		}
 
 		public static void NameDB_RealAwake(NameDB __instance)
@@ -144,6 +147,13 @@ namespace RogueLibsCore
 				foreach (IDoFixedUpdate obj in item.invItem.GetHooks<IDoFixedUpdate>())
 					try { obj.FixedUpdate(); }
 					catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, item); }
+		}
+
+		public static bool Unlocks_AddNuggets(int numNuggets)
+		{
+			GameController.gameController.sessionDataBig.nuggets += numNuggets;
+			GameController.gameController.unlocks.SaveUnlockData(true);
+			return false;
 		}
 	}
 }

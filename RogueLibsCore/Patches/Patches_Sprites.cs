@@ -31,6 +31,9 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(Item), nameof(Item.DestroyMe2));
 			Patcher.Postfix(typeof(Item), nameof(Item.FakeStart));
 			Patcher.Postfix(typeof(Melee), nameof(Melee.MeleeLateUpdate));
+
+			// Nugget slot image
+			Patcher.Postfix(typeof(NuggetSlot), nameof(NuggetSlot.UpdateNuggetText));
 		}
 
 		public static void GameController_Awake(GameController __instance)
@@ -200,5 +203,9 @@ namespace RogueLibsCore
 			RogueSprite sprite = (RogueSprite)hb.heldItem2?.CurrentSprite?.__RogueLibsCustom;
 			if (sprite != null) hb.heldItem2Renderer.sharedMaterial = sprite.Material;
 		}
+
+		public static void NuggetSlot_UpdateNuggetText(Image ___itemImage)
+			=> ___itemImage.sprite = GameController.gameController.gameResources.itemDic
+				.TryGetValue("Nugget", out Sprite sprite) ? sprite : null;
 	}
 }

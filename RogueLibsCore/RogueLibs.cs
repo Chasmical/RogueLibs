@@ -77,6 +77,7 @@ namespace RogueLibsCore
 			return sprite;
 		}
 
+
 		public static CustomName CreateCustomName(string name, string type, CustomNameInfo info)
 			=> NameProvider.AddName(name, type, info);
 

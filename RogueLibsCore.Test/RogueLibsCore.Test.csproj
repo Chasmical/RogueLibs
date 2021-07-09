@@ -37,6 +37,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Tests\GiantAbility.cs" />
+    <Compile Include="Tests\Hug.cs" />
     <Compile Include="Tests\Smoker.cs" />
     <Compile Include="TestPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,6 +86,7 @@
     <None Include="Resources\Batteries.bin" />
     <None Include="Resources\Converter.bin" />
     <None Include="Resources\Duplicator.bin" />
+    <None Include="Resources\Hug.bin" />
     <None Include="Resources\LootBox.bin" />
     <None Include="Resources\LootBox2.bin" />
     <None Include="Resources\LootBox3.bin" />

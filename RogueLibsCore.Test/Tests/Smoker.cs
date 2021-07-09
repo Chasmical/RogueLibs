@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static UnityEngine.GraphicsBuffer;
 
 namespace RogueLibsCore.Test
 {
-	public class Smoker : CustomTrait
+	public class Smoker : CustomTrait, ITraitUpdateable
 	{
 		public static void Test()
 		{
@@ -22,7 +23,6 @@ namespace RogueLibsCore.Test
 
 		public override void OnAdded()
 		{
-			RogueFramework.LogDebug("");
 			Owner.SetEndurance(Owner.enduranceStatMod - 1);
 			Owner.SetSpeed(Owner.speedStatMod - 1);
 		}
@@ -31,7 +31,7 @@ namespace RogueLibsCore.Test
 			Owner.SetEndurance(Owner.enduranceStatMod + 1);
 			Owner.SetSpeed(Owner.speedStatMod + 1);
 		}
-		public override void OnUpdated(TraitUpdatedArgs e)
+		public void OnUpdated(TraitUpdatedArgs e)
 		{
 			e.UpdateDelay = 5f;
 
@@ -40,6 +40,7 @@ namespace RogueLibsCore.Test
 			{
 				rnd = new Random().Next(3) + 1;
 				Owner.SayDialogue($"Smoker_Cough{rnd}");
+				gc.audioHandler.Play(Owner, "AgentAnnoyed");
 
 				Noise noise = gc.spawnerMain.SpawnNoise(Owner.tr.position, 1f, Owner, "Attract", Owner);
 				noise.distraction = true;

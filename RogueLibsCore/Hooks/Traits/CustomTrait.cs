@@ -21,7 +21,10 @@ namespace RogueLibsCore
 
 		public abstract void OnAdded();
 		public abstract void OnRemoved();
-		public abstract void OnUpdated(TraitUpdatedArgs e);
+	}
+	public interface ITraitUpdateable
+	{
+		void OnUpdated(TraitUpdatedArgs e);
 	}
 	public class TraitUpdatedArgs : EventArgs
 	{

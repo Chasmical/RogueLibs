@@ -127,6 +127,9 @@
   <data name="Duplicator" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Duplicator.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
+  <data name="Hug" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Hug.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
   <data name="LootBox" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\LootBox.bin;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
