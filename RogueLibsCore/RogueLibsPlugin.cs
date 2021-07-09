@@ -6,6 +6,7 @@ using System.Diagnostics;
 using UnityEngine;
 using BepInEx;
 using HarmonyLib;
+using System.IO;
 
 namespace RogueLibsCore
 {
@@ -22,6 +23,13 @@ namespace RogueLibsCore
 
 			RogueFramework.Plugin = this;
 			RogueFramework.Logger = Logger;
+
+			RogueLibs.audioCachePath = Path.Combine(Paths.CachePath, "RogueLibs Audio");
+			Directory.CreateDirectory(RogueLibs.audioCachePath);
+			foreach (string file in Directory.EnumerateFiles(RogueLibs.audioCachePath))
+				File.Delete(file);
+			foreach (string directory in Directory.EnumerateDirectories(RogueLibs.audioCachePath))
+				Directory.Delete(directory, true);
 
 			Patcher = new RoguePatcher(this) { EnableStopwatch = true };
 

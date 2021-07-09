@@ -25,6 +25,10 @@ namespace RogueLibsCore
 			// IDoFixedUpdate.FixedUpdate
 			Patcher.Postfix(typeof(Updater), nameof(Updater.FixedUpdate));
 
+			// load prepared AudioClips
+			Patcher.Prefix(typeof(AudioHandler), nameof(AudioHandler.SetupDics), nameof(AudioHandler_SetupDics_Prefix));
+			Patcher.Postfix(typeof(AudioHandler), nameof(AudioHandler.SetupDics));
+
 			// remove 99 nuggets limit
 			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.AddNuggets));
 		}
@@ -147,6 +151,21 @@ namespace RogueLibsCore
 				foreach (IDoFixedUpdate obj in item.invItem.GetHooks<IDoFixedUpdate>())
 					try { obj.FixedUpdate(); }
 					catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, item); }
+		}
+
+		public static void AudioHandler_SetupDics_Prefix(AudioHandler __instance, ref bool __state)
+			=> __state = __instance.loadedDics;
+		internal static List<AudioClip> preparedClips = new List<AudioClip>();
+		public static void AudioHandler_SetupDics(AudioHandler __instance, ref bool __state)
+		{
+			if (__state) return;
+			foreach (AudioClip clip in preparedClips)
+			{
+				__instance.audioClipRealList.Add(clip);
+				__instance.audioClipList.Add(clip.name);
+				__instance.audioClipDic.Add(clip.name, clip);
+			}
+			preparedClips = null;
 		}
 
 		public static bool Unlocks_AddNuggets(int numNuggets)

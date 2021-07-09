@@ -4,6 +4,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using System.IO;
+using System.Threading;
+using UnityEngine.Networking;
+using BepInEx;
 
 namespace RogueLibsCore
 {
@@ -77,6 +81,33 @@ namespace RogueLibsCore
 			return sprite;
 		}
 
+		internal static string audioCachePath;
+		public static AudioClip CreateCustomAudio(string name, byte[] rawData)
+		{
+			string myPath = Path.Combine(audioCachePath, name + ".ogg.request");
+			try
+			{
+				File.WriteAllBytes(myPath, rawData);
+
+				UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip("file:///" + myPath, AudioType.OGGVORBIS);
+				request.SendWebRequest();
+				while (!request.isDone) Thread.Sleep(1);
+				AudioClip clip = DownloadHandlerAudioClip.GetContent(request);
+				clip.name = name;
+				if (GameController.gameController?.audioHandler != null)
+				{
+					GameController.gameController.audioHandler.audioClipList.Add(name);
+					GameController.gameController.audioHandler.audioClipRealList.Add(clip);
+					GameController.gameController.audioHandler.audioClipDic.Add(name, clip);
+				}
+				else RogueLibsPlugin.preparedClips.Add(clip);
+				return clip;
+			}
+			finally
+			{
+				File.Delete(myPath);
+			}
+		}
 
 		public static CustomName CreateCustomName(string name, string type, CustomNameInfo info)
 			=> NameProvider.AddName(name, type, info);
