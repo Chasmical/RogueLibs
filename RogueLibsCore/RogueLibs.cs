@@ -26,7 +26,7 @@ namespace RogueLibsCore
 		public const string Name = "RogueLibsCore";
 
 		public const string CompiledVersion = "3.0";
-		public const string CompiledSemanticVersion = "3.0.0-beta.8";
+		public const string CompiledSemanticVersion = "3.0.0-rc.1";
 		internal const string AssemblyVersion = "3.0.0.0";
 
 		public static string Version { [MethodImpl(MethodImplOptions.NoInlining)] get => CompiledVersion; }
