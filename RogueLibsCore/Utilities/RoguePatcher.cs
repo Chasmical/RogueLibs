@@ -55,6 +55,8 @@ namespace RogueLibsCore
 			log.LogDebug($"Total: {total,5:#####}ms");
 		}
 
+		private static readonly BindingFlags All = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
 		public bool Prefix(Type targetType, string targetMethod, Type[] targetParameterTypes = null)
 		{
 			if (targetType is null) throw new ArgumentNullException(nameof(targetType));
@@ -73,12 +75,10 @@ namespace RogueLibsCore
 				{
 					sw = new Stopwatch();
 					sw.Start();
-					MethodInfo target = AccessTools.Method(targetType, targetMethod, targetParameterTypes)
+					MethodInfo target = targetType.GetMethod(targetMethod, All, null, targetParameterTypes, null)
 						?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-
-					MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod)
+					MethodInfo patch = TypeWithPatches.GetMethod(patchMethod, All)
 						?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-
 					harmony.Patch(target, new HarmonyMethod(patch));
 					sw.Stop();
 
@@ -86,9 +86,9 @@ namespace RogueLibsCore
 				}
 				else
 				{
-					MethodInfo target = AccessTools.Method(targetType, targetMethod, targetParameterTypes)
+					MethodInfo target = targetType.GetMethod(targetMethod, All, null, targetParameterTypes, null)
 						?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-					MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod)
+					MethodInfo patch = TypeWithPatches.GetMethod(patchMethod, All)
 						?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
 					harmony.Patch(target, new HarmonyMethod(patch));
 				}
@@ -120,12 +120,10 @@ namespace RogueLibsCore
 				{
 					sw = new Stopwatch();
 					sw.Start();
-					MethodInfo target = AccessTools.Method(targetType, targetMethod, targetParameterTypes)
+					MethodInfo target = targetType.GetMethod(targetMethod, All, null, targetParameterTypes, null)
 						?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-
-					MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod)
+					MethodInfo patch = TypeWithPatches.GetMethod(patchMethod, All)
 						?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-
 					harmony.Patch(target, null, new HarmonyMethod(patch));
 					sw.Stop();
 
@@ -133,9 +131,9 @@ namespace RogueLibsCore
 				}
 				else
 				{
-					MethodInfo target = AccessTools.Method(targetType, targetMethod, targetParameterTypes)
+					MethodInfo target = targetType.GetMethod(targetMethod, All, null, targetParameterTypes, null)
 						?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-					MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod)
+					MethodInfo patch = TypeWithPatches.GetMethod(patchMethod, All)
 						?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
 					harmony.Patch(target, null, new HarmonyMethod(patch));
 				}
@@ -167,12 +165,10 @@ namespace RogueLibsCore
 				{
 					sw = new Stopwatch();
 					sw.Start();
-					MethodInfo target = AccessTools.Method(targetType, targetMethod, targetParameterTypes)
+					MethodInfo target = targetType.GetMethod(targetMethod, All, null, targetParameterTypes, null)
 						?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-
-					MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod)
+					MethodInfo patch = TypeWithPatches.GetMethod(patchMethod, All)
 						?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-
 					harmony.Patch(target, null, null, new HarmonyMethod(patch));
 					sw.Stop();
 
@@ -180,9 +176,9 @@ namespace RogueLibsCore
 				}
 				else
 				{
-					MethodInfo target = AccessTools.Method(targetType, targetMethod, targetParameterTypes)
+					MethodInfo target = targetType.GetMethod(targetMethod, All, null, targetParameterTypes, null)
 						?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-					MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod)
+					MethodInfo patch = TypeWithPatches.GetMethod(patchMethod, All)
 						?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
 					harmony.Patch(target, null, null, new HarmonyMethod(patch));
 				}
@@ -214,12 +210,10 @@ namespace RogueLibsCore
 				{
 					sw = new Stopwatch();
 					sw.Start();
-					MethodInfo target = AccessTools.Method(targetType, targetMethod, targetParameterTypes)
+					MethodInfo target = targetType.GetMethod(targetMethod, All, null, targetParameterTypes, null)
 						?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-
-					MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod)
+					MethodInfo patch = TypeWithPatches.GetMethod(patchMethod, All)
 						?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-
 					harmony.Patch(target, null, null, null, new HarmonyMethod(patch));
 					sw.Stop();
 
@@ -227,9 +221,9 @@ namespace RogueLibsCore
 				}
 				else
 				{
-					MethodInfo target = AccessTools.Method(targetType, targetMethod, targetParameterTypes)
+					MethodInfo target = targetType.GetMethod(targetMethod, All, null, targetParameterTypes, null)
 						?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-					MethodInfo patch = AccessTools.Method(TypeWithPatches, patchMethod)
+					MethodInfo patch = TypeWithPatches.GetMethod(patchMethod, All)
 						?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
 					harmony.Patch(target, null, null, null, new HarmonyMethod(patch));
 				}
