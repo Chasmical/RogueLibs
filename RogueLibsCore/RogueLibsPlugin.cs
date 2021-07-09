@@ -34,7 +34,9 @@ namespace RogueLibsCore
 			PatchSprites();
 			PatchAbilities();
 
+#if DEBUG
 			Patcher.LogResults();
+#endif
 
 			sw.Stop();
 			Logger.LogDebug($"RogueLibs took {sw.ElapsedMilliseconds,5:#####} ms to load.");
