@@ -161,7 +161,7 @@ namespace RogueLibsCore
 		/// <inheritdoc/>
 		public string this[LanguageCode language]
 		{
-			get => _texts.TryGetValue(language, out string str) ? str : null;
+			get => _texts != null && _texts.TryGetValue(language, out string str) ? str : null;
 			set
 			{
 				if (value != null) Texts[language] = value;
