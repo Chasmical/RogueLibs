@@ -1,6 +1,6 @@
 <div align="center">
   <p>
-    <img src="https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibs.png" width=50% alt="RogueLibs"/>
+    <img src="./img/RogueLibs.png" width=75% alt="RogueLibs"/>
   </p>
   <p>
     <a href="https://github.com/Abbysssal/RogueLibs/releases/latest">
@@ -24,7 +24,7 @@
 
 This modding library does nothing on its own, but it provides methods for other mods to easily create new custom mutators, items, abilities and traits.
 
-If you have any suggestions or find any bugs, you can open a new issue here on GitHub, or create a pull request if you know how to fix that:
+If you have any suggestions or find any bugs, you can open a new issue here on GitHub, or create a pull request:
 
 <div>
   <a href="https://github.com/Abbysssal/RogueLibs/issues/new/choose">
@@ -35,35 +35,47 @@ If you have any suggestions or find any bugs, you can open a new issue here on G
   </a>
 </div>
 
-## Contents ##
+## Installation ##
+
+1. Install BepInEx
+   1. [Download the latest version of BepInEx](https://github.com/BepInEx/BepInEx/releases/latest);
+   2. Drag all files from the archive into directory `/Steam/SteamApps/common/Streets of Rogue`;
+   3. Run the game, so BepInEx can create needed files and directories, and close the game;
+2. Install RogueLibs
+   1. [Download the latest version of RogueLibs](https://github.com/Abbysssal/RogueLibs/releases/latest);
+   2. Drag the file "RogueLibsCore.dll" into directory `/Steam/SteamApps/common/Streets of Rogue/BepInEx/plugins`;
+   3. Drag the file "RogueLibsPatcher.dll" into directory `/Steam/SteamApps/common/Streets of Rogue/BepInEx/patchers`;
+3. Download and install whatever mods you want to use.
+4. Run the game!
+
+## Table of Contents ##
 
 - **Main page**
-- [1. Getting started](./md/1.%20Getting%20started.md)
-- 2\. Adding custom content
-  - [2.1. Custom Names](./md/2.1.%20Custom%20Names.md)
-  - [2.2. Custom Unlocks](./md/2.2.%20Custom%20Unlocks.md)
-  - [2.3. Custom Mutators](./md/2.3.%20Custom%20Mutators.md)
-  - [2.4. Custom Items](./md/2.4.%20Custom%20Items.md)
-  - [2.5. Custom Abilities](./md/2.5.%20Custom%20Abilities.md)
-  - [2.6. Custom Traits](./md/2.6.%20Custom%20Traits.md)
-- 3\. Additional tools
-  - [3.1. RoguePatcher](./md/3.1.%20RoguePatcher.md)
-  - [3.2. RogueUtilities](./md/3.2.%20RogueUtilities.md)
-- [4. Changelog](./md/4.%20Changelog.md)
+- **1. Introduction**
+  - 1.1. [Basic Setup](./md/1.1-Basic-Setup.md)
+  - 1.2. [Patching and Utilities](./md/1.2-Patching-and-Utilities.md)
+  - 1.3. [Classes](./md/1.3-Classes.md)
+- **2. Custom Items and Abilities**
+  - 2.1. [Custom Items](./md/2.1-Custom-Items.md)
+  - 2.2. [Adding Functionality](./md/2.2-Adding-Functionality.md)
+  - 2.3. Making Weapons
+  - 2.4. [Inventory and Events](./md/2.4-Inventory-and-Events.md)
+  - 2.5. Custom Abilities
+- **3. Custom Traits and Status Effects**
+  - 3.1. [Custom Traits](./md/3.1-Custom-Traits.md)
+  - 3.2. [Custom Status Effects](./md/3.2-Custom-Status-Effects.md)
+- **4. Custom Unlocks and Mutators**
+  - 4.1. Custom Unlocks
+  - 4.2. Custom Mutators
+  - 4.3. Custom State Unlocks
+- **5. Custom Objects**
+  - 5.1. ???
+- **6. Custom Agents**
+  - 6.1. ???
+- **7. Advanced**
+  - 7.1. [Hook System](./md/7.1-Hook-System.md)
+  - 7.2. Unlocks and Menus
 
 ## Links ##
 - [Download RogueLibs (latest stable version)](https://github.com/Abbysssal/RogueLibs/releases/latest)
 - [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
-
-## Discord ##
-
-<div>
-  <h4>Official Streets of Rogue Discord Server</h4>
-  <a href="https://discord.com/invite/streetsofrogue">
-    <img src="./md/2021-06-19_230057.png"/>
-  </a>
-  <h4>Русский сервер Дискорд по Streets of Rogue (russian Discord server)</h4>
-  <a href="https://discord.gg/neDvsmk">
-    <img src="./md/2021-06-19_230107.png"/>
-  </a>
-</div>
