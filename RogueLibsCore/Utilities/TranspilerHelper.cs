@@ -5,6 +5,8 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
+	[Obsolete("A new, more optimized, easier and more transparent way to transpile methods will soon be added.")]
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 	public static class TranspilerHelper
 	{
 		public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> begin,
@@ -65,6 +67,8 @@ namespace RogueLibsCore
 						else current = 0;
 					}
 				}
+				if (state == SearchState.Searching) throw new InvalidOperationException("Could not match the beginning of the region to remove.");
+				if (state == SearchState.Found) throw new InvalidOperationException("Could not match the end of the region to remove.");
 			}
 		}
 
@@ -122,6 +126,7 @@ namespace RogueLibsCore
 						else current = 0;
 					}
 				}
+				if (state == SearchState.Searching) throw new InvalidOperationException("Could not match the after region.");
 			}
 		}
 
@@ -298,4 +303,5 @@ namespace RogueLibsCore
 			return instr;
 		}
 	}
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
 }

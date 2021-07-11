@@ -11,11 +11,10 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	public partial class RogueLibsPlugin
+	internal sealed partial class RogueLibsPlugin
 	{
 		public void PatchScrollingMenu()
 		{
-			//patcher.Transpiler(typeof(ScrollingMenu), nameof(ScrollingMenu.OpenScrollingMenu), nameof(ScrollingMenu_OpenScrollingMenu_Transpiler));
 			Patcher.Prefix(typeof(ScrollingMenu), nameof(ScrollingMenu.OpenScrollingMenu), nameof(ScrollingMenu_OpenScrollingMenu_Prefix));
 			Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.OpenScrollingMenu));
 
@@ -38,6 +37,8 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.RefreshLoadouts));
 
 			Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.CanHaveTrait));
+
+			Patcher.AnyErrors();
 
 			RogueLibs.CreateCustomName("GiveNuggetsDebug", "Unlock", new CustomNameInfo("[DEBUG] +10 Nuggets"));
 			RogueLibs.CreateCustomName("D_GiveNuggetsDebug", "Unlock", new CustomNameInfo("A debug tool that gives you 10 nuggets."));
@@ -153,7 +154,7 @@ namespace RogueLibsCore
 			myButtonData.scrollingButtonUnlock = myUnlock;
 			myButtonData.scrollingButtonType = myUnlock.unlockName;
 			myButtonData.interactable = true;
-			myButtonData.buttonText = du.GetName();
+			myButtonData.buttonText = du.GetFancyName();
 
 			du.UpdateUnlock();
 			du.UpdateButton();
@@ -243,7 +244,7 @@ namespace RogueLibsCore
 			DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock.__RogueLibsCustom;
 
 			__instance.detailsTitle.text = du.GetName();
-			__instance.detailsText.text = du.GetDescription();
+			__instance.detailsText.text = du.GetFancyDescription();
 			__instance.detailsImage.sprite = du.GetImage();
 			__instance.detailsImage.gameObject.SetActive(__instance.detailsImage.sprite != null);
 

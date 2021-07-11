@@ -8,19 +8,40 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
+	/// <summary>
+	///   <para>Represents a trait unlock.</para>
+	/// </summary>
 	public class TraitUnlock : DisplayedUnlock, IUnlockInCC
 	{
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="TraitUnlock"/> class without a name.</para>
+		/// </summary>
 		public TraitUnlock() : this(null, false) { }
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="TraitUnlock"/> class without a name.</para>
+		/// </summary>
+		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
 		public TraitUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="TraitUnlock"/> class with the specified <paramref name="name"/>.</para>
+		/// </summary>
+		/// <param name="name">The unlock's and trait's name.</param>
 		public TraitUnlock(string name) : this(name, false) { }
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="TraitUnlock"/> class with the specified <paramref name="name"/>.</para>
+		/// </summary>
+		/// <param name="name">The unlock's and trait's name.</param>
+		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
 		public TraitUnlock(string name, bool unlockedFromStart) : base(name, "Trait", unlockedFromStart) => IsAvailableInCC = true;
 		internal TraitUnlock(Unlock unlock) : base(unlock) { }
 
+		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
+		/// <inheritdoc/>
 		public bool IsAddedToCC
 		{
 			get => ((CustomCharacterCreation)Menu).CC.traitsChosen.Contains(Unlock);
@@ -33,6 +54,7 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -44,6 +66,7 @@ namespace RogueLibsCore
 				else if (cur == false && value) { gc.sessionDataBig.traitUnlocks.Add(Unlock); Unlock.traitCount++; }
 			}
 		}
+		/// <inheritdoc/>
 		public bool IsAvailableInCC
 		{
 			get => Unlock.onlyInCharacterCreation;
@@ -56,10 +79,23 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <summary>
+		///   <para>Gets the trait's upgrade cost, in money.</para>
+		/// </summary>
+		/// <returns>The trait's upgrade cost, in money.</returns>
 		public virtual int GetUpgradeCost() => Mathf.Abs((gc.unlocks.GetUnlock(Unlock.upgrade, "Trait")?.cost3 ?? CharacterCreationCost) * ((CustomScrollingMenu)Menu).Menu.upgradeTraitAdjust);
+		/// <summary>
+		///   <para>Gets the trait's removal cost, in money.</para>
+		/// </summary>
+		/// <returns>The trait's removal cost, in money.</returns>
 		public virtual int GetRemovalCost() => Mathf.Abs(CharacterCreationCost * ((CustomScrollingMenu)Menu).Menu.removeTraitAdjust);
+		/// <summary>
+		///   <para>Gets the trait's swap cost, in money.</para>
+		/// </summary>
+		/// <returns>The trait's swap cost, in money.</returns>
 		public virtual int GetSwapCost() => Mathf.Abs(CharacterCreationCost * (CharacterCreationCost < 0 ? ((CustomScrollingMenu)Menu).Menu.changeTraitRandomAdjustNegativeTrait : ((CustomScrollingMenu)Menu).Menu.changeTraitRandomAdjustPositiveTrait));
 
+		/// <inheritdoc/>
 		public override void UpdateButton()
 		{
 			if (Menu.Type == UnlocksMenuType.TraitsMenu)
@@ -75,6 +111,7 @@ namespace RogueLibsCore
 			else if (Menu.Type == UnlocksMenuType.AB_SwapTrait)
 				Text = $"{GetName()} | ${GetSwapCost()}";
 		}
+		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			if (IsUnlocked)
@@ -100,7 +137,7 @@ namespace RogueLibsCore
 				{
 					PlaySound("ClickButton");
 					if (IsAddedToCC = !IsAddedToCC)
-						foreach (DisplayedUnlock du in GetCancellations())
+						foreach (DisplayedUnlock du in EnumerateCancellations())
 							((IUnlockInCC)du).IsAddedToCC = false;
 					UpdateButton();
 					UpdateMenu();

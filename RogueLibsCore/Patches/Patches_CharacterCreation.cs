@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace RogueLibsCore
 {
-	public partial class RogueLibsPlugin
+	internal sealed partial class RogueLibsPlugin
 	{
 		public void PatchCharacterCreation()
 		{
@@ -27,6 +27,8 @@ namespace RogueLibsCore
 			Patcher.Prefix(typeof(CharacterCreation), nameof(CharacterCreation.PushedButton));
 
 			Patcher.Prefix(typeof(CharacterCreation), nameof(CharacterCreation.ShowDetails));
+
+			Patcher.AnyErrors();
 		}
 
 		public static bool CharacterCreation_SetupItems(ButtonData myButtonData, Unlock myUnlock) => SetupUnlocks(myButtonData, myUnlock);
@@ -120,7 +122,7 @@ namespace RogueLibsCore
 				DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock.__RogueLibsCustom;
 
 				title.text = du.GetName();
-				text.text = du.GetDescription();
+				text.text = du.GetFancyDescription();
 				image.sprite = du.GetImage();
 				image.gameObject.SetActive(image.sprite != null);
 			}

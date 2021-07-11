@@ -11,7 +11,7 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	public partial class RogueLibsPlugin
+	internal sealed partial class RogueLibsPlugin
 	{
 		public void PatchSprites()
 		{

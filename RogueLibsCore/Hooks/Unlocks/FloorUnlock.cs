@@ -8,19 +8,40 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
+	/// <summary>
+	///   <para>Represents a floor unlock.</para>
+	/// </summary>
 	public class FloorUnlock : DisplayedUnlock
 	{
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="FloorUnlock"/> class without a name.</para>
+		/// </summary>
 		public FloorUnlock() : this(null, false) { }
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="FloorUnlock"/> class without a name.</para>
+		/// </summary>
+		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
 		public FloorUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="FloorUnlock"/> class with the specified <paramref name="name"/>.</para>
+		/// </summary>
+		/// <param name="name">The unlock's and floor's name.</param>
 		public FloorUnlock(string name) : this(name, false) { }
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="FloorUnlock"/> class with the specified <paramref name="name"/>.</para>
+		/// </summary>
+		/// <param name="name">The unlock's and floor's name.</param>
+		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
 		public FloorUnlock(string name, bool unlockedFromStart) : base(name, "Floor", unlockedFromStart) { }
 		internal FloorUnlock(Unlock unlock) : base(unlock) { }
 
+		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
+		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -33,11 +54,13 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <inheritdoc/>
 		public override void UpdateButton()
 		{
 			if (Menu.Type == UnlocksMenuType.FloorsMenu)
 				UpdateButton(false);
 		}
+		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			if (IsUnlocked)
@@ -63,22 +86,9 @@ namespace RogueLibsCore
 			else PlaySound("CantDo");
 		}
 
+		/// <inheritdoc/>
 		public override string GetName() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name + "Name", Unlock.unlockNameType) : "?????";
-		public override string GetDescription()
-		{
-			if (IsUnlocked || Unlock.nowAvailable)
-			{
-				string text = "";
-				AddCancellationsTo(ref text);
-				AddRecommendationsTo(ref text);
-				return text.Trim('\n');
-			}
-			else
-			{
-				string text = "?????";
-				AddPrerequisitesTo(ref text);
-				return text.Trim('\n');
-			}
-		}
+		/// <inheritdoc/>
+		public override string GetDescription() => IsUnlocked || Unlock.nowAvailable ? string.Empty : "?????";
 	}
 }

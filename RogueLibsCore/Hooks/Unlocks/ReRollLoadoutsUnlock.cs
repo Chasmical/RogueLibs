@@ -8,21 +8,31 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
+	/// <summary>
+	///   <para>Represents a "Re-Roll Loadouts" button in the Loadout Menu.</para>
+	/// </summary>
 	public class ReRollLoadoutsUnlock : MutatorUnlock
 	{
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="ReRollLoadoutsUnlock"/> class.</para>
+		/// </summary>
 		public ReRollLoadoutsUnlock() : base("ReRollLoadouts", true) { }
+		/// <inheritdoc/>
 		public override bool IsAvailable { get; set; } = true;
+		/// <inheritdoc/>
 		public override bool IsEnabled { get => false; set { } }
 
 		private static readonly FieldInfo loadoutListField = AccessTools.Field(typeof(ScrollingMenu), "loadoutList");
 		private static readonly FieldInfo listUnlocksField = AccessTools.Field(typeof(ScrollingMenu), "listUnlocks");
 
+		/// <inheritdoc/>
 		public override void UpdateButton()
 		{
 			UpdateButton(false);
 			ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
 			Text += $" - ${menu.reRollCost}";
 		}
+		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;

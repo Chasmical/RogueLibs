@@ -11,7 +11,7 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	public partial class RogueLibsPlugin
+	internal sealed partial class RogueLibsPlugin
 	{
 		public void PatchAbilities()
 		{
@@ -26,6 +26,8 @@ namespace RogueLibsCore
 
 			Patcher.Postfix(typeof(SpecialAbilityIndicator), nameof(SpecialAbilityIndicator.ShowIndicator),
 				new Type[3] { typeof(PlayfieldObject), typeof(string), typeof(string) });
+
+			Patcher.AnyErrors();
 		}
 
 		public static void StatusEffects_GiveSpecialAbility(StatusEffects __instance)
@@ -110,22 +112,28 @@ namespace RogueLibsCore
 			__instance.startedRechargeSpecialAbility = true;
 			__instance.rechargesSpecialAbility = true;
 			float countSpeed = 1f;
+			bool showBuffText = true;
 			while (__instance.agent.inventory.equippedSpecialAbility == ability.Item)
 			{
 				InvItem item = __instance.agent.inventory.equippedSpecialAbility;
 				if (item.invItemCount > 0)
 				{
-					OnAbilityRechargingArgs args = new OnAbilityRechargingArgs() { UpdateDelay = countSpeed };
+					OnAbilityRechargingArgs args = new OnAbilityRechargingArgs() { UpdateDelay = countSpeed, ShowRechargedText = showBuffText };
 					((IAbilityRechargeable)ability).OnRecharge(args);
 					countSpeed = args.UpdateDelay;
+					showBuffText = args.ShowRechargedText;
 
 					yield return countSpeed > 0 ? new WaitForSeconds(countSpeed) : null;
 
 					if (__instance.agent.inventory.equippedSpecialAbility != ability.Item) break;
-					if (item.invItemCount > 0 && __instance.CanRecharge() && --item.invItemCount == 0)
+					if (item.invItemCount == 0)
 					{
-						__instance.CreateBuffText("Recharged", __instance.agent.objectNetID);
-						GameController.gameController.audioHandler.Play(__instance.agent, "Recharge");
+						if (showBuffText)
+						{
+							__instance.CreateBuffText("Recharged", __instance.agent.objectNetID);
+							GameController.gameController.audioHandler.Play(__instance.agent, "Recharge");
+						}
+
 						if (!(ability is IAbilityTargetable))
 							__instance.agent.inventory.buffDisplay?.specialAbilitySlot.MakeUsable();
 					}

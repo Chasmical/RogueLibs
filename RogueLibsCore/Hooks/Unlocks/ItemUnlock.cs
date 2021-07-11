@@ -8,11 +8,30 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
+	/// <summary>
+	///   <para>Represents an item unlock.</para>
+	/// </summary>
 	public class ItemUnlock : DisplayedUnlock, IUnlockInCC
 	{
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="ItemUnlock"/> class without a name.</para>
+		/// </summary>
 		public ItemUnlock() : this(null, false) { }
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="ItemUnlock"/> class without a name.</para>
+		/// </summary>
+		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
 		public ItemUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="ItemUnlock"/> class with the specified <paramref name="name"/>.</para>
+		/// </summary>
+		/// <param name="name">The unlock's and item's name.</param>
 		public ItemUnlock(string name) : this(name, false) { }
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="ItemUnlock"/> class with the specified <paramref name="name"/>.</para>
+		/// </summary>
+		/// <param name="name">The unlock's and item's name.</param>
+		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
 		public ItemUnlock(string name, bool unlockedFromStart)
 			: base(name, "Item", unlockedFromStart)
 		{
@@ -23,11 +42,13 @@ namespace RogueLibsCore
 		}
 		internal ItemUnlock(Unlock unlock) : base(unlock) { }
 
+		/// <inheritdoc/>
 		public override bool IsEnabled
 		{
 			get => !Unlock.notActive;
 			set => Unlock.notActive = !value;
 		}
+		/// <inheritdoc/>
 		public bool IsAddedToCC
 		{
 			get => ((CustomCharacterCreation)Menu).CC.itemsChosen.Contains(Unlock);
@@ -39,6 +60,9 @@ namespace RogueLibsCore
 				else if (!cur && value) list.Add(Unlock);
 			}
 		}
+		/// <summary>
+		///   <para>Gets or sets whether the item is selected as a Loadout.</para>
+		/// </summary>
 		public bool IsSelectedLoadout
 		{
 			get => GetMyLoadouts().Contains(Name);
@@ -51,6 +75,13 @@ namespace RogueLibsCore
 			}
 		}
 
+		private List<string> GetMyLoadouts()
+			=> Menu.Agent.isPlayer is 1 ? gc.sessionDataBig.loadouts1
+			: Menu.Agent.isPlayer is 2 ? gc.sessionDataBig.loadouts2
+			: Menu.Agent.isPlayer is 3 ? gc.sessionDataBig.loadouts3
+			: gc.sessionDataBig.loadouts4;
+
+		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
 			get => !Unlock.unavailable;
@@ -62,6 +93,7 @@ namespace RogueLibsCore
 				else if (cur == false && value) { gc.sessionDataBig.itemUnlocks.Add(Unlock); Unlock.itemCount++; }
 			}
 		}
+		/// <inheritdoc/>
 		public bool IsAvailableInCC
 		{
 			get => Unlock.onlyInCharacterCreation;
@@ -73,6 +105,9 @@ namespace RogueLibsCore
 				else if (cur == false && value) { gc.sessionDataBig.itemUnlocksCharacterCreation.Add(Unlock); Unlock.itemCountCharacterCreation++; }
 			}
 		}
+		/// <summary>
+		///   <para>Gets or sets whether the item is available in the Item Teleporter's menu.</para>
+		/// </summary>
 		public bool IsAvailableInItemTeleporter
 		{
 			get => Unlock.freeItem;
@@ -85,12 +120,7 @@ namespace RogueLibsCore
 			}
 		}
 
-		private List<string> GetMyLoadouts()
-			=> Menu.Agent.isPlayer is 1 ? gc.sessionDataBig.loadouts1
-			: Menu.Agent.isPlayer is 2 ? gc.sessionDataBig.loadouts2
-			: Menu.Agent.isPlayer is 3 ? gc.sessionDataBig.loadouts3
-			: gc.sessionDataBig.loadouts4;
-
+		/// <inheritdoc/>
 		public override void UpdateButton()
 		{
 			if (Menu.Type == UnlocksMenuType.RewardsMenu)
@@ -109,6 +139,7 @@ namespace RogueLibsCore
 			else if (Menu.Type == UnlocksMenuType.CharacterCreation)
 				UpdateButton(IsAddedToCC);
 		}
+		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
 			if (IsUnlocked)
@@ -187,7 +218,7 @@ namespace RogueLibsCore
 				{
 					PlaySound("ClickButton");
 					if (IsAddedToCC = !IsAddedToCC)
-						foreach (DisplayedUnlock du in GetCancellations())
+						foreach (DisplayedUnlock du in EnumerateCancellations())
 							((IUnlockInCC)du).IsAddedToCC = false;
 					UpdateButton();
 					UpdateMenu();
@@ -204,6 +235,7 @@ namespace RogueLibsCore
 			else PlaySound("CantDo");
 		}
 
+		/// <inheritdoc/>
 		public override Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable)
 			&& GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
 	}

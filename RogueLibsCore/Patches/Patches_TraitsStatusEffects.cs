@@ -13,7 +13,7 @@ using static UnityEngine.Random;
 
 namespace RogueLibsCore
 {
-	public partial class RogueLibsPlugin
+	internal sealed partial class RogueLibsPlugin
 	{
 		public void PatchTraitsAndStatusEffects()
 		{
@@ -41,6 +41,8 @@ namespace RogueLibsCore
 
 			Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.UpdateStatusEffect));
 			Patcher.Prefix(typeof(StatusEffects), nameof(StatusEffects.UpdateTrait));
+
+			Patcher.AnyErrors();
 		}
 
 		public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> codeEnumerable)

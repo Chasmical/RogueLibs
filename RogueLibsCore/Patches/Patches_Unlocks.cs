@@ -13,7 +13,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 namespace RogueLibsCore
 {
-	public partial class RogueLibsPlugin
+	internal sealed partial class RogueLibsPlugin
 	{
 		public void PatchUnlocks()
 		{
@@ -28,6 +28,14 @@ namespace RogueLibsCore
 
 			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.SaveUnlockData2));
 			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.LoadUnlockData2));
+
+			if (Patcher.AnyErrors())
+			{
+				Logger.LogError("One of the unlock patches failed!");
+				Logger.LogError("Terminating the process to keep the save file safe.");
+				Environment.Exit(1);
+				return;
+			}
 
 			RogueLibs.CreateCustomName("UnlockFor", "Unlock", new CustomNameInfo
 			{
@@ -46,7 +54,7 @@ namespace RogueLibsCore
 			}
 		}
 
-		private static void UnlocksClearHelper(bool dontClear)
+		public static void Unlocks_LoadInitialUnlocks_Helper(bool dontClear)
 		{
 			if (dontClear) return;
 			if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
@@ -58,7 +66,7 @@ namespace RogueLibsCore
 			{
 				new CodeInstruction(OpCodes.Ldarg_0),
 				new CodeInstruction(OpCodes.Ldfld, AccessTools.Field(typeof(Unlocks), "loadedInitialUnlocks")),
-				new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RogueLibsPlugin), nameof(UnlocksClearHelper))),
+				new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RogueLibsPlugin), nameof(Unlocks_LoadInitialUnlocks_Helper))),
 			}
 			.Concat(codeEnumerable.ReplaceRegion(
 				new Func<CodeInstruction, bool>[]
@@ -72,10 +80,11 @@ namespace RogueLibsCore
 				new CodeInstruction[]
 				{
 					new CodeInstruction(OpCodes.Pop),
-					new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)))
+					new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(InitializeUnlockWrappers)))
 				}));
 		private static readonly MethodInfo List_Unlock_GetEnumerator = typeof(List<Unlock>).GetMethod("GetEnumerator");
-		public static void LoadUnlockWrappersAndCategorize()
+#pragma warning disable CS0618 // Type or member is obsolete
+		public static void InitializeUnlockWrappers()
 		{
 			GameController gc = GameController.gameController;
 			SessionDataBig sdb = gc.sessionDataBig;
@@ -117,7 +126,13 @@ namespace RogueLibsCore
 				else if (unlock.unlockType == "BigQuest") wrapper = new BigQuestUnlock(unlock);
 				else if (unlock.unlockType == "HomeBase") wrapper = new HomeBaseUnlock(unlock);
 				else if (unlock.unlockType == "Extra") wrapper = new ExtraUnlock(unlock);
-				else if (unlock.unlockType == "Agent") wrapper = new AgentUnlock(unlock);
+				else if (unlock.unlockType == "Agent")
+				{
+					wrapper = new AgentUnlock(unlock)
+					{
+						IsSSA = unlock.unlockName == "Cop2" || unlock.unlockName == "UpperCruster" || unlock.unlockName == "Guard2"
+					};
+				}
 				else if (unlock.unlockType == "Loadout") wrapper = new LoadoutUnlock(unlock);
 				else
 				{
@@ -137,6 +152,7 @@ namespace RogueLibsCore
 				AddUnlockFull(wrapper);
 			}
 		}
+#pragma warning restore CS0618 // Type or member is obsolete
 		public static void AddUnlockFull(UnlockWrapper wrapper, bool alreadyLoaded = false)
 		{
 			try
@@ -615,11 +631,25 @@ namespace RogueLibsCore
 			return false;
 		}
 	}
+	/// <summary>
+	///   <para>Provides extension methods for the <see cref="Unlocks"/> class.</para>
+	/// </summary>
 	public static class UnlocksExtensions
 	{
+		/// <summary>
+		///   <para>Determines whether the unlocks should be unlockable anyway.</para>
+		/// </summary>
 		public static bool AllowUnlocksAnyway { get; set; }
+		/// <summary>
+		///   <para>Forcefully unlocks an unlock with the specified <paramref name="unlockName"/> and <paramref name="unlockType"/>.</para>
+		/// </summary>
+		/// <param name="unlocks">The current unlocks.</param>
+		/// <param name="unlockName">The name of the unlock to unlock.</param>
+		/// <param name="unlockType">The type of the unlock to unlock.</param>
+		/// <exception cref="ArgumentNullException"><paramref name="unlocks"/> is <see langword="null"/>.</exception>
 		public static void DoUnlockForced(this Unlocks unlocks, string unlockName, string unlockType)
 		{
+			if (unlocks is null) throw new ArgumentNullException(nameof(unlocks));
 			if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
 				RogueFramework.LogDebug($"Force-unlocking \"{unlockName}\" ({unlockType})");
 

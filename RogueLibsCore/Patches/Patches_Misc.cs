@@ -11,7 +11,7 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	public partial class RogueLibsPlugin
+	internal sealed partial class RogueLibsPlugin
 	{
 		public void PatchMisc()
 		{
@@ -29,8 +29,10 @@ namespace RogueLibsCore
 			Patcher.Prefix(typeof(AudioHandler), nameof(AudioHandler.SetupDics), nameof(AudioHandler_SetupDics_Prefix));
 			Patcher.Postfix(typeof(AudioHandler), nameof(AudioHandler.SetupDics));
 
-			// remove 99 nuggets limit
+			// remove 99 nuggets max limit
 			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.AddNuggets));
+
+			Patcher.AnyErrors();
 		}
 
 		public static void NameDB_RealAwake(NameDB __instance)
