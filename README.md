@@ -29,17 +29,14 @@ This modding library does nothing on its own, but it provides methods for other 
 - **[Installation guide](https://abbysssal.github.io/RogueLibs/docs/user/installation)**
 - **[Making mods with RogueLibs](https://abbysssal.github.io/RogueLibs/docs/getting-started)**
 
-## See the RogueLibs' site for more info:
-## https://abbysssal.github.io/RogueLibs
+## [See RogueLibs' site for more info](https://abbysssal.github.io/RogueLibs)
 
----
-
-## Links
+### Links
 - [Download RogueLibs (latest stable version)](https://github.com/Abbysssal/RogueLibs/releases/latest)
 - [Steam guide on modding with BepInEx](https://steamcommunity.com/sharedfiles/filedetails/?id=2106187116)
 - [RogueLibs' site](https://abbysssal.github.io/RogueLibs)
 
-## Contributing
+### Contributing
 
 If you have any suggestions or find any bugs, you can open a new issue here on GitHub, or create a pull request:
 
