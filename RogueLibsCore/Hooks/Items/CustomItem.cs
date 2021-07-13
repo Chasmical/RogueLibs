@@ -64,7 +64,7 @@ namespace RogueLibsCore
 		///   <para>Returns the custom item's count text.</para>
 		/// </summary>
 		/// <returns>The custom count string, if overriden; otherwise, <see langword="null"/>.</returns>
-		public virtual string GetCountString() => null;
+		public virtual CustomTooltip GetCountString() => null;
 	}
 	/// <summary>
 	///   <para>Indicates that a custom item is usable.</para>
