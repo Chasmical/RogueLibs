@@ -223,36 +223,37 @@ namespace RogueLibsCore
 					}
 					Directory.CreateDirectory(text + "/CloudData/");
 				}
+				SessionDataBig sdb = GameController.gameController.sessionDataBig;
 				UnlockSaveData unlockSaveData = new UnlockSaveData
 				{
-					unlocks = GameController.gameController.sessionDataBig.unlocks,
-					highScores = GameController.gameController.sessionDataBig.highScores,
-					customCharacterSlots = GameController.gameController.sessionDataBig.customCharacterSlots,
-					storedItem = GameController.gameController.sessionDataBig.storedItem,
-					storedItem2 = GameController.gameController.sessionDataBig.storedItem2,
-					storedItem3 = GameController.gameController.sessionDataBig.storedItem3,
-					storedItem4 = GameController.gameController.sessionDataBig.storedItem4,
-					storedItem5 = GameController.gameController.sessionDataBig.storedItem5,
-					totalDeaths = GameController.gameController.sessionDataBig.totalDeaths,
-					totalWins = GameController.gameController.sessionDataBig.totalWins,
-					totalGamesPlayed = GameController.gameController.sessionDataBig.totalGamesPlayed,
-					nuggets = GameController.gameController.sessionDataBig.nuggets,
-					lastDailyRun = GameController.gameController.sessionDataBig.lastDailyRun,
-					finishedTutorial = GameController.gameController.sessionDataBig.finishedTutorial,
-					viewedReadThis = GameController.gameController.sessionDataBig.viewedReadThis,
+					unlocks = sdb.unlocks,
+					highScores = sdb.highScores,
+					customCharacterSlots = sdb.customCharacterSlots,
+					storedItem = sdb.storedItem,
+					storedItem2 = sdb.storedItem2,
+					storedItem3 = sdb.storedItem3,
+					storedItem4 = sdb.storedItem4,
+					storedItem5 = sdb.storedItem5,
+					totalDeaths = sdb.totalDeaths,
+					totalWins = sdb.totalWins,
+					totalGamesPlayed = sdb.totalGamesPlayed,
+					nuggets = sdb.nuggets + sdb.loadoutNuggetsSpent,
+					lastDailyRun = sdb.lastDailyRun,
+					finishedTutorial = sdb.finishedTutorial,
+					viewedReadThis = sdb.viewedReadThis,
 					currentVersion = GameController.gameController.version,
 				};
 				try
 				{
 					unlockSaveData.loadoutList = new List<Unlock>[30];
-					for (int i = 0; i < GameController.gameController.sessionDataBig.loadoutList.Length; i++)
+					for (int i = 0; i < sdb.loadoutList.Length; i++)
 					{
 						unlockSaveData.loadoutList[i] = new List<Unlock>();
-						if (GameController.gameController.sessionDataBig.loadoutList[i] != null)
+						if (sdb.loadoutList[i] != null)
 						{
-							for (int j = 0; j < GameController.gameController.sessionDataBig.loadoutList[i].Count; j++)
+							for (int j = 0; j < sdb.loadoutList[i].Count; j++)
 							{
-								Unlock item = GameController.gameController.sessionDataBig.loadoutList[i][j];
+								Unlock item = sdb.loadoutList[i][j];
 								unlockSaveData.loadoutList[i].Add(item);
 							}
 						}
@@ -270,38 +271,38 @@ namespace RogueLibsCore
 						unlockSaveData.rewardConfigConsoleList = new List<string>[10];
 						unlockSaveData.traitConfigConsoleList = new List<string>[10];
 						unlockSaveData.mutatorConfigConsoleList = new List<string>[10];
-						for (int k = 0; k < GameController.gameController.sessionDataBig.rewardConfigConsoleList.Length; k++)
+						for (int k = 0; k < sdb.rewardConfigConsoleList.Length; k++)
 						{
 							unlockSaveData.rewardConfigConsoleList[k] = new List<string>();
-							if (GameController.gameController.sessionDataBig.rewardConfigConsoleList[k] != null)
+							if (sdb.rewardConfigConsoleList[k] != null)
 							{
-								for (int l = 0; l < GameController.gameController.sessionDataBig.rewardConfigConsoleList[k].Count; l++)
+								for (int l = 0; l < sdb.rewardConfigConsoleList[k].Count; l++)
 								{
-									string item2 = GameController.gameController.sessionDataBig.rewardConfigConsoleList[k][l];
+									string item2 = sdb.rewardConfigConsoleList[k][l];
 									unlockSaveData.rewardConfigConsoleList[k].Add(item2);
 								}
 							}
 						}
-						for (int m = 0; m < GameController.gameController.sessionDataBig.traitConfigConsoleList.Length; m++)
+						for (int m = 0; m < sdb.traitConfigConsoleList.Length; m++)
 						{
 							unlockSaveData.traitConfigConsoleList[m] = new List<string>();
-							if (GameController.gameController.sessionDataBig.traitConfigConsoleList[m] != null)
+							if (sdb.traitConfigConsoleList[m] != null)
 							{
-								for (int n = 0; n < GameController.gameController.sessionDataBig.traitConfigConsoleList[m].Count; n++)
+								for (int n = 0; n < sdb.traitConfigConsoleList[m].Count; n++)
 								{
-									string item3 = GameController.gameController.sessionDataBig.traitConfigConsoleList[m][n];
+									string item3 = sdb.traitConfigConsoleList[m][n];
 									unlockSaveData.traitConfigConsoleList[m].Add(item3);
 								}
 							}
 						}
-						for (int num = 0; num < GameController.gameController.sessionDataBig.mutatorConfigConsoleList.Length; num++)
+						for (int num = 0; num < sdb.mutatorConfigConsoleList.Length; num++)
 						{
 							unlockSaveData.mutatorConfigConsoleList[num] = new List<string>();
-							if (GameController.gameController.sessionDataBig.mutatorConfigConsoleList[num] != null)
+							if (sdb.mutatorConfigConsoleList[num] != null)
 							{
-								for (int num2 = 0; num2 < GameController.gameController.sessionDataBig.mutatorConfigConsoleList[num].Count; num2++)
+								for (int num2 = 0; num2 < sdb.mutatorConfigConsoleList[num].Count; num2++)
 								{
-									string item4 = GameController.gameController.sessionDataBig.mutatorConfigConsoleList[num][num2];
+									string item4 = sdb.mutatorConfigConsoleList[num][num2];
 									unlockSaveData.mutatorConfigConsoleList[num].Add(item4);
 								}
 							}
@@ -313,7 +314,7 @@ namespace RogueLibsCore
 					}
 				}
 				Debug.Log("SAVE UNLOCK DATA");
-				string saveSlotText = GameController.gameController.sessionDataBig.GetSaveSlotText();
+				string saveSlotText = sdb.GetSaveSlotText();
 				if (GameController.gameController.consoleVersion && !GameController.gameController.fakeConsole)
 					GameController.gameController.consoleFunctions.SaveData(unlockSaveData, saveSlotText + "GameUnlocks");
 				else if (GameController.gameController.usingUWP)

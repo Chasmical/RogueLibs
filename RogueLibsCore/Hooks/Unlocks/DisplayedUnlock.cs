@@ -151,7 +151,7 @@ namespace RogueLibsCore
 				if (CharacterCreationCost != 0)
 					name += $" | <color={(CharacterCreationCost < 0 ? "lime" : "orange")}>{CharacterCreationCost}</color>";
 			}
-			else if (Unlock.nowAvailable && UnlockCost > -1)
+			else if (!IsUnlocked && Unlock.nowAvailable && UnlockCost > 0)
 			{
 				name += $" - ${UnlockCost}";
 			}
@@ -186,11 +186,11 @@ namespace RogueLibsCore
 		/// <param name="description">The description to append to.</param>
 		protected void AddCancellationsTo(ref string description)
 		{
-			if (description is null) description = string.Empty;
-			else description += "\n\n";
-
 			if (Unlock.cancellations.Count > 0)
 			{
+				if (description is null) description = string.Empty;
+				else description += "\n\n";
+
 				description += $"<color=orange>{gc.nameDB.GetName("Cancels", "Interface")}:</color>\n" +
 					string.Join(", ", Unlock.cancellations.ConvertAll(unlockName =>
 					{
@@ -205,11 +205,11 @@ namespace RogueLibsCore
 		/// <param name="description">The description to append to.</param>
 		protected void AddRecommendationsTo(ref string description)
 		{
-			if (description is null) description = string.Empty;
-			else description += "\n\n";
-
 			if (Unlock.recommendations.Count > 0)
 			{
+				if (description is null) description = string.Empty;
+				else description += "\n\n";
+
 				description += $"<color=cyan>{gc.nameDB.GetName("Recommends", "Interface")}:</color>\n" +
 					string.Join(", ", Unlock.recommendations.ConvertAll(unlockName =>
 					{
@@ -224,9 +224,6 @@ namespace RogueLibsCore
 		/// <param name="description">The description to append to.</param>
 		protected void AddPrerequisitesTo(ref string description)
 		{
-			if (description is null) description = string.Empty;
-			else description += "\n\n";
-
 			List<string> prereqs = new List<string>();
 			if (Unlock.prerequisites.Count > 0)
 			{
@@ -252,7 +249,12 @@ namespace RogueLibsCore
 				prereqs.Add($"\n{gc.nameDB.GetName("UnlockFor", "Unlock")} <color={costColor}>${Unlock.cost}</color>");
 			}
 			if (prereqs.Count > 0)
+			{
+				if (description is null) description = string.Empty;
+				else description += "\n\n";
+
 				description += $"<color=cyan>{gc.nameDB.GetName("Prerequisites", "Unlock")}:</color>\n" + string.Join("\n", prereqs);
+			}
 		}
 
 		/// <summary>

@@ -315,10 +315,12 @@ namespace RogueLibsCore
 			Vector3 b = new Vector3(vector5.x, vector6.y, 0f);
 			Vector3 a = new Vector3(vector6.x, vector5.y, 0f);
 
+			Material mat = new Material(Shader.Find("tk2d/BlendVertexColor")) { name = texture.name, mainTexture = texture };
 			return new tk2dSpriteDefinition
 			{
 				name = texture.name,
-				material = new Material(Shader.Find("tk2d/BlendVertexColor")) { name = texture.name, mainTexture = texture },
+				material = mat,
+				materialInst = mat,
 				normals = new Vector3[0],
 				tangents = new Vector4[0],
 				indices = new int[6] { 0, 3, 1, 2, 3, 0 },
@@ -360,11 +362,15 @@ namespace RogueLibsCore
 			Material[] newMats = new Material[collection.materials.Length + 1];
 			Array.Copy(collection.materials, 0, newMats, 0, collection.materials.Length);
 			newMats[newMats.Length - 1] = definition.material;
+			if (Array.IndexOf(newMats, null) != -1)
+				newMats = Array.FindAll(newMats, m => m != null);
 			collection.materials = newMats;
 
 			Texture[] newTextures = new Texture[collection.textures.Length + 1];
 			Array.Copy(collection.textures, 0, newTextures, 0, collection.textures.Length);
 			newTextures[newTextures.Length - 1] = definition.material.mainTexture;
+			if (Array.IndexOf(newTextures, null) != -1)
+				newTextures = Array.FindAll(newTextures, m => m != null);
 			collection.textures = newTextures;
 
 			collection.inst.materialIdsValid = false;

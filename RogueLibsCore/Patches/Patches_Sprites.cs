@@ -128,11 +128,15 @@ namespace RogueLibsCore
 
 		public static void ObjectReal_RefreshShader(ObjectReal __instance)
 		{
-			RogueSprite sprite = (RogueSprite)__instance.objectSprite?.spr?.CurrentSprite?.__RogueLibsCustom;
+			RogueSprite sprite = (RogueSprite)__instance.spr?.CurrentSprite?.__RogueLibsCustom;
 			if (sprite != null)
 			{
+				Shader shader = GameController.gameController.lightingType == "Full" || GameController.gameController.lightingType == "Med"
+					? GameController.gameController.litShader : GameController.gameController.normalShader;
 				__instance.objectSprite.meshRenderer.material = sprite.Material;
+				__instance.objectSprite.meshRenderer.material.shader = shader;
 				__instance.objectSprite.objectRenderer.sharedMaterial = sprite.Material;
+				__instance.objectSprite.objectRenderer.sharedMaterial.shader = shader;
 			}
 		}
 		public static void ObjectSprite_SetObjectHighlight(ObjectSprite __instance)

@@ -8,104 +8,26 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Just implement the `IItemCombinable` interface in your item's class:
 
-```csharp
+```csharp title="MyCombinableItem.cs"
 // highlight-next-line
-public class MyCustomItem : CustomItem, IItemCombinable
+public class MyCombinableItem : CustomItem, IItemCombinable
 {
     // highlight-start
-    public bool CombineFilter(InvItem other) { /*...*/ }
-    public bool CombineItems(InvItem other) { /*...*/ }
-    public CustomTooltip CombineTooltip(InvItem other) { /*...*/ }
-    public CustomTooltip CombineCursorText(InvItem other) { /*...*/ }
+    public bool CombineFilter(InvItem other) { /* ... */ }
+    public bool CombineItems(InvItem other) { /* ... */ }
+    public CustomTooltip CombineTooltip(InvItem other) { /* ... */ }
+    public CustomTooltip CombineCursorText(InvItem other) { /* ... */ }
     // highlight-end
 }
 ```
 
-`CombineFilter` determines what items' inventory slots should be highlighted, when using the current item.
-
-`CombineItems` combines the current item with another one. The return value determines whether the combining was successful.
-
-`CombineTooltip` determines the tooltip text, displayed in the lower left corner of the inventory slot.
-
-`CombineCursorText` determines the cursor text, that will be visible under the cursor.
-
-:::caution
-`CombineFilter` does not control what items can be passed as parameters to other methods. You need to check if the passed item is compatible inside other methods too:
-
-```csharp
-    public bool CombineItems(InvItem other)
-    {
-        // highlight-next-line
-        if (!CombineFilter(other)) return false;
-        // ...
-    }
-    public CustomTooltip CombineTooltip(InvItem other)
-    {
-        // highlight-next-line
-        if (!CombineFilter(other)) return null;
-        // ...
-    }
-    public CustomTooltip CombineCursorText(InvItem other)
-        => gc.nameDB.GetName(CombineFilter(other) ? "DoSomething" : "CantDoSomething", "Interface");
-```
-:::
-
 ## Examples {#examples}
 
 <Tabs
-    defaultValue="grindstone"
+    defaultValue="ammobox"
     values={[
-        {label:'Grindstone', value:'grindstone'},
         {label:'Ammo Box', value:'ammobox'},
     ]}>
-<TabItem value="grindstone">
-
-A simple example. Uses special item attributes (functionality is added in patches).
-
-```csharp title="Grindstone.cs"
-[ItemCategories(RogueCategories.Technology, RogueCategories.MeleeAccessory, RogueCategories.Melee)]
-public class Grindstone : CustomItem, IItemCombinable
-{
-    public override void SetupDetails()
-    {
-        Item.itemType = ItemTypes.Combine;
-        Item.itemValue = 40;
-        Item.initCount = 10;
-        Item.rewardCount = 10;
-        Item.hasCharges = true;
-        Item.stackable = true;
-    }
-    public bool CombineFilter(InvItem other)
-        => other.itemType == ItemTypes.WeaponMelee && !other.contents.Exists(c => c.StartsWith("Sharpened:"));
-    public bool CombineItems(InvItem other)
-    {
-        if (!CombineFilter(other)) return false;
-        
-        other.contents.Add("Sharpened:3");
-        Count--;
-        return true;
-    }
-    public CustomTooltip CombineTooltip(InvItem other) => null;
-    public CustomTooltip CombineCursorText(InvItem other) => null;
-}
-```
-
-```csharp
-RogueLibs.CreateCustomItem<Grindstone>()
-    .WithName(new CustomNameInfo("Grindstone"))
-    .WithDescription(new CustomNameInfo("Use on melee weapons to sharpen them. Sharpened weapons will ignore all damage-reducing effects."))
-    .WithSprite(Properties.Resources.Grindstone)
-    .WithUnlock(new ItemUnlock
-    {
-        UnlockCost = 10,
-        CharacterCreationCost = 5,
-        LoadoutCost = 5,
-        // Melee Durability Spray must be unlocked in order to unlock Grindstone
-        Prerequisites = { "MeleeDurabilityDoubler" },
-    });
-```
-
-</TabItem>
 <TabItem value="ammobox">
 
 A pretty complicated example with a lot of math.

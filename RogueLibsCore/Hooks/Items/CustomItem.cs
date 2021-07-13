@@ -64,7 +64,25 @@ namespace RogueLibsCore
 		///   <para>Returns the custom item's count text.</para>
 		/// </summary>
 		/// <returns>The custom count string, if overriden; otherwise, <see langword="null"/>.</returns>
-		public virtual CustomTooltip GetCountString() => null;
+		public virtual CustomTooltip GetCountString()
+		{
+			if (Item.noCountText) return default;
+
+			if (Item.rechargeAmount > 0)
+			{
+				if (Count == Item.rechargeAmount)
+					return new CustomTooltip(Item.rechargeAmount - 1, Color.red);
+				else if (Item.invItemCount != 1)
+					return new CustomTooltip(Count - 1, Color.red);
+				else return default;
+			}
+
+			if (Item.stackable || Item.stackableContents || Item.isArmor || Item.isArmorHead
+				|| Item.itemType == ItemTypes.WeaponProjectile || Item.itemType == ItemTypes.WeaponMelee)
+				return new CustomTooltip(Count, Color.white);
+
+			return default;
+		}
 	}
 	/// <summary>
 	///   <para>Indicates that a custom item is usable.</para>
@@ -170,6 +188,15 @@ namespace RogueLibsCore
 			Color = null;
 		}
 		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="CustomTooltip"/> structure with the specified <paramref name="obj"/>.</para>
+		/// </summary>
+		/// <param name="obj">An object representing the tooltip's text.</param>
+		public CustomTooltip(object obj)
+		{
+			Text = obj?.ToString();
+			Color = null;
+		}
+		/// <summary>
 		///   <para>Initializes a new instance of the <see cref="CustomTooltip"/> structure with the specified <paramref name="text"/> and <paramref name="color"/>.</para>
 		/// </summary>
 		/// <param name="text">The tooltip's text.</param>
@@ -177,6 +204,16 @@ namespace RogueLibsCore
 		public CustomTooltip(string text, Color color)
 		{
 			Text = text;
+			Color = color;
+		}
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="CustomTooltip"/> structure with the specified <paramref name="obj"/> and <paramref name="color"/>.</para>
+		/// </summary>
+		/// <param name="obj">An object representing the tooltip's text.</param>
+		/// <param name="color">The tooltip's text color.</param>
+		public CustomTooltip(object obj, Color color)
+		{
+			Text = obj?.ToString();
 			Color = color;
 		}
 		/// <summary>

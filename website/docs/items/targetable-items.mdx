@@ -8,37 +8,17 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Just implement the `IItemTargetable` interface in your item's class:
 
-```csharp
+```csharp title="MyTargetableItem.cs"
 // highlight-next-line
-public class MyCustomItem : CustomItem, IItemTargetable
+public class MyTargetableItem : CustomItem, IItemTargetable
 {
     // highlight-start
-    public bool TargetFilter(PlayfieldObject target) { /*...*/ }
-    public bool TargetObject(PlayfieldObject target) { /*...*/ }
-    public CustomTooltip TargetCursorText(PlayfieldObject target) { /*...*/ }
+    public bool TargetFilter(PlayfieldObject target) { /* ... */ }
+    public bool TargetObject(PlayfieldObject target) { /* ... */ }
+    public CustomTooltip TargetCursorText(PlayfieldObject target) { /* ... */ }
     // highlight-end
 }
 ```
-
-`TargetFilter` determines what objects to highlight when using the current item.
-
-`TargetObject` uses the current item on the object. The return value determines whether the usage was successful.
-
-`TargetCursorText` determines the cursor text, that will be visible under the cursor.
-
-:::caution
-`TargetFilter` does not control what objects can be passed as parameters to other methods. You need to check if the passed object is compatible inside other methods too:
-
-```csharp
-    public bool TargetObject(PlayfieldObject target)
-    {
-        // highlight-next-line
-        if (!TargetFilter(target)) return false;
-        // ...
-    }
-    public CustomTooltip TargetCursorText(PlayfieldObject target) => null;
-```
-:::
 
 ## Examples {#examples}
 
@@ -46,7 +26,6 @@ public class MyCustomItem : CustomItem, IItemTargetable
   defaultValue="spytron3000"
   values={[
     {label:'SPYTRON 3000', value:'spytron3000'},
-    {label:'Blank Voodoo Doll', value:'blankvoodoodoll'},
   ]}>
 <TabItem value="spytron3000">
 
@@ -115,65 +94,6 @@ RogueLibs.CreateCustomItem<SPYTRON3000>()
     .WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 3, LoadoutCost = 2 });
 
 RogueLibs.CreateCustomName("Disguise", "Interface", new CustomNameInfo("Disguise as"));
-```
-
-</TabItem>
-
-<TabItem value="blankvoodoodoll">
-
-Blank Voodoo Doll. See [Recharging Items: Examples](./recharging-items#examples) for the activated Voodoo Doll.
-
-```csharp title="BlankVoodooDoll.cs"
-[ItemCategories(RogueCategories.Usable, RogueCategories.Stealth, RogueCategories.Weird)]
-public class BlankVoodooDoll : CustomItem, IItemTargetable
-{
-    public override void SetupDetails()
-    {
-        Item.itemType = ItemTypes.Tool;
-        Item.itemValue = 100;
-        Item.initCount = 3;
-        Item.rewardCount = 3;
-        Item.stackable = true;
-        Item.hasCharges = true;
-        Item.goesInToolbar = true;
-    }
-    public bool TargetFilter(PlayfieldObject target) => target is Agent agent && !agent.dead && !agent.electronic;
-    public bool TargetObject(PlayfieldObject target)
-    {
-        if (!TargetFilter(target)) return false;
-
-        Inventory.DestroyItem(Item);
-        VoodooDoll doll = Inventory.AddItem<VoodooDoll>(Count);
-        doll.Victim = (Agent)target;
-        
-        Item.invInterface.HideTarget();
-    }
-    public CustomTooltip TargetCursorText(PlayfieldObject target)
-    {
-        if (!(target is Agent agent)) return null;
-        if (agent.dead) return gc.nameDB.GetName("VoodooDead", "Interface");
-        if (agent.electronic) return gc.nameDB.GetName("VoodooElectronic", "Interface");
-        return gc.nameDB.GetName("VoodooBind", "Interface");
-    }
-}
-```
-
-```csharp
-RogueLibs.CreateCustomItem<BlankVoodooDoll>()
-    .WithName(new CustomNameInfo("Blank Voodoo Doll"))
-    .WithDescription(new CustomNameInfo("Bind it to someone first. Has limited uses."))
-    .WithSprite(Properties.Resources.BlankVoodooDoll)
-    .WithUnlock(new ItemUnlock
-    {
-        UnlockCost = 10,
-        CharacterCreationCost = 5,
-        LoadoutCost = 5,
-        Prerequisites = { "Necronomicon" },
-    });
-
-RogueLibs.CreateCustomName("VoodooBind", "Interface", new CustomNameInfo("Bind"));
-RogueLibs.CreateCustomName("VoodooDead", "Interface", new CustomNameInfo("They're already dead"));
-RogueLibs.CreateCustomName("VoodooElectronic", "Interface", new CustomNameInfo("This thing doesn't have a soul"));
 ```
 
 </TabItem>

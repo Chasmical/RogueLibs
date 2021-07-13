@@ -30,9 +30,9 @@ module.exports = {
             {
               'Custom Abilities': [
                 'items/create-ability',
-                'items/usable-abilities',
                 'items/rechargeable-abilities',
                 'items/chargeable-abilities',
+                'items/targetable-abilities',
               ],
             },
           ],

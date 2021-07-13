@@ -271,34 +271,33 @@ namespace RogueLibsCore
 			return false;
 		}
 
-		private static Color? targetTextColor;
 		public static void InvInterface_ShowTarget(InvInterface __instance, InvItem item)
 		{
+			__instance.cursorTextString3.color = Color.white;
+
 			if (item.itemType != "Combine")
 			{
-				if (targetTextColor is null) targetTextColor = __instance.cursorTextString3.color;
-
 				CustomItem custom = item.GetHook<CustomItem>();
 				if (custom is IItemTargetable targetable)
 				{
 					CustomTooltip tooltip = targetable.TargetCursorText(item.agent.target.playfieldObject);
+					__instance.cursorTextCanvas3.enabled = !string.IsNullOrEmpty(tooltip.Text);
 					__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
-					__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
+					__instance.cursorTextString3.color = tooltip.Color ?? Color.white;
 				}
 			}
 		}
 		public static void InvInterface_ShowCursorText(InvInterface __instance, PlayfieldObject myPlayfieldObject)
 		{
+			__instance.cursorTextString3.color = Color.white;
+
 			CustomItem custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
 			if (custom is IItemTargetable targetable)
 			{
-				if (targetTextColor is null) targetTextColor = __instance.cursorTextString3.color;
-
 				CustomTooltip tooltip = targetable.TargetCursorText(myPlayfieldObject);
-				__instance.cursorTextCanvas3.enabled = true;
+				__instance.cursorTextCanvas3.enabled = !string.IsNullOrEmpty(tooltip.Text);
 				__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
-				__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
-				if (string.IsNullOrEmpty(tooltip.Text)) __instance.cursorTextCanvas3.enabled = false;
+				__instance.cursorTextString3.color = tooltip.Color ?? Color.white;
 			}
 		}
 		public static void InvInterface_HideCursorText(InvInterface __instance)
@@ -307,16 +306,17 @@ namespace RogueLibsCore
 			if (custom is IItemTargetable targetable)
 			{
 				CustomTooltip tooltip = targetable.TargetCursorText(null);
-				__instance.cursorTextCanvas3.enabled = true;
+				__instance.cursorTextCanvas3.enabled = !string.IsNullOrEmpty(tooltip.Text);
 				__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
-				__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
-				if (string.IsNullOrEmpty(tooltip.Text)) __instance.cursorTextCanvas3.enabled = false;
+				__instance.cursorTextString3.color = tooltip.Color ?? Color.white;
 			}
 		}
 
-		private static Color? combineTextColor;
 		public static void InvSlot_SetColor(InvSlot __instance)
 		{
+			// set default color
+			__instance.toolbarNumText.color = new Color32(255, 237, 0, 255);
+
 			InvItem combiner = __instance.mainGUI.targetItem ?? __instance.database.invInterface.draggedInvItem;
 			if (combiner is null) return;
 			InvItem combinee = __instance.curItemList[__instance.slotNumber];
@@ -344,12 +344,10 @@ namespace RogueLibsCore
 
 					if (__instance.slotType != "NPCChest" && __instance.slotType != "Chest")
 					{
-						if (combineTextColor is null) combineTextColor = __instance.toolbarNumText.color;
-
 						CustomTooltip tooltip = combinable.CombineTooltip(combinee);
 						__instance.toolbarNumTextGo.SetActive(true);
 						__instance.toolbarNumText.text = tooltip.Text ?? string.Empty;
-						__instance.toolbarNumText.color = tooltip.Color ?? combineTextColor.Value;
+						__instance.toolbarNumText.color = tooltip.Color ?? new Color32(255, 237, 0, 255);
 					}
 				}
 				else if (__instance.slotType != "NPCChest" && (combinee.invItemName != null || combiner.itemType != "Combine"))
@@ -368,26 +366,21 @@ namespace RogueLibsCore
 			}
 		}
 
-		private static Color? countTextColor;
 		public static void InvSlot_UpdateInvSlot(InvSlot __instance, Text ___itemText)
 		{
 			CustomItem custom = __instance.item?.GetHook<CustomItem>();
 			if (custom != null)
 			{
-				if (countTextColor is null) countTextColor = ___itemText.color;
-
 				CustomTooltip tooltip = custom.GetCountString();
-				if (tooltip.Text != null)
-				{
-					___itemText.enabled = true;
-					___itemText.text = tooltip.Text;
-					___itemText.color = tooltip.Color ?? countTextColor.Value;
-				}
+				___itemText.text = tooltip.Text ?? string.Empty;
+				___itemText.color = tooltip.Color ?? Color.white;
 			}
 		}
 
 		public static void InvInterface_TargetAnywhere(InvInterface __instance, Vector2 myPos, bool pressedButton)
 		{
+			__instance.cursorTextString3.color = Color.white;
+
 			bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
 			InvItem invItem = __instance.mainGUI.targetItem;
 			if (invItem != null)
@@ -398,7 +391,6 @@ namespace RogueLibsCore
 				{
 					if (debug && pressedButton)
 						RogueFramework.LogDebug($"Targeting {custom} ({invItem.invItemName}) anywhere:");
-					if (targetTextColor is null) targetTextColor = __instance.cursorTextString3.color;
 
 					bool filter = targetable.TargetFilter(myPos);
 					__instance.cursorHighlight = filter;
@@ -406,8 +398,9 @@ namespace RogueLibsCore
 					__instance.mainGUI.agent.targetImage.tr.localScale = Vector3.one;
 
 					CustomTooltip tooltip = targetable.TargetCursorText(myPos);
+					__instance.cursorTextCanvas3.enabled = !string.IsNullOrEmpty(tooltip.Text);
 					__instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
-					__instance.cursorTextString3.color = tooltip.Color ?? targetTextColor.Value;
+					__instance.cursorTextString3.color = tooltip.Color ?? Color.white;
 
 					if (pressedButton)
 					{

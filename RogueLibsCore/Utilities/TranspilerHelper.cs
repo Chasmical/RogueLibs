@@ -5,7 +5,6 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-	[Obsolete("A new, more optimized, easier and more transparent way to transpile methods will soon be added.")]
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 	public static class TranspilerHelper
 	{

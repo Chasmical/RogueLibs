@@ -8,181 +8,174 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 If you want to make a rechargeable item, you'll have to make use of the [`IDoUpdate` interface](../extra#update-interfaces):
 
-```csharp
+```csharp title="MyRechargeableItem.cs"
 // highlight-next-line
-public class MyCustomItem : CustomItem, IItemUsable, IDoUpdate
+public class MyRechargeableItem : CustomItem, IItemUsable, IDoUpdate
 {
-    // highlight-start
+    /* ... */
+}
+```
+
+Here's a couple of useful presets:
+
+<Tabs defaultValue="cooldown"
+    values={[
+        {label:'Cooldown', value:'cooldown'},
+        {label:'Charge', value:'charge'},
+    ]}>
+<TabItem value="cooldown">
+
+`Cooldown` represents the amount of seconds to wait until full recharge.
+
+```csharp
     public float Cooldown { get; private set; }
     public void Update() => Cooldown = Mathf.Max(Cooldown - Time.deltaTime, 0f);
-    // highlight-end
+```
 
+With adjustable recharging speed:
+
+```csharp
+    public float RechargeSpeed = 1f;
+
+    public float Cooldown { get; private set; }
+    public void Update() => Cooldown = Mathf.Max(Cooldown - Time.deltaTime * RechargeSpeed, 0f);
+```
+
+Usage:
+
+```csharp
     public bool UseItem()
     {
-        // highlight-next-line
         if (Cooldown != 0f) return false;
-
-        // do something
-        // highlight-next-line
-        Cooldown = 1f;
+        /* ... */
+        Cooldown = 1.5f;
         return true;
     }
-}
 ```
 
-And that's it. If you want to display a different item's count, without actually changing it:
+</TabItem>
+<TabItem value="charge">
+
+`Charge` represents the amount of seconds of "stored up energy".
 
 ```csharp
-    // highlight-start
-    public override string GetCountString()
-    {
-        string count = Count.ToString();
-        if (Cooldown != 0f) count += $" ({(int)Mathf.Ceil(Cooldown * 10)})";
-        return count;
-    }
-    // highlight-end
+    public float Charge { get; private set; } = 5f;
+    public void Update() => Cooldown = Mathf.Min(Charge + Time.deltaTime, 5f);
 ```
 
-## Vanilla recharging {#vanilla-recharging}
-
-:::caution Not recommended
-I'm not even sure if that's really how it works. Plus, you can't really use `rechargeAmountInverse` in here, because the game can only have one inverse-recharging coroutine (and that could be Laser Gun's). Just use the `IDoUpdate` method above.
-:::
+With adjustable charging speed and maximum charge:
 
 ```csharp
-public class MyCustomItem : CustomItem, IItemUsable
-{
-    public override void SetupDetails()
+    public float ChargingSpeed = 1f, MaxCharge = 5f;
+
+    public float Charge { get; private set; } = 5f;
+    public void Update() => Cooldown = Mathf.Min(Charge + Time.deltaTime * ChargingSpeed, MaxCharge);
+```
+
+Plus, with a charging delay:
+
+```csharp
+    public float DelayThreshold = 3f, ChargingSpeed = 1f, MaxCharge = 5f;
+
+    private float lastUsage;
+    public float Charge { get; private set; } = 5f;
+    public void Update()
     {
-        // ...
-        // highlight-next-line
-        Item.rechargeAmount = 10;
+        if (lastUsage + DelayThreshold < Time.time)
+            Cooldown = Mathf.Min(Charge + Time.deltaTime * ChargingSpeed, MaxCharge);
     }
+```
+
+Usage:
+
+```csharp
     public bool UseItem()
     {
-        // highlight-next-line
-        if (Item.rechargingItem) return false;
-
-        // do something
-        // highlight-next-line
-        Inventory.RechargeItem(Item, true);
+        if (Charge < 1.5f) return false;
+        /* ... */
+        Charge -= 1.5f;
+        lastUsage = Time.time;
         return true;
     }
-}
 ```
+
+</TabItem>
+</Tabs>
+
+If you want to display your `Cooldown` or `Charge` as the item's count, then override this method:
+
+```csharp
+    public override CustomTooltip GetCountString()
+    {
+        if (Cooldown != 0f) return new CustomTooltip(Cooldown.ToString(), Color.red);
+        return base.GetCountString(); // display default count
+    }
+```
+
+:::note
+There's also a vanilla way of recharging items, but it's really messy and unreliable.
+:::
 
 ## Examples {#examples}
 
 <Tabs
-  defaultValue="voodoodoll"
+  defaultValue="quantumfud"
   values={[
-    {label:'Voodoo Doll', value:'voodoodoll'},
+    {label:'Quantum Fud', value:'quantumfud'},
   ]}>
-<TabItem value="voodoodoll">
+<TabItem value="quantumfud">
 
-```csharp title="VoodooDoll.cs"
-[ItemName("VoodooDoll2")] // conflicts with the original item id
-[ItemCategories(RogueCategories.Social, RogueCategories.Stealth, RogueCategories.Weird)]
-public class VoodooDoll : CustomItem, IItemCombinable, IDoUpdate
+```csharp title="QuantumFud.cs"
+[ItemCategories(RogueCategories.Food, RogueCategories.Technology)]
+public class QuantumFud : CustomItem, IItemUsable, IDoUpdate
 {
     public override void SetupDetails()
     {
-        Item.itemType = ItemTypes.Combine;
-        Item.itemValue = 200;
-        Item.initCount = 1;
-        Item.rewardCount = 1;
-        Item.stackable = true;
-        Item.hasCharges = true;
+        Item.itemType = ItemTypes.Food;
+        Item.itemValue = 180;
+        Item.healthChange = 1;
+        Item.cantBeCloned = true;
+        Item.goesInToolbar = true;
     }
-
-    public Agent Victim { get; set; }
+    
     public float Cooldown { get; set; }
-    public void Update()
-    {
-        if (Victim.dead || !Victim.isActiveAndEnabled) CombineItems(Item);
-        if (Cooldown > 0f) Cooldown = Math.Max(Cooldown - Time.deltaTime, 0f);
-    }
+    public void Update() => Cooldown = Math.Max(Cooldown - Time.deltaTime, 0f);
 
-    [IgnoreChecks("AutoStacking")] // handle combining the doll with itself
-    public bool CombineFilter(InvItem other)
+    public bool UseItem()
     {
-        if (Item == other) return true;
-        if (other.itemType == ItemTypes.WeaponMelee) return true;
-        if (other.itemType == ItemTypes.WeaponProjectile && other.invItemCount > 0) return true;
-        if (other.itemType == ItemTypes.Consumable) return true;
-        return false;
-    }
-    public bool CombineItems(InvItem other)
-    {
+        // if the item hasn't recharged yet, return false (usage failed)
         if (Cooldown != 0f) return false;
+        
+        // change owner's health
+        int heal = new ItemFunctions().DetermineHealthChange(Item, Owner);
+        Owner.statusEffects.ChangeHealth(heal);
 
-        if (Item == other)
-        {
-            Inventory.DestroyItem(Item);
-            if (--Count > 0) Inventory.AddItem<BlankVoodooDoll>(Count);
-            return true;
-        }
-        else if (other.itemType == ItemTypes.Consumable)
-        {
-            new ItemFunctions().UseItem(other, Victim);
-            Cooldown = Mathf.Clamp(other.itemValue / 50f, 0.5f, 1.5f);
-        }
-        else if (other.itemType == ItemTypes.WeaponMelee)
-        {
-            float damage = other.meleeDamage / 2f;
-            damage *= 1f + Owner.strengthStatMod / 3f;
-            damage *= Owner.agentSpriteTransform.localScale.x;
+        // if the owner has "Share the Health" trait, share it
+        if (Owner.HasTrait("HealthItemsGiveFollowersExtraHealth")
+            || Owner.HasTrait("HealthItemsGiveFollowersExtraHealth2"))
+            new ItemFunctions().GiveFollowersHealth(Owner, heal);
 
-            if (Owner.HasTrait("Strength")) damage *= 1.5f;
-            if (Owner.HasTrait("StrengthSmall")) damage *= 1.25f;
-            if (Owner.HasTrait("Weak")) damage *= 0.5f;
-            if (Owner.HasTrait("Withdrawal")) damage *= 0.75f;
-
-            Inventory.DepleteMelee(Mathf.Clamp((int)(damage / Owner.agentSpriteTransform.localScale.x), 0, 15), other);
-
-            Quaternion rn = UnityEngine.Random.rotation;
-            Victim.statusEffects.ChangeHealth(-(int)damage, Owner);
-            Victim.movement.KnockBackBullet(rn, 80f, true, Owner);
-            Victim.relationships.SetRel(Owner, "Hateful");
-            Victim.relationships.AddRelHate(Owner, 5);
-
-            gc.audioHandler.Play(Victim, other.hitSoundType == "Cut"
-              ? damage < 12f ? "MeleeHitAgentCutSmall" : "MeleeHitAgentCutLarge"
-              : damage < 10f ? "MeleeHitAgentSmall" : "MeleeHitAgentLarge");
-
-            string effect = "BloodHit";
-            if (Victim.inhuman) effect += "Yellow";
-            if (damage >= 10f) effect += damage < 15f ? "Med" : "Large";
-            gc.spawnerMain.SpawnParticleEffect(effect, Victim.tr.position, rn.eulerAngles.z);
-
-            Cooldown = Mathf.Clamp(damage / 15, 0.5f, 1f);
-        }
-        else if (other.itemType == ItemTypes.WeaponProjectile && other.invItemCount > 0)
-        {
-            InvItem prev = Inventory.equippedWeapon;
-            Inventory.equippedWeapon = other;
-            Owner.gun.Shoot(false, false, false);
-            Inventory.equippedWeapon = prev;
-
-            Bullet bullet = Owner.GetLastFiredBullet();
-            Cooldown = Owner.weaponCooldown;
-
-            bullet.curPosition = bullet.transform.position = Victim.curPosition;
-            bullet.rb.velocity = Victim.rb.velocity;
-        }
-        else return false;
-
-        return true;
+        // play sound and set cooldown
+        gc.audioHandler.Play(Owner, "UseFood");
+        Cooldown = 0.5f;
+        return true; // usage was successful
     }
 }
 ```
 
 ```csharp
-RogueLibs.CreateCustomItem<VoodooDoll>()
-    .WithName(new CustomNameInfo("Voodoo Doll"))
-    .WithDescription(new CustomNameInfo("Combine things with the doll to inflict damage or effects onto the victim."))
-    .WithSprite(Properties.Resources.VoodooDoll);
-    // without an ItemUnlock, because this item cannot spawn under normal circumstances
+RogueLibs.CreateCustomItem<QuantumFud>()
+    .WithName(new CustomNameInfo("Quantum Fud"))
+    .WithDescription(new CustomNameInfo("A very complicated piece of quantum technology. When you eat it, its quantum equivalent clone is consumed, while the original thing remains intact."))
+    .WithSprite(Properties.Resources.QuantumFud)
+    .WithUnlock(new ItemUnlock
+    {
+        UnlockCost = 10,
+        CharacterCreationCost = 10,
+        LoadoutCost = 10,
+        // Food Processor must be unlocked in order to unlock Quantum Fud
+        Prerequisites = { "FoodProcessor" },
+    });
 ```
 
 </TabItem>

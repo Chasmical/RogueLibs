@@ -1,4 +1,4 @@
-# Targetable Items +*
+# Targetable Items +
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
@@ -8,37 +8,17 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Just implement the `IItemTargetableAnywhere` interface in your item's class:
 
-```csharp
+```csharp title="MyTargetableAnywhereItem.cs"
 // highlight-next-line
-public class MyCustomItem : CustomItem, IItemTargetableAnywhere
+public class MyTargetableAnywhereItem : CustomItem, IItemTargetableAnywhere
 {
     // highlight-start
-    public bool TargetFilter(Vector2 position) { /*...*/ }
-    public bool TargetPosition(Vector2 position) { /*...*/ }
-    public CustomTooltip TargetCursorText(Vector2 position) { /*...*/ }
+    public bool TargetFilter(Vector2 position) { /* ... */ }
+    public bool TargetPosition(Vector2 position) { /* ... */ }
+    public CustomTooltip TargetCursorText(Vector2 position) { /* ... */ }
     // highlight-end
 }
 ```
-
-`TargetFilter` determines what places to highlight when using the current item.
-
-`TargetPosition` uses the current item on the position. The return value determines whether the usage was successful.
-
-`TargetCursorText` determines the cursor text, that will be visible under the cursor.
-
-:::caution
-`TargetFilter` does not control what positions can be passed as parameters to other methods. You need to check if the passed position is compatible inside other methods too:
-
-```csharp
-    public bool TargetPosition(Vector2 position)
-    {
-        // highlight-next-line
-        if (!TargetFilter(position)) return false;
-        // ...
-    }
-    public CustomTooltip TargetCursorText(Vector2 position) => null;
-```
-:::
 
 ## Examples {#examples}
 
