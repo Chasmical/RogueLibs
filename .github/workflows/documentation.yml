@@ -18,6 +18,7 @@ jobs:
         with:
           node-version: '12.x'
       - name: Test Build
+        working-directory: ./website
         run: |
           if [ -e yarn.lock ]; then
           yarn install --frozen-lockfile
@@ -27,7 +28,6 @@ jobs:
           npm i
           fi
           npm run build
-        working-directory: ./website
   gh-release:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
@@ -43,6 +43,7 @@ jobs:
         env:
           USE_SSH: true
           GIT_USER: git
+        working-directory: ./website
         run: |
           git config --global user.email "hillankeyxl2@yandex.ru"
           git config --global user.name "Abbysssal"
