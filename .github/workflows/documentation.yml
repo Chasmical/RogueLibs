@@ -2,9 +2,10 @@ name: documentation
 
 on:
   pull_request:
-    branches: [documentation]
+    branches: [master]
+    paths: ['website/**']
   push:
-    branches: [documentation]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -26,6 +27,7 @@ jobs:
           npm i
           fi
           npm run build
+        working-directory: ./website
   gh-release:
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
