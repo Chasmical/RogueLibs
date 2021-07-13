@@ -1,0 +1,18 @@
+.toolbar {
+    position: relative;
+}
+.outline {
+    position: relative;
+}
+.slots {
+    display: flex;
+    position: absolute;
+    left: 2px;
+    top: 2px;
+}
+.numbers {
+    display: flex;
+    position: absolute;
+    left: 2px;
+    top: 2px;
+}

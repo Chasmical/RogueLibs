@@ -1,0 +1,16 @@
+.form {
+    display: inline-block;
+}
+
+.button {
+    background-color: #0067b8;
+    color: #fff;
+    padding: 3px 4px 2px;
+    border: 2px solid transparent;
+    font-family: 'Segoe UI','Segoe UI Web','wf_segoe-ui_normal','Helvetica Neue','BBAlpha Sans','S60 Sans',Arial,sans-serif;
+    font-weight: 600;
+}
+.button:hover {
+    text-decoration: underline;
+    cursor: pointer;
+}

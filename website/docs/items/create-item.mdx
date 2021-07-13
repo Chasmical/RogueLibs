@@ -1,0 +1,133 @@
+# Creating a Custom Item
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `CustomItem` class {#customitem}
+
+To make a custom item, you need to create a class deriving from `CustomItem`:
+
+```csharp title="MyCustomItem.cs"
+// highlight-next-line
+public class MyCustomItem : CustomItem
+{
+}
+```
+
+There's only one method that you need to implement - `SetupDetails`:
+
+```csharp title="MyCustomItem.cs"
+public class MyCustomItem : CustomItem
+{
+    // highlight-start
+    public override void SetupDetails()
+    {
+        Item.itemType = ItemTypes.Tool;
+        Item.itemValue = 200;
+        Item.initCount = 1;
+        Item.rewardCount = 1;
+        Item.stackable = true;
+        Item.hasCharges = true;
+    }
+    // highlight-end
+}
+```
+
+This method is called only once, when the item is created or spawned.<br/>See more info [later on this page](#setupdetails).
+
+You should add categories using `ItemCategories` attribute instead of adding them in `SetupDetails`. `RogueCategories` contains consts for all default item categories:
+
+```csharp title="MyCustomItem.cs"
+[ItemCategories(RogueCategories.Usable, RogueCategories.Weird, "MyCustomCategory")]
+public class MyCustomItem : CustomItem
+{
+    ...
+}
+```
+
+:::tip Pro-tip: String consts
+Use static types with string consts, like `RogueCategories` and `ItemTypes`. This way you won't make a typo. Typos can be critical sometimes, since neither the game nor RogueLibs track all existing item categories *(although it's an interesting idea, maybe I'll do something like that)*.
+:::
+
+By default, your custom item will have the same name as the class (`Type.Name`).<br/>You can change that behavior with an `ItemName` attribute:
+
+```csharp title="MyCustomItem.cs"
+// highlight-next-line
+[ItemName("My_Custom_Item")]
+public class MyCustomItem : CustomItem
+{
+    ...
+}
+```
+
+## Initialization {#initialization}
+
+Just call the following method in your plugin's `Awake()`:
+
+```csharp title="MyCoolPlugin.cs"
+public void Awake()
+{
+    // highlight-next-line
+    RogueLibs.CreateCustomItem<MyCustomItem>();
+}
+```
+
+You can set your item's name and description using `WithName` and `WithDescription` methods:
+
+```csharp title="MyCoolPlugin.cs"
+public void Awake()
+{
+    RogueLibs.CreateCustomItem<MyCustomItem>()
+    // highlight-start
+        .WithName(new CustomNameInfo("My Custom Item"))
+        .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"));
+    // highlight-end
+}
+```
+
+You can do the same with sprites and unlocks:
+
+```csharp title="MyCoolPlugin.cs"
+public void Awake()
+{
+    RogueLibs.CreateCustomItem<MyCustomItem>()
+        .WithName(new CustomNameInfo("My Custom Item"))
+        .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"))
+    // highlight-start
+        .WithSprite(Properties.Resources.MyCustomItem)
+        .WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
+    // highlight-end
+}
+```
+
+:::info
+See [Custom Names](../names/custom-names), [Custom Sprites](../custom-sprites) for more info.
+:::
+
+## Unlock Properties {#unlock-properties}
+
+You can use the following properties when initializing `ItemUnlock`s:
+
+Property | Default | Description
+---------|---------|------------
+`UnlockCost` | `0` | Unlock cost of the item, in nuggets. If set to 0, it will unlock automatically, once all prerequisites are unlocked.
+`CharacterCreationCost` | `1` | Cost of the item in Character Creation, in points.
+`LoadoutCost` | `1` | Cost of the item in Loadout, in nuggets.
+`IsAvailable` | `true` | Determines whether the item is available in the Rewards menu.
+`IsAvailableInCC` | `true` | Determines whether the item is available in the Character Creation menu.
+`IsAvailableInItemTeleporter` | `true` | Determines whether the item is available in Item Teleporter's menu.
+`Prerequisites` | | Determines what unlocks must be unlocked in order to unlock this item.
+`Recommendations` | | Just shows these unlocks in a separate Recommendations paragraph in the menus.
+
+Other properties should not be used during initialization.
+
+## Implementing `SetupDetails` {#setupdetails}
+
+:::caution Work-In-Progress
+The code generator is still work-in-progress, but as you can see, it's going to be really amazing. Pixel- and tone-perfect previews. Everything's organized, and stuff.
+:::
+
+import SetupDetailsGenerator from '@site/src/components/SetupDetailsGenerator';
+
+<SetupDetailsGenerator/>

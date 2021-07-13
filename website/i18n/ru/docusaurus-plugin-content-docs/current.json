@@ -1,0 +1,46 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.documentationSidebar.category.User's Guide": {
+    "message": "User's Guide",
+    "description": "The label for category User's Guide in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Developer's Guide": {
+    "message": "Developer's Guide",
+    "description": "The label for category Developer's Guide in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Custom Items": {
+    "message": "Custom Items",
+    "description": "The label for category Custom Items in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Adding Functionality": {
+    "message": "Adding Functionality",
+    "description": "The label for category Adding Functionality in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Weapons": {
+    "message": "Weapons",
+    "description": "The label for category Weapons in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Custom Abilities": {
+    "message": "Custom Abilities",
+    "description": "The label for category Custom Abilities in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Custom Traits and Effects": {
+    "message": "Custom Traits and Effects",
+    "description": "The label for category Custom Traits and Effects in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Custom Names": {
+    "message": "Custom Names",
+    "description": "The label for category Custom Names in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Custom Unlocks": {
+    "message": "Custom Unlocks",
+    "description": "The label for category Custom Unlocks in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Hooks": {
+    "message": "Hooks",
+    "description": "The label for category Hooks in sidebar documentationSidebar"
+  }
+}

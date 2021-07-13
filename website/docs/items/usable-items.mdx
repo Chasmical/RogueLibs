@@ -1,0 +1,212 @@
+# Usable Items
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Making items usable {#making-usable}
+
+Just implement the `IItemUsable` interface in your item's class:
+
+```csharp
+// highlight-next-line
+public class MyCustomItem : CustomItem, IItemUsable
+{
+    // highlight-start
+    public bool UseItem()
+    {
+        ...
+    }
+    // highlight-end
+}
+```
+
+`UseItem` is called when the item is used. The return value determines whether the interaction/usage was successful.
+
+## Examples {#examples}
+
+<Tabs
+    defaultValue="jokebook"
+    values={[
+        {label:'Joke Book', value:'jokebook'},
+        {label:'Quantum Fud', value:'quantumfud'},
+        {label:'Wild Bypasser', value:'wildbypasser'},
+    ]}>
+<TabItem value="jokebook">
+
+A simple usable item, that just temporarily changes the character's ability.
+
+```csharp title="JokeBook.cs"
+[ItemCategories(RogueCategories.Usable, RogueCategories.Social)]
+public class JokeBook : CustomItem, IItemUsable
+{
+    public override void SetupDetails()
+    {
+        Item.itemType = ItemTypes.Tool;
+        Item.itemValue = 40;
+        Item.initCount = 10;
+        Item.rewardCount = 10;
+        Item.stackable = true;
+        Item.hasCharges = true;
+        Item.goesInToolbar = true;
+    }
+    public bool UseItem()
+    {
+        // Just temporarily change the character's special ability
+        string prev = Owner.specialAbility;
+        Owner.specialAbility = "Joke";
+        Owner.statusEffects.PressedSpecialAbility();
+        Owner.specialAbility = prev;
+
+        // subtract from item count
+        Count--;
+        return true;
+    }
+}
+```
+
+```csharp
+RogueLibs.CreateCustomItem<JokeBook>()
+    .WithName(new CustomNameInfo("Joke Book"))
+    .WithDescription(new CustomNameInfo("Always wanted to be a Comedian? Now you can! (kind of)"))
+    .WithSprite(Properties.Resources.JokeBook)
+    .WithUnlock(new ItemUnlock
+    {
+        UnlockCost = 10,
+        CharacterCreationCost = 3,
+        LoadoutCost = 3,
+        // Comedian's BQ must be completed in order to unlock Joke Book
+        Prerequisites = { "Comedian_BQ" },
+    });
+```
+
+</TabItem>
+<TabItem value="quantumfud">
+
+A slightly more complicated food item. Uses [`IDoUpdate` interface](../extra#update-interfaces) for cooldown.
+
+```csharp title="QuantumFud.cs"
+[ItemCategories(RogueCategories.Food, RogueCategories.Technology)]
+public class QuantumFud : CustomItem, IItemUsable, IDoUpdate
+{
+    public override void SetupDetails()
+    {
+        Item.itemType = ItemTypes.Food;
+        Item.itemValue = 180;
+        Item.healthChange = 1;
+        Item.cantBeCloned = true;
+        Item.goesInToolbar = true;
+    }
+    public bool UseItem()
+    {
+        if (Cooldown != 0f) return false;
+        
+        // determine the health change
+        int heal = new ItemFunctions().DetermineHealthChange(Item, Owner);
+        Owner.statusEffects.ChangeHealth(heal);
+
+        // if the player has "Share the Health" trait, share it
+        if (Owner.HasTrait("HealthItemsGiveFollowersExtraHealth")
+            || Owner.HasTrait("HealthItemsGiveFollowersExtraHealth2"))
+            new ItemFunctions().GiveFollowersHealth(Owner, heal);
+
+        // play sound
+        gc.audioHandler.Play(Owner, "UseFood");
+        // set cooldown, so that players can't just click 20-30 times per second and be almost invincible
+        Cooldown = 0.5f;
+        return true;
+    }
+    public float Cooldown { get; set; }
+    // subtract Time.deltaTime from Cooldown, but Cooldown won't go below 0.
+    public void Update() => Cooldown = Math.Max(Cooldown - Time.deltaTime, 0f);
+}
+```
+
+```csharp
+RogueLibs.CreateCustomItem<QuantumFud>()
+    .WithName(new CustomNameInfo("Quantum Fud"))
+    .WithDescription(new CustomNameInfo("A very complicated piece of quantum technology. When you eat it, its quantum equivalent clone is consumed, while the original thing remains intact."))
+    .WithSprite(Properties.Resources.QuantumFud)
+    .WithUnlock(new ItemUnlock
+    {
+        UnlockCost = 10,
+        CharacterCreationCost = 10,
+        LoadoutCost = 10,
+        // Food Processor must be unlocked in order to unlock Quantum Fud
+        Prerequisites = { "FoodProcessor" },
+    });
+```
+
+</TabItem>
+<TabItem value="wildbypasser">
+
+A complicated tool item, based on Wall Bypasser's code (see `ItemFunctions.UseItem`).
+
+```csharp title="WildBypasser.cs"
+[ItemCategories(RogueCategories.Technology, RogueCategories.Usable, RogueCategories.Stealth)]
+public class WildBypasser : CustomItem, IItemUsable
+{
+    public override void SetupDetails()
+    {
+        Item.itemType = ItemTypes.Tool;
+		Item.itemValue = 60;
+		Item.initCount = 1;
+		Item.rewardCount = 1;
+		Item.stackable = true;
+		Item.goesInToolbar = true;
+    }
+    public bool UseItem()
+    {
+        Vector3 position = Owner.agentHelperTr.localPosition = Vector3.zero;
+		TileData tileData;
+		int limit = 0;
+		do
+		{
+			position.x += 0.64f;
+			Owner.agentHelperTr.localPosition = position;
+			tileData = gc.tileInfo.GetTileData(Owner.agentHelperTr.position);
+
+		} while ((gc.tileInfo.IsOverlapping(Owner.agentHelperTr.position, "Anything")
+            || tileData.wallMaterial != wallMaterialType.None) && limit++ < 250);
+
+		if (limit > 250)
+        {
+            gc.audioHandler.Play(Owner, "CantDo");
+            return false;
+        }
+
+		Owner.SpawnParticleEffect("Spawn", Owner.tr.position);
+		Owner.Teleport(Owner.agentHelperTr.position, false, true);
+		Owner.rb.velocity = Vector2.zero;
+
+		if (!(Owner.HasTrait("ThiefToolsMayNotSubtract2")
+                && gc.percentChance(Owner.DetermineLuck(80, "ThiefToolsMayNotSubtract", true)))
+            && !(Owner.HasTrait("ThiefToolsMayNotSubtract")
+                && gc.percentChance(Owner.DetermineLuck(40, "ThiefToolsMayNotSubtract", true))))
+			Count--;
+
+        // spawn particles and play sound
+		Owner.SpawnParticleEffect("Spawn", Owner.tr.position, false);
+		gc.audioHandler.Play(Owner, "Spawn");
+        return true;
+    }
+}
+```
+
+```csharp
+RogueLibs.CreateCustomItem<WildBypasser>()
+    .WithName(new CustomNameInfo("Wild Bypasser"))
+    .WithDescription(new CustomNameInfo("Warps you in the direction you're facing. Teleports through any amount of walls."))
+    .WithSprite(Properties.Resources.WildBypasser)
+    .WithUnlock(new ItemUnlock
+    {
+        UnlockCost = 10,
+        CharacterCreationCost = 2,
+        LoadoutCost = 2,
+        // Wall Bypasser must be unlocked in order to unlock Wild Bypasser
+        Prerequisites = { "WallBypasser" }
+    });
+```
+
+</TabItem>
+</Tabs>

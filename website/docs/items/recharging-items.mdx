@@ -1,0 +1,189 @@
+# Recharging Items
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Making items rechargeable {#making-rechargeable}
+
+If you want to make a rechargeable item, you'll have to make use of the [`IDoUpdate` interface](../extra#update-interfaces):
+
+```csharp
+// highlight-next-line
+public class MyCustomItem : CustomItem, IItemUsable, IDoUpdate
+{
+    // highlight-start
+    public float Cooldown { get; private set; }
+    public void Update() => Cooldown = Mathf.Max(Cooldown - Time.deltaTime, 0f);
+    // highlight-end
+
+    public bool UseItem()
+    {
+        // highlight-next-line
+        if (Cooldown != 0f) return false;
+
+        // do something
+        // highlight-next-line
+        Cooldown = 1f;
+        return true;
+    }
+}
+```
+
+And that's it. If you want to display a different item's count, without actually changing it:
+
+```csharp
+    // highlight-start
+    public override string GetCountString()
+    {
+        string count = Count.ToString();
+        if (Cooldown != 0f) count += $" ({(int)Mathf.Ceil(Cooldown * 10)})";
+        return count;
+    }
+    // highlight-end
+```
+
+## Vanilla recharging {#vanilla-recharging}
+
+:::caution Not recommended
+I'm not even sure if that's really how it works. Plus, you can't really use `rechargeAmountInverse` in here, because the game can only have one inverse-recharging coroutine (and that could be Laser Gun's). Just use the `IDoUpdate` method above.
+:::
+
+```csharp
+public class MyCustomItem : CustomItem, IItemUsable
+{
+    public override void SetupDetails()
+    {
+        // ...
+        // highlight-next-line
+        Item.rechargeAmount = 10;
+    }
+    public bool UseItem()
+    {
+        // highlight-next-line
+        if (Item.rechargingItem) return false;
+
+        // do something
+        // highlight-next-line
+        Inventory.RechargeItem(Item, true);
+        return true;
+    }
+}
+```
+
+## Examples {#examples}
+
+<Tabs
+  defaultValue="voodoodoll"
+  values={[
+    {label:'Voodoo Doll', value:'voodoodoll'},
+  ]}>
+<TabItem value="voodoodoll">
+
+```csharp title="VoodooDoll.cs"
+[ItemName("VoodooDoll2")] // conflicts with the original item id
+[ItemCategories(RogueCategories.Social, RogueCategories.Stealth, RogueCategories.Weird)]
+public class VoodooDoll : CustomItem, IItemCombinable, IDoUpdate
+{
+    public override void SetupDetails()
+    {
+        Item.itemType = ItemTypes.Combine;
+        Item.itemValue = 200;
+        Item.initCount = 1;
+        Item.rewardCount = 1;
+        Item.stackable = true;
+        Item.hasCharges = true;
+    }
+
+    public Agent Victim { get; set; }
+    public float Cooldown { get; set; }
+    public void Update()
+    {
+        if (Victim.dead || !Victim.isActiveAndEnabled) CombineItems(Item);
+        if (Cooldown > 0f) Cooldown = Math.Max(Cooldown - Time.deltaTime, 0f);
+    }
+
+    [IgnoreChecks("AutoStacking")] // handle combining the doll with itself
+    public bool CombineFilter(InvItem other)
+    {
+        if (Item == other) return true;
+        if (other.itemType == ItemTypes.WeaponMelee) return true;
+        if (other.itemType == ItemTypes.WeaponProjectile && other.invItemCount > 0) return true;
+        if (other.itemType == ItemTypes.Consumable) return true;
+        return false;
+    }
+    public bool CombineItems(InvItem other)
+    {
+        if (Cooldown != 0f) return false;
+
+        if (Item == other)
+        {
+            Inventory.DestroyItem(Item);
+            if (--Count > 0) Inventory.AddItem<BlankVoodooDoll>(Count);
+            return true;
+        }
+        else if (other.itemType == ItemTypes.Consumable)
+        {
+            new ItemFunctions().UseItem(other, Victim);
+            Cooldown = Mathf.Clamp(other.itemValue / 50f, 0.5f, 1.5f);
+        }
+        else if (other.itemType == ItemTypes.WeaponMelee)
+        {
+            float damage = other.meleeDamage / 2f;
+            damage *= 1f + Owner.strengthStatMod / 3f;
+            damage *= Owner.agentSpriteTransform.localScale.x;
+
+            if (Owner.HasTrait("Strength")) damage *= 1.5f;
+            if (Owner.HasTrait("StrengthSmall")) damage *= 1.25f;
+            if (Owner.HasTrait("Weak")) damage *= 0.5f;
+            if (Owner.HasTrait("Withdrawal")) damage *= 0.75f;
+
+            Inventory.DepleteMelee(Mathf.Clamp((int)(damage / Owner.agentSpriteTransform.localScale.x), 0, 15), other);
+
+            Quaternion rn = UnityEngine.Random.rotation;
+            Victim.statusEffects.ChangeHealth(-(int)damage, Owner);
+            Victim.movement.KnockBackBullet(rn, 80f, true, Owner);
+            Victim.relationships.SetRel(Owner, "Hateful");
+            Victim.relationships.AddRelHate(Owner, 5);
+
+            gc.audioHandler.Play(Victim, other.hitSoundType == "Cut"
+              ? damage < 12f ? "MeleeHitAgentCutSmall" : "MeleeHitAgentCutLarge"
+              : damage < 10f ? "MeleeHitAgentSmall" : "MeleeHitAgentLarge");
+
+            string effect = "BloodHit";
+            if (Victim.inhuman) effect += "Yellow";
+            if (damage >= 10f) effect += damage < 15f ? "Med" : "Large";
+            gc.spawnerMain.SpawnParticleEffect(effect, Victim.tr.position, rn.eulerAngles.z);
+
+            Cooldown = Mathf.Clamp(damage / 15, 0.5f, 1f);
+        }
+        else if (other.itemType == ItemTypes.WeaponProjectile && other.invItemCount > 0)
+        {
+            InvItem prev = Inventory.equippedWeapon;
+            Inventory.equippedWeapon = other;
+            Owner.gun.Shoot(false, false, false);
+            Inventory.equippedWeapon = prev;
+
+            Bullet bullet = Owner.GetLastFiredBullet();
+            Cooldown = Owner.weaponCooldown;
+
+            bullet.curPosition = bullet.transform.position = Victim.curPosition;
+            bullet.rb.velocity = Victim.rb.velocity;
+        }
+        else return false;
+
+        return true;
+    }
+}
+```
+
+```csharp
+RogueLibs.CreateCustomItem<VoodooDoll>()
+    .WithName(new CustomNameInfo("Voodoo Doll"))
+    .WithDescription(new CustomNameInfo("Combine things with the doll to inflict damage or effects onto the victim."))
+    .WithSprite(Properties.Resources.VoodooDoll);
+    // without an ItemUnlock, because this item cannot spawn under normal circumstances
+```
+
+</TabItem>
+</Tabs>

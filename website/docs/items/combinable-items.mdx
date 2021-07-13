@@ -1,0 +1,188 @@
+# Combinable Items
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Making items combinable {#making-combinable}
+
+Just implement the `IItemCombinable` interface in your item's class:
+
+```csharp
+// highlight-next-line
+public class MyCustomItem : CustomItem, IItemCombinable
+{
+    // highlight-start
+    public bool CombineFilter(InvItem other) { /*...*/ }
+    public bool CombineItems(InvItem other) { /*...*/ }
+    public CustomTooltip CombineTooltip(InvItem other) { /*...*/ }
+    public CustomTooltip CombineCursorText(InvItem other) { /*...*/ }
+    // highlight-end
+}
+```
+
+`CombineFilter` determines what items' inventory slots should be highlighted, when using the current item.
+
+`CombineItems` combines the current item with another one. The return value determines whether the combining was successful.
+
+`CombineTooltip` determines the tooltip text, displayed in the lower left corner of the inventory slot.
+
+`CombineCursorText` determines the cursor text, that will be visible under the cursor.
+
+:::caution
+`CombineFilter` does not control what items can be passed as parameters to other methods. You need to check if the passed item is compatible inside other methods too:
+
+```csharp
+    public bool CombineItems(InvItem other)
+    {
+        // highlight-next-line
+        if (!CombineFilter(other)) return false;
+        // ...
+    }
+    public CustomTooltip CombineTooltip(InvItem other)
+    {
+        // highlight-next-line
+        if (!CombineFilter(other)) return null;
+        // ...
+    }
+    public CustomTooltip CombineCursorText(InvItem other)
+        => gc.nameDB.GetName(CombineFilter(other) ? "DoSomething" : "CantDoSomething", "Interface");
+```
+:::
+
+## Examples {#examples}
+
+<Tabs
+    defaultValue="grindstone"
+    values={[
+        {label:'Grindstone', value:'grindstone'},
+        {label:'Ammo Box', value:'ammobox'},
+    ]}>
+<TabItem value="grindstone">
+
+A simple example. Uses special item attributes (functionality is added in patches).
+
+```csharp title="Grindstone.cs"
+[ItemCategories(RogueCategories.Technology, RogueCategories.MeleeAccessory, RogueCategories.Melee)]
+public class Grindstone : CustomItem, IItemCombinable
+{
+    public override void SetupDetails()
+    {
+        Item.itemType = ItemTypes.Combine;
+        Item.itemValue = 40;
+        Item.initCount = 10;
+        Item.rewardCount = 10;
+        Item.hasCharges = true;
+        Item.stackable = true;
+    }
+    public bool CombineFilter(InvItem other)
+        => other.itemType == ItemTypes.WeaponMelee && !other.contents.Exists(c => c.StartsWith("Sharpened:"));
+    public bool CombineItems(InvItem other)
+    {
+        if (!CombineFilter(other)) return false;
+        
+        other.contents.Add("Sharpened:3");
+        Count--;
+        return true;
+    }
+    public CustomTooltip CombineTooltip(InvItem other) => null;
+    public CustomTooltip CombineCursorText(InvItem other) => null;
+}
+```
+
+```csharp
+RogueLibs.CreateCustomItem<Grindstone>()
+    .WithName(new CustomNameInfo("Grindstone"))
+    .WithDescription(new CustomNameInfo("Use on melee weapons to sharpen them. Sharpened weapons will ignore all damage-reducing effects."))
+    .WithSprite(Properties.Resources.Grindstone)
+    .WithUnlock(new ItemUnlock
+    {
+        UnlockCost = 10,
+        CharacterCreationCost = 5,
+        LoadoutCost = 5,
+        // Melee Durability Spray must be unlocked in order to unlock Grindstone
+        Prerequisites = { "MeleeDurabilityDoubler" },
+    });
+```
+
+</TabItem>
+<TabItem value="ammobox">
+
+A pretty complicated example with a lot of math.
+
+```csharp title="AmmoBox.cs"
+[ItemCategories(RogueCategories.Technology, RogueCategories.GunAccessory, RogueCategories.Guns)]
+public class AmmoBox : CustomItem, IItemCombinable
+{
+    public override void SetupDetails()
+    {
+        Item.itemType = ItemTypes.Combine;
+        Item.itemValue = 4;
+        Item.initCount = 100;
+        Item.rewardCount = 200;
+        Item.hasCharges = true;
+        Item.stackable = true;
+    }
+    public bool CombineFilter(InvItem other) => other.itemType == ItemTypes.WeaponProjectile && !other.noRefills;
+    public bool CombineItems(InvItem other)
+    {
+        if (!CombineFilter(other)) return false;
+
+        int amountToRefill = other.maxAmmo - other.invItemCount;
+        float singleCost = (float)other.itemValue / other.maxAmmo;
+        if (Owner.oma.superSpecialAbility && (Owner.agentName == "Soldier" || Owner.agentName == "Doctor"))
+            singleCost = 0f;
+        if (other.invItemCount >= other.maxAmmo)
+        {
+            Owner.SayDialogue("AmmoDispenserFull");
+            gc.audioHandler.Play(Owner, "CantDo");
+            return false;
+        }
+
+        int affordableAmount = (int)Mathf.Ceil(Count / singleCost);
+        int willBeBought = Mathf.Min(affordableAmount, amountToRefill);
+        int willBeReduced = (int)Mathf.Min(Count, willBeBought * singleCost);
+
+        Count -= willBeReduced;
+        other.invItemCount += willBeBought;
+        Owner.SayDialogue("AmmoDispenserFilled");
+        gc.audioHandler.Play(Owner, "BuyItem");
+        return true;
+    }
+    public CustomTooltip CombineTooltip(InvItem other)
+    {
+        if (!CombineFilter(other)) return null;
+
+        int amountToRefill = other.maxAmmo - other.invItemCount;
+        if (amountToRefill == 0) return null;
+
+        float singleCost = (float)other.itemValue / other.maxAmmo;
+        if (Owner.oma.superSpecialAbility && (Owner.agentName == "Soldier" || Owner.agentName == "Doctor"))
+            singleCost = 0f;
+        int cost = (int)Mathf.Floor(amountToRefill * singleCost);
+        int canAfford = (int)Mathf.Ceil(Count / singleCost);
+
+        return "+" + Mathf.Min(amountToRefill, canAfford) + " (" + Mathf.Min(cost, Count) + ")";
+    }
+    public CustomTooltip CombineCursorText(InvItem other) => null;
+}
+```
+
+```csharp
+RogueLibs.CreateCustomItem<AmmoBox>()
+    .WithName(new CustomNameInfo("Ammo Box"))
+    .WithDescription(new CustomNameInfo("Combine with any refillable weapon to refill it. Limited ammo."))
+    .WithSprite(Properties.Resources.AmmoBox)
+    .WithUnlock(new ItemUnlock
+    {
+        UnlockCost = 10,
+        CharacterCreationCost = 3,
+        LoadoutCost = 3,
+        // Portable Ammo Dispenser must be unlocked in order to unlock Ammo Box
+        // Portable Ammo Dispenser is another custom item
+        Prerequisites = { nameof(PortableAmmoDispenser) },
+    });
+```
+
+</TabItem>
+</Tabs>

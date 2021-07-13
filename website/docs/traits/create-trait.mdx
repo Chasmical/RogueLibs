@@ -1,0 +1,161 @@
+# Creating a Custom Trait
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `CustomTrait` class {#customtrait}
+
+To make a custom trait, you need to create a class deriving from `CustomTrait`:
+
+```csharp title="MyCustomTrait.cs"
+// highlight-next-line
+public class MyCustomTrait : CustomTrait
+{
+}
+```
+
+There are 3 methods that you need to implement:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    public override void OnAdded()
+    {
+        ...
+    }
+    public override void OnRemoved()
+    {
+        ...
+    }
+}
+```
+
+`OnAdded` is called when the trait is added to a character, and `OnRemoved` is called when it's removed from a character.
+
+`OnUpdated` works like Unity's `Update`, but with a settable interval (default is 1 second).
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    public override void OnUpdated(TraitUpdatedArgs e)
+    {
+        e.UpdateDelay = 0.5f; // 2 updates/second
+        ...
+    }
+}
+```
+
+## Initialization {#initialization}
+
+Just call the following method in your plugin's `Awake()`:
+
+```csharp title="MyCoolPlugin.cs"
+public void Awake()
+{
+    // highlight-next-line
+    RogueLibs.CreateCustomTrait<MyCustomTrait>();
+}
+```
+
+You can set your trait's name and description using `WithName` and `WithDescription` methods:
+
+```csharp title="MyCoolPlugin.cs"
+public void Awake()
+{
+    RogueLibs.CreateCustomTrait<MyCustomTrait>();
+    // highlight-start
+        .WithName(new CustomNameInfo("My Custom Trait"))
+        .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"));
+    // highlight-end
+}
+```
+
+You can do the same with sprites and unlocks:
+
+```csharp title="MyCoolPlugin.cs"
+public void Awake()
+{
+    RogueLibs.CreateCustomTrait<MyCustomTrait>();
+        .WithName(new CustomNameInfo("My Custom Trait"))
+        .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"))
+    // highlight-start
+        .WithSprite(Properties.Resources.MyCustomTrait)
+        // the sprite will be displayed only in the menus (optional)
+        .WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
+    // highlight-end
+}
+```
+
+:::info
+See [Custom Names](../names/custom-names), [Custom Sprites](../custom-sprites) for more info.
+:::
+
+## Unlock Properties {#unlock-properties}
+
+You can use the following properties when initializing `TraitUnlock`s:
+
+Property | Default | Description
+---------|---------|------------
+`UnlockCost` | `0` | Unlock cost of the trait, in nuggets. If set to 0, it will unlock automatically, once all prerequisites are unlocked.
+`CharacterCreationCost` | `1` | Cost of the trait in Character Creation, in points.
+`IsAvailable` | `true` | Determines whether the trait is available in the Traits menu.
+`IsAvailableInCC` | `true` | Determines whether the trait is available in the Character Creation menu.
+`Cancellations` | | Determines what traits cannot co-exist with this trait.
+`Prerequisites` | | Determines what unlocks must be unlocked in order to unlock this trait.
+`Recommendations` | | Just shows these unlocks in a separate Recommendations paragraph in the menus.
+
+Other properties should not be used during initialization.
+
+## Examples {#examples}
+
+<Tabs
+    defaultValue="smoker"
+    values={[
+        {label:'Smoker', value:'smoker'},
+        {label:''}
+    ]}>
+<TabItem value="smoker">
+
+A reference to one of the traits in Void Bastards.
+
+> Clients with the Smoker trait will cough randomly, alerting any nearby enemies.
+
+```cs title="Smoker.cs"
+public class Smoker : CustomTrait
+{
+    public override void OnAdded() { }
+    public override void OnRemoved() { }
+    public override void OnUpdated(TraitUpdatedArgs e)
+    {
+        e.UpdateDelay = 5f; // next update will be in 5 seconds
+
+        int rnd = new System.Random().Next(0, 5);
+        if (rnd == 0) // 20% chance every 5 seconds
+        {
+            rnd = new System.Random().Next(3) + 1;
+            Owner.SayDialogue($"Smoker_Cough{rnd}");
+            // randomly say one of the dialogues:
+            // "Smoker_Cough1", "Smoker_Cough2" or "Smoker_Cough3"
+            
+            Noise noise = gc.spawnerMain.SpawnNoise(Owner.tr.position, 1f, Owner, "Attract", Owner);
+            noise.distraction = true;
+            // let nearby characters know about this
+        }
+    }
+}
+```
+
+```cs
+RogueLibs.CreateCustomTrait<Smoker>()
+			.WithName(new CustomNameInfo("Smoker"))
+			.WithDescription(new CustomNameInfo("Randomly cough, alerting enemies"))
+			.WithUnlock(new TraitUnlock { CharacterCreationCost = -4, });
+
+		RogueLibs.CreateCustomName("Smoker_Cough1", "Dialogue", new CustomNameInfo("*Cough*"));
+		RogueLibs.CreateCustomName("Smoker_Cough2", "Dialogue", new CustomNameInfo("*Cough* *CouGH*"));
+		RogueLibs.CreateCustomName("Smoker_Cough3", "Dialogue", new CustomNameInfo("*coUGH* *COUgh*"));
+```
+
+</TabItem>
+</Tabs>

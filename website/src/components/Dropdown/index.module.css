@@ -1,0 +1,30 @@
+.container {
+  border-radius: 0.5rem;
+  border: none;
+  position: relative;
+  background: var(--ifm-menu-color-background-hover);
+}
+.header {
+  border-radius: 0.5rem;
+  border: none;
+  padding: 7.5px 10px;
+  cursor: pointer;
+}
+.header:hover, .focused {
+  background: var(--ifm-menu-color-background-hover);
+}
+.contentsBack {
+  border-radius: 0.5rem;
+  border: none;
+  background: var(--ifm-background-color);
+}
+.contents {
+  border-radius: 0.5rem;
+  border: none;
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 5px;
+  gap: 5px;
+  background: var(--ifm-menu-color-background-hover);
+}

@@ -1,0 +1,49 @@
+# Extra Stuff
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `IDoUpdate` and `IDoFixedUpdate` {#update-interfaces}
+
+If you want to update your items/traits/unlocks with Unity's `Update` or `FixedUpdate`, implement these interfaces:
+
+<Tabs
+    defaultValue="update"
+    values={[
+        {label:'IDoUpdate', value:'update'},
+        {label:'IDoFixedUpdate', value:'fixedupdate'},
+    ]}>
+<TabItem value="update">
+
+```csharp
+// highlight-next-line
+public class MyCustomItem : CustomItem, IDoUpdate
+{
+    // highlight-start
+    public void Update()
+    {
+        ...
+    }
+    // highlight-end
+}
+```
+
+</TabItem>
+<TabItem value="fixedupdate">
+
+```csharp
+// highlight-next-line
+public class MyCustomItem : CustomItem, IDoFixedUpdate
+{
+    // highlight-start
+    public void FixedUpdate()
+    {
+        ...
+    }
+    // highlight-end
+}
+```
+
+</TabItem>
+</Tabs>

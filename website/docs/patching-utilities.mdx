@@ -1,0 +1,259 @@
+# Patching Utilities
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `RoguePatcher` {#roguepatcher}
+
+`RoguePatcher` is a small helper class that makes writing patches a little bit faster and easier. If you need more control (patch order, priority, etc.), then use the original Harmony methods.
+
+<Tabs defaultValue="roguepatcher"
+    values={[
+        {label:'RoguePatcher', value:'roguepatcher'},
+        {label:'Harmony', value:'harmony'},
+    ]}>
+<TabItem value="roguepatcher">
+
+```csharp
+RoguePatcher patcher = new RoguePatcher(this);
+patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
+```
+
+</TabItem>
+<TabItem value="harmony">
+
+```csharp
+Harmony harmony = new Harmony(pluginGUID);
+MethodInfo original = AccessTools.Method(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
+MethodInfo patch = AccessTools.Method(GetType(), "MyPatchMethod");
+harmony.Patch(original, patch);
+```
+
+</TabItem>
+</Tabs>
+
+You can put your patches in a different class if you want. Just specify a different type in the constructor:
+
+<Tabs defaultValue="roguepatcher"
+    values={[
+        {label:'RoguePatcher', value:'roguepatcher'},
+        {label:'Harmony', value:'harmony'},
+    ]}>
+<TabItem value="roguepatcher">
+
+```csharp
+[BepInPlugin(...)]
+public class MyCoolPlugin : BaseUnityPlugin
+{
+    ...
+    public void Awake()
+    {
+        // highlight-next-line
+        RoguePatcher patcher = new RoguePatcher(this, typeof(MyCoolPatches));
+        patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
+    }
+}
+public class MyCoolPatches
+{
+    public static void StatusEffects_hasStatusEffect(StatusEffects __instance)
+    {
+        ...
+    }
+}
+```
+
+</TabItem>
+<TabItem value="harmony">
+
+```csharp
+[BepInPlugin(...)]
+public class MyCoolPlugin : BaseUnityPlugin
+{
+    ...
+    public void Awake()
+    {
+        Harmony harmony = new Harmony(pluginGUID);
+        MethodInfo original = AccessTools.Method(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
+        MethodInfo patch = AccessTools.Method(typeof(MyCoolPatches), nameof(MyCoolPatches.MyPatchMethod));
+        harmony.Patch(original, patch);
+    }
+}
+public class MyCoolPatches
+{
+    public static void MyPatchMethod(StatusEffects __instance)
+    {
+        ...
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Transpiler helper methods {#transpiler-helper-methods}
+
+Here's an example from RogueLibs:
+
+<Tabs defaultValue="helper"
+    values={[
+        {label:'Helper methods', value:'helper'},
+        {label:'Harmony', value:'harmony'},
+    ]}>
+<TabItem value="helper">
+
+```csharp
+public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> codeEnumerable)
+    => codeEnumerable.AddRegionAfter(
+        new Func<CodeInstruction, bool>[]
+        {
+            i => i.IsLdloc(),
+            i => i.opcode == OpCodes.Ldarg_3,
+            i => i.opcode == OpCodes.Stfld && i.StoresField(causingAgentField),
+        },
+        new Func<CodeInstruction[], CodeInstruction>[]
+        {
+            a => a[0],
+            _ => new CodeInstruction(OpCodes.Ldarg_0),
+            _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook))),
+        });
+
+private static readonly FieldInfo causingAgentField = typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent));
+```
+
+</TabItem>
+<TabItem value="harmony">
+
+```csharp
+public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> code)
+{
+    bool searching = true;
+	int current = 0;
+	CodeInstruction[] matches = new CodeInstruction[after.Length];
+	foreach (CodeInstruction instr in code)
+	{
+		yield return instr;
+		if (searching)
+		{
+            if (current is 0 ? instr.IsLdloc()
+                : current is 1 ? instr.opcode == OpCodes.Ldarg_3
+                : instr.opcode == OpCodes.Stfld && instr.StoresField(causingAgentField))
+			{
+				matches[current] = instr;
+				if (++current is 3)
+				{
+                    searching = false;
+                    yield return matches[0];
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook)));
+				}
+			}
+			else current = 0;
+		}
+	}
+}
+
+private static readonly FieldInfo causingAgentField = typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent));
+```
+
+Yeah, it looks easy. But that's only because it's a very simple example.
+
+</TabItem>
+</Tabs>
+
+:::tip Avoid heavy calculations
+When writing predicates, keep in mind that they might get called hundreds or thousands of times. For example, you can pre-calculate the `FieldInfo` value, used by your predicate, just put it in a static readonly field, like in the example above.
+
+Heavy calculations like that can cost you **hundreds of milliseconds** of start-up time (or even entire seconds, if you're working on a big project).
+:::
+
+Here's another example from RogueLibs:
+
+<Tabs defaultValue="helper"
+    values={[
+        {label:'Helper methods', value:'helper'},
+        {label:'Harmony', value:'harmony'},
+    ]}>
+
+<TabItem value="helper">
+
+```csharp
+public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
+	=> codeEnumerable.ReplaceRegion(
+		new Func<CodeInstruction, bool>[]
+		{
+			i => i.opcode == OpCodes.Callvirt && i.Calls(List_Unlock_GetEnumerator),
+            i => i.IsStloc(),
+		},
+		new Func<CodeInstruction, bool>[]
+		{
+            i => i.opcode == OpCodes.Callvirt,
+			i => i.opcode == OpCodes.Endfinally,
+            i => i.opcode == OpCodes.Ldarg_0,
+		},
+		new CodeInstruction[]
+		{
+			new CodeInstruction(OpCodes.Pop),
+			new CodeInstruction(OpCodes.Pop),
+			new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)))
+		}
+	);
+```
+
+</TabItem>
+<TabItem value="harmony">
+
+```csharp
+public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> code)
+{
+    int state = 0;
+	int current = 0;
+	CodeInstruction[] beginCache = new CodeInstruction[2];
+	foreach (CodeInstruction instr in code)
+	{
+		if (state is 2)
+			yield return instr;
+		else if (state is 0)
+		{
+			if (current is 0 ? instr.opcode == OpCodes.Callvirt && instr.Calls(List_Unlock_GetEnumerator)
+                : instr.IsStloc())
+			{
+				beginCache[current] = instr;
+				if (++current == 2)
+				{
+					state = 1;
+					current = 0;
+				}
+			}
+			else
+			{
+				if (current > 0)
+				{
+					for (int i = 0; i < current; i++)
+						yield return beginCache[i];
+					current = 0;
+				}
+				yield return instr;
+			}
+		}
+		else
+		{
+			if (current is 0 ? instr.opcode == OpCodes.Callvirt
+                : current is 1 ? instr.opcode == OpCodes.Endfinally
+                : instr.opcode == OpCodes.Ldarg_0)
+			{
+				if (++current == 3)
+				{
+			        yield return new CodeInstruction(OpCodes.Pop);
+			        yield return new CodeInstruction(OpCodes.Pop);
+			        yield return new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)));
+				}
+			}
+			else current = 0;
+		}
+	}
+}
+```
+
+</TabItem>
+</Tabs>

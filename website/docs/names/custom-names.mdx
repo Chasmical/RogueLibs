@@ -1,0 +1,124 @@
+# Custom Names
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `CustomNameInfo` {#customnameinfo}
+
+`CustomNameInfo` structure is used to create custom names and transfer localizations data.
+
+```csharp
+CustomNameInfo emptyInfo = new CustomNameInfo();
+CustomNameInfo nameInfo = new CustomNameInfo("english text");
+```
+
+You can add more translations to the custom names too:
+
+<Tabs
+    defaultValue="indexer"
+    values={[
+        {label:'Indexer property', value:'indexer'},
+        {label:'Named properties', value:'named'},
+    ]}>
+<TabItem value="indexer">
+
+```csharp
+nameInfo = new CustomNameInfo
+{
+    [LanguageCode.French] = "texte français",
+    [LanguageCode.Spanish] = "texto en español",
+};
+// or
+nameInfo[LanguageCode.French] = "texte français";
+nameInfo[LanguageCode.Spanish] = "texto en español";
+```
+
+You can also use your own language codes:
+
+```csharp
+nameInfo[(LanguageCode)123] = "日本語テキスト";
+```
+
+:::info
+See more info in [Custom Languages](./custom-languages).
+:::
+
+</TabItem>
+<TabItem value="named">
+
+```csharp
+nameInfo = new CustomNameInfo
+{
+    French = "texte français",
+    Spanish = "texto en español",
+};
+// or
+nameInfo.French = "texte français";
+nameInfo.Spanish = "texto en español";
+```
+
+</TabItem>
+</Tabs>
+
+Unlike dictionaries, both `CustomName` and `CustomNameInfo` return `null`, if they don't contain the specified `LanguageCode`:
+
+```csharp
+string translation = nameInfo[(LanguageCode)123];
+// returns null, if that language is not specified
+string display = translation ?? nameInfo.English;
+```
+
+## `CustomName` {#customname}
+
+Usually, `CustomName`s are created automatically, when you add names and descriptions to your items, traits, abilities and etc.:
+
+```csharp
+RogueLibs.CreateCustomItem<MyCustomItem>()
+    .WithName(new CustomNameInfo("English name"))
+    .WithDescription(new CustomNameInfo("English description"));
+```
+
+You can initialize them yourself too, although you have to provide the name and type of the `CustomName` yourself:
+
+```csharp
+CustomName name = RogueLibs.CreateCustomName("Name", "Type", new CustomNameInfo("Info"));
+```
+
+If you're going to use the second method, here's the list of types used in the game:
+
+- `Item` - item and special ability names;
+- `Description` - item, special ability, trait, status effect and agent descriptions;
+- `StatusEffect` - trait and status effect names;
+- `Interface` - interface buttons, labels and stuff;
+- `Unlock` - mutator and Big Quest names and descriptions;
+- `Object` - object and chunk type names;
+- `Agent` - agent names;
+- `Dialogue` - agent dialogue lines;
+
+## Usage {#usage}
+
+If you want to use your custom names in the game, use `NameDB.GetName()` or any other methods that use it:
+
+```csharp
+string dialogue = gc.nameDB.GetName("CryForHelp", "Dialogue");
+```
+
+```csharp
+Owner.SayDialogue("CryForHelp");
+```
+
+`CustomName`s and `CustomNameInfo`s also can be implicitly converted into `CustomTooltip`:
+
+```csharp
+public class Recycler : CustomItem, IItemCombinable
+{
+    private static CustomName recycleTooltip = RogueLibs.CreateCustomName("Recycle", "Interface", new CustomNameInfo
+    {
+        English = "Recycle",
+        Russian = "Переработать",
+    });
+    ...
+    public CustomTooltip CombineTooltip(InvItem _) => recycleTooltip;
+}
+```
