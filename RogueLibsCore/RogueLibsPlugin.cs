@@ -45,6 +45,7 @@ namespace RogueLibsCore
 			PatchSprites();
 			PatchTraitsAndStatusEffects();
 			PatchUnlocks();
+			PatchAgents();
 #if DEBUG
 			Patcher.SortResults();
 			Patcher.LogResults();

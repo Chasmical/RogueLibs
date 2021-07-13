@@ -247,5 +247,16 @@ namespace RogueLibsCore
 			return agent.statusEffects.hasTrait(traitName);
 		}
 
+		/// <summary>
+		///   <para>Returns the last <see cref="Bullet"/> fired by the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <returns>The last <see cref="Bullet"/> fired by the current <paramref name="agent"/>, or <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static Bullet GetLastFiredBullet(this Agent agent)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.GetHook<LastFiredBulletHook>()?.LastFiredBullet;
+		}
 	}
 }

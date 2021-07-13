@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hooks\Items\DefaultInventoryChecks.cs" />
+    <Compile Include="Patches\Patches_Agents.cs" />
     <Compile Include="Utilities\HookExtensions.cs" />
     <Compile Include="Hooks\Items\CustomAbility.cs" />
     <Compile Include="Hooks\Effects\CustomEffect.cs" />
