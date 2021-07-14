@@ -3,6 +3,7 @@
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+import ColorSquare from '@site/src/components/ColorSquare';
 
 ## Making items targetable anywhere {#making-targetable-anywhere}
 
@@ -19,6 +20,12 @@ public class MyTargetableAnywhereItem : CustomItem, IItemTargetableAnywhere
     // highlight-end
 }
 ```
+
+`TargetFilter` determines where the cursor should be highlighted, when using the current item.
+
+`TargetPosition` uses the current item on the position. The return value indicates whether it was a success or not. You can play a `"CantDo"` sound and make the player say something, if the item cannot be used. Returning `true` will also play an animation.
+
+`TargetCursorText` determines the text under the cursor when hovering over the specified position. You can also specify the cursor text's color. Text set to `null` will default to "Use", and Color set to `null` will default to <ColorSquare color='#FFFFFF'/>.
 
 ## Examples {#examples}
 
