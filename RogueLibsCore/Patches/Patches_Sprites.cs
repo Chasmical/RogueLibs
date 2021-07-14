@@ -26,6 +26,7 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(ObjectReal), nameof(ObjectReal.RefreshShader));
 			Patcher.Postfix(typeof(ObjectSprite), nameof(ObjectSprite.SetObjectHighlight));
 			Patcher.Postfix(typeof(ObjectSprite), nameof(ObjectSprite.SetAgentOff));
+			Patcher.Postfix(typeof(ObjectSprite), nameof(ObjectSprite.SetAgentHighlight));
 
 			Patcher.Postfix(typeof(InvDatabase), nameof(InvDatabase.ThrowWeapon));
 			Patcher.Postfix(typeof(Item), nameof(Item.DestroyMe2));
@@ -103,46 +104,41 @@ namespace RogueLibsCore
 			try
 			{
 				tk2dSprite itemImage = __result.tr.GetChild(0).transform.GetChild(0).GetComponent<tk2dSprite>();
-				itemImage.GetComponent<Renderer>().sharedMaterial = ((RogueSprite)itemImage.CurrentSprite.__RogueLibsCustom).Material;
-			} catch { }
+				itemImage.GetComponent<Renderer>().sharedMaterial = itemImage.CurrentSprite.material;
+			}
+			catch { }
 		}
 		public static void SpawnerMain_SetLighting2(PlayfieldObject myObject)
 		{
 			if (myObject.CompareTag("ObjectReal"))
 			{
 				ObjectReal objectReal = (ObjectReal)myObject;
-				try
-				{
-					RogueSprite sprite = (RogueSprite)objectReal.spr.CurrentSprite.__RogueLibsCustom;
-					if (sprite != null) objectReal.spr.GetComponent<Renderer>().sharedMaterial = sprite.Material;
-				}
+				try { objectReal.spr.GetComponent<Renderer>().sharedMaterial = objectReal.spr.CurrentSprite.material; }
 				catch { }
 			}
 			if (myObject.CompareTag("Item") || myObject.CompareTag("Wreckage"))
 			{
-				Item item = (Item)myObject; // iteRealTr.GetComponent<tk2dSprite>()
-				RogueSprite sprite = (RogueSprite)item.spr?.CurrentSprite?.__RogueLibsCustom;
-				if (sprite != null) item.spriteTr.GetComponent<Renderer>().sharedMaterial = sprite.Material;
+				Item item = (Item)myObject;
+				try { item.spriteTr.GetComponent<Renderer>().sharedMaterial = item.spr.CurrentSprite.material; }
+				catch { }
 			}
 		}
 
 		public static void ObjectReal_RefreshShader(ObjectReal __instance)
 		{
-			RogueSprite sprite = (RogueSprite)__instance.spr?.CurrentSprite?.__RogueLibsCustom;
-			if (sprite != null)
-			{
-				Shader shader = GameController.gameController.lightingType == "Full" || GameController.gameController.lightingType == "Med"
-					? GameController.gameController.litShader : GameController.gameController.normalShader;
-				__instance.objectSprite.meshRenderer.material = sprite.Material;
-				__instance.objectSprite.meshRenderer.material.shader = shader;
-				__instance.objectSprite.objectRenderer.sharedMaterial = sprite.Material;
-				__instance.objectSprite.objectRenderer.sharedMaterial.shader = shader;
-			}
+			Material mat = __instance.spr?.CurrentSprite.material;
+
+			Shader shader = GameController.gameController.lightingType == "Full" || GameController.gameController.lightingType == "Med"
+				? GameController.gameController.litShader : GameController.gameController.normalShader;
+			__instance.objectSprite.meshRenderer.material = mat;
+			__instance.objectSprite.meshRenderer.material.shader = shader;
+			__instance.objectSprite.objectRenderer.sharedMaterial = mat;
+			__instance.objectSprite.objectRenderer.sharedMaterial.shader = shader;
 		}
 		public static void ObjectSprite_SetObjectHighlight(ObjectSprite __instance)
 		{
-			RogueSprite sprite = (RogueSprite)__instance.sprH.CurrentSprite.__RogueLibsCustom;
-			if (sprite != null) __instance.objectRendererH.sharedMaterial = sprite.LightUpMaterial;
+			if (__instance.sprH.CurrentSprite.__RogueLibsCustom is RogueSprite sprite)
+				__instance.objectRendererH.sharedMaterial = sprite.LightUpMaterial;
 		}
 		public static void ObjectSprite_SetAgentOff(ObjectSprite __instance)
 		{
@@ -153,8 +149,8 @@ namespace RogueLibsCore
 				for (int i = 0; i < agentSpriteRendererListH.Count; i++)
 				{
 					agentSpriteRendererListH[i].enabled = false;
-					RogueSprite sprite = (RogueSprite)agentSpriteList[i].CurrentSprite.__RogueLibsCustom;
-					if (sprite != null) __instance.agentHitbox.agentSpriteRendererList[i].sharedMaterial = sprite.Material;
+					if (agentSpriteList[i].CurrentSprite.__RogueLibsCustom is RogueSprite sprite)
+						__instance.agentHitbox.agentSpriteRendererList[i].sharedMaterial = sprite.Material;
 				}
 				return;
 			}
@@ -163,49 +159,72 @@ namespace RogueLibsCore
 			for (int j = 0; j < agentSpriteList.Count; j++)
 			{
 				agentSpriteRendererListH[j].enabled = false;
-				RogueSprite sprite = (RogueSprite)agentSpriteList[j].CurrentSprite.__RogueLibsCustom;
-				if (sprite != null) agentSpriteRendererList[j].sharedMaterial = sprite.Material;
+				if (agentSpriteList[j].CurrentSprite.__RogueLibsCustom is RogueSprite sprite)
+					agentSpriteRendererList[j].sharedMaterial = sprite.Material;
 			}
 
-			RogueSprite meleeSpr1 = (RogueSprite)__instance.agent.melee.arm1Sprite.CurrentSprite.__RogueLibsCustom;
-			if (meleeSpr1 != null) __instance.agent.melee.arm1SpriteRenderer.sharedMaterial = meleeSpr1.Material;
+			if (__instance.agent.inventory.equippedWeapon == __instance.agent.melee.invItem)
+			{
+				if (__instance.agent.melee.arm1Sprite.CurrentSprite.__RogueLibsCustom is RogueSprite meleeSpr1)
+					__instance.agent.melee.arm1SpriteRenderer.sharedMaterial = meleeSpr1.Material;
 
-			RogueSprite meleeSpr2 = (RogueSprite)__instance.agent.melee.arm2Sprite.CurrentSprite.__RogueLibsCustom;
-			if (meleeSpr2 != null) __instance.agent.melee.arm2SpriteRenderer.sharedMaterial = meleeSpr2.Material;
+				if (__instance.agent.melee.arm2Sprite.CurrentSprite.__RogueLibsCustom is RogueSprite meleeSpr2)
+					__instance.agent.melee.arm2SpriteRenderer.sharedMaterial = meleeSpr2.Material;
 
-			RogueSprite meleeSpr = (RogueSprite)__instance.agent.melee.spr.CurrentSprite.__RogueLibsCustom;
-			if (meleeSpr != null) __instance.agent.melee.meleeSpriteRenderer.sharedMaterial = meleeSpr.Material;
+				if (__instance.agent.melee.spr.CurrentSprite.__RogueLibsCustom is RogueSprite meleeSpr)
+					__instance.agent.melee.meleeSpriteRenderer.sharedMaterial = meleeSpr.Material;
+			}
+			else if (__instance.agent.inventory.equippedWeapon == __instance.agent.gun.visibleGun)
+			{
+				if (__instance.agent.gun.arm1Sprite.CurrentSprite.__RogueLibsCustom is RogueSprite gunSpr1)
+					__instance.agent.gun.arm1SpriteRenderer.sharedMaterial = gunSpr1.Material;
 
-			RogueSprite gunSpr1 = (RogueSprite)__instance.agent.gun.arm1Sprite.CurrentSprite.__RogueLibsCustom;
-			if (gunSpr1 != null) __instance.agent.gun.arm1SpriteRenderer.sharedMaterial = gunSpr1.Material;
+				if (__instance.agent.gun.arm2Sprite.CurrentSprite.__RogueLibsCustom is RogueSprite gunSpr2)
+					__instance.agent.gun.arm2SpriteRenderer.sharedMaterial = gunSpr2.Material;
 
-			RogueSprite gunSpr2 = (RogueSprite)__instance.agent.gun.arm2Sprite.CurrentSprite.__RogueLibsCustom;
-			if (gunSpr2 != null) __instance.agent.gun.arm2SpriteRenderer.sharedMaterial = gunSpr2.Material;
-
-			RogueSprite gunSpr = (RogueSprite)__instance.agent.gun.gunSprite.CurrentSprite.__RogueLibsCustom;
-			if (gunSpr != null) __instance.agent.gun.gunSpriteRenderer.sharedMaterial = gunSpr.Material;
+				if (__instance.agent.gun.gunSprite.CurrentSprite.__RogueLibsCustom is RogueSprite gunSpr)
+					__instance.agent.gun.gunSpriteRenderer.sharedMaterial = gunSpr.Material;
+			}
+		}
+		public static void ObjectSprite_SetAgentHighlight(ObjectSprite __instance, int i)
+		{
+			Renderer renderer = __instance.agentHitbox.agentSpriteRendererListH[i];
+			if (__instance.agentHitbox.agentSpriteListH[i].CurrentSprite.__RogueLibsCustom is RogueSprite sprite)
+				renderer.sharedMaterial = sprite.LightUpMaterial;
 		}
 
 		public static void InvDatabase_ThrowWeapon(InvDatabase __instance)
 		{
-			RogueSprite sprite = (RogueSprite)__instance.agent?.agentHitboxScript?.heldItem2?.CurrentSprite?.__RogueLibsCustom;
-			if (sprite != null) __instance.agent.agentHitboxScript.heldItem2Renderer.sharedMaterial = sprite.Material;
+			if (__instance.agent?.agentHitboxScript?.heldItem2?.CurrentSprite?.__RogueLibsCustom is RogueSprite sprite)
+				__instance.agent.agentHitboxScript.heldItem2Renderer.sharedMaterial = sprite.Material;
 		}
 		public static void Item_DestroyMe2(Item __instance)
 		{
-			RogueSprite sprite = (RogueSprite)__instance.itemImage?.CurrentSprite?.__RogueLibsCustom;
-			if (sprite != null) __instance.itemImageTransform.GetComponent<Renderer>().sharedMaterial = sprite.Material;
+			if (__instance.itemImage?.CurrentSprite?.__RogueLibsCustom is RogueSprite sprite)
+				__instance.itemImageTransform.GetComponent<Renderer>().sharedMaterial = sprite.Material;
 		}
 		public static void Item_FakeStart(Item __instance)
 		{
-			RogueSprite sprite = (RogueSprite)__instance.itemImageReal?.CurrentSprite?.__RogueLibsCustom;
-			if (sprite != null) __instance.itemImageReal.GetComponent<Renderer>().sharedMaterial = sprite.Material;
+			if (__instance.itemImageReal?.CurrentSprite?.__RogueLibsCustom is RogueSprite sprite)
+				__instance.itemImageReal.GetComponent<Renderer>().sharedMaterial = sprite.Material;
 		}
 		public static void Melee_MeleeLateUpdate(Melee __instance)
 		{
 			AgentHitbox hb = __instance.agent.agentHitboxScript;
-			RogueSprite sprite = (RogueSprite)hb.heldItem2?.CurrentSprite?.__RogueLibsCustom;
-			if (sprite != null) hb.heldItem2Renderer.sharedMaterial = sprite.Material;
+
+			hb.heldItem2H.SetSprite(hb.heldItem2.spriteId);
+			if (hb.heldItem2.CurrentSprite.__RogueLibsCustom is RogueSprite sprite)
+			{
+				hb.heldItem2Renderer.sharedMaterial = sprite.Material;
+				hb.heldItem2H.GetComponent<Renderer>().sharedMaterial = sprite.Material;
+			}
+
+			hb.heldItemH.SetSprite(hb.heldItem.spriteId);
+			if (hb.heldItem.CurrentSprite.__RogueLibsCustom is RogueSprite sprite2)
+			{
+				hb.heldItemRenderer.sharedMaterial = sprite2.Material;
+				hb.heldItemH.GetComponent<Renderer>().sharedMaterial = sprite2.Material;
+			}
 		}
 
 		public static void NuggetSlot_UpdateNuggetText(Image ___itemImage)
