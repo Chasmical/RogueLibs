@@ -121,7 +121,6 @@ function Tabs(props) {
             (tabItem) => isShown(selectedValue, tabItem.props),
           )[0],
           {
-            curSelected: selectedValue,
             className: styles.tab,
           },
         )
@@ -131,7 +130,6 @@ function Tabs(props) {
             cloneElement(tabItem, {
               key: i,
               hidden: !isShown(selectedValue, tabItem.props),
-              selectedValue: selectedValue,
               className: styles.tab,
             }),
           )}

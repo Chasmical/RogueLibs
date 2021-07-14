@@ -9,7 +9,7 @@ module.exports = {
       'Developer\'s Guide': [
         'getting-started',
         {
-          'Custom Items': [
+          'Custom Items and Abilities': [
             'items/create-item',
             {
               'Adding Functionality': [
@@ -40,6 +40,11 @@ module.exports = {
             'traits/create-trait',
             'traits/create-effect',
           ],
+          'Custom Unlocks': [
+            'unlocks/custom-unlocks',
+            'unlocks/custom-mutators',
+            'unlocks/overriding-behavior',
+          ],
           'Custom Names': [
             'names/custom-names',
             'names/custom-languages',
@@ -50,11 +55,6 @@ module.exports = {
         'extra',
         'patching-utilities',
         {
-          'Custom Unlocks': [
-            'unlocks/custom-unlocks',
-            'unlocks/custom-mutators',
-            'unlocks/overriding-behavior',
-          ],
           'Hooks': [
             'hooks/hooks',
             'hooks/hook-factories',

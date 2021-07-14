@@ -53,6 +53,16 @@ Usage:
     }
 ```
 
+If you want to display `Cooldown` as the item's count, then override the `GetCountString` method:
+
+```csharp
+    public override CustomTooltip GetCountString()
+    {
+        if (Cooldown != 0f) return new CustomTooltip(Cooldown, Color.red);
+        return base.GetCountString(); // display default count
+    }
+```
+
 </TabItem>
 <TabItem value="charge">
 
@@ -60,29 +70,29 @@ Usage:
 
 ```csharp
     public float Charge { get; private set; } = 5f;
-    public void Update() => Cooldown = Mathf.Min(Charge + Time.deltaTime, 5f);
+    public void Update() => Charge = Mathf.Min(Charge + Time.deltaTime, 5f);
 ```
 
 With adjustable charging speed and maximum charge:
 
 ```csharp
-    public float ChargingSpeed = 1f, MaxCharge = 5f;
+    public float ChargeSpeed = 1f, MaxCharge = 5f;
 
     public float Charge { get; private set; } = 5f;
-    public void Update() => Cooldown = Mathf.Min(Charge + Time.deltaTime * ChargingSpeed, MaxCharge);
+    public void Update() => Charge = Mathf.Min(Charge + Time.deltaTime * ChargeSpeed, MaxCharge);
 ```
 
 Plus, with a charging delay:
 
 ```csharp
-    public float DelayThreshold = 3f, ChargingSpeed = 1f, MaxCharge = 5f;
+    public float DelayThreshold = 3f, ChargeSpeed = 1f, MaxCharge = 5f;
 
     private float lastUsage;
     public float Charge { get; private set; } = 5f;
     public void Update()
     {
         if (lastUsage + DelayThreshold < Time.time)
-            Cooldown = Mathf.Min(Charge + Time.deltaTime * ChargingSpeed, MaxCharge);
+            Charge = Mathf.Min(Charge + Time.deltaTime * ChargeSpeed, MaxCharge);
     }
 ```
 
@@ -99,18 +109,20 @@ Usage:
     }
 ```
 
-</TabItem>
-</Tabs>
-
-If you want to display your `Cooldown` or `Charge` as the item's count, then override this method:
+If you want to display `Charge` as the item's count, then override the `GetCountString` method:
 
 ```csharp
     public override CustomTooltip GetCountString()
     {
-        if (Cooldown != 0f) return new CustomTooltip(Cooldown.ToString(), Color.red);
-        return base.GetCountString(); // display default count
+        string text = $"{Charge} ({base.GetCountString()})"; // display both charge and count
+        Color color = Color.Lerp(Color.red, Color.white, Charge / MaxCharge);
+        // color between red and white: red - no charge, white - full charge
+        return new CustomTooltip(text, color);
     }
 ```
+
+</TabItem>
+</Tabs>
 
 :::note
 There's also a vanilla way of recharging items, but it's really messy and unreliable.

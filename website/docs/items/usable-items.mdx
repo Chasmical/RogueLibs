@@ -17,17 +17,30 @@ public class MyUsableItem : CustomItem, IItemUsable
 }
 ```
 
+`UseItem`'s return value indicates whether the item was successfully used. Returning `true` will also play an animation. When returning `false`, you can play a `"CantDo"` sound, and optionally make the current owner say why the item cannot be used:
+
+```csharp
+if (cantUse)
+{
+    gc.audioHandler.Play(Owner, "CantDo");
+    Owner.SayDialogue("CantUseItemBecause...");
+    // don't forget to create a dialogue with that id
+    return false;
+}
+```
+
 ## Examples {#examples}
 
 <Tabs
     defaultValue="jokebook"
     values={[
         {label:'Joke Book', value:'jokebook'},
+        {label:'Adrenaline Shot', value:'adrenalineshot'},
         {label:'Wild Bypasser', value:'wildbypasser'},
     ]}>
 <TabItem value="jokebook">
 
-A simple usable item, that just temporarily changes the character's ability.
+A simple usable item that allows the player to use the Joke ability.
 
 ```csharp title="JokeBook.cs"
 [ItemCategories(RogueCategories.Usable, RogueCategories.Social)]
@@ -45,13 +58,13 @@ public class JokeBook : CustomItem, IItemUsable
     }
     public bool UseItem()
     {
-        // just temporarily change the character's special ability
+        if (Owner.statusEffects.makingJoke) return false;
+
         string prev = Owner.specialAbility;
         Owner.specialAbility = "Joke";
         Owner.statusEffects.PressedSpecialAbility();
         Owner.specialAbility = prev;
 
-        // subtract from item count
         Count--;
         return true;
     }
@@ -68,15 +81,65 @@ RogueLibs.CreateCustomItem<JokeBook>()
         UnlockCost = 10,
         CharacterCreationCost = 3,
         LoadoutCost = 3,
-        // Comedian's BQ must be completed in order to unlock Joke Book
         Prerequisites = { "Comedian_BQ" },
     });
 ```
 
 </TabItem>
+<TabItem value="adrenalineshot">
+
+A simple usable item that gives the player an effect called "Adrenaline". You can see Adrenaline effect's implementation in [Creating a Custom Effect: Examples](../traits/create-effect#examples).
+
+```csharp title="AdrenalineShot.cs"
+[ItemCategories(RogueCategories.Drugs, RogueCategories.Melee, RogueCategories.Usable)]
+public class AdrenalineShot : CustomItem, IItemUsable
+{
+    public override void SetupDetails()
+    {
+        Item.itemType = ItemTypes.Consumable;
+        Item.itemValue = 60;
+        Item.initCount = 1;
+        Item.rewardCount = 2;
+        Item.stackable = true;
+        Item.goesInToolbar = true;
+    }
+    public bool UseItem()
+    {
+        if (Owner.electronic)
+        {
+            Owner.SayDialogue("AdrenalineElectronic");
+            gc.audioHandler.Play(Owner, "CantDo");
+            return false;
+        }
+        Owner.statusEffects.AddStatusEffect("Adrenaline");
+        gc.audioHandler.Play(Owner, "UseSyringe");
+        Count--;
+        return true;
+    }
+}
+```
+
+```csharp
+RogueLibs.CreateCustomItem<AdrenalineShot>()
+    .WithName(new CustomNameInfo("Adrenaline Shot"))
+    .WithDescription(new CustomNameInfo("Gives you some boosts."))
+    .WithSprite(Properties.Resources.AdrenalineShot)
+    .WithUnlock(new ItemUnlock
+    {
+        UnlockCost = 10,
+        CharacterCreationCost = 4,
+        LoadoutCost = 4,
+        Prerequisites = { "KillerThrower", "Antidote", "RagePoison" },
+    });
+
+RogueLibs.CreateCustomName("AdrenalineElectronic", "Dialogue",
+    new CustomNameInfo("I don't have a circulatory system."));
+```
+
+</TabItem>
 <TabItem value="wildbypasser">
 
-A complicated tool item, based on Wall Bypasser's code (see `ItemFunctions.UseItem`).
+A more complicated usable item, based on Wall Bypasser's code (see `ItemFunctions.UseItem`).
 
 ```csharp title="WildBypasser.cs"
 [ItemCategories(RogueCategories.Technology, RogueCategories.Usable, RogueCategories.Stealth)]
@@ -121,7 +184,6 @@ public class WildBypasser : CustomItem, IItemUsable
                 && gc.percentChance(Owner.DetermineLuck(40, "ThiefToolsMayNotSubtract", true))))
             Count--;
 
-        // spawn particles and play sound
         Owner.SpawnParticleEffect("Spawn", Owner.tr.position, false);
         gc.audioHandler.Play(Owner, "Spawn");
         return true;
@@ -139,8 +201,7 @@ RogueLibs.CreateCustomItem<WildBypasser>()
         UnlockCost = 10,
         CharacterCreationCost = 2,
         LoadoutCost = 2,
-        // Wall Bypasser must be unlocked in order to unlock Wild Bypasser
-        Prerequisites = { "WallBypasser" }
+        Prerequisites = { "WallBypasser" },
     });
 ```
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './InventorySlot.module.css';
 
-export default function ({sprite, tooltip, count, countColor, ...props}) {
+export default function ({sprite, tooltip, tooltipColor, count, countColor, ...props}) {
   return (
     <div className={styles.container}>
       <img key="slot" className={styles.slot} src={useBaseUrl("/img/SetupDetailsGenerator/ToolbarSlot.png")}/>
@@ -12,7 +12,11 @@ export default function ({sprite, tooltip, count, countColor, ...props}) {
       }
 
       {tooltip == null ? [] :
-        <span key="tooltip" className={styles.tooltip}>{tooltip}</span>
+        <span key="tooltip" className={styles.tooltip}>
+          <span style={{color: tooltipColor || "#FFED00"}}>
+            {tooltip}
+          </span>
+        </span>
       }
 
       {count == null ? [] :

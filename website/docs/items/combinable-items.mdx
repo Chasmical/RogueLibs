@@ -21,6 +21,50 @@ public class MyCombinableItem : CustomItem, IItemCombinable
 }
 ```
 
+Plus, your item's type must be `"Combine"`:
+
+```csharp
+    public override void SetupDetails()
+    {
+        // highlight-next-line
+        Item.itemType = ItemTypes.Combine;
+        /* ... */
+    }
+```
+
+### Inventory Slot Preview {#slot-preview}
+
+Wanna see how your `CombineTooltip` will look in the game? Check out this small tool:
+
+import InventorySlot from '@site/src/components/SetupDetailsGenerator/InventorySlot';
+import { useState } from 'react';
+
+export function PreviewTooltip ({props}) {
+  const [sprite, setSprite] = useState(useBaseUrl(`/img/SetupDetailsGenerator/TestItem.png`));
+  const [tooltipColor, setTooltipColor] = useState("#FFED00");
+  const spriteHandler = e => {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => setSprite(reader.result));
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+  const [text, setText] = useState("$123");
+  return (
+    <div style={{padding: '10px', border: '5px dashed var(--ifm-menu-color-background-hover)', width: 'max-content'}}>
+      <input type="file" accept="image/*"
+        onChange={spriteHandler} style={{margin: '5px'}}/>
+      <div style={{margin: '5px'}}>
+        <InventorySlot sprite={sprite} tooltip={text} tooltipColor={tooltipColor}/>
+      </div>
+      <input type="text" placeholder="$123" onChange={e => setText(e.target.value)} style={{'fontSize': '22px', margin: '5px'}}/>
+      <input type="color" value={tooltipColor} onChange={e => setTooltipColor(e.target.value)}/>
+    </div>
+  );
+};
+
+<PreviewTooltip/>
+
 ## Examples {#examples}
 
 <Tabs
@@ -86,7 +130,8 @@ public class AmmoBox : CustomItem, IItemCombinable
 
         return "+" + Mathf.Min(amountToRefill, canAfford) + " (" + Mathf.Min(cost, Count) + ")";
     }
-    public CustomTooltip CombineCursorText(InvItem other) => null;
+    public CustomTooltip CombineCursorText(InvItem other) => gc.nameDB.GetName("RefillGun", "Interface");
+    // it's one of the vanilla dialogues, so there's no need to define it in the mod
 }
 ```
 
@@ -100,9 +145,7 @@ RogueLibs.CreateCustomItem<AmmoBox>()
         UnlockCost = 10,
         CharacterCreationCost = 3,
         LoadoutCost = 3,
-        // Portable Ammo Dispenser must be unlocked in order to unlock Ammo Box
-        // Portable Ammo Dispenser is another custom item
-        Prerequisites = { nameof(PortableAmmoDispenser) },
+        Prerequisites = { "AmmoProcessor", "KillProfiterAmmo", "AmmoCapacityMod" },
     });
 ```
 

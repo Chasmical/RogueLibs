@@ -91,7 +91,12 @@ RogueLibs.CreateCustomItem<SPYTRON3000>()
     .WithName(new CustomNameInfo("SPYTRON 3000"))
     .WithDescription(new CustomNameInfo("Always wanted to be someone else? Now you can!"))
     .WithSprite(Properties.Resources.SPYTRON3000)
-    .WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 3, LoadoutCost = 2 });
+    .WithUnlock(new ItemUnlock
+    {
+        UnlockCost = 10,
+        CharacterCreationCost = 3,
+        LoadoutCost = 2,
+    });
 
 RogueLibs.CreateCustomName("Disguise", "Interface", new CustomNameInfo("Disguise as"));
 ```

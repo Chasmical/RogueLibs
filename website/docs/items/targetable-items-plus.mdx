@@ -68,7 +68,13 @@ RogueLibs.CreateCustomItem<UsableTeleporter>()
     .WithName(new CustomNameInfo("Usable Teleporter"))
     .WithDescription(new CustomNameInfo("Teleports you somewhere. Has limited uses."))
     .WithSprite(Properties.Resources.UsableTeleporter)
-    .WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 3, LoadoutCost = 3 });
+    .WithUnlock(new ItemUnlock
+    {
+        UnlockCost = 10,
+        CharacterCreationCost = 3,
+        LoadoutCost = 3,
+        Prerequisites = { "QuickEscapeTeleporter" },
+    });
 
 RogueLibs.CreateCustomName("TeleportHere", "Interface", new CustomNameInfo("Teleport here"));
 ```
