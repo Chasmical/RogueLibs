@@ -6,6 +6,7 @@ on:
     paths: ['website/**']
   push:
     branches: [master]
+    paths: ['website/**']
   workflow_dispatch:
 
 jobs:
