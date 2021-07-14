@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using BepInEx;
 using HarmonyLib;
+using Light2D.Examples;
 
 namespace RogueLibsCore
 {
@@ -32,6 +33,9 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(Item), nameof(Item.DestroyMe2));
 			Patcher.Postfix(typeof(Item), nameof(Item.FakeStart));
 			Patcher.Postfix(typeof(Melee), nameof(Melee.MeleeLateUpdate));
+
+			Patcher.Postfix(typeof(ObjectReal), "Start");
+			Patcher.Postfix(typeof(ObjectReal), nameof(ObjectReal.SpawnShadow));
 
 			// Nugget slot image
 			Patcher.Postfix(typeof(NuggetSlot), nameof(NuggetSlot.UpdateNuggetText));
@@ -224,6 +228,47 @@ namespace RogueLibsCore
 			{
 				hb.heldItemRenderer.sharedMaterial = sprite2.Material;
 				hb.heldItemH.GetComponent<Renderer>().sharedMaterial = sprite2.Material;
+			}
+		}
+
+		public static void ObjectReal_Start(ObjectReal __instance)
+		{
+			if (__instance.spr != null)
+				__instance.ChangeSprite(__instance.spr.CurrentSprite.name);
+			__instance.objectSprite?.RefreshRenderer();
+			try
+			{
+				__instance.RefreshShader();
+				__instance.StartCoroutine(__instance.SpawnShadow());
+			}
+			catch { }
+		}
+		public static void ObjectReal_SpawnShadow(ObjectReal __instance, ref IEnumerator __result)
+			=> __result = SpawnShadowHelper(__instance, __result);
+		private static IEnumerator SpawnShadowHelper(ObjectReal __instance, IEnumerator enumerator)
+		{
+			while (enumerator.MoveNext())
+				yield return enumerator.Current;
+
+			if (__instance.objectShadow != null)
+			{
+				__instance.objectShadow.SetSprite(__instance.spr.CurrentSprite.name);
+				Material mat = __instance.objectShadow.CurrentSprite.material;
+				__instance.objectShadow.GetComponent<Renderer>().sharedMaterial = mat;
+				foreach (Renderer renderer in __instance.objectShadow.GetComponents<Renderer>())
+					renderer.sharedMaterial = mat;
+				foreach (Renderer renderer in __instance.objectShadow.GetComponentsInChildren<Renderer>(true))
+					renderer.sharedMaterial = mat;
+			}
+			if (__instance.objectShadowCustom != null)
+			{
+				__instance.objectShadowCustom.SetSprite(__instance.spr.CurrentSprite.name);
+				Material mat = __instance.objectShadowCustom.CurrentSprite.material;
+				__instance.objectShadowCustom.GetComponent<Renderer>().sharedMaterial = mat;
+				foreach (Renderer renderer in __instance.objectShadowCustom.GetComponents<Renderer>())
+					renderer.sharedMaterial = mat;
+				foreach (Renderer renderer in __instance.objectShadowCustom.GetComponentsInChildren<Renderer>(true))
+					renderer.sharedMaterial = mat;
 			}
 		}
 
