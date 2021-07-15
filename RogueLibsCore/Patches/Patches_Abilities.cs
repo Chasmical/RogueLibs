@@ -73,7 +73,7 @@ namespace RogueLibsCore
 			if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
 				RogueFramework.LogDebug($"Holding ability {custom} for {prevHeld}s ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
 
-			OnAbilityHeldArgs args = new OnAbilityHeldArgs { HeldTime = prevHeld };
+			AbilityHeldArgs args = new AbilityHeldArgs { HeldTime = prevHeld };
 			try { chargeable.OnHeld(args); }
 			catch (Exception e) { RogueFramework.LogError(e, "CustomAbility.OnHeld", custom, __instance.agent); }
 
@@ -94,7 +94,7 @@ namespace RogueLibsCore
 				RogueFramework.LogDebug($"Releasing ability {custom} - {prevHeld}s ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
 
 			custom.lastHeld = 0f;
-			try { chargeable.OnReleased(new OnAbilityReleasedArgs(prevHeld)); }
+			try { chargeable.OnReleased(new AbilityReleasedArgs(prevHeld)); }
 			catch (Exception e) { RogueFramework.LogError(e, "CustomAbility.OnReleased", custom, __instance.agent); }
 		}
 
@@ -118,8 +118,8 @@ namespace RogueLibsCore
 				InvItem item = __instance.agent.inventory.equippedSpecialAbility;
 				if (item.invItemCount > 0)
 				{
-					OnAbilityRechargingArgs args = new OnAbilityRechargingArgs() { UpdateDelay = countSpeed, ShowRechargedText = showBuffText };
-					((IAbilityRechargeable)ability).OnRecharge(args);
+					AbilityRechargingArgs args = new AbilityRechargingArgs() { UpdateDelay = countSpeed, ShowRechargedText = showBuffText };
+					((IAbilityRechargeable)ability).OnRecharging(args);
 					countSpeed = args.UpdateDelay;
 					showBuffText = args.ShowRechargedText;
 

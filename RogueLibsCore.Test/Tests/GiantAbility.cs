@@ -18,7 +18,7 @@ namespace RogueLibsCore.Test
 
 		public override void OnAdded() { }
 
-		public void OnRecharge(OnAbilityRechargingArgs e) => e.UpdateDelay = 1f;
+		public void OnRecharging(AbilityRechargingArgs e) => e.UpdateDelay = 1f;
 
 		public override void OnPressed()
 		{

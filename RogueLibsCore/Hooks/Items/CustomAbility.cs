@@ -43,17 +43,17 @@ namespace RogueLibsCore
 		///   <para>The method that is called each frame when the special ability is held.</para>
 		/// </summary>
 		/// <param name="e">The custom ability's holding data.</param>
-		void OnHeld(OnAbilityHeldArgs e);
+		void OnHeld(AbilityHeldArgs e);
 		/// <summary>
 		///   <para>The method that is called when the special ability is released.</para>
 		/// </summary>
 		/// <param name="e">The custom ability's release data.</param>
-		void OnReleased(OnAbilityReleasedArgs e);
+		void OnReleased(AbilityReleasedArgs e);
 	}
 	/// <summary>
 	///   <para>Represents the custom ability's holding args.</para>
 	/// </summary>
-	public class OnAbilityHeldArgs : EventArgs
+	public class AbilityHeldArgs : EventArgs
 	{
 		/// <summary>
 		///   <para>Gets or sets the current holding time, in seconds.</para>
@@ -67,13 +67,13 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Represents the custom ability's released args.</para>
 	/// </summary>
-	public class OnAbilityReleasedArgs : EventArgs
+	public class AbilityReleasedArgs : EventArgs
 	{
 		/// <summary>
-		///   <para>Initializes a new instance of the <see cref="OnAbilityReleasedArgs"/> class with the specified <paramref name="heldTime"/>.</para>
+		///   <para>Initializes a new instance of the <see cref="AbilityReleasedArgs"/> class with the specified <paramref name="heldTime"/>.</para>
 		/// </summary>
 		/// <param name="heldTime">The custom ability's held time.</param>
-		public OnAbilityReleasedArgs(float heldTime) => HeldTime = heldTime;
+		public AbilityReleasedArgs(float heldTime) => HeldTime = heldTime;
 		/// <summary>
 		///   <para>Gets the last holding time, in seconds.</para>
 		/// </summary>
@@ -88,12 +88,12 @@ namespace RogueLibsCore
 		///   <para>The method that is called as a part of the special ability's recharging coroutine.</para>
 		/// </summary>
 		/// <param name="e">The custom ability's recharging data.</param>
-		void OnRecharge(OnAbilityRechargingArgs e);
+		void OnRecharging(AbilityRechargingArgs e);
 	}
 	/// <summary>
 	///   <para>Represents the custom ability's recharging args.</para>
 	/// </summary>
-	public class OnAbilityRechargingArgs : EventArgs
+	public class AbilityRechargingArgs : EventArgs
 	{
 		/// <summary>
 		///   <para>Gets or sets the recharging coroutine's update delay, in seconds.</para>
