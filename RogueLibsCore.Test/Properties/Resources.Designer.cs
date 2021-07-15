@@ -63,29 +63,9 @@ namespace RogueLibsCore.Test.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] Batteries {
+        internal static byte[] AdrenalineShot {
             get {
-                object obj = ResourceManager.GetObject("Batteries", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Converter {
-            get {
-                object obj = ResourceManager.GetObject("Converter", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] Duplicator {
-            get {
-                object obj = ResourceManager.GetObject("Duplicator", resourceCulture);
+                object obj = ResourceManager.GetObject("AdrenalineShot", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -103,9 +83,9 @@ namespace RogueLibsCore.Test.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] LootBox {
+        internal static byte[] JokeBook {
             get {
-                object obj = ResourceManager.GetObject("LootBox", resourceCulture);
+                object obj = ResourceManager.GetObject("JokeBook", resourceCulture);
                 return ((byte[])(obj));
             }
         }
@@ -113,39 +93,9 @@ namespace RogueLibsCore.Test.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] LootBox2 {
+        internal static byte[] Titan {
             get {
-                object obj = ResourceManager.GetObject("LootBox2", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] LootBox3 {
-            get {
-                object obj = ResourceManager.GetObject("LootBox3", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] NuclearBriefcase {
-            get {
-                object obj = ResourceManager.GetObject("NuclearBriefcase", resourceCulture);
-                return ((byte[])(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static byte[] OpenNuclearBriefcase {
-            get {
-                object obj = ResourceManager.GetObject("OpenNuclearBriefcase", resourceCulture);
+                object obj = ResourceManager.GetObject("Titan", resourceCulture);
                 return ((byte[])(obj));
             }
         }

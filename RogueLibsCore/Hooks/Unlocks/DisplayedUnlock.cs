@@ -146,14 +146,17 @@ namespace RogueLibsCore
 					name = $"{name} <color=yellow>#{num + 1}</color> <color=cyan>({gc.twitchFunctions.voteCount[num]})</color>";
 				}
 			}
-			else if (Menu.Type == UnlocksMenuType.CharacterCreation)
+			else
 			{
-				if (CharacterCreationCost != 0)
-					name += $" | <color={(CharacterCreationCost < 0 ? "lime" : "orange")}>{CharacterCreationCost}</color>";
-			}
-			else if (!IsUnlocked && Unlock.nowAvailable && UnlockCost > 0)
-			{
-				name += $" - ${UnlockCost}";
+				if (!IsUnlocked && Unlock.nowAvailable && UnlockCost > 0)
+				{
+					name += $" - ${UnlockCost}";
+				}
+				if (Menu.Type == UnlocksMenuType.CharacterCreation)
+				{
+					if (CharacterCreationCost != 0)
+						name += $" | <color={(CharacterCreationCost < 0 ? "lime" : "orange")}>{CharacterCreationCost}</color>";
+				}
 			}
 			return name;
 		}

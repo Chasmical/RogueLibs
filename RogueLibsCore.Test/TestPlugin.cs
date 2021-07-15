@@ -24,15 +24,7 @@ namespace RogueLibsCore.Test
 			Log = Logger;
 			Instance = this;
 
-			LootBox.Test();
-			Converter.Test();
-			Duplicator.Test();
-			NuclearBriefcase.Test();
-
-			GiantAbility.Test();
-			Hug.Test();
-
-			Smoker.Test();
+			RogueLibs.LoadFromAssembly();
 		}
 	}
 }

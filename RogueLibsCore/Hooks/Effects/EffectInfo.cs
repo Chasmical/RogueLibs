@@ -56,6 +56,9 @@ namespace RogueLibsCore
 			Name = attr?.Name ?? type.Name;
 
 			EffectParametersAttribute parsAttr = type.GetCustomAttributes<EffectParametersAttribute>().FirstOrDefault();
+			if (parsAttr is null)
+				RogueFramework.LogWarning($"Type {type} does not have a {nameof(EffectParametersAttribute)}!");
+
 			Limitations = parsAttr?.Limitations ?? EffectLimitations.RemoveOnDeath;
 			RemoveOnDeath = (Limitations & EffectLimitations.RemoveOnDeath) != 0;
 			RemoveOnKnockOut = (Limitations & EffectLimitations.RemoveOnKnockOut) != 0;

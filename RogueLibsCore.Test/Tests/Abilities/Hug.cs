@@ -1,22 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 namespace RogueLibsCore.Test
 {
 	public class Hug : CustomAbility, IAbilityTargetable
 	{
-		public static void Test()
+		[RLSetup]
+		public static void Setup()
 		{
 			RogueLibs.CreateCustomAbility<Hug>()
 				.WithName(new CustomNameInfo("Hug"))
 				.WithDescription(new CustomNameInfo("Sneak up behind people. And HUG THEM!!"))
 				.WithSprite(Properties.Resources.Hug)
 				.WithUnlock(new AbilityUnlock { UnlockCost = 5, CharacterCreationCost = 5, });
+
 			RogueLibs.CreateCustomName("HugNegative1", "Dialogue", new CustomNameInfo("Huh? What are you doing?"));
 			RogueLibs.CreateCustomName("HugNegative2", "Dialogue", new CustomNameInfo("Excuse me?!"));
 			RogueLibs.CreateCustomName("HugNegative3", "Dialogue", new CustomNameInfo("Stop it!"));

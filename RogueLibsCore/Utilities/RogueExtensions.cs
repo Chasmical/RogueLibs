@@ -248,6 +248,203 @@ namespace RogueLibsCore
 		}
 
 		/// <summary>
+		///   <para>Adds the specified <typeparamref name="TEffect"/> effect to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <typeparam name="TEffect">The type of the effect to add to the <paramref name="agent"/>.</typeparam>
+		/// <param name="agent">The current agent.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static TEffect AddEffect<TEffect>(this Agent agent) where TEffect : CustomEffect
+			=> AddEffect<TEffect>(agent, default(CreateEffectInfo));
+		/// <summary>
+		///   <para>Adds the specified <typeparamref name="TEffect"/> effect with the <paramref name="specificTime"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <typeparam name="TEffect">The type of the effect to add to the <paramref name="agent"/>.</typeparam>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="specificTime">The effect's time.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static TEffect AddEffect<TEffect>(this Agent agent, int specificTime) where TEffect : CustomEffect
+			=> AddEffect<TEffect>(agent, new CreateEffectInfo(specificTime));
+		/// <summary>
+		///   <para>Adds the specified <typeparamref name="TEffect"/> effect with the specified <paramref name="causerAgent"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <typeparam name="TEffect">The type of the effect to add to the <paramref name="agent"/>.</typeparam>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="causerAgent">The agent that caused this effect.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static TEffect AddEffect<TEffect>(this Agent agent, Agent causerAgent) where TEffect : CustomEffect
+			=> AddEffect<TEffect>(agent, new CreateEffectInfo(causerAgent));
+		/// <summary>
+		///   <para>Adds the specified <typeparamref name="TEffect"/> effect with the specified <paramref name="causerAgent"/> and <paramref name="specificTime"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <typeparam name="TEffect">The type of the effect to add to the <paramref name="agent"/>.</typeparam>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="causerAgent">The agent that caused this effect.</param>
+		/// <param name="specificTime">The effect's time.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static TEffect AddEffect<TEffect>(this Agent agent, Agent causerAgent, int specificTime) where TEffect : CustomEffect
+			=> AddEffect<TEffect>(agent, new CreateEffectInfo(causerAgent, specificTime));
+		/// <summary>
+		///   <para>Adds the specified <typeparamref name="TEffect"/> effect with the specified <paramref name="info"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <typeparam name="TEffect">The type of the effect to add to the <paramref name="agent"/>.</typeparam>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="info">The struct containing effect initialization info.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static TEffect AddEffect<TEffect>(this Agent agent, CreateEffectInfo info) where TEffect : CustomEffect
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			string effectName = EffectInfo.Get<TEffect>().Name;
+			agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent,
+				agent.objectMult.IsFromClient(), info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
+			return agent.GetEffect<TEffect>();
+		}
+
+		/// <summary>
+		///   <para>Finds an effect hook that is assignable to a variable of <typeparamref name="TEffect"/> type on the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <typeparam name="TEffect">The type of the effect hook to search for.</typeparam>
+		/// <param name="agent">The current agent.</param>
+		/// <returns>An effect hook assignable to a variable of <typeparamref name="TEffect"/> type, if found; otherwise, <see langword="default"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static TEffect GetEffect<TEffect>(this Agent agent)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			StatusEffect effect = agent.statusEffects.StatusEffectList.Find(s => s.GetHook<TEffect>() != null);
+			return effect != null ? effect.GetHook<TEffect>() : default;
+		}
+		/// <summary>
+		///   <para>Finds all effect hooks that are assignable to a variable of <typeparamref name="TEffect"/> type on the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <typeparam name="TEffect">The type of the effect hooks to search for.</typeparam>
+		/// <param name="agent">The current agent.</param>
+		/// <returns>An enumerable collection of effect hooks that are assignable to a variable of <typeparamref name="TEffect"/> type.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static IEnumerable<TEffect> GetEffects<TEffect>(this Agent agent)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.StatusEffectList.SelectMany(s => s.GetHooks<TEffect>()).Where(e => e != null).ToArray();
+		}
+		/// <summary>
+		///   <para>Determines whether the current <paramref name="agent"/> has an effect with a hook that is assignable to a variable of <typeparamref name="TEffect"/> type.</para>
+		/// </summary>
+		/// <typeparam name="TEffect">The type of the effect hook to search for.</typeparam>
+		/// <param name="agent">The current agent.</param>
+		/// <returns><see langword="true"/>, if the <paramref name="agent"/> has an effect that has a hook that is assignable to a variable of <typeparamref name="TEffect"/> type; otherwise, <see langword="false"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static bool HasEffect<TEffect>(this Agent agent)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.StatusEffectList.Exists(s => s.GetHook<TEffect>() != null);
+		}
+
+		/// <summary>
+		///   <para>Adds an effect with the specified <paramref name="effectName"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectName">The name of the effect to add.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static StatusEffect AddEffect(this Agent agent, string effectName)
+			=> AddEffect(agent, effectName, default(CreateEffectInfo));
+		/// <summary>
+		///   <para>Adds an effect with the specified <paramref name="effectName"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectName">The name of the effect to add.</param>
+		/// <param name="specificTime">The effect's time.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static StatusEffect AddEffect(this Agent agent, string effectName, int specificTime)
+			=> AddEffect(agent, effectName, new CreateEffectInfo(specificTime));
+		/// <summary>
+		///   <para>Adds an effect with the specified <paramref name="effectName"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectName">The name of the effect to add.</param>
+		/// <param name="causerAgent">The agent that caused this effect.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static StatusEffect AddEffect(this Agent agent, string effectName, Agent causerAgent)
+			=> AddEffect(agent, effectName, new CreateEffectInfo(causerAgent));
+		/// <summary>
+		///   <para>Adds an effect with the specified <paramref name="effectName"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectName">The name of the effect to add.</param>
+		/// <param name="causerAgent">The agent that caused this effect.</param>
+		/// <param name="specificTime">The effect's time.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static StatusEffect AddEffect(this Agent agent, string effectName, Agent causerAgent, int specificTime)
+			=> AddEffect(agent, effectName, new CreateEffectInfo(causerAgent, specificTime));
+		/// <summary>
+		///   <para>Adds an effect with the specified <paramref name="effectName"/> and <paramref name="info"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectName">The name of the effect to add.</param>
+		/// <param name="info">The struct containing effect initialization info.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static StatusEffect AddEffect(this Agent agent, string effectName, CreateEffectInfo info)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent,
+				agent.objectMult.IsFromClient(), info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
+			return agent.GetEffect(effectName);
+		}
+
+		/// <summary>
+		///   <para>Finds an effect with the specified <paramref name="effectName"/> on the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectName">The name of theeffect to search for.</param>
+		/// <returns>The effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static StatusEffect GetEffect(this Agent agent, string effectName)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.StatusEffectList.Find(s => s.statusEffectName == effectName);
+		}
+		/// <summary>
+		///   <para>Determines whether the current <paramref name="agent"/> has an effect with the specified <paramref name="effectName"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectName">The name of the effect to search for.</param>
+		/// <returns><see langword="true"/>, if the current <paramref name="agent"/> has an effect with the specified <paramref name="effectName"/>; otherwise, <see langword="false"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static bool HasEffect(this Agent agent, string effectName)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.StatusEffectList.Exists(s => s.statusEffectName == effectName);
+		}
+
+		/// <summary>
+		///   <para>Changes the current <paramref name="agent"/>'s health by the specified <paramref name="healthChange"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="healthChange">The health delta.</param>
+		public static void ChangeHealth(this Agent agent, float healthChange)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			agent.statusEffects.ChangeHealth(healthChange);
+		}
+		/// <summary>
+		///   <para>Changes the current <paramref name="agent"/>'s health by the specified <paramref name="healthChange"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="healthChange">The health delta.</param>
+		/// <param name="damager">The object that damaged the current agent.</param>
+		public static void ChangeHealth(this Agent agent, float healthChange, PlayfieldObject damager)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			agent.statusEffects.ChangeHealth(healthChange, damager);
+		}
+		/// <summary>
 		///   <para>Returns the last <see cref="Bullet"/> fired by the current <paramref name="agent"/>.</para>
 		/// </summary>
 		/// <param name="agent">The current agent.</param>
@@ -258,5 +455,62 @@ namespace RogueLibsCore
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
 			return agent.GetHook<LastFiredBulletHook>()?.LastFiredBullet;
 		}
+	}
+	/// <summary>
+	///   <para>Represents status effect initialization information.</para>
+	/// </summary>
+	public struct CreateEffectInfo
+	{
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="CreateEffectInfo"/> structure with the specified <paramref name="specificTime"/>.</para>
+		/// </summary>
+		/// <param name="specificTime">The effect's time.</param>
+		public CreateEffectInfo(int specificTime)
+		{
+			SpecificTime = specificTime;
+			DontShowText = false;
+			IgnoreElectronic = false;
+			CauserAgent = null;
+		}
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="CreateEffectInfo"/> structure with the specified <paramref name="causerAgent"/>.</para>
+		/// </summary>
+		/// <param name="causerAgent">The agent that caused this effect.</param>
+		public CreateEffectInfo(Agent causerAgent)
+		{
+			SpecificTime = 0;
+			DontShowText = false;
+			IgnoreElectronic = false;
+			CauserAgent = causerAgent;
+		}
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="CreateEffectInfo"/> structure with the specified <paramref name="causerAgent"/> and <paramref name="specificTime"/>.</para>
+		/// </summary>
+		/// <param name="causerAgent">The agent that caused this effect.</param>
+		/// <param name="specificTime">The effect's time.</param>
+		public CreateEffectInfo(Agent causerAgent, int specificTime)
+		{
+			SpecificTime = specificTime;
+			DontShowText = false;
+			IgnoreElectronic = false;
+			CauserAgent = causerAgent;
+		}
+
+		/// <summary>
+		///   <para>Gets or sets the effect's time.</para>
+		/// </summary>
+		public int SpecificTime { get; set; }
+		/// <summary>
+		///   <para>Gets or sets whether a buff text shouldn't be displayed.</para>
+		/// </summary>
+		public bool DontShowText { get; set; }
+		/// <summary>
+		///   <para>Gets or sets whether the effect ignores the "Electronic" trait.</para>
+		/// </summary>
+		public bool IgnoreElectronic { get; set; }
+		/// <summary>
+		///   <para>Gets or sets the agent that caused this effect.</para>
+		/// </summary>
+		public Agent CauserAgent { get; set; }
 	}
 }

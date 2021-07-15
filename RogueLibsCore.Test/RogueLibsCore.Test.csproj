@@ -36,15 +36,21 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Tests\GiantAbility.cs" />
-    <Compile Include="Tests\Hug.cs" />
-    <Compile Include="Tests\Smoker.cs" />
+    <Compile Include="Tests\Abilities\Kamikaze.cs" />
+    <Compile Include="Tests\Abilities\Titan.cs" />
+    <Compile Include="Tests\Abilities\Hug.cs" />
+    <Compile Include="Tests\Effects\Adrenaline.cs" />
+    <Compile Include="Tests\Items\AdrenalineShot.cs" />
+    <Compile Include="Tests\Items\AmmoBox.cs" />
+    <Compile Include="Tests\Items\JokeBook.cs" />
+    <Compile Include="Tests\Items\QuantumFud.cs" />
+    <Compile Include="Tests\Items\SPYTRON3000.cs" />
+    <Compile Include="Tests\Items\UsableTeleporter.cs" />
+    <Compile Include="Tests\Items\WildBypasser.cs" />
+    <Compile Include="Tests\Traits\Smoker.cs" />
     <Compile Include="TestPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\Duplicator.cs" />
-    <Compile Include="Tests\LootBox.cs" />
-    <Compile Include="Tests\NuclearBriefcase.cs" />
-    <Compile Include="Tests\Converter.cs" />
+    <Compile Include="Tests\Traits\Stinky.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RogueLibsCore\RogueLibsCore.csproj">
@@ -83,24 +89,13 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Batteries.bin" />
-    <None Include="Resources\Converter.bin" />
-    <None Include="Resources\Duplicator.bin" />
+    <None Include="Resources\AdrenalineShot.bin" />
     <None Include="Resources\Hug.bin" />
-    <None Include="Resources\LootBox.bin" />
-    <None Include="Resources\LootBox2.bin" />
-    <None Include="Resources\LootBox3.bin" />
-    <None Include="Resources\NuclearBriefcase.bin" />
-    <None Include="Resources\OpenNuclearBriefcase.bin" />
+    <None Include="Resources\JokeBook.bin" />
+    <None Include="Resources\Titan.bin" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Batteries.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Converter.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\Duplicator.png" />
+    <Folder Include="Tests\Weapons\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

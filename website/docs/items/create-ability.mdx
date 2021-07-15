@@ -1,8 +1,122 @@
-# Creating a Custom Ability*
+# Creating a Custom Ability
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-:::info Work-In-Progress
+## `CustomAbility` class {#customability}
+
+Special abilities are actually really similar to items. They have `SetupDetails`, `Count` and exist in the owner's inventory, just like items. To create one, you need to create a class deriving from `CustomAbility` (which derives from `CustomItem`):
+
+```csharp title="MyCustomAbility.cs"
+// highlight-next-line
+public class MyCustomAbility : CustomAbility
+{
+    /* ... */
+}
+```
+
+You only need to implement 2 methods: `OnAdded` is called when a character receives this special ability, and `OnPressed` is called when the player uses the ability. There's no `OnRemoved` at the moment, because it's not implemented in SoR.
+
+```csharp title="MyCustomAbility.cs"
+public class MyCustomAbility : CustomAbility
+{
+    // highlight-start
+    public override void OnAdded() { /* ... */ }
+    public override void OnPressed() { /* ... */ }
+    // highlight-end
+}
+```
+
+### `SetupDetails` {#setupdetails}
+
+`SetupDetails` is overriden by `CustomAbility` and here's its implementation:
+
+```csharp
+    public override void SetupDetails()
+    {
+        Item.stackable = true;
+        Item.initCount = 0;
+        Item.lowCountThreshold = 100;
+    }
+```
+
+This method should work for most abilities, but if you need something more sophisticated, then override it yourself.
+
+## Initialization {#initialization}
+
+Just call the following method in your plugin's `Awake()`:
+
+```csharp title="MyCoolPlugin.cs"
+public void Awake()
+{
+    // highlight-next-line
+    RogueLibs.CreateCustomAbility<MyCustomAbility>();
+}
+```
+
+:::caution
+Make sure that you're calling `CreateCustomAbility` and not `CreateCustomItem` method. RogueLibs will throw an exception, if you call `CreateCustomItem` with a `CustomAbility` type.
 :::
+
+You can set your ability's name and description using `WithName` and `WithDescription` methods:
+
+```csharp title="MyCoolPlugin.cs"
+public void Awake()
+{
+    RogueLibs.CreateCustomAbility<MyCustomAbility>()
+    // highlight-start
+        .WithName(new CustomNameInfo("My Custom Ability"))
+        .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"));
+    // highlight-end
+}
+```
+
+You can do the same with sprites and unlocks:
+
+```csharp title="MyCoolPlugin.cs"
+public void Awake()
+{
+    RogueLibs.CreateCustomAbility<MyCustomAbility>()
+        .WithName(new CustomNameInfo("My Custom Ability"))
+        .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"))
+    // highlight-start
+        .WithSprite(Properties.Resources.MyCustomAbility)
+        .WithUnlock(new AbilityUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
+    // highlight-end
+}
+```
+
+:::info
+See [Custom Names](../names/custom-names), [Custom Sprites](../custom-sprites) for more info.
+:::
+
+## Unlock Properties {#unlock-properties}
+
+You can use the following properties when initializing `AbilityUnlock`s:
+
+Property | Default | Description
+---------|---------|------------
+`UnlockCost` | `0` | Unlock cost of the ability, in nuggets. If set to 0, it will unlock automatically, once all prerequisites are unlocked.
+`CharacterCreationCost` | `1` | Cost of the ability in Character Creation, in points.
+`IsAvailable` | `true` | Determines whether the ability is available in the ... Well, there's no menu for custom abilities at the moment, but if there was, this property would determine whether it's available in that menu.
+`IsAvailableInCC` | `true` | Determines whether the ability is available in the Character Creation menu.
+`Prerequisites` | | Determines what unlocks must be unlocked in order to unlock this ability.
+`Recommendations` | | Just shows these unlocks in a separate Recommendations paragraph in the menus.
+
+Other properties should not be used during initialization.
+
+## Examples {#examples}
+
+<Tabs defaultValue=""
+  values={[
+    {label:'', value:''},
+  ]}>
+<TabItem value="">
+
+```csharp title=""
+
+```
+
+</TabItem>
+</Tabs>

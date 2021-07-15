@@ -79,7 +79,7 @@ namespace RogueLibsCore
 		{
 			if (Interlocked.Exchange(ref awoken, 1) == 1)
 			{
-				Logger.LogError("A second instance of RogueLibs was awaken, so it was terminated immediately.");
+				Logger.LogError("A second instance of RogueLibs was awakened, so it was terminated immediately.");
 				return;
 			}
 			Logger.LogInfo($"Running RogueLibs v{RogueLibs.CompiledSemanticVersion}.");

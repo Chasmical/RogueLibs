@@ -5,9 +5,6 @@ using System.Reflection.Emit;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using BepInEx;
-using HarmonyLib;
 
 namespace RogueLibsCore
 {
@@ -53,6 +50,7 @@ namespace RogueLibsCore
 		{
 			CustomAbility custom = __instance.agent.GetAbility();
 			if (custom is null) return;
+			if (custom.Item.invItemName != __instance.agent.specialAbility) return;
 
 			if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
 				RogueFramework.LogDebug($"Pressing ability ability {custom} ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
@@ -66,6 +64,7 @@ namespace RogueLibsCore
 		{
 			CustomAbility custom = __instance.agent.GetAbility();
 			if (!(custom is IAbilityChargeable chargeable)) return;
+			if (custom.Item.invItemName != __instance.agent.specialAbility) return;
 
 			ref float held = ref GameController.gameController.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1];
 			float prevHeld = held;
@@ -86,6 +85,7 @@ namespace RogueLibsCore
 		{
 			CustomAbility custom = __instance.agent.GetAbility();
 			if (!(custom is IAbilityChargeable chargeable)) return;
+			if (custom.Item.invItemName != __instance.agent.specialAbility) return;
 
 			float prevHeld = custom.lastHeld;
 			if (prevHeld is 0f) return;

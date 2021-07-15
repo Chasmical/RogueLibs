@@ -10,11 +10,13 @@ If you want to make a rechargeable item, you'll have to make use of the [`IDoUpd
 
 ```csharp title="MyRechargeableItem.cs"
 // highlight-next-line
-public class MyRechargeableItem : CustomItem, IItemUsable, IDoUpdate
+public class MyRechargeableItem : CustomItem, IDoUpdate
 {
     /* ... */
 }
 ```
+
+## Presets {#presets}
 
 Here's a couple of useful presets:
 
@@ -52,6 +54,10 @@ Usage:
         return true;
     }
 ```
+
+:::info
+You can use other activation methods too, like `CombineItems`, `TargetObject`, `TargetPosition` and etc.
+:::
 
 If you want to display `Cooldown` as the item's count, then override the `GetCountString` method:
 
@@ -109,6 +115,10 @@ Usage:
     }
 ```
 
+:::info
+You can use other activation methods too, like `CombineItems`, `TargetObject`, `TargetPosition` and etc.
+:::
+
 If you want to display `Charge` as the item's count, then override the `GetCountString` method:
 
 ```csharp
@@ -130,6 +140,10 @@ There's also a vanilla way of recharging items, but it's really messy and unreli
 
 ## Examples {#examples}
 
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import QuantumFud from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/QuantumFud.cs';
+
 <Tabs
   defaultValue="quantumfud"
   values={[
@@ -137,58 +151,7 @@ There's also a vanilla way of recharging items, but it's really messy and unreli
   ]}>
 <TabItem value="quantumfud">
 
-```csharp title="QuantumFud.cs"
-[ItemCategories(RogueCategories.Food, RogueCategories.Technology)]
-public class QuantumFud : CustomItem, IItemUsable, IDoUpdate
-{
-    public override void SetupDetails()
-    {
-        Item.itemType = ItemTypes.Food;
-        Item.itemValue = 180;
-        Item.healthChange = 1;
-        Item.cantBeCloned = true;
-        Item.goesInToolbar = true;
-    }
-    
-    public float Cooldown { get; set; }
-    public void Update() => Cooldown = Math.Max(Cooldown - Time.deltaTime, 0f);
-
-    public bool UseItem()
-    {
-        // if the item hasn't recharged yet, return false (usage failed)
-        if (Cooldown != 0f) return false;
-        
-        // change owner's health
-        int heal = new ItemFunctions().DetermineHealthChange(Item, Owner);
-        Owner.statusEffects.ChangeHealth(heal);
-
-        // if the owner has "Share the Health" trait, share it
-        if (Owner.HasTrait("HealthItemsGiveFollowersExtraHealth")
-            || Owner.HasTrait("HealthItemsGiveFollowersExtraHealth2"))
-            new ItemFunctions().GiveFollowersHealth(Owner, heal);
-
-        // play sound and set cooldown
-        gc.audioHandler.Play(Owner, "UseFood");
-        Cooldown = 0.5f;
-        return true; // usage was successful
-    }
-}
-```
-
-```csharp
-RogueLibs.CreateCustomItem<QuantumFud>()
-    .WithName(new CustomNameInfo("Quantum Fud"))
-    .WithDescription(new CustomNameInfo("A very complicated piece of quantum technology. When you eat it, its quantum equivalent clone is consumed, while the original thing remains intact."))
-    .WithSprite(Properties.Resources.QuantumFud)
-    .WithUnlock(new ItemUnlock
-    {
-        UnlockCost = 10,
-        CharacterCreationCost = 10,
-        LoadoutCost = 10,
-        // Food Processor must be unlocked in order to unlock Quantum Fud
-        Prerequisites = { "FoodProcessor" },
-    });
-```
+<CodeSnippet>{QuantumFud}</CodeSnippet>
 
 </TabItem>
 </Tabs>

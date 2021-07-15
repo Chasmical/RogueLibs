@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static UnityEngine.GraphicsBuffer;
 
 namespace RogueLibsCore.Test
 {
 	public class Smoker : CustomTrait, ITraitUpdateable
 	{
-		public static void Test()
+		[RLSetup]
+		public static void Setup()
 		{
 			RogueLibs.CreateCustomTrait<Smoker>()
 				.WithName(new CustomNameInfo("Smoker"))
@@ -21,16 +17,8 @@ namespace RogueLibsCore.Test
 			RogueLibs.CreateCustomName("Smoker_Cough3", "Dialogue", new CustomNameInfo("*coUGH* *COUgh*"));
 		}
 
-		public override void OnAdded()
-		{
-			Owner.SetEndurance(Owner.enduranceStatMod - 1);
-			Owner.SetSpeed(Owner.speedStatMod - 1);
-		}
-		public override void OnRemoved()
-		{
-			Owner.SetEndurance(Owner.enduranceStatMod + 1);
-			Owner.SetSpeed(Owner.speedStatMod + 1);
-		}
+		public override void OnAdded() { }
+		public override void OnRemoved() { }
 		public void OnUpdated(TraitUpdatedArgs e)
 		{
 			e.UpdateDelay = 5f;

@@ -12,6 +12,7 @@ To make a custom item, you need to create a class deriving from `CustomItem`:
 // highlight-next-line
 public class MyCustomItem : CustomItem
 {
+    /* ... */
 }
 ```
 
@@ -34,32 +35,21 @@ public class MyCustomItem : CustomItem
 }
 ```
 
-This method is called only once, when the item is created or spawned.<br/>See more info [later on this page](#setupdetails).
+This method is called only once, when the item is created or spawned. See more info [later on this page](#setupdetails).
 
-You should add categories using `ItemCategories` attribute instead of adding them in `SetupDetails`. `RogueCategories` contains consts for all default item categories:
+You should add categories using the `ItemCategories` attribute instead of adding them in `SetupDetails`:
 
 ```csharp title="MyCustomItem.cs"
 [ItemCategories(RogueCategories.Usable, RogueCategories.Weird, "MyCustomCategory")]
 public class MyCustomItem : CustomItem
 {
-    ...
+    /* ... */
 }
 ```
 
 :::tip Pro-tip: String consts
 Use static types with string consts, like `RogueCategories` and `ItemTypes`. This way you won't make a typo. Typos can be critical sometimes, since neither the game nor RogueLibs track all existing item categories *(although it's an interesting idea, maybe I'll do something like that)*.
 :::
-
-By default, your custom item will have the same name as the class (`Type.Name`).<br/>You can change that behavior with an `ItemName` attribute:
-
-```csharp title="MyCustomItem.cs"
-// highlight-next-line
-[ItemName("My_Custom_Item")]
-public class MyCustomItem : CustomItem
-{
-    ...
-}
-```
 
 ## Initialization {#initialization}
 

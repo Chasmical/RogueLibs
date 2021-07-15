@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Reflection;
 using UnityEngine;
 using System.IO;
 using System.Threading;
@@ -41,7 +43,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Semantic version of RogueLibs that the current assembly is compiled with. Don't use it in BepInPlugin.</para>
 		/// </summary>
-		public const string CompiledSemanticVersion = "3.0.0-rc.3";
+		public const string CompiledSemanticVersion = "3.0.0-rc.4";
 		internal const string AssemblyVersion = "3.0.0.0";
 
 		/// <summary>
@@ -63,9 +65,10 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="TItem">The <see cref="CustomItem"/> type. Must have a parameterless constructor.</typeparam>
 		/// <returns>An <see cref="ItemBuilder"/> with the specified item's metadata.</returns>
-		public static ItemBuilder CreateCustomItem<TItem>()
-			where TItem : CustomItem, new()
+		public static ItemBuilder CreateCustomItem<TItem>() where TItem : CustomItem, new()
 		{
+			if (typeof(CustomAbility).IsAssignableFrom(typeof(TItem)))
+				throw new ArgumentException($"The specified type is a CustomAbility! Use {nameof(CreateCustomAbility)} instead.", nameof(TItem));
 			ItemInfo info = ItemFactory.AddItem<TItem>();
 			return new ItemBuilder(info);
 		}
@@ -74,8 +77,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="TAbility">The <see cref="CustomAbility"/> type. Must have a parameterless constructor.</typeparam>
 		/// <returns>An <see cref="AbilityBuilder"/> with the specified ability's metadata.</returns>
-		public static AbilityBuilder CreateCustomAbility<TAbility>()
-			where TAbility : CustomAbility, new()
+		public static AbilityBuilder CreateCustomAbility<TAbility>() where TAbility : CustomAbility, new()
 		{
 			ItemInfo info = ItemFactory.AddItem<TAbility>();
 			return new AbilityBuilder(info);
@@ -85,8 +87,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="TTrait">The <see cref="CustomTrait"/> type. Must have a parameterless constructor.</typeparam>
 		/// <returns>An <see cref="TraitBuilder"/> with the specified trait's metadata.</returns>
-		public static TraitBuilder CreateCustomTrait<TTrait>()
-			where TTrait : CustomTrait, new()
+		public static TraitBuilder CreateCustomTrait<TTrait>() where TTrait : CustomTrait, new()
 		{
 			TraitInfo info = TraitFactory.AddTrait<TTrait>();
 			return new TraitBuilder(info);
@@ -96,8 +97,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <typeparam name="TEffect">The <see cref="CustomEffect"/> type. Must have a parameterless constructor.</typeparam>
 		/// <returns>An <see cref="EffectBuilder"/> with the specified effect's metadata.</returns>
-		public static EffectBuilder CreateCustomEffect<TEffect>()
-			where TEffect : CustomEffect, new()
+		public static EffectBuilder CreateCustomEffect<TEffect>() where TEffect : CustomEffect, new()
 		{
 			EffectInfo info = EffectFactory.AddEffect<TEffect>();
 			return new EffectBuilder(info);
@@ -223,7 +223,25 @@ namespace RogueLibsCore
 		/// <returns>The unlock of the specified <typeparamref name="TUnlock"/> type and with the specified <paramref name="name"/>, if found; otherwise, <see langword="null"/>.</returns>
 		public static TUnlock GetUnlock<TUnlock>(string name) where TUnlock : UnlockWrapper
 			=> (TUnlock)RogueFramework.Unlocks.Find(u => u is TUnlock && u.Name == name);
+
+		/// <summary>
+		///   <para>Invokes all static methods marked with a <see cref="RLSetupAttribute"/> in the current assembly.</para>
+		/// </summary>
+		public static void LoadFromAssembly()
+		{
+			MethodBase caller = new StackTrace().GetFrame(1).GetMethod();
+			Assembly assembly = caller.ReflectedType.Assembly;
+			foreach (Type type in assembly.GetTypes())
+				foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+					if (method.GetCustomAttributes<RLSetupAttribute>().Any())
+						method.Invoke(null, null);
+		}
 	}
+	/// <summary>
+	///   <para>Indicates that this method should be executed when <see cref="RogueLibs.LoadFromAssembly()"/> is called.</para>
+	/// </summary>
+	[AttributeUsage(AttributeTargets.Method)]
+	public class RLSetupAttribute : Attribute { }
 	/// <summary>
 	///   <para>Repesents a <see cref="CustomItem"/> builder, that attaches additional information to the item.</para>
 	/// </summary>

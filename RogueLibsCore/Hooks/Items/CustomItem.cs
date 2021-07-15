@@ -33,7 +33,8 @@ namespace RogueLibsCore
 			set
 			{
 				int delta = value - Count;
-				if (delta < 0) Inventory.SubtractFromItemCount(Item, -delta);
+				if (delta < 0 && Inventory != null)
+					Inventory.SubtractFromItemCount(Item, -delta);
 				else Item.invItemCount += delta;
 			}
 		}
@@ -159,19 +160,19 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="position">The target position.</param>
 		/// <returns><see langword="true"/>, if the current item can be targeted at the specified <paramref name="position"/>; otherwise, <see langword="false"/>.</returns>
-		bool TargetFilter(Vector3 position);
+		bool TargetFilter(Vector2 position);
 		/// <summary>
 		///   <para>Uses the current item on the specified <paramref name="position"/>. The return value indicates whether the usage succeeded or failed.</para>
 		/// </summary>
 		/// <param name="position">The target position.</param>
 		/// <returns><see langword="true"/>, if the item was successfully used on the specified <paramref name="position"/>; otherwise, <see langword="false"/>.</returns>
-		bool TargetPosition(Vector3 position);
+		bool TargetPosition(Vector2 position);
 		/// <summary>
 		///   <para>Determines the cursor text when hovering over the specified <paramref name="position"/>.</para>
 		/// </summary>
 		/// <param name="position">The target position.</param>
 		/// <returns>The cursor text to display, or <see langword="null"/> to display the default cursor text.</returns>
-		CustomTooltip TargetCursorText(Vector3 position);
+		CustomTooltip TargetCursorText(Vector2 position);
 	}
 	/// <summary>
 	///   <para>Represents a custom tooltip.</para>
