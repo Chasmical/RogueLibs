@@ -79,17 +79,26 @@ export function PreviewTooltip ({props}) {
 import CodeSnippet from '@site/src/components/CodeSnippet';
 
 import AmmoBox from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/AmmoBox.cs';
+import SpiceRack from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/SpiceRack.cs';
 
 <Tabs
     defaultValue="ammobox"
     values={[
         {label:'Ammo Box', value:'ammobox'},
+        {label:'Spice Rack', value:'spicerack'},
     ]}>
 <TabItem value="ammobox">
 
 A pretty complicated example with a lot of math.
 
 <CodeSnippet>{AmmoBox}</CodeSnippet>
+
+</TabItem>
+<TabItem value="spicerack">
+
+A simple example, with custom hooks to keep track of seasoned items.
+
+<CodeSnippet>{SpiceRack}</CodeSnippet>
 
 </TabItem>
 </Tabs>

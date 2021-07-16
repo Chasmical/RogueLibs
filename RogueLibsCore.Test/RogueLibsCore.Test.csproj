@@ -44,6 +44,7 @@
     <Compile Include="Tests\Items\AmmoBox.cs" />
     <Compile Include="Tests\Items\JokeBook.cs" />
     <Compile Include="Tests\Items\QuantumFud.cs" />
+    <Compile Include="Tests\Items\SpiceRack.cs" />
     <Compile Include="Tests\Items\SPYTRON3000.cs" />
     <Compile Include="Tests\Items\UsableTeleporter.cs" />
     <Compile Include="Tests\Items\WildBypasser.cs" />
@@ -90,9 +91,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AdrenalineShot.bin" />
+    <None Include="Resources\AmmoBox.bin" />
     <None Include="Resources\Hug.bin" />
     <None Include="Resources\JokeBook.bin" />
+    <None Include="Resources\QuantumFud.bin" />
+    <None Include="Resources\SpiceRack.bin" />
+    <None Include="Resources\SPYTRON3000.bin" />
     <None Include="Resources\Titan.bin" />
+    <None Include="Resources\Toolkit.bin" />
+    <None Include="Resources\UsableTeleporter.bin" />
+    <None Include="Resources\WildBypasser.bin" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Tests\Weapons\" />
