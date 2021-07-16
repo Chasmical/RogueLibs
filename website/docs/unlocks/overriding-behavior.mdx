@@ -1,8 +1,304 @@
-# Overriding Default Behavior*
+# Overriding Default Behavior
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-:::info Work-In-Progress
+## Sorting {#sorting}
+
+If you want your unlock to be at the top of the menu, set the `SortingOrder` and `SortingIndex` properties.
+
+Unlocks are first sorted by their `SortingOrder`, then by their state (unlocked, purchasable, available and locked), and then by their `SortingIndex`. You can ignore the sorting by the state by setting `IgnoreStateSorting` to `true`.
+
+Here's an example of how it would work:
+
+- `SortingOrder = -400`:
+  - `Unlocked`:
+    - `SortingIndex = -3`;
+    - `SortingIndex = 1`;
+    - `SortingIndex = 2`;
+  - `Purchasable`:
+    - ...
+  - `Available`:
+    - ...
+  - `Locked`:
+    - ...
+- `SortingOrder = -3`:
+  - ...
+- `SortingOrder = 0` (vanilla unlocks go here):
+  - ...
+- `SortingOrder = 1`:
+  - ...
+- `SortingOrder = 500`:
+  - ...
+
+:::caution
+The menu might get weird or even crash if not all unlocks on the current `SortingOrder` have `IgnoreStateSorting` set to the same value. So make sure that all other unlocks have `IgnoreStateSorting` set to `true` too.
 :::
+
+## Overrideable methods {#methods}
+
+### `UnlockWrapper`
+
+```csharp title="UnlockWrapper.cs"
+// called when the unlock is initialized and integrated into the game
+public virtual void SetupUnlock() { }
+
+// called pretty often to determine if it can be unlocked right now
+public virtual void UpdateUnlock()
+{
+    if ((Unlock.nowAvailable = !Unlock.unlocked && CanBeUnlocked()) && UnlockCost is 0)
+        gc.unlocks.DoUnlockForced(Name, Type);
+}
+
+// determines whether the unlock can be unlocked right now
+public virtual bool CanBeUnlocked() => UnlockCost > -1
+    && Unlock.prerequisites.All(c => gc.sessionDataBig.unlocks.Exists(u => u.unlockName == c && u.unlocked));
+
+// gets the unlock's raw name, without any rich text, costs and values
+public virtual string GetName() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockNameType) : "?????";
+
+// gets the unlock's raw description, without any rich text, costs and values
+public virtual string GetDescription() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockDescriptionType) : "?????";
+
+// gets the unlock's image (displayed in the menus)
+public virtual Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable)
+    && RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
+```
+
+### `DisplayedUnlock`
+
+```csharp title="DisplayedUnlock.cs"
+// called when the button is updated. `UpdateUnlock` is called right before this.
+public virtual void UpdateButton() => UpdateButton(IsEnabled, UnlockButtonState.Selected, UnlockButtonState.Normal);
+
+protected void UpdateButton(bool isEnabledOrSelected, UnlockButtonState selected, UnlockButtonState normal)
+{
+    Text = GetFancyName();
+    State = IsUnlocked ? isEnabledOrSelected ? selected : normal
+        : Unlock.nowAvailable && UnlockCost > -1 ? UnlockButtonState.Purchasable
+        : UnlockButtonState.Locked;
+}
+
+// called when the button is pressed. See other unlocks' implementations for more info
+public abstract void OnPushedButton();
+
+// gets the unlock's "fancy" name, with rich text formatting, costs and point values
+public virtual string GetFancyName()
+{
+    /* A lot of stuff, see RogueLibs' source code for more information */
+}
+
+// gets the unlock's "fancy" description, with rich text formatting, cancellations, prerequisites and recommendations
+public virtual string GetFancyDescription()
+{
+    /* A lot of stuff, see RogueLibs' source code for more information */
+}
+```
+
+:::tip Pro-tip
+You can see for yourself how these methods are implemented in [RogueLibs' source code](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibsCore/Hooks/Unlocks/UnlockWrapper.cs).
+:::
+
+## Examples {#examples}
+
+<Tabs defaultValue="present"
+  values={[
+    {label:'Present (sprite variations)', value:'present'},
+    {label:'Random Items Button', value:'randomitems'},
+    {label:'Categories', value:'categories'},
+  ]}>
+<TabItem value="present">
+
+Let's say, you want to make an [item called Present, and it has 3 different sprites](../custom-sprites#sprite-variations).
+
+First of all, you'll need to create an unlock class deriving from `ItemUnlock`:
+
+```csharp title="PresentUnlock.cs"
+// highlight-next-line
+public class PresentUnlock : ItemUnlock
+{
+}
+```
+
+Now you can override the `DisplayedUnlock`'s `GetImage` method:
+
+```csharp title="PresentUnlock.cs"
+public class PresentUnlock : ItemUnlock
+{
+    public override Sprite GetImage()
+    {
+        int rnd = new System.Random().Next(3) + 1;
+        return (IsUnlocked || Unlock.nowAvailable) && rnd != 1
+            && gc.gameResources.itemDic.TryGetValue($"Present{rnd}", out Sprite sprite)
+            ? sprite : base.GetImage();
+    }
+}
+```
+
+Then just use your custom unlock in the custom item's initialization:
+
+```csharp title="Present.cs"
+public class Present : CustomItem, IItemUsable
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomItem<Present>()
+            .WithName(new CustomNameInfo("Present"))
+            .WithDescription(new CustomNameInfo("Open it!"))
+            .WithSprite(Properties.Resources.Present)
+            // highlight-next-line
+            .WithUnlock(new PresentUnlock
+            {
+                UnlockCost = 5,
+                CharacterCreationCost = 3,
+                LoadoutCost = 3
+            });
+    }
+}
+```
+
+</TabItem>
+<TabItem value="randomitems">
+
+A simple example - a button in the Item Teleporter's menu, that gives you 5 random items.
+
+```csharp title="RandomItemsButton.cs"
+public class RandomItemsButton : ItemUnlock
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomUnlock(new RandomItemsButton(),
+            new CustomNameInfo("Name"),
+            new CustomNameInfo("Description"));
+        // this API will probably change
+    }
+
+    public RandomItemsButton()
+    {
+        SortingOrder = -100; // appear on top of the menu
+        IsAvailable = false;
+        IsAvailableInCC = false;
+        IsAvailableInItemTeleporter = true; // only in Item Teleporter
+    }
+
+    public override void OnPushedButton()
+    {
+        System.Random rnd = new System.Random();
+        for (int i = 0; i < 5; i++)
+        {
+            UnlockWrapper item;
+            do
+            {
+                int index = rnd.Next(Menu.Unlocks.Count);
+                UnlockWrapper item = Menu.Unlocks[index];
+            }
+            // make sure that you don't accidentally purchase a locked item
+            while (!item.IsUnlocked && item != this);
+
+            // it'd be way better and safer to spawn the item yourself,
+            // but for the sake of simplicity, we'll just simulate the button push
+            item.OnPushedButton();
+        }
+    }
+}
+```
+
+</TabItem>
+<TabItem value="categories">
+
+So, you want to make categories, like in [aToM](https://github.com/Abbysssal/aToM)? Here you go!
+
+```csharp title="MyCategory.cs"
+public class MyCategory : MutatorUnlock
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        MyCategory category = new MyCategory("MyCustomCategory1");
+        RogueLibs.CreateCustomUnlock(category,
+            new CustomNameInfo("My Custom Category 1"),
+            new CustomNameInfo("My Custom Category 1 is very cool and does a lot of great stuff"));
+
+        category.SortingOrder = -59;
+        category.SortingIndex = -1;
+        int i = 0;
+        foreach (MutatorUnlock mutator in mutators1)
+        {
+            mutator.SortingOrder = -59;
+            mutator.SortingIndex = i;
+            category.Contents.Add(mutator);
+        }
+        Categories.Add(category);
+        
+        category = new MyCategory("MyCustomCategory2");
+        RogueLibs.CreateCustomUnlock(category,
+            new CustomNameInfo("My Custom Category 2"),
+            new CustomNameInfo("My Custom Category 2 is really great and accomplishes a ton of cool things"));
+
+        category.SortingOrder = -58;
+        category.SortingIndex = -1;
+        i = 0;
+        foreach (MutatorUnlock mutator in mutators2)
+        {
+            mutator.SortingOrder = -58;
+            mutator.SortingIndex = i;
+            category.Contents.Add(mutator);
+        }
+        Categories.Add(category);
+        
+        RogueLibs.CreateCustomName("CategoryShow", "Interface", new CustomNameInfo("Show"));
+        RogueLibs.CreateCustomName("CategoryHide", "Interface", new CustomNameInfo("Hide"));
+    }
+
+    public MyCategory(string name) : base(name) { }
+
+    public List<UnlockWrapper> Contents = new List<UnlockWrapper>();
+    public static List<MyCategory> Categories = new List<MyCategory>();
+
+    private bool isExpanded;
+    public bool IsExpanded
+    {
+        get => isExpanded;
+        set
+        {
+            if (isExpanded != (isExpanded = value)) // if the value changed
+            {
+                // make current category's mutators available/unavailable
+                foreach (UnlockWrapper mutator in Contents)
+                    mutator.IsAvailable = value;
+                
+                // if it was expanded, close all other categories
+                if (value)
+                    foreach (MyCategory category in Categories)
+                        if (category != this) category.IsExpanded = false;
+            }
+        }
+    }
+
+    public override void GetFancyName()
+    {
+        string name = base.GetFancyName();
+        name += " - " +  gc.nameDB.GetName(IsExpanded ? "CategoryHide" : "CategoryShow", "Interface");
+        return name;
+    }
+    public override void OnPushedButton()
+    {
+        if (Menu.Type == UnlocksMenuType.MutatorMenu)
+        {
+            PlaySound("ClickButton");
+            // toggle the IsExpanded property
+            IsExpanded = !IsExpanded;
+            // reopen the menu to update the buttons list
+            ((CustomScrollingMenu)Menu).Menu.OpenScrollingMenu();
+        }
+        else base.OnPushedButton();
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+

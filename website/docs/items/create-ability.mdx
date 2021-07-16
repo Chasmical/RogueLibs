@@ -45,45 +45,57 @@ This method should work for most abilities, but if you need something more sophi
 
 ## Initialization {#initialization}
 
-Just call the following method in your plugin's `Awake()`:
+Just call the `CreateCustomAbility` method with your ability's type as a parameter:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomAbility.cs"
+public class MyCustomAbility : CustomAbility
 {
-    // highlight-next-line
-    RogueLibs.CreateCustomAbility<MyCustomAbility>();
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomAbility<MyCustomAbility>();
+    }
 }
 ```
 
-:::caution
-Make sure that you're calling `CreateCustomAbility` and not `CreateCustomItem` method. RogueLibs will throw an exception, if you call `CreateCustomItem` with a `CustomAbility` type.
+:::note
+See more about the `RLSetup` attribute [here](../patching-utilities#rlsetup).
 :::
 
 You can set your ability's name and description using `WithName` and `WithDescription` methods:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomAbility.cs"
+public class MyCustomAbility : CustomAbility
 {
-    RogueLibs.CreateCustomAbility<MyCustomAbility>()
-    // highlight-start
-        .WithName(new CustomNameInfo("My Custom Ability"))
-        .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"));
-    // highlight-end
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomAbility<MyCustomAbility>();
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Ability"))
+            .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
 }
 ```
 
 You can do the same with sprites and unlocks:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomAbility.cs"
+public class MyCustomAbility : CustomAbility
 {
-    RogueLibs.CreateCustomAbility<MyCustomAbility>()
-        .WithName(new CustomNameInfo("My Custom Ability"))
-        .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"))
-    // highlight-start
-        .WithSprite(Properties.Resources.MyCustomAbility)
-        .WithUnlock(new AbilityUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
-    // highlight-end
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomAbility<MyCustomAbility>();
+            .WithName(new CustomNameInfo("My Custom Ability"))
+            .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"));
+            // highlight-start
+            .WithSprite(Properties.Resources.MyCustomAbility)
+            .WithUnlock(new AbilityUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
+            // highlight-end
+    }
 }
 ```
 

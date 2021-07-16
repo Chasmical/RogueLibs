@@ -42,7 +42,6 @@ module.exports = {
           ],
           'Custom Unlocks': [
             'unlocks/custom-unlocks',
-            'unlocks/custom-mutators',
             'unlocks/overriding-behavior',
           ],
           'Custom Names': [

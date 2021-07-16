@@ -70,26 +70,38 @@ public class MyCustomEffect : CustomEffect
 
 ## Initialization {#initialization}
 
-Just call the following method in your plugin's `Awake()`:
+Just call the `CreateCustomEffect` method with your effect's type as a parameter:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomEffect.cs"
+public class MyCustomEffect : CustomEffect
 {
-    // highlight-next-line
-    RogueLibs.CreateCustomEffect<MyCustomEffect>();
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomEffect<MyCustomEffect>();
+    }
 }
 ```
 
+:::note
+See more about the `RLSetup` attribute [here](../patching-utilities#rlsetup).
+:::
+
 You can set your effect's name and description using `WithName` and `WithDescription` methods:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomEffect.cs"
+public class MyCustomEffect : CustomEffect
 {
-    RogueLibs.CreateCustomEffect<MyCustomEffect>();
-        // highlight-start
-        .WithName(new CustomNameInfo("My Custom Effect"))
-        .WithDescription(new CustomNameInfo("My Custom Effect is very cool and does a lot of great stuff"));
-        // highlight-end
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomEffect<MyCustomEffect>();
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Effect"))
+            .WithDescription(new CustomNameInfo("My Custom Effect is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
 }
 ```
 

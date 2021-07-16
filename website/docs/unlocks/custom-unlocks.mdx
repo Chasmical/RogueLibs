@@ -1,8 +1,77 @@
-# Custom Unlocks*
+# Custom Unlocks
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-:::info Work-In-Progress
+## `UnlockWrapper` class {#unlockwrapper}
+
+All of the unlocks in the game are wrapped in a more flexible class - `UnlockWrapper`.
+
+`UnlockWrapper` provides methods to get the unlock's name, description, image and other stuff.
+
+:::caution
+You probably shouldn't implement `UnlockWrapper` directly. Use the classes described later on the page.
+:::
+
+## `DisplayedUnlock` class {#displayedunlock}
+
+`DisplayedUnlock` derives from the `UnlockWrapper` class. It provides methods to display the unlock in the in-game menus.
+
+:::caution
+You shouldn't implement `DisplayedUnlock` directly either. Use the classes described later on the page.
+:::
+
+## Unlock classes {#unlock-classes}
+
+RogueLibs provides the following classes that you can derive from:
+
+- `ItemUnlock` - for items;
+- `AbilityUnlock` - for abilities;
+- `TraitUnlock` - for traits;
+- `MutatorUnlock` - for mutators;
+- `AgentUnlock` - for agents;
+- `BigQuestUnlock` - for agent Big Quests;
+- `ExtraUnlock` - for achievements and other stuff;
+- `FloorUnlock` - for floor unlocks;
+
+:::note
+There's also a couple of classes that are in RogueLibs only for compatibility reasons.
+:::
+
+## Initialization {#initialization}
+
+You can initialize your unlocks like this:
+
+```csharp title="MyCustomItem.cs"
+public class MyCustomItem : CustomItem
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomItem<MyCustomItem>();
+            .WithName(new CustomNameInfo("My Custom Item"))
+            .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"));
+            .WithSprite(Properties.Resources.MyCustomItem)
+            // highlight-next-line
+            .WithUnlock(new ItemUnlock
+            {
+                UnlockCost = 10,
+                CharacterCreationCost = 5,
+                LoadoutCost = 4,
+            });
+    }
+}
+```
+
+Or you can just initialize them directly (in case of mutators):
+
+```csharp
+RogueLibs.CreateCustomUnlock(new MutatorUnlock("MyMutator"),
+    new CustomNameInfo("Mutator Name"),
+    new CustomNameInfo("Mutator Description"));
+```
+
+:::danger
+This API is subject to change. It will be replaced with a `MutatorBuilder` or something like that.
 :::

@@ -53,41 +53,57 @@ Use static types with string consts, like `RogueCategories` and `ItemTypes`. Thi
 
 ## Initialization {#initialization}
 
-Just call the following method in your plugin's `Awake()`:
+Just call the `CreateCustomItem` method with your item's type as a parameter:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomItem.cs"
+public class MyCustomItem : CustomItem
 {
-    // highlight-next-line
-    RogueLibs.CreateCustomItem<MyCustomItem>();
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomItem<MyCustomItem>();
+    }
 }
 ```
 
+:::note
+See more about the `RLSetup` attribute [here](../patching-utilities#rlsetup).
+:::
+
 You can set your item's name and description using `WithName` and `WithDescription` methods:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomItem.cs"
+public class MyCustomItem : CustomItem
 {
-    RogueLibs.CreateCustomItem<MyCustomItem>()
-    // highlight-start
-        .WithName(new CustomNameInfo("My Custom Item"))
-        .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"));
-    // highlight-end
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomItem<MyCustomItem>();
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Item"))
+            .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
 }
 ```
 
 You can do the same with sprites and unlocks:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomItem.cs"
+public class MyCustomItem : CustomItem
 {
-    RogueLibs.CreateCustomItem<MyCustomItem>()
-        .WithName(new CustomNameInfo("My Custom Item"))
-        .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"))
-    // highlight-start
-        .WithSprite(Properties.Resources.MyCustomItem)
-        .WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
-    // highlight-end
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomItem<MyCustomItem>();
+            .WithName(new CustomNameInfo("My Custom Item"))
+            .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"));
+            // highlight-start
+            .WithSprite(Properties.Resources.MyCustomItem)
+            .WithUnlock(new ItemUnlock { UnlockCost = 10, CharacterCreationCost = 5, LoadoutCost = 4, });
+            // highlight-end
+    }
 }
 ```
 

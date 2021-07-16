@@ -54,42 +54,58 @@ public class MyCustomTrait : CustomTrait, ITraitUpdateable
 
 ## Initialization {#initialization}
 
-Just call the following method in your plugin's `Awake()`:
+Just call the `CreateCustomTrait` method with your trait's type as a parameter:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
 {
-    // highlight-next-line
-    RogueLibs.CreateCustomTrait<MyCustomTrait>();
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomTrait<MyCustomTrait>();
+    }
 }
 ```
 
+:::note
+See more about the `RLSetup` attribute [here](../patching-utilities#rlsetup).
+:::
+
 You can set your trait's name and description using `WithName` and `WithDescription` methods:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
 {
-    RogueLibs.CreateCustomTrait<MyCustomTrait>();
-        // highlight-start
-        .WithName(new CustomNameInfo("My Custom Trait"))
-        .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"));
-        // highlight-end
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomTrait<MyCustomTrait>();
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Trait"))
+            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
 }
 ```
 
 You can do the same with sprites and unlocks:
 
-```csharp title="MyCoolPlugin.cs"
-public void Awake()
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
 {
-    RogueLibs.CreateCustomTrait<MyCustomTrait>();
-        .WithName(new CustomNameInfo("My Custom Trait"))
-        .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"))
-        // highlight-start
-        // the sprite will be displayed only in the menus (optional)
-        .WithSprite(Properties.Resources.MyCustomTrait)
-        .WithUnlock(new TraitUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
-        // highlight-end
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomTrait<MyCustomTrait>();
+            .WithName(new CustomNameInfo("My Custom Trait"))
+            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"));
+            // highlight-start
+            // the sprite will be displayed only in the menus (optional)
+            .WithSprite(Properties.Resources.MyCustomTrait)
+            .WithUnlock(new TraitUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
+            // highlight-end
+    }
 }
 ```
 
