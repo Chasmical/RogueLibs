@@ -32,6 +32,7 @@
 			Item.stackable = true;
 			Item.goesInToolbar = true;
 		}
+		[IgnoreChecks("FullHealth")]
 		public bool UseItem()
 		{
 			if (Owner.electronic)
