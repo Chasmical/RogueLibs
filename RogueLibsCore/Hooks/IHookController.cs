@@ -89,6 +89,7 @@ namespace RogueLibsCore
 		{
 			if (hook is null) throw new ArgumentNullException(nameof(hook));
 			hook.Instance = Instance;
+			hook.Initialize();
 			hooks.Add(hook);
 		}
 		/// <summary>
@@ -101,6 +102,7 @@ namespace RogueLibsCore
 		{
 			THook hook = new THook { Instance = Instance };
 			hooks.Add(hook);
+			hook.Initialize();
 			return hook;
 		}
 		void IHookController.AddHook(IHook hook)

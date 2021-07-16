@@ -50,7 +50,6 @@ namespace RogueLibsCore
 			Effect.dontRemoveOnDeath = !EffectInfo.RemoveOnDeath;
 			Effect.removeOnKnockout = EffectInfo.RemoveOnKnockOut;
 			Effect.keepBetweenLevels = !EffectInfo.RemoveOnNextLevel;
-			OnAdded();
 		}
 
 		/// <summary>

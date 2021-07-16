@@ -37,7 +37,7 @@ namespace RogueLibsCore
 				throw new ArgumentException($"The specified type is not a {nameof(CustomTrait)}!", nameof(type));
 
 			TraitNameAttribute nameAttr = type.GetCustomAttributes<TraitNameAttribute>().FirstOrDefault();
-			Name = nameAttr?.Name ?? type.Name;
+			Name = nameAttr?.Name ?? type.FullName;
 		}
 	}
 	/// <summary>

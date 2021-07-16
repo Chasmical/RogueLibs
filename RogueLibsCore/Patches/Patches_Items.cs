@@ -60,7 +60,6 @@ namespace RogueLibsCore
 						else RogueFramework.LogDebug($"Initializing item hook {hook} for \"{__instance.invItemName}\".");
 					}
 					__instance.AddHook(hook);
-					hook.Initialize();
 				}
 		}
 

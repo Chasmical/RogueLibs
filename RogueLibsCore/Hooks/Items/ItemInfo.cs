@@ -51,7 +51,7 @@ namespace RogueLibsCore
 				throw new ArgumentException($"{nameof(type)} does not inherit from {nameof(CustomItem)}!", nameof(type));
 
 			ItemNameAttribute nameAttr = type.GetCustomAttributes<ItemNameAttribute>().FirstOrDefault();
-			Name = nameAttr?.Name ?? type.Name;
+			Name = nameAttr?.Name ?? type.FullName;
 
 			string[] categories = type.GetCustomAttributes<ItemCategoriesAttribute>().SelectMany(c => c.Categories).Distinct().ToArray();
 			Categories = new ReadOnlyCollection<string>(categories);

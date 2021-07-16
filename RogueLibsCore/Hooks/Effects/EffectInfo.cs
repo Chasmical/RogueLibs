@@ -53,7 +53,7 @@ namespace RogueLibsCore
 				throw new ArgumentException($"The specified {nameof(type)} is not a {nameof(CustomEffect)}.", nameof(type));
 
 			EffectNameAttribute attr = type.GetCustomAttributes<EffectNameAttribute>().FirstOrDefault();
-			Name = attr?.Name ?? type.Name;
+			Name = attr?.Name ?? type.FullName;
 
 			EffectParametersAttribute parsAttr = type.GetCustomAttributes<EffectParametersAttribute>().FirstOrDefault();
 			if (parsAttr is null)

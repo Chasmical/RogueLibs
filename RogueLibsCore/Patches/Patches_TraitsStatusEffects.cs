@@ -91,7 +91,9 @@ namespace RogueLibsCore
 						else RogueFramework.LogDebug($"Initializing effect hook {hook} ({effect.statusEffectName}, {parent.agent.agentName}).");
 					}
 					effect.AddHook(hook);
-					hook.Initialize();
+					// CustomEffect does not call OnAdded when initialized,
+					// because of the GetStatusEffectTime/Hate patches
+					if (hook is CustomEffect custom) custom.OnAdded();
 				}
 		}
 		public static void RefreshEffect(StatusEffect effect, int newTime)
@@ -134,7 +136,6 @@ namespace RogueLibsCore
 						else RogueFramework.LogDebug($"Initializing trait hook {hook} ({trait.traitName}, {parent.agent.agentName}).");
 					}
 					trait.AddHook(hook);
-					hook.Initialize();
 					if (hook is CustomTrait && hook is ITraitUpdateable)
 						updateable = true;
 				}
