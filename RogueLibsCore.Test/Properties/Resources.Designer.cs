@@ -73,6 +73,16 @@ namespace RogueLibsCore.Test.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] AmmoBox {
+            get {
+                object obj = ResourceManager.GetObject("AmmoBox", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Hug {
             get {
                 object obj = ResourceManager.GetObject("Hug", resourceCulture);
@@ -93,9 +103,69 @@ namespace RogueLibsCore.Test.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] QuantumFud {
+            get {
+                object obj = ResourceManager.GetObject("QuantumFud", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SpiceRack {
+            get {
+                object obj = ResourceManager.GetObject("SpiceRack", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] SPYTRON3000 {
+            get {
+                object obj = ResourceManager.GetObject("SPYTRON3000", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] Titan {
             get {
                 object obj = ResourceManager.GetObject("Titan", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] Toolkit {
+            get {
+                object obj = ResourceManager.GetObject("Toolkit", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] UsableTeleporter {
+            get {
+                object obj = ResourceManager.GetObject("UsableTeleporter", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] WildBypasser {
+            get {
+                object obj = ResourceManager.GetObject("WildBypasser", resourceCulture);
                 return ((byte[])(obj));
             }
         }
