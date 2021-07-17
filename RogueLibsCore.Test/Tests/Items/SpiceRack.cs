@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace RogueLibsCore.Test
 {
@@ -22,7 +17,7 @@ namespace RogueLibsCore.Test
 					UnlockCost = 10,
 					CharacterCreationCost = 3,
 					LoadoutCost = 3,
-					Prerequisites = { "FoodProcessor", "QuantumFud" },
+					Prerequisites = { "FoodProcessor", nameof(QuantumFud) },
 				});
 
 			SeasonCursorText = RogueLibs.CreateCustomName("Season", "Interface", new CustomNameInfo("Season"));
@@ -63,7 +58,7 @@ namespace RogueLibsCore.Test
 			if (!CombineFilter(other)) return default;
 
 			SpicedHook hook = other.GetHook<SpicedHook>();
-			int bonus = hook is null ? (int)Mathf.Ceil(Instance.healthChange / 4f) : hook.HealthBonus;
+			int bonus = hook is null ? (int)Mathf.Ceil(other.healthChange / 4f) : hook.HealthBonus;
 			return new CustomTooltip($"+{bonus}", Color.green);
 		}
 
