@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 
 namespace RogueLibsCore.Test
@@ -15,8 +13,8 @@ namespace RogueLibsCore.Test
 				.WithDescription(new CustomNameInfo("You smell really bad for some reason"))
 				.WithUnlock(new TraitUnlock { CharacterCreationCost = -5 });
 
-			RogueLibs.CreateCustomName("StinkReaction1", "Dialogue", new CustomNameInfo("Ew! You stink!"));
-			RogueLibs.CreateCustomName("StinkReaction2", "Dialogue", new CustomNameInfo("Ew! You smell really bad!"));
+			RogueLibs.CreateCustomName("StinkReaction1", "Dialogue", new CustomNameInfo("Ew!"));
+			RogueLibs.CreateCustomName("StinkReaction2", "Dialogue", new CustomNameInfo("Ew! You stink!"));
 			RogueLibs.CreateCustomName("StinkReaction3", "Dialogue", new CustomNameInfo("ARGHH! Get away from me!"));
 		}
 
@@ -26,19 +24,15 @@ namespace RogueLibsCore.Test
 		private const float stinkRange = 1f;
 		public void OnUpdated(TraitUpdatedArgs e)
 		{
-			e.UpdateDelay = 1f;
+			e.UpdateDelay = 2f;
 			foreach (Agent agent in gc.agentList.Where(a => Vector2.Distance(a.curPosition, Owner.curPosition) <= stinkRange))
 			{
+				if (agent == Owner) continue;
 				agent.relationships.AddStrikes(Owner, 1);
 				agent.SayDialogue($"StinkReaction{new System.Random().Next(3) + 1}");
-				gc.spawnerMain.SpawnDanger(agent, "Targeted", "AnnoyedAgent", Owner);
+				try { gc.spawnerMain.SpawnDanger(Owner, "Targeted", "AnnoyedAgent", agent); }
+				catch { }
 			}
-		}
-
-		public class Smeller
-		{
-			public Agent Agent;
-			public int Duration;
 		}
 	}
 }
