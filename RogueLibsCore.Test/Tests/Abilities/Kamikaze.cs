@@ -7,11 +7,13 @@ namespace RogueLibsCore.Test
 		[RLSetup]
 		public static void Setup()
 		{
+			/*
 			RogueLibs.CreateCustomAbility<Kamikaze>()
 				.WithName(new CustomNameInfo("Kamikaze"))
 				.WithDescription(new CustomNameInfo("Charge up and explode everything around you."))
 				.WithSprite(Properties.Resources.Kamikaze)
 				.WithUnlock(new AbilityUnlock { UnlockCost = 20, CharacterCreationCost = 20 });
+			*/
 		}
 
 		public float Charge { get; private set; }

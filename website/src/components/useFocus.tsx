@@ -1,19 +1,18 @@
 import React, { useState, useEffect, useRef } from "react";
-import ReactDOM from "react-dom";
 
-export default function (initialIsVisible) {
-  const [isComponentVisible, setIsComponentVisible] = useState(initialIsVisible);
-  const ref = useRef(null);
+export default function (initialFocused : boolean) : [React.MutableRefObject<any>, boolean, React.Dispatch<React.SetStateAction<boolean>>] {
+  const [focused, setFocused] = useState(initialFocused);
+  const ref = useRef(null as any);
 
-  const handleHideDropdown = event => {
+  const handleHideDropdown = (event : KeyboardEvent) => {
     if (event.key === "Escape") {
-      setIsComponentVisible(false);
+      setFocused(false);
     }
   };
 
-  const handleClickOutside = event => {
+  const handleClickOutside = (event : MouseEvent) => {
     if (ref.current && !ref.current.contains(event.target)) {
-      setIsComponentVisible(false);
+      setFocused(false);
     }
   };
 
@@ -26,5 +25,5 @@ export default function (initialIsVisible) {
     };
   });
 
-  return [ ref, isComponentVisible, setIsComponentVisible ];
+  return [ref, focused, setFocused];
 }

@@ -352,6 +352,28 @@ Field name                | Description
 The code generator is still work-in-progress, but as you can see, it's going to be really amazing. Pixel- and tone-perfect previews. Everything's organized, and stuff.
 :::
 
-import SetupDetailsGenerator from '@site/src/components/SetupDetailsGenerator';
+import { useState } from 'react';
+import { Dropdown, DropdownHeader, DropdownOption, DropdownDivider } from '@site/src/components/Dropdown';
 
-<SetupDetailsGenerator/>
+export function Test({...props}) {
+  const [item, setItem] = useState("Food");
+  return (
+    <Dropdown onChange={e => setItem(e.values[0])}>
+      <DropdownHeader>{`Item Type: ${item}`}</DropdownHeader>
+      {"Regular:"}
+      <DropdownOption value="Food"/>
+      <DropdownOption value="Consumable"/>
+      <DropdownOption value="Tool"/>
+      <DropdownOption value="Combine" label="Combinable"/>
+      <DropdownDivider/>
+      {"Weapons:"}
+      <DropdownOption value="WeaponMelee" label="Melee Weapon"/>
+      <DropdownOption value="WeaponThrown" label="Thrown Weapon"/>
+      <DropdownOption value="WeaponProjectile" label="Projectile Weapon"/>
+      <DropdownDivider/>
+      <DropdownOption value="Wearable"/>
+    </Dropdown>
+  );
+};
+
+<Test/>

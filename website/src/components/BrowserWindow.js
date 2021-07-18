@@ -2,7 +2,7 @@ import React from 'react';
 
 import styles from './BrowserWindow.module.css';
 
-function BrowserWindow({children, minHeight, url}) {
+export default function ({children, minHeight, url}) {
   return (
     <div>
       <div className={styles.browserWindow} style={{minHeight}}>
@@ -26,6 +26,4 @@ function BrowserWindow({children, minHeight, url}) {
       <br/>
     </div>
   );
-}
-
-export default BrowserWindow;
+};

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "esnext",
+    "jsx": "preserve",
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "strict": true,
+    "plugins": [
+      { "name": "typescript-plugin-css-modules" }
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*"
+  ],
+}
