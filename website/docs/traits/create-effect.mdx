@@ -6,7 +6,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## `CustomEffect` class {#customeffect}
 
-To make a custom trait, you need to create a class deriving from `CustomTrait`:
+To make a custom effect, you need to create a class deriving from `CustomEffect`:
 
 ```csharp title="MyCustomEffect.cs"
 // highlight-next-line
@@ -96,7 +96,7 @@ public class MyCustomEffect : CustomEffect
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomEffect<MyCustomEffect>();
+        RogueLibs.CreateCustomEffect<MyCustomEffect>()
             // highlight-start
             .WithName(new CustomNameInfo("My Custom Effect"))
             .WithDescription(new CustomNameInfo("My Custom Effect is very cool and does a lot of great stuff"));
