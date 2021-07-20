@@ -81,14 +81,25 @@ RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceN
 
 ## Sprite variations {#sprite-variations}
 
-If you have more than 1 sprite for your item, then use `InvItem.LoadItemSprite` in your item's `SetupDetails`:
+If you have more than 1 sprite for your item, use `InvItem.LoadItemSprite` in your item's `SetupDetails`:
 
 ```csharp
 public class Present : CustomItem, IItemUsable
 {
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomItem<Present>()
+            /* ... */
+            .WithSprite(Properties.Resources.Present);
+
+        RogueLibs.CreateCustomSprite("Present2", SpriteScope.Items, Properties.Resources.Present2);
+        RogueLibs.CreateCustomSprite("Present3", SpriteScope.Items, Properties.Resources.Present3);
+    }
+
     public override void SetupDetails()
 	{
-        ...
+        /* ... */
 		int rnd = new Random().Next(3) + 1;
         // random integer x, such that 1 ≤ x ≤ 3
 
@@ -98,15 +109,6 @@ public class Present : CustomItem, IItemUsable
         // if it's 1, then the default "Present" will be used
 	}
 }
-```
-
-```csharp
-RogueLibs.CreateCustomItem<Present>()
-    ...
-    .WithSprite(Properties.Resources.Present);
-
-RogueLibs.CreateCustomSprite("Present2", SpriteScope.Items, Properties.Resources.Present2);
-RogueLibs.CreateCustomSprite("Present3", SpriteScope.Items, Properties.Resources.Present3);
 ```
 
 This example works only if an item actually exists. In the Loadout and Rewards menus it will always have the `Present` sprite. If you want the sprite in the menus to be randomly selected too, you'll have to [override the `DisplayedUnlock.GetImage` method](./unlocks/overriding-behavior#examples).

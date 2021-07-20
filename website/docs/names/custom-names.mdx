@@ -113,12 +113,18 @@ Owner.SayDialogue("CryForHelp");
 ```csharp
 public class Recycler : CustomItem, IItemCombinable
 {
-    private static CustomName recycleTooltip = RogueLibs.CreateCustomName("Recycle", "Interface", new CustomNameInfo
+    [RLSetup]
+    public static void Setup()
     {
-        English = "Recycle",
-        Russian = "Переработать",
-    });
-    ...
+        recycleTooltip = RogueLibs.CreateCustomName("Recycle", "Interface", new CustomNameInfo
+        {
+            English = "Recycle",
+            Russian = "Переработать",
+        });
+    }
+    private static CustomName recycleTooltip;
+
+    /* ... */
     public CustomTooltip CombineTooltip(InvItem _) => recycleTooltip;
 }
 ```
