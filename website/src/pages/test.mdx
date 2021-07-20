@@ -3,28 +3,38 @@
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import InventorySlot from '@site/src/components/InventorySlot';
 import InventoryRow from '@site/src/components/InventoryRow';
-import InventoryToolbar from '@site/src/components/InventoryToolbar';
+import Inventory from '@site/src/components/Inventory';
 
 <InventorySlot count="4" sprite={useBaseUrl("/img/TestItem.png")}/>
 
-<br/>
+<br/><br/>
 
-<InventoryRow items={[
-  {sprite: useBaseUrl("/img/TestItem.png"), count: '4'},
-  {sprite: useBaseUrl("/img/TestItem.png"), count: '2'},
-]}>
-<InventorySlot count="3"/>
-<InventorySlot count="9"/>
-<InventorySlot count="-2" sprite={useBaseUrl("/img/TestItem.png")}/>
+<InventoryRow>
+  <InventorySlot count="4" sprite={useBaseUrl("/img/TestItem.png")}/>
+  <InventorySlot count="18" sprite={useBaseUrl("/img/TestItem.png")}/>
+  <InventorySlot count="9"/>
+  <InventorySlot count="-2" sprite={useBaseUrl("/img/TestItem.png")}/>
+  <InventorySlot count="7"/>
 </InventoryRow>
 
 <br/><br/>
 
-<InventoryToolbar items={[
-  {sprite: useBaseUrl("/img/TestItem.png"), count: '4'},
-  {sprite: useBaseUrl("/img/TestItem.png"), count: '2'},
-]}>
-<InventorySlot count="3"/>
-<InventorySlot count="9"/>
-<InventorySlot count="-2" sprite={useBaseUrl("/img/TestItem.png")}/>
-</InventoryToolbar>
+<Inventory>
+  <InventoryRow>
+    <InventorySlot count="4" sprite={useBaseUrl("/img/TestItem.png")}/>
+    <InventorySlot count="18" sprite={useBaseUrl("/img/TestItem.png")}/>
+    <InventorySlot count="9"/>
+    <InventorySlot count="-2" sprite={useBaseUrl("/img/TestItem.png")}/>
+    <InventorySlot count="7"/>
+    <InventorySlot count="7"/>
+  </InventoryRow>
+  <InventorySlot count="2" sprite={useBaseUrl("/img/TestItem.png")}/>
+  <InventoryRow>
+    <InventorySlot count="18" sprite={useBaseUrl("/img/TestItem.png")}/>
+    <InventorySlot count="9"/>
+    <InventorySlot count="7"/>
+    <InventorySlot count="4" sprite={useBaseUrl("/img/TestItem.png")}/>
+    <InventorySlot count="-2" sprite={useBaseUrl("/img/TestItem.png")}/>
+  </InventoryRow>
+  <InventorySlot count="3" sprite={useBaseUrl("/img/TestItem.png")}/>
+</Inventory>

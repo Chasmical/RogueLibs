@@ -1,4 +1,5 @@
 .container {
+  display: inline-block;
   position: relative;
   width: 80px;
   height: 80px;
@@ -28,7 +29,6 @@
   left: 4px;
   top: -6px;
   font-family: 'Munro';
-  color: #FFED00;
   font-size: 30px;
   text-shadow: 3px 3px black;
   user-select: none;
@@ -39,7 +39,6 @@
   right: 4px;
   bottom: -6px;
   font-family: 'Munro';
-  color: white;
   font-size: 30px;
   text-shadow: 3px 3px black;
   user-select: none;

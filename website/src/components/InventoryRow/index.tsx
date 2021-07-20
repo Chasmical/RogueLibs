@@ -1,29 +1,39 @@
-import React, { useState } from 'react';
+import React from "react";
+import InventorySlot, { Props as SlotProps } from "../InventorySlot";
 import styles from './index.module.css';
-import InventorySlot, { Props as SlotProps } from '../InventorySlot';
 
 export type Props = {
-  items?: SlotProps[],
-  children: React.ReactNode,
-  minCount?: number,
+  children?: React.ReactNode,
+  width?: number,
 }
 
-export default function({items, children, minCount}: Props): JSX.Element {
+export function getSlots(children: React.ReactNode, width?: number): SlotProps[] {
+  let items: SlotProps[] = [];
 
-  items = items || [];
-  let Children = React.Children.toArray(children);
-  for (let c of Children) {
-    let type: string | undefined = (c as any)?.props?.mdxType;
-    if (type == "InventorySlot") items.push({...(c as any).props});
+  for (let child of React.Children.toArray(children)) {
+    let c = child as any;
+    let type = c?.props?.mdxType;
+    if (type === "InventorySlot")
+      items.push(c.props);
   }
 
-  minCount = minCount || 5;
-  for (let i = items.length; i < minCount; i++)
-    items.push({});
-  for (let i = 0; i < items.length; i++) {
-    items[i].tooltip = `${i + 1}`;
-    items[i].tooltipColor = undefined;
+  if (width !== undefined) {
+    if (items.length < width) {
+      for (let i = items.length; i < width; i++)
+        items.push({});
+    }
+    else if (items.length > width) {
+      items.splice(items.length - 1, items.length - width);
+    }
   }
+
+  return items;
+}
+
+export default function ({children, width}: Props): JSX.Element {
+
+  width = width || 5;
+  let items = getSlots(children, width);
 
   return (
     <div className={styles.row}>
