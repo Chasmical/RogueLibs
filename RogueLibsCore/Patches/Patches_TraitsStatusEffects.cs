@@ -245,7 +245,8 @@ namespace RogueLibsCore
 								UpdateDelay = countSpeed,
 								ShowTextOnRemoval = showTextOnRemoval
 							};
-							customEffect.OnUpdated(args);
+							try { customEffect.OnUpdated(args); }
+							catch (Exception e) { RogueFramework.LogError(e, nameof(CustomEffect.OnUpdated), customEffect, __instance.agent); }
 							countSpeed = args.UpdateDelay;
 							showTextOnRemoval = args.ShowTextOnRemoval;
 						}
@@ -287,9 +288,10 @@ namespace RogueLibsCore
 					{
 						if (GameController.gameController.loadComplete && !GameController.gameController.mainGUI.questNotification.gameIsOver && !__instance.agent.disappearedArcade)
 						{
-							TraitUpdatedArgs e = new TraitUpdatedArgs { UpdateDelay = countSpeed };
-							((ITraitUpdateable)customTrait).OnUpdated(e);
-							countSpeed = e.UpdateDelay;
+							TraitUpdatedArgs args = new TraitUpdatedArgs { UpdateDelay = countSpeed };
+							try { ((ITraitUpdateable)customTrait).OnUpdated(args); }
+							catch (Exception e) { RogueFramework.LogError(e, nameof(ITraitUpdateable.OnUpdated), customTrait, __instance.agent); }
+							countSpeed = args.UpdateDelay;
 						}
 						yield return countSpeed > 0 ? new WaitForSeconds(countSpeed) : null;
 					}
