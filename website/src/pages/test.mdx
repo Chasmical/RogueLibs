@@ -1,0 +1,30 @@
+# Test page
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import InventorySlot from '@site/src/components/InventorySlot';
+import InventoryRow from '@site/src/components/InventoryRow';
+import InventoryToolbar from '@site/src/components/InventoryToolbar';
+
+<InventorySlot count="4" sprite={useBaseUrl("/img/TestItem.png")}/>
+
+<br/>
+
+<InventoryRow items={[
+  {sprite: useBaseUrl("/img/TestItem.png"), count: '4'},
+  {sprite: useBaseUrl("/img/TestItem.png"), count: '2'},
+]}>
+<InventorySlot count="3"/>
+<InventorySlot count="9"/>
+<InventorySlot count="-2" sprite={useBaseUrl("/img/TestItem.png")}/>
+</InventoryRow>
+
+<br/><br/>
+
+<InventoryToolbar items={[
+  {sprite: useBaseUrl("/img/TestItem.png"), count: '4'},
+  {sprite: useBaseUrl("/img/TestItem.png"), count: '2'},
+]}>
+<InventorySlot count="3"/>
+<InventorySlot count="9"/>
+<InventorySlot count="-2" sprite={useBaseUrl("/img/TestItem.png")}/>
+</InventoryToolbar>

@@ -3,15 +3,15 @@ import clsx from 'clsx';
 import styles from './index.module.css';
 import useFocus from '../useFocus';
 
-type DropdownProps = {
+export type DropdownProps = {
   defaultValues?: string[],
   minChoices?: number,
   maxChoices?: number,
   lockChoices?: boolean,
-  children?: React.ReactNode,
+  children: React.ReactNode,
   onChange?: (e: ChangeEventData) => void,
 }
-type ChangeEventData = {
+export type ChangeEventData = {
   changeType: "added" | "removed",
   changedValue: string,
   changedLabel: string,
@@ -19,21 +19,21 @@ type ChangeEventData = {
   labels: string[],
 }
 
-export function Dropdown({defaultValues, minChoices, maxChoices, lockChoices, children, onChange} : DropdownProps) : JSX.Element {
+export function Dropdown({defaultValues, minChoices, maxChoices, lockChoices, children, onChange}: DropdownProps): JSX.Element {
 
   let MinChoices = minChoices != undefined ? minChoices : 1;
   let MaxChoices = maxChoices != undefined ? maxChoices : MinChoices;
   if (MinChoices == MaxChoices && lockChoices) throw Error("Cannot lock choices with the minimum amount equal to the maximum!");
 
   let Children = React.Children.toArray(children);
-  let header = Children.find((c : any) => c?.props?.mdxType == "DropdownHeader");
-  let options = Children.filter((c : any) => c?.props?.mdxType == "DropdownOption");
+  let header = Children.find((c: any) => c?.props?.mdxType == "DropdownHeader");
+  let options = Children.filter((c: any) => c?.props?.mdxType == "DropdownOption");
 
   const [indexes, setIndexes] = useState(() => {
     if (MinChoices > options.length) throw Error("There are less options than the minimum!");
     if (!defaultValues)
     {
-      let newIndexes : number[] = [];
+      let newIndexes: number[] = [];
       for (let i = 0; i < MinChoices; i++)
         newIndexes.push(i);
       return newIndexes;
@@ -78,7 +78,7 @@ export function Dropdown({defaultValues, minChoices, maxChoices, lockChoices, ch
       values: newIndexes.map(i => (options[i] as any).props).map(p => p.value),
       labels: newIndexes.map(i => (options[i] as any).props).map(p => p.label || p.value),
     });
-  };
+  }
 
   const [ref, focused, setFocused] = useFocus(false);
 
@@ -93,7 +93,7 @@ export function Dropdown({defaultValues, minChoices, maxChoices, lockChoices, ch
           <div className={styles.contents}>
           {React.Children.map(children, (c, key) => {
             if (c === null || c === undefined || c === true || c === false) return null;
-            let type : string = (c as any)?.props?.mdxType;
+            let type: string = (c as any)?.props?.mdxType;
             if (type == "DropdownHeader") return null;
 
             if (type == "DropdownOption") {
@@ -129,9 +129,9 @@ export function Dropdown({defaultValues, minChoices, maxChoices, lockChoices, ch
       </div>
     </div>
   );
-};
+}
 
-type HeaderProps = {
+export type HeaderProps = {
   children: React.ReactNode,
 }
 
@@ -141,12 +141,12 @@ export function DropdownHeader({children} : HeaderProps) : JSX.Element {
       {children}
     </>
   );
-};
+}
 
-type OptionProps = {
+export type OptionProps = {
   value: string,
   label?: string,
-  children?: React.ReactNode,
+  children: React.ReactNode,
 }
 
 export function DropdownOption({value, label, children} : OptionProps) : JSX.Element {
@@ -155,7 +155,7 @@ export function DropdownOption({value, label, children} : OptionProps) : JSX.Ele
       {children || label || value}
     </>
   );
-};
+}
 
 export function DropdownDivider() : JSX.Element {
   return <div style={{width:'100%'}}/>

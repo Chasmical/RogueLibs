@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
-import styles from './InventorySlot.module.css';
+import styles from './index.module.css';
 
-export default function ({sprite, tooltip, tooltipColor, count, countColor, ...props}) {
+export type Props = {
+  sprite?: string,
+  tooltip?: string,
+  tooltipColor?: string,
+  count?: string,
+  countColor?: string,
+}
+
+export default function ({sprite, tooltip, tooltipColor, count, countColor}: Props): JSX.Element {
   return (
     <div className={styles.container}>
-      <img key="slot" className={styles.slot} src={useBaseUrl("/img/SetupDetailsGenerator/ToolbarSlot.png")}/>
+      <img key="slot" className={styles.slot} src={useBaseUrl("/img/components/InventorySlot/Normal.png")}/>
 
-      {sprite == null ? [] :
+      {sprite &&
         <img key="sprite" className={styles.sprite} src={sprite}/>
       }
 
-      {tooltip == null ? [] :
+      {tooltip &&
         <span key="tooltip" className={styles.tooltip}>
           <span style={{color: tooltipColor || "#FFED00"}}>
             {tooltip}
@@ -19,14 +27,13 @@ export default function ({sprite, tooltip, tooltipColor, count, countColor, ...p
         </span>
       }
 
-      {count == null ? [] :
+      {count &&
         <span key="count" className={styles.count}>
           <span style={{color: countColor || "#FFFFFF"}}>
             {count}
           </span>
         </span>
       }
-
     </div>
   );
-};
+}

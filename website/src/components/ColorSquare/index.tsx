@@ -1,13 +1,18 @@
 import React, { useState } from 'react';
 
-export default function ({color, size, ...props}) {
-  size = (size || 14) + 'px';
+export type Props = {
+  color: string,
+  size?: number,
+}
+
+export default function ({color, size}: Props): JSX.Element {
+  let Size: string = (size || 14) + 'px';
   return (
     <div style={{display:'inline'}}>
       <div style={{
         display: 'inline-block',
-        width: size,
-        height: size,
+        width: Size,
+        height: Size,
         background: color,
         marginRight: '2px',
       }}/>
@@ -16,4 +21,4 @@ export default function ({color, size, ...props}) {
       </div>
     </div>
   );
-};
+}

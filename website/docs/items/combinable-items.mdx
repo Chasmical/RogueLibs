@@ -45,11 +45,11 @@ Plus, your item's type must be `"Combine"`:
 
 Wanna see how your `CombineTooltip` will look in the game? Check out this small tool:
 
-import InventorySlot from '@site/src/components/SetupDetailsGenerator/InventorySlot';
+import InventorySlot from '@site/src/components/InventorySlot';
 import { useState } from 'react';
 
 export function PreviewTooltip ({props}) {
-  const [sprite, setSprite] = useState(useBaseUrl(`/img/SetupDetailsGenerator/TestItem.png`));
+  const [sprite, setSprite] = useState(useBaseUrl(`/img/TestItem.png`));
   const [tooltipColor, setTooltipColor] = useState("#FFED00");
   const spriteHandler = e => {
     if (e.target.files[0]) {

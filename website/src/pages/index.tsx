@@ -8,10 +8,10 @@ import HomepageFeatures from '../components/HomepageFeatures';
 import useThemeContext from '@theme/hooks/useThemeContext';
 import Logo from '@site/static/img/logo.png';
 import LogoDark from '@site/static/img/logo-inverted.png';
-import Translate, {translate} from '@docusaurus/Translate';
+import Translate, { translate } from '@docusaurus/Translate';
 
 function HomepageHeader() {
-  const {siteConfig} = useDocusaurusContext();
+  const { siteConfig } = useDocusaurusContext();
   const { isDarkTheme } = useThemeContext();
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
@@ -43,9 +43,9 @@ export default function Home() {
     <Layout
       title={`${siteConfig.title}`}
       description="RogueLibs Modding Library for Streets of Rogue">
-      <HomepageHeader />
+      <HomepageHeader/>
       <main>
-        <HomepageFeatures />
+        <HomepageFeatures/>
       </main>
     </Layout>
   );

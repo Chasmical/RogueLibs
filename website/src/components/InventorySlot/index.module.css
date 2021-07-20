@@ -1,0 +1,46 @@
+.container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  overflow: hidden;
+}
+
+.slot {
+  position: relative;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.sprite {
+  position: absolute;
+  margin: auto;
+  left: 8px;
+  top: 8px;
+  right: 8px;
+  bottom: 8px;
+  max-width: 64px;
+  max-height: 64px;
+  user-select: none;
+}
+
+.tooltip {
+  position: absolute;
+  left: 4px;
+  top: -6px;
+  font-family: 'Munro';
+  color: #FFED00;
+  font-size: 30px;
+  text-shadow: 3px 3px black;
+  user-select: none;
+}
+
+.count {
+  position: absolute;
+  right: 4px;
+  bottom: -6px;
+  font-family: 'Munro';
+  color: white;
+  font-size: 30px;
+  text-shadow: 3px 3px black;
+  user-select: none;
+}
