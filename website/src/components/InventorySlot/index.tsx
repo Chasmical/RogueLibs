@@ -18,7 +18,7 @@ export default function ({sprite, tooltip, tooltipColor, count, countColor, type
   type = type || "normal";
 
   return (
-    <div className={styles.container} onClick={onClick}>
+    <div className={styles.container} onClick={onClick} style={{cursor: interactable ? "pointer" : "inherit"}}>
       {interactable &&
         <img key="hoverslot" className={styles.hoverslot} src={useBaseUrl(`/img/components/InventorySlot/${type}Hover.png`)}/>
       }
