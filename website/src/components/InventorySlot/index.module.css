@@ -11,6 +11,19 @@
   user-select: none;
   -webkit-user-drag: none;
 }
+.hoverslot {
+  display: none;
+  position: relative;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.container:hover > .hoverslot {
+  display: inherit;
+}
+.container:hover > .hoverslot + .slot {
+  display: none;
+}
 
 .sprite {
   position: absolute;

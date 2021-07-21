@@ -12,6 +12,14 @@ module.exports = {
   i18n: {
     defaultLocale: 'en',
     locales: ['en', 'ru'],
+    localeConfigs: {
+      'en': {
+        label: 'English',
+      },
+      'ru': {
+        label: 'Русский',
+      },
+    },
   },
   // plugins: ['docusaurus-plugin-fontloader'],
   themeConfig: {
@@ -19,6 +27,11 @@ module.exports = {
     prism: {
       theme: require('prism-react-renderer/themes/dracula'),
       additionalLanguages: ['clike', 'csharp', 'bash'],
+    },
+    announcementBar: {
+      id: 'star',
+      content:
+        '<span style="font-size: 1rem;">⭐️ If you like RogueLibs, give it a star on <a target="_blank" href="https://github.com/Abbysssal/RogueLibs">GitHub</a>! ⭐️</span>',
     },
     navbar: {
       hideOnScroll: true,
@@ -48,7 +61,13 @@ module.exports = {
           type: 'localeDropdown',
           position: 'right',
         },
-	    ],
+        {
+          href: 'https://github.com/Abbysssal/RogueLibs',
+          position: 'right',
+          className: 'header-github-link',
+          'aria-label': 'GitHub repository',
+        },
+      ],
     },
     footer: {
       style: 'dark',
@@ -65,11 +84,11 @@ module.exports = {
         {
           title: 'Community',
           items: [
-		    {
-				label: 'Streets of Rogue Discord',
-				href: 'https://discord.com/invite/streetsofrogue',
-			}
-		  ],
+        {
+        label: 'Streets of Rogue Discord',
+        href: 'https://discord.com/invite/streetsofrogue',
+      }
+      ],
         },
         {
           title: 'More',

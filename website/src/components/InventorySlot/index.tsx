@@ -8,12 +8,21 @@ export type Props = {
   tooltipColor?: string,
   count?: string,
   countColor?: string,
+  type?: "normal" | "selected" | "locked" | null,
+  onClick?: () => void,
 }
 
-export default function ({sprite, tooltip, tooltipColor, count, countColor}: Props): JSX.Element {
+export default function ({sprite, tooltip, tooltipColor, count, countColor, type, onClick}: Props): JSX.Element {
+
+  let interactable = type !== undefined;
+  type = type || "normal";
+
   return (
-    <div className={styles.container}>
-      <img key="slot" className={styles.slot} src={useBaseUrl("/img/components/InventorySlot/Normal.png")}/>
+    <div className={styles.container} onClick={onClick}>
+      {interactable &&
+        <img key="hoverslot" className={styles.hoverslot} src={useBaseUrl(`/img/components/InventorySlot/${type}Hover.png`)}/>
+      }
+      <img key="slot" className={styles.slot} src={useBaseUrl(`/img/components/InventorySlot/${type}.png`)}/>
 
       {sprite &&
         <img key="sprite" className={styles.sprite} src={sprite}/>
