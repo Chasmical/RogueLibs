@@ -7,13 +7,11 @@ namespace RogueLibsCore.Test
 		[RLSetup]
 		public static void Setup()
 		{
-			/*
 			RogueLibs.CreateCustomAbility<Kamikaze>()
 				.WithName(new CustomNameInfo("Kamikaze"))
 				.WithDescription(new CustomNameInfo("Charge up and explode everything around you."))
 				.WithSprite(Properties.Resources.Kamikaze)
 				.WithUnlock(new AbilityUnlock { UnlockCost = 20, CharacterCreationCost = 20 });
-			*/
 		}
 
 		public float Charge { get; private set; }
@@ -24,23 +22,33 @@ namespace RogueLibsCore.Test
 		{
 			IsCharging = true;
 			gc.audioHandler.Play(Owner, "GeneratorHiss");
+			Owner.objectMult.chargingSpecialLunge = true;
 		}
 		public override CustomTooltip GetCountString()
 		{
 			if (Charge is 0) return default;
-			string text = $"{Charge:#.##}s";
+			string text = $"{Charge:#.#}s";
 			Color color = Color.Lerp(Color.white, Color.red, Charge / 10f);
-			if (Charge > 10f) color = Time.deltaTime % 1f < 0.5f ? Color.white : Color.red;
+			if (Charge > 10f)
+			{
+				text = "BOOM!";
+				color = Color.Lerp(Color.white, Color.red, Mathf.PingPong(Time.time * 5, 1f));
+			}
 			return new CustomTooltip(text, color);
 		}
 		public void OnHeld(AbilityHeldArgs e)
 		{
 			Charge += Time.deltaTime;
 			e.HeldTime = Charge;
+			if (Charge > 10f)
+			{
+				Owner.objectMult.chargingSpecialLunge = true;
+			}
 		}
 		public void OnReleased(AbilityReleasedArgs e)
 		{
 			IsCharging = false;
+			Owner.objectMult.chargingSpecialLunge = false;
 			if (e.HeldTime > 10f)
 			{
 				Owner.AddEffect("Resurrection", new CreateEffectInfo(1) { DontShowText = true, IgnoreElectronic = true });

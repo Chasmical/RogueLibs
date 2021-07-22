@@ -103,6 +103,16 @@ namespace RogueLibsCore.Test.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] Kamikaze {
+            get {
+                object obj = ResourceManager.GetObject("Kamikaze", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] QuantumFud {
             get {
                 object obj = ResourceManager.GetObject("QuantumFud", resourceCulture);
