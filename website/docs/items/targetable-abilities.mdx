@@ -1,4 +1,4 @@
-# Targetable Abilities*
+# Targetable Abilities
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
@@ -37,15 +37,15 @@ Then, you can use `CurrentTarget` in any of the methods:
 
 import CodeSnippet from '@site/src/components/CodeSnippet';
 
-<Tabs defaultValue=""
+import Hug from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Abilities/Hug.cs';
+
+<Tabs defaultValue="hug"
   values={[
-    {label:'', value:''},
+    {label:'Hug', value:'hug'},
   ]}>
-<TabItem value="">
+<TabItem value="hug">
 
-```csharp title=""
-
-```
+<CodeSnippet>{Hug}</CodeSnippet>
 
 </TabItem>
 </Tabs>
