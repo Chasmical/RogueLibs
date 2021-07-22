@@ -1,0 +1,112 @@
+# Инвентарные проверки
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `InventoryChecks` {#inventorychecks}
+
+Итак, с инвентарными проверками, вы можете опустить такой код:
+
+```csharp
+if (Owner.statusEffects.hasTrait("BloodRestoresHealth"))
+{
+    Owner.SayDialogue("WontEatThis");
+    return;
+}
+if (Owner.statusEffects.hasTrait("OilRestoresHealth"))
+{
+    Owner.SayDialogue("WontEatThat");
+    return;
+}
+if (Owner.health == Owner.maxHealth)
+{
+    Owner.SayDialogue("NoImFull");
+    return;
+}
+...
+```
+
+RogueLibs позволяет вам создавать **инвентарные проверки**, которые будут работать на всех предметах в игре, соответствующих определённым критериям (например, имеют тип "Food" и категорию "Alcohol"). Такие инвентарные проверки также реализуют некоторые обычные штуки, которые моддеры иногда забывают реализовать. Например, удаление предмета из инвентаря или остановка взаимодействия, когда количество предмета становится равным 0.
+
+## Игнорирование инвентарных проверок {#ignoring-checks}
+
+Инвентарные проверки могут быть проигнорированы с помощью атрибута `IgnoreChecks`.
+
+Вы можете ставить атрибуты `IgnoreChecks` на класс вашего предмета или на любой из его интерфейсных методов.
+
+```csharp
+[ItemCategories(RogueCategories.Food, RogueCategories.Weird, "Meat")]
+public class MysteryFood : CustomItem, IItemUsable
+{
+    // highlight-next-line
+    [IgnoreChecks("VegetarianCheck")]
+    public bool UseItem()
+    {
+        e.User.ChangeHealth(Item.healthChange);
+        Count--;
+        e.User.Say("Huh, tasty. I wonder what that was..."); // O_o
+        return true;
+    }
+}
+```
+
+Смотрите таблицу инвентарных проверок реализованных в RogueLibs [позже на этой странице](#default-checks).
+
+## Создание инвентарных проверок {#adding-checks}
+
+У класса `RogueEventArgs` есть два свойства: `Cancel` и `Handled`. Если выставить `Handled` на `true`, то все другие проверки будут пропущены. Если выставить `Cancel` на `true`, то действие, которое должно было произойти, не произойдёт. Обычно, они ставятся на `true` одновременно.
+
+Например, есть особенность под названием `"Vegetarian"` которая не должна давать игроку употреблять еду с категорией `"Meat"`:
+
+```csharp
+InventoryChecks.AddItemUsingCheck("VegetarianCheck", VegetarianCheck);
+...
+public static void VegetarianCheck(OnItemUsingArgs e)
+{
+    if (e.Item.itemType == ItemTypes.Food && e.User.HasTrait("Vegetarian") && e.Item.Categories.Contains("Meat"))
+    {
+        // сделать что-нибудь чтобы показать почему предмет не может быть использован
+        e.User.gc.audioHandler.Play(e.User, "CantDo");
+        e.User.SayDialogue("WontEatMeat");
+        // выставить Cancel и Handled на true
+        e.Cancel = e.Handled = true;
+    }
+};
+```
+
+Если вы хотите перегрузить инвентарную проверку из другого мода, то вам придётся патчить её с Harmony.
+
+## Таблица инвентарных проверок по умолчанию {#default-checks}
+
+### Проверки `IItemUsable` {#iitemusable-checks}
+
+Название            | Критерии                                                                   | Фраза
+--------------------|----------------------------------------------------------------------------|------
+`Ghost`             | Игрок - призрак.                                                           | -
+`PeaBrained`        | Особенность "Безмозглый", тип **НЕ** Food.                                 | "Р-р-р-р-р!!!!!"
+`OnlyOil`           | Особенность "Бензинозависимость", тип Food и (категория Food или Alcohol). | "Мне нужен бензин..."
+`OnlyOilMedicine`   | Особенность "Бензинозависимость", тип Consumable и категория Health.       | "Мне нужен бензин..."
+`OnlyBlood`         | Особенность "Кровопийца", тип Food и (категория Food или Alcohol).         | "Фу, гадость, я не буду это есть!"
+`OnlyBloodMedicine` | Особенность "Кровопийца", тип Consumable и категория Health.               | "Современная медицина для людей, мне нужна КРОВЬ!"
+`OnlyCharge`        | Особенность "Электронный", тип Food и категория Food.                      | "У меня нет желудка."
+`OnlyHumanFlesh`    | Особенность "Ярый каннибализм", тип Food и категория Food.                 | "Фу, гадость, я не буду это есть!"
+`FullHealth`        | У игрока полное здоровье и `healthChange` у предмета больше 0.             | "Не надо, у меня и так все в порядке!"
+
+Эти проверки доступны через `DefaultInventoryChecks`. Остальные реализованы внутри патчей RogueLibs.
+
+### Проверки `IItemCombinable` {#iitemcombinable-checks}
+
+Название       | Критерии                                                                     | Что произойдёт
+---------------|------------------------------------------------------------------------------|---------------
+`AutoStacking` | У предметов одинаковое название                                              | Они будут подсвечены, и будучи объединёнными, они будут объединены в один предмет
+`StopOnZero`   | Количество текущего предмета равно 0, или он больше не находится в инвентаре | Взаимодействие/объединение будет остановлено
+
+### Проверки `IItemTargetable` {#iitemtargetable-checks}
+
+Название     | Критерии                                                                     | Что произойдёт
+-------------|------------------------------------------------------------------------------|---------------
+`Distance`   | Расстояние между игроком и целью больше 15 единиц                            | `false`
+`ButlerBot`  | Цель - Робот-дворецкий                                                       | `false`
+`EmptyMech`  | Цель - пустой Мех                                                            | `false`
+`StopOnZero` | Количество текущего предмета равно 0, или он больше не находится в инвентаре | Взаимодействие/направление будет остановлено
