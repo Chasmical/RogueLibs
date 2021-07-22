@@ -36,6 +36,7 @@ namespace RogueLibsCore
 			Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.SetColor));
 			// CustomItem.GetCount(.) patch
 			Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.UpdateInvSlot));
+			Patcher.Postfix(typeof(EquippedItemSlot), nameof(EquippedItemSlot.LateUpdateEquippedItemSlot));
 
 			// CustomItem, IItemTargetableAnywhere patches
 			Patcher.Postfix(typeof(InvInterface), nameof(InvInterface.TargetAnywhere));
@@ -370,9 +371,22 @@ namespace RogueLibsCore
 			CustomItem custom = __instance.item?.GetHook<CustomItem>();
 			if (custom != null)
 			{
+				___itemText.enabled = true;
 				CustomTooltip tooltip = custom.GetCountString();
 				___itemText.text = tooltip.Text ?? string.Empty;
 				___itemText.color = tooltip.Color ?? Color.white;
+			}
+		}
+		public static void EquippedItemSlot_LateUpdateEquippedItemSlot(EquippedItemSlot __instance)
+		{
+			CustomItem custom = __instance.item?.GetHook<CustomItem>();
+			if (custom != null)
+			{
+				__instance.countText.enabled = true;
+				__instance.countText.rectTransform.localScale = new Vector3(0.2f, 0.2f, 1f);
+				CustomTooltip tooltip = custom.GetCountString();
+				__instance.countText.text = tooltip.Text ?? string.Empty;
+				__instance.countText.color = tooltip.Color ?? Color.white;
 			}
 		}
 
