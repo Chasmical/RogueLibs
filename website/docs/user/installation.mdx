@@ -106,7 +106,7 @@ Try looking at these paths:
 
 Make sure you extract it the right way. There's a lot of wrong ways, apparently.
 
-- Make sure that `BepInEx` folder is extracted in the same directory as your game's executable (`StreetsOfRogue.exe`);
+- Make sure that `BepInEx` folder is in the same directory as your game's executable (`StreetsOfRogue.exe`);
 - Make sure that you extract the `doorstop_config.ini` and `winhttp.dll` files too;
 
 </TabItem>
@@ -328,30 +328,9 @@ Click **OK** and run the game through Steam.
         {label:'RogueLibs v2.x.x', value:'v2'},
         {label:'RogueLibs v3.x.x', value:'v3'},
     ]}>
-<TabItem value="v2">
-
-**[Download the latest RogueLibs version](https://github.com/Abbysssal/RogueLibs/releases/latest)**
-
-You need to download only one file - `RogueLibs.dll`.
-
-:::note
-Screenshot needed
-:::
-
-Go to the BepInEx's directory and put `RogueLibs.dll` into `plugins` directory:
-
-:::note
-Screenshot/GIF needed
-:::
-
-</TabItem>
 <TabItem value="v3">
 
-:::caution
-RogueLibs v3.x.x is still in beta! Backup your save files before installing it.
-:::
-
-**[Download the latest RogueLibs version](https://github.com/Abbysssal/RogueLibs/releases)**
+**[Download the latest RogueLibs version](https://github.com/Abbysssal/RogueLibs/releases/latest)**
 
 You need to download only two files: `RogueLibsCore.dll` and `RogueLibsPatcher.dll`.
 
@@ -359,13 +338,34 @@ You need to download only two files: `RogueLibsCore.dll` and `RogueLibsPatcher.d
 Screenshot needed
 :::
 
-Go to the BepInEx's directory and put `RogueLibsCore.dll` into `plugins` directory:
+Go to the BepInEx's directory and put `RogueLibsCore.dll` file into `plugins` directory:
 
 :::note
 Screenshot/GIF needed
 :::
 
-Put `RogueLibsPatcher.dll` into `patchers` (not `plugins`!) directory:
+Put `RogueLibsPatcher.dll` file into `patchers` ***(not `plugins`!)*** directory:
+
+:::note
+Screenshot/GIF needed
+:::
+
+</TabItem>
+<TabItem value="v2">
+
+:::caution
+RogueLibs v2.x.x is outdated and is not compatible with new mods! There's only a couple of old mods that still use it.
+:::
+
+**[Download the latest RogueLibs version](https://github.com/Abbysssal/RogueLibs/releases/tag/v2.2-pre.2)**
+
+You need to download only one file - `RogueLibs.dll`.
+
+:::note
+Screenshot needed
+:::
+
+Go to the BepInEx's directory and put `RogueLibs.dll` file into `plugins` directory:
 
 :::note
 Screenshot/GIF needed
@@ -376,9 +376,9 @@ Screenshot/GIF needed
 
 ## Installing plugins (aka. mods) {#plugins}
 
-Download the plugins that you want to install (`.dll`s).
+Download the plugins that you want to install (`.dll` files).
 
-And put the `.dll` files in the `BepInEx/plugins` directory.
+And put these `.dll` files in the `BepInEx/plugins` directory.
 
 :::note
 Screenshot needed
