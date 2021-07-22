@@ -11,9 +11,9 @@
     "message": "Developer's Guide",
     "description": "The label for category Developer's Guide in sidebar documentationSidebar"
   },
-  "sidebar.documentationSidebar.category.Custom Items": {
-    "message": "Custom Items",
-    "description": "The label for category Custom Items in sidebar documentationSidebar"
+  "sidebar.documentationSidebar.category.Custom Items and Abilities": {
+    "message": "Custom Items and Abilities",
+    "description": "The label for category Custom Items and Abilities in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Adding Functionality": {
     "message": "Adding Functionality",
@@ -31,13 +31,13 @@
     "message": "Custom Traits and Effects",
     "description": "The label for category Custom Traits and Effects in sidebar documentationSidebar"
   },
-  "sidebar.documentationSidebar.category.Custom Names": {
-    "message": "Custom Names",
-    "description": "The label for category Custom Names in sidebar documentationSidebar"
-  },
   "sidebar.documentationSidebar.category.Custom Unlocks": {
     "message": "Custom Unlocks",
     "description": "The label for category Custom Unlocks in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Custom Names": {
+    "message": "Custom Names",
+    "description": "The label for category Custom Names in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Hooks": {
     "message": "Hooks",

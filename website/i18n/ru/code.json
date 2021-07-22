@@ -1,4 +1,26 @@
 {
+  "features.easy.title": {
+    "message": "Easy to Use"
+  },
+  "features.easy.description": {
+    "message": "RogueLibs does all of the patching for you!"
+  },
+  "features.focus.title": {
+    "message": "Focus on What Matters"
+  },
+  "features.focus.description": {
+    "message": "Let RogueLibs handle the hard work, and"
+  },
+  "features.focus.description.bold": {
+    "message": "you just focus on the content!"
+  },
+  "homepage.tagline": {
+    "message": "Doing the impossible."
+  },
+  "homepage.button": {
+    "message": "RogueLibs Documentation",
+    "description": "The big button in the center on the home page"
+  },
   "theme.NotFound.title": {
     "message": "Страница не найдена",
     "description": "The title of the 404 page"
@@ -162,27 +184,5 @@
   "theme.common.skipToMainContent": {
     "message": "Перейти к основному содержимому",
     "description": "The skip to content label used for accessibility, allowing to rapidly navigate to main content with keyboard tab/enter navigation"
-  },
-  "features.easy.title": {
-    "message": "Прост в использовании"
-  },
-  "features.easy.description": {
-    "message": "RogueLibs делает все патчи за тебя!"
-  },
-  "features.focus.title": {
-    "message": "Сконцентрируйся на важном"
-  },
-  "features.focus.description": {
-    "message": "Пусть RogueLibs занимается патчами, а ты "
-  },
-  "features.focus.description.bold": {
-    "message": "сконцентрируйся на контенте!"
-  },
-  "homepage.button": {
-    "message": "Документация RogueLibs",
-    "description": "The big button in the center on the home page"
-  },
-  "homepage.tagline": {
-    "message": "Делаем невозможное."
   }
 }
