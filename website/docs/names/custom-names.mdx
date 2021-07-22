@@ -75,8 +75,16 @@ Usually, `CustomName`s are created automatically, when you add names and descrip
 
 ```csharp
 RogueLibs.CreateCustomItem<MyCustomItem>()
-    .WithName(new CustomNameInfo("English name"))
-    .WithDescription(new CustomNameInfo("English description"));
+    .WithName(new CustomNameInfo("English name")
+    {
+        French = "nom français",
+        Spanish = "nombre español",
+    })
+    .WithDescription(new CustomNameInfo("English description")
+    {
+        French = "description française",
+        Spanish = "descripción en español",
+    });
 ```
 
 You can initialize them yourself too, although you have to provide the name and type of the `CustomName` yourself:
