@@ -183,28 +183,14 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="unlock">The unlock to integrate into the game.</param>
 		/// <exception cref="ArgumentNullException"><paramref name="unlock"/> is <see langword="null"/>.</exception>
-		public static void CreateCustomUnlock(UnlockWrapper unlock)
+		public static UnlockBuilder CreateCustomUnlock(UnlockWrapper unlock)
 		{
 			if (unlock is null) throw new ArgumentNullException(nameof(unlock));
 			RogueFramework.Unlocks.Add(unlock);
 			RogueFramework.CustomUnlocks.Add(unlock);
-			if (GameController.gameController?.unlocks is null) return;
-			RogueLibsPlugin.AddUnlockFull(unlock);
-		}
-		/// <summary>
-		///   <para>Integrates the specified <paramref name="unlock"/> into the game and creates a <paramref name="name"/> and a <paramref name="description"/> for it.</para>
-		/// </summary>
-		/// <param name="unlock">The unlock to integrate into the game.</param>
-		/// <param name="name">The localization data to initialize the unlock's name with.</param>
-		/// <param name="description">The localization data to initialize the unlock's description with.</param>
-		/// <exception cref="ArgumentNullException"><paramref name="unlock"/> is <see langword="null"/>.</exception>
-		/// <exception cref="ArgumentException">A localizable string that acts as the specified <paramref name="unlock"/>'s name or description already exists in the <see cref="CustomNameProvider"/> dictionary.</exception>
-		public static void CreateCustomUnlock(UnlockWrapper unlock, CustomNameInfo name, CustomNameInfo description)
-		{
-			CreateCustomUnlock(unlock);
-			CreateCustomName(unlock.Name, unlock.Unlock.unlockNameType, name);
-			CreateCustomName(unlock is MutatorUnlock || unlock is BigQuestUnlock ? "D_" + unlock.Name : unlock.Name,
-				unlock is BigQuestUnlock ? "Unlock" : unlock.Unlock.unlockDescriptionType, description);
+			if (GameController.gameController?.unlocks != null)
+				RogueLibsPlugin.AddUnlockFull(unlock);
+			return new UnlockBuilder(unlock);
 		}
 
 		/// <summary>
@@ -232,9 +218,32 @@ namespace RogueLibsCore
 			MethodBase caller = new StackTrace().GetFrame(1).GetMethod();
 			Assembly assembly = caller.ReflectedType.Assembly;
 			foreach (Type type in assembly.GetTypes())
-				foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
+				foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+				{
 					if (method.GetCustomAttributes<RLSetupAttribute>().Any())
-						method.Invoke(null, null);
+					{
+						if (method.GetParameters().Length != 0)
+						{
+							RogueFramework.LogError($"{assembly.FullName}: Methods marked with [RLSetup] cannot have any parameters!");
+							continue;
+						}
+						if (!method.IsStatic)
+						{
+							RogueFramework.LogWarning($"{assembly.FullName}: Methods marked with [RLSetup] must be static!");
+							ConstructorInfo ctor = method.DeclaringType.GetConstructor(new Type[0]);
+							if (ctor != null)
+							{
+								object instance = ctor.Invoke(null);
+								try { method.Invoke(instance, null); }
+								catch (Exception e) { RogueFramework.LogError(e.ToString()); }
+								RogueFramework.LogWarning($"The issue was temporarily resolved by creating an instance of {method.DeclaringType} type.");
+							}
+							continue;
+						}
+						try { method.Invoke(null, null); }
+						catch (Exception e) { RogueFramework.LogError(e.ToString()); }
+					}
+				}
 		}
 	}
 	/// <summary>
@@ -620,6 +629,54 @@ namespace RogueLibsCore
 		public EffectBuilder WithSprite(byte[] rawData, Rect region, float ppu = 64f)
 		{
 			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Extra, rawData, region, ppu);
+			return this;
+		}
+	}
+	/// <summary>
+	///   <para>Represents a <see cref="UnlockWrapper"/> builder, that attaches additional information to the unlock.</para>
+	/// </summary>
+	public class UnlockBuilder
+	{
+		/// <summary>
+		///   <para>Initializes a new instance of the <see cref="UnlockBuilder"/> class with the specified <paramref name="unlock"/>.</para>
+		/// </summary>
+		/// <param name="unlock">The unlock wrapper to use.</param>
+		public UnlockBuilder(UnlockWrapper unlock) => Unlock = unlock;
+		/// <summary>
+		///   <para>The used unlock wrapper.</para>
+		/// </summary>
+		public UnlockWrapper Unlock { get; }
+
+		/// <summary>
+		///   <para>Gets the unlock's localizable name.</para>
+		/// </summary>
+		public CustomName Name { get; private set; }
+		/// <summary>
+		///   <para>Gets the unlock's localizable description.</para>
+		/// </summary>
+		public CustomName Description { get; private set; }
+
+		/// <summary>
+		///   <para>Creates a localizable string with the specified localization <paramref name="info"/> to act as the unlock's name.</para>
+		/// </summary>
+		/// <param name="info">The localization data to initialize the localizable string with.</param>
+		/// <returns>The current instance of <see cref="UnlockBuilder"/>, for chaining purposes.</returns>
+		/// <exception cref="ArgumentException">A localizable string that acts as the unlock's name already exists.</exception>
+		public UnlockBuilder WithName(CustomNameInfo info)
+		{
+			Name = RogueLibs.CreateCustomName(Unlock.Name, Unlock.Unlock.unlockNameType, info);
+			return this;
+		}
+		/// <summary>
+		///   <para>Creates a localizable string with the specified localization <paramref name="info"/> to act as the unlock's description.</para>
+		/// </summary>
+		/// <param name="info">The localization data to initialize the localizable string with.</param>
+		/// <returns>The current instance of <see cref="UnlockBuilder"/>, for chaining purposes.</returns>
+		/// <exception cref="ArgumentException">A localizable string that acts as the unlock's description already exists.</exception>
+		public UnlockBuilder WithDescription(CustomNameInfo info)
+		{
+			Description = RogueLibs.CreateCustomName(Unlock is MutatorUnlock || Unlock is BigQuestUnlock ? "D_" + Unlock.Name : Unlock.Name,
+				Unlock is BigQuestUnlock ? "Unlock" : Unlock.Unlock.unlockDescriptionType, info);
 			return this;
 		}
 	}
