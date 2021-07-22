@@ -4,43 +4,43 @@
     "description": "The label for version current"
   },
   "sidebar.documentationSidebar.category.User's Guide": {
-    "message": "User's Guide",
+    "message": "Руководство пользователя",
     "description": "The label for category User's Guide in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Developer's Guide": {
-    "message": "Developer's Guide",
+    "message": "Руководство разработчика",
     "description": "The label for category Developer's Guide in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Custom Items and Abilities": {
-    "message": "Custom Items and Abilities",
+    "message": "Кастомные предметы и способности",
     "description": "The label for category Custom Items and Abilities in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Adding Functionality": {
-    "message": "Adding Functionality",
+    "message": "Добавляем функционал",
     "description": "The label for category Adding Functionality in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Weapons": {
-    "message": "Weapons",
+    "message": "Оружие",
     "description": "The label for category Weapons in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Custom Abilities": {
-    "message": "Custom Abilities",
+    "message": "Кастомные способности",
     "description": "The label for category Custom Abilities in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Custom Traits and Effects": {
-    "message": "Custom Traits and Effects",
+    "message": "Кастомные особенности и эффекты",
     "description": "The label for category Custom Traits and Effects in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Custom Unlocks": {
-    "message": "Custom Unlocks",
+    "message": "Кастомные разблокировки",
     "description": "The label for category Custom Unlocks in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Custom Names": {
-    "message": "Custom Names",
+    "message": "Кастомные имена",
     "description": "The label for category Custom Names in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Hooks": {
-    "message": "Hooks",
+    "message": "Хуки",
     "description": "The label for category Hooks in sidebar documentationSidebar"
   }
 }

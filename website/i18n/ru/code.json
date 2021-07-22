@@ -1,24 +1,24 @@
 {
   "features.easy.title": {
-    "message": "Easy to Use"
+    "message": "Прост в использовании"
   },
   "features.easy.description": {
-    "message": "RogueLibs does all of the patching for you!"
+    "message": "RogueLibs делает все патчи за вас!"
   },
   "features.focus.title": {
-    "message": "Focus on What Matters"
+    "message": "Сконцентрируйтесь на том что важно"
   },
   "features.focus.description": {
-    "message": "Let RogueLibs handle the hard work, and"
+    "message": "Пусть RogueLibs занимается патчами, а"
   },
   "features.focus.description.bold": {
-    "message": "you just focus on the content!"
+    "message": "ты сконцентрируйся на контенте!"
   },
   "homepage.tagline": {
-    "message": "Doing the impossible."
+    "message": "Делаем невозможное."
   },
   "homepage.button": {
-    "message": "RogueLibs Documentation",
+    "message": "Документация RogueLibs",
     "description": "The big button in the center on the home page"
   },
   "theme.NotFound.title": {
@@ -142,7 +142,7 @@
     "description": "The ARIA label for open button of mobile doc sidebar"
   },
   "theme.docs.sidebar.navAriaLabel": {
-    "message": "Sidebar navigation",
+    "message": "Навигация по сайдбару",
     "description": "The ARIA label for documentation menu"
   },
   "theme.docs.versions.unreleasedVersionLabel": {

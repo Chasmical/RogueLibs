@@ -1,10 +1,10 @@
 {
   "item.label.Introduction": {
-    "message": "Introduction",
+    "message": "Введение",
     "description": "Navbar item with label Introduction"
   },
   "item.label.Documentation": {
-    "message": "Documentation",
+    "message": "Документация",
     "description": "Navbar item with label Documentation"
   },
   "item.label.API": {
