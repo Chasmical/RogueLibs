@@ -64,14 +64,10 @@ public class MyCustomItem : CustomItem
 }
 ```
 
-Or you can just initialize them directly (in case of mutators):
+Or you can just initialize them directly (like in case of mutators):
 
 ```csharp
-RogueLibs.CreateCustomUnlock(new MutatorUnlock("MyMutator"),
-    new CustomNameInfo("Mutator Name"),
-    new CustomNameInfo("Mutator Description"));
+RogueLibs.CreateCustomUnlock(new MutatorUnlock("MyMutator"))
+    .WithName(new CustomNameInfo("Mutator Name"))
+    .WithDescription(new CustomNameInfo("Mutator Description"));
 ```
-
-:::danger
-This API is subject to change. It will be replaced with a `MutatorBuilder` or something like that.
-:::

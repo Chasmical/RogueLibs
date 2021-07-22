@@ -32,7 +32,7 @@ public class MyCustomTrait : CustomTrait
 
 ## Updating {#updating}
 
-You can make your trait updateable by implementing `ITraitUpdateable`:
+You can make your trait updateable by implementing the `ITraitUpdateable` interface:
 
 ```csharp title="MyCustomTrait.cs"
 public class MyCustomTrait : CustomTrait, ITraitUpdateable
@@ -117,15 +117,15 @@ See [Custom Names](../names/custom-names), [Custom Sprites](../custom-sprites) f
 
 You can use the following properties when initializing `TraitUnlock`s:
 
-Property | Default | Description
----------|---------|------------
-`UnlockCost` | `0` | Unlock cost of the trait, in nuggets. If set to 0, it will unlock automatically, once all prerequisites are unlocked.
-`CharacterCreationCost` | `1` | Cost of the trait in Character Creation, in points.
-`IsAvailable` | `true` | Determines whether the trait is available in the Traits menu.
-`IsAvailableInCC` | `true` | Determines whether the trait is available in the Character Creation menu.
-`Cancellations` | | Determines what traits cannot co-exist with this trait.
-`Prerequisites` | | Determines what unlocks must be unlocked in order to unlock this trait.
-`Recommendations` | | Just shows these unlocks in a separate Recommendations paragraph in the menus.
+Property                | Default | Description
+------------------------|---------|------------
+`UnlockCost`            | `0`     | Unlock cost of the trait, in nuggets. If set to 0, it will unlock automatically, once all prerequisites are unlocked.
+`CharacterCreationCost` | `1`     | Cost of the trait in Character Creation, in points.
+`IsAvailable`           | `true`  | Determines whether the trait is available in the Traits menu.
+`IsAvailableInCC`       | `true`  | Determines whether the trait is available in the Character Creation menu.
+`Cancellations`         |         | Determines what traits cannot co-exist with this trait.
+`Prerequisites`         |         | Determines what unlocks must be unlocked in order to unlock this trait.
+`Recommendations`       |         | Just shows these unlocks in a separate Recommendations paragraph in the menus.
 
 Other properties should not be used during initialization.
 

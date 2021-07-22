@@ -58,7 +58,7 @@ public class MyCustomEffect : CustomEffect
 You're responsible for decrementing the effect's `CurrentTime`. So, don't forget to do that.
 :::
 
-All custom effect classes should have an `EffectParameters` attribute. You can specify whether your effect should be removed on death, on knockout or between levels. Default is `RemoveOnDeath`, but you should specify the value yourself anyway, because the default value might get changed.
+All custom effect classes should have an `EffectParameters` attribute. You can specify whether your effect should be removed on death, on knockout or between levels. Default is `RemoveOnDeath`.
 
 ```csharp
 [EffectParameters(EffectLimitations.RemoveOnDeath | EffectLimitations.RemoveOnKnockOut)]

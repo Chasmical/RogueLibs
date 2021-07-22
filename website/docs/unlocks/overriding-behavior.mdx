@@ -66,6 +66,10 @@ public virtual Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable)
     && RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
 ```
 
+:::tip Pro-tip
+You can see for yourself how these methods are implemented in [RogueLibs' source code](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibsCore/Hooks/Unlocks/UnlockWrapper.cs).
+:::
+
 ### `DisplayedUnlock`
 
 ```csharp title="DisplayedUnlock.cs"
@@ -97,7 +101,7 @@ public virtual string GetFancyDescription()
 ```
 
 :::tip Pro-tip
-You can see for yourself how these methods are implemented in [RogueLibs' source code](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibsCore/Hooks/Unlocks/UnlockWrapper.cs).
+You can see for yourself how these methods are implemented in [RogueLibs' source code](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibsCore/Hooks/Unlocks/DisplayedUnlock.cs).
 :::
 
 ## Examples {#examples}
@@ -170,10 +174,9 @@ public class RandomItemsButton : ItemUnlock
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomUnlock(new RandomItemsButton(),
-            new CustomNameInfo("Name"),
-            new CustomNameInfo("Description"));
-        // this API will probably change
+        RogueLibs.CreateCustomUnlock(new RandomItemsButton())
+            .WithName(new CustomNameInfo("Random Items")
+            .WithDescription(new CustomNameInfo("Gives you 5 random items"));
     }
 
     public RandomItemsButton()
@@ -218,9 +221,9 @@ public class MyCategory : MutatorUnlock
     public static void Setup()
     {
         MyCategory category = new MyCategory("MyCustomCategory1");
-        RogueLibs.CreateCustomUnlock(category,
-            new CustomNameInfo("My Custom Category 1"),
-            new CustomNameInfo("My Custom Category 1 is very cool and does a lot of great stuff"));
+        RogueLibs.CreateCustomUnlock(category)
+            .WithName(new CustomNameInfo("My Custom Category 1"))
+            .WithDescription(new CustomNameInfo("My Custom Category 1 is very cool and does a lot of great stuff"));
 
         category.SortingOrder = -59;
         category.SortingIndex = -1;
@@ -234,9 +237,9 @@ public class MyCategory : MutatorUnlock
         Categories.Add(category);
         
         category = new MyCategory("MyCustomCategory2");
-        RogueLibs.CreateCustomUnlock(category,
-            new CustomNameInfo("My Custom Category 2"),
-            new CustomNameInfo("My Custom Category 2 is really great and accomplishes a ton of cool things"));
+        RogueLibs.CreateCustomUnlock(category)
+            .WithName(new CustomNameInfo("My Custom Category 2"))
+            .WithDescription(new CustomNameInfo("My Custom Category 2 is really great and accomplishes a ton of cool things"));
 
         category.SortingOrder = -58;
         category.SortingIndex = -1;
