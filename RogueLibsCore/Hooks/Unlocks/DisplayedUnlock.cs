@@ -118,7 +118,7 @@ namespace RogueLibsCore
 					name = $"<color=yellow>{name}</color>";
 				if (Unlock.isUpgrade)
 					name = $"<color=lime>{name}</color>";
-				if (Name == "EnduranceTrait" || Name == "Strength" || Name == "Accuracy" || Name == "Speed")
+				if (Name == "EnduranceTrait" || Name == "StrengthTrait" || Name == "AccuracyTrait" || Name == "SpeedTrait")
 					name = $"<color=cyan>{name}</color>";
 				if ((gc.twitchMode || gc.sessionDataBig.twitchOn) && (gc.sessionDataBig.twitchTraits || gc.twitchMode))
 				{

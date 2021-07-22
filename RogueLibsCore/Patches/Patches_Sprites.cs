@@ -233,11 +233,11 @@ namespace RogueLibsCore
 
 		public static void ObjectReal_Start(ObjectReal __instance)
 		{
-			if (__instance.spr != null)
-				__instance.ChangeSprite(__instance.spr.CurrentSprite.name);
-			__instance.objectSprite?.RefreshRenderer();
 			try
 			{
+				if (__instance.spr != null)
+					__instance.ChangeSprite(__instance.spr.CurrentSprite.name);
+				__instance.objectSprite?.RefreshRenderer();
 				__instance.RefreshShader();
 				__instance.StartCoroutine(__instance.SpawnShadow());
 			}

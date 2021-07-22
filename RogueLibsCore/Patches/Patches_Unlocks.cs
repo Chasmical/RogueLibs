@@ -107,18 +107,22 @@ namespace RogueLibsCore
 				}
 				else if (unlock.unlockType == "Item")
 				{
+					if (unlock.onlyInCharacterCreation && !unlock.unavailable)
+						unlock.unavailable = true;
 					if (!unlock.unavailable && !unlock.onlyInCharacterCreation && !unlock.freeItem)
 						unlock.onlyInCharacterCreation = unlock.freeItem = true;
 					wrapper = new ItemUnlock(unlock);
 				}
 				else if (unlock.unlockType == "Trait")
 				{
-					unlock.onlyInCharacterCreation = !unlock.unavailable;
+					if (unlock.onlyInCharacterCreation && !unlock.unavailable)
+						unlock.unavailable = true;
 					wrapper = new TraitUnlock(unlock);
 				}
 				else if (unlock.unlockType == "Ability")
 				{
-					unlock.onlyInCharacterCreation = !unlock.unavailable;
+					if (unlock.onlyInCharacterCreation && !unlock.unavailable)
+						unlock.unavailable = true;
 					wrapper = new AbilityUnlock(unlock);
 				}
 				else if (unlock.unlockType == "Achievement") wrapper = new AchievementUnlock(unlock);
