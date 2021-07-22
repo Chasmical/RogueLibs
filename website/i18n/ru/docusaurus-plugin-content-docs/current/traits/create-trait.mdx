@@ -1,0 +1,148 @@
+# Создаём кастомную особенность
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Класс `CustomTrait` {#customtrait}
+
+Чтобы сделать кастомную особенность, создайте класс наследующий от `CustomTrait`:
+
+```csharp title="MyCustomTrait.cs"
+// highlight-next-line
+public class MyCustomTrait : CustomTrait
+{
+    /* ... */
+}
+```
+
+Вам надо реализовать только 2 метода:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    // highlight-start
+    public override void OnAdded() { /* ... */ }
+    public override void OnRemoved() { /* ... */ }
+    // highlight-end
+}
+```
+
+`OnAdded` вызывается когда особенность добавлена персонажу, и `OnRemoved` вызывается когда она убрана с персонажа.
+
+## Обновление {#updating}
+
+Вы можете сделать свою особенность обновляемой, реализовав интерфейс `ITraitUpdateable`:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait, ITraitUpdateable
+{
+    public void OnUpdated(TraitUpdatedArgs e) { /* ... */ }
+}
+```
+
+`OnUpdated` работает как `Update` в Unity, но с выставляемым интервалом (по умолчанию, 1 секунда):
+
+```csharp
+    public void OnUpdated(TraitUpdatedArgs e)
+    {
+        // highlight-next-line
+        e.UpdateDelay = 0.5f; // 2 обновления в секунду
+        /* ... */
+    }
+```
+
+## Инициализация {#initialization}
+
+Просто вызовите метод `CreateCustomTrait` с типом своей особенности в качестве параметра:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomTrait<MyCustomTrait>();
+    }
+}
+```
+
+:::note
+Смотрите подробнее об атрибуте `RLSetup` [здесь](../patching-utilities#rlsetup).
+:::
+
+Вы можете выставить название и описание своей особенности с помощью методов `WithName` и `WithDescription`:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomTrait<MyCustomTrait>()
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Trait"))
+            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
+}
+```
+
+То же самое можно сделать и со спрайтами и разблокировками:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomTrait<MyCustomTrait>();
+            .WithName(new CustomNameInfo("My Custom Trait"))
+            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"));
+            // highlight-start
+            // the sprite will be displayed only in the menus (optional)
+            .WithSprite(Properties.Resources.MyCustomTrait)
+            .WithUnlock(new TraitUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
+            // highlight-end
+    }
+}
+```
+
+:::info
+Смотрите [Кастомные имена](../names/custom-names), [Кастомные спрайты](../custom-sprites).
+:::
+
+## Свойства разблокировок {#unlock-properties}
+
+Вы можете использовать следующие свойства при инициализации `TraitUnlock`:
+
+Свойство                | По умолчанию | Описание
+------------------------|--------------|---------
+`UnlockCost`            | `0`          | Стоимость разблокировки особенности, в наггетсах. Если выставлено на 0, разблокируется автоматически, как только все требования открыты.
+`CharacterCreationCost` | `1`          | Стоимость особенности в Редакторе персонажей, в очках.
+`IsAvailable`           | `true`       | Определяет, доступна ли особенность в Меню особенностей.
+`IsAvailableInCC`       | `true`       | Определяет, доступна ли особенность в Редакторе персонажей.
+`Cancellations`         |              | Определяет какие особенности несовместимы с этой особенностью.
+`Prerequisites`         |              | Определяет какие разблокировки должны быть разблокированы, чтобы открыть эту особенность.
+`Recommendations`       |              | Просто показывает эти разблокировки в отдельном разделе Рекомендации в меню.
+
+Другие свойства не должны использоваться во время инициализации.
+
+## Примеры {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import Smoker from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Traits/Smoker.cs';
+
+<Tabs
+    defaultValue="smoker"
+    values={[
+        {label:'Курящий', value:'smoker'},
+    ]}>
+<TabItem value="smoker">
+
+<CodeSnippet>{Smoker}</CodeSnippet>
+
+</TabItem>
+</Tabs>

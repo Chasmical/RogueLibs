@@ -1,0 +1,129 @@
+# Создаём кастомный эффект
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Класс `CustomEffect` {#customeffect}
+
+Чтобы сделать кастомный эффект, создайте класс наследующий от `CustomEffect`:
+
+```csharp title="MyCustomEffect.cs"
+// highlight-next-line
+public class MyCustomEffect : CustomEffect
+{
+    /* ... */
+}
+```
+
+Вам нужно реализовать 5 методов:
+
+```csharp title="MyCustomEffect.cs"
+public class MyCustomEffect : CustomEffect
+{
+    // highlight-start
+    public override int GetEffectTime() { /* ... */ }
+    public override int GetEffectHate() { /* ... */ }
+    public override void OnAdded() { /* ... */ }
+    public override void OnRemoved() { /* ... */ }
+    public override void OnUpdated(EffectUpdatedArgs e) { /* ... */ }
+    // highlight-end
+}
+```
+
+`GetEffectTime` определяет время эффекта по умолчанию. Особенности типа "Продолжительные статусные эффекты", "Продолжительные статусные эффекты +" и "Короткие статусные эффекты" применяются после вызова этого метода.
+
+`GetEffectHate` определяет количество ненависти, которое персонажи получат по отношению к тому, кто нанёс на них этот эффект, по умолчанию. Обычно, это 5 для отрицательных эффектов, и 0 для положительных.
+
+:::caution
+`GetEffectTime` и `GetEffectHate` вызываются на частично инициализированных хуках, а то есть владелец эффекта может и не иметь эффекта на самом деле. Не инициализируйте какие-либо переменные в этих методах.
+:::
+
+`OnAdded` вызывается когда эффект нанесён на персонажа, и `OnRemoved` вызывается когда эффект убран с персонажа.
+
+`OnUpdated` работает как `Update` в Unity, но с выставляемым интервалом (по умолчанию, 1 секунда):
+
+```csharp
+    public void OnUpdated(EffectUpdatedArgs e)
+    {
+        // highlight-next-line
+        e.UpdateDelay = 0.5f; // 2 обновления в секунду
+        /* ... */
+        // highlight-next-line
+        CurrentTime--;
+    }
+```
+
+:::info
+Ответственность за уменьшение `CurrentTime` лежит на вас. Так что, не забывайте это делать.
+:::
+
+Все классы кастомных эффектов должны иметь атрибут `EffectParameters`. Вы можете указать должен ли эффект сниматься при смерти, нокауте или между уровнями. По умолчанию, `RemoveOnDeath` (убирать только при смерти).
+
+```csharp
+[EffectParameters(EffectLimitations.RemoveOnDeath | EffectLimitations.RemoveOnKnockOut)]
+public class MyCustomEffect : CustomEffect
+{
+    /* ... */
+}
+```
+
+## Инициализация {#initialization}
+
+Просто вызовите метод `CreateCustomEffect` с типом своего эффекта в качестве параметра:
+
+```csharp title="MyCustomEffect.cs"
+public class MyCustomEffect : CustomEffect
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomEffect<MyCustomEffect>();
+    }
+}
+```
+
+:::note
+Смотрите подробнее об атрибуте `RLSetup` [здесь](../patching-utilities#rlsetup).
+:::
+
+Вы можете выставить название и описание своего эффекта с помощью методов `WithName` и `WithDescription`:
+
+```csharp title="MyCustomEffect.cs"
+public class MyCustomEffect : CustomEffect
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomEffect<MyCustomEffect>()
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Effect"))
+            .WithDescription(new CustomNameInfo("My Custom Effect is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
+}
+```
+
+:::info
+Смотрите [Кастомные имена](../names/custom-names).
+:::
+
+## Примеры {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import Adrenaline from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Effects/Adrenaline.cs';
+
+<Tabs defaultValue="adrenaline"
+  values={[
+    {label:'Адреналин', value:'adrenaline'},
+  ]}>
+<TabItem value="adrenaline">
+
+Простой эффект, дающий временный бонус к некоторым характеристикам. Вы можете посмотреть реализацию предмета Адреналин, дающего этот эффект, в [Используемые предметы: Примеры](../items/usable-items#examples).
+
+<CodeSnippet>{Adrenaline}</CodeSnippet>
+
+</TabItem>
+</Tabs>
