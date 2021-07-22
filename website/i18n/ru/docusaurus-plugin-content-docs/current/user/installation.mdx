@@ -1,0 +1,385 @@
+# Установка
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import MicrosoftButton from '@site/src/components/MicrosoftButton';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Устанавливаем BepInEx {#bepinex}
+
+**Если у вас уже установлен BepInEx, [пропустите этот шаг](#roguelibs).**
+
+### Скачиваем BepInEx {#bepinex-downloading}
+
+**[Перейдите сюда](https://github.com/BepInEx/BepInEx/releases/latest) и скачайте версию для вашей ОС:**
+
+<Tabs
+    groupId="os"
+    defaultValue="win"
+    values={[
+        {label: 'Windows', value: 'win'},
+        {label: 'Linux', value: 'linux'},
+        {label: 'macOS', value: 'macos'},
+    ]}>
+<TabItem value="win">
+
+Скачайте версию BepInEx для вашего типа системы:
+
+- **`BepInEx_x64_5.x.y.z.zip`** для **64-битных** систем.
+- **`BepInEx_x86_5.x.y.z.zip`** для **32-битных** систем.
+
+Вот вам парочка советов:
+
+- Если у вас **больше 4 Гб ОП**, то у вас определённо **64-битная ОС**. 32-битная версия просто-напросто не может использовать больше 4 Гб ОП, из-за, ну знаете, 32 бит (2^32 байт = 4 гигабайта).
+- Если у вас Windows 10, <MicrosoftButton link="ms-settings:about">откройте О системе</MicrosoftButton> (или `⊞ Win`+`I` > **Система** > **О системе**). Вы увидите какая у вас версия Windows в **Характеристики устройства: Тип системы**.
+- Если у вас Windows 7 или 8, тогда [смотрите тут](https://support.microsoft.com/ru-ru/windows/32-разрядная-и-64-разрядная-версия-windows-вопросы-и-ответы-c6ca9541-8dce-4d48-0415-94a3faa2e13d).
+
+</TabItem>
+<TabItem values={["linux", "macos"]}>
+
+- Просто скачайте **`BepInEx_unix_5.x.y.z.zip`.**
+
+</TabItem>
+</Tabs>
+
+### Извлекаем файлы {#bepinex-extract}
+
+<Tabs
+    groupId="vendor"
+    defaultValue="steam"
+    values={[
+        {label: 'Я знаю где установлена моя игра!', value: 'none'},
+        {label: 'Steam', value: 'steam'},
+        {label: 'GOG', value: 'gog'},
+    ]}>
+<TabItem value="steam">
+
+Откройте библиотеку игр Steam, нажмите правой кнопкой по игре и выберите **Свойства...**:
+
+<img src={useBaseUrl('/img/installation/finding-the-game-1.png')} width='300'/>
+
+Перейдите во вкладку **Локальные файлы** и нажмите **Обзор...**:
+
+<img src={useBaseUrl('/img/installation/finding-the-game-2.png')} width='600'/>
+
+</TabItem>
+<TabItem value="gog">
+
+Поищите на следующих путях:
+
+<Tabs
+    groupId="os"
+    defaultValue="win"
+    values={[
+        {label: 'Windows', value: 'win'},
+        {label: 'Linux', value: 'linux'},
+        {label: 'macOS', value: 'macos'},
+    ]}>
+<TabItem value="win">
+
+- `C:\GOG Games`;
+- `C:\Program Files (x86)\GOG.com`;
+- `C:\Program Files\GOGcom`; <!-- ага, без точки -->
+
+</TabItem>
+<TabItem values={["linux", "macos"]}>
+
+- `$HOME/GOG Games`;
+
+</TabItem>
+</Tabs>
+
+</TabItem>
+</Tabs>
+
+**Извлеките содержимое .zip файла в корневую папку игры.**
+
+<Tabs
+    groupId="os"
+    defaultValue="win"
+    values={[
+        {label: 'Windows', value: 'win'},
+        {label: 'Linux', value: 'linux'},
+        {label: 'macOS', value: 'macos'},
+    ]}>
+<TabItem value="win">
+
+Убедитесь что вы извлекли всё правильно. Судя по всему, тут легко ошибиться.
+
+- Убедитесь что папка `BepInEx` находится в той же папке, что и исполняемый файл вашей игры (`StreetsOfRogue.exe`);
+- Убедитесь что вы извлекли файлы `doorstop_config.ini` и `winhttp.dll` тоже;
+
+</TabItem>
+<TabItem value="linux">
+
+Убедитесь что вы извлекли всё правильно. Судя по всему, тут легко ошибиться.
+
+- Убедитесь что папки `BepInEx` и `doorstop_libs` находятся в той же папке, что и исполняемый файл вашей игры (`StreetsOfRogue.x86` или `StreetsOfRogue.x86_64`);
+- Убедитесь что вы извлекли файл `run_bepinex.sh` тоже;
+
+</TabItem>
+<TabItem value="macos">
+
+Убедитесь что вы извлекли всё правильно. Судя по всему, тут легко ошибиться.
+
+- Убедитесь что папки `BepInEx` и `doorstop_libs` находятся в той же папке, что и исполняемый файл вашей игры (`StreetsOfRogue.app`);
+- Убедитесь что вы извлекли файл `run_bepinex.sh` тоже;
+
+</TabItem>
+</Tabs>
+
+### Запускаем игру {#bepinex-first-run}
+
+:::note
+Необходимо запустить игру хотя бы один раз, чтобы BepInEx сгенерировал файлы настроек и папки!
+:::
+
+import BrowserWindow from '@site/src/components/BrowserWindow';
+
+<Tabs
+    groupId="os"
+    defaultValue="win"
+    values={[
+        {label: 'Windows', value: 'win'},
+        {label: 'Linux', value: 'linux'},
+        {label: 'macOS', value: 'macos'},
+    ]}>
+<TabItem value="win">
+
+Просто запустите игру. Либо через исполняемый файл, либо через любой лаунчер.
+
+Можете закрыть игру, как только увидите логотип или загрузочный экран.
+
+</TabItem>
+<TabItem value="linux">
+
+Откройте приложженый скрипт `run_bepinex.sh` и измените в выделенной строчке название исполняемого файла игры:
+
+```bash title="run_bepinex.sh"
+#!/bin/sh
+# BepInEx running script
+#
+# This script is used to run a Unity game with BepInEx enabled.
+#
+# Usage: Configure the script below and simply run this script when you want to run your game modded.
+
+# -------- SETTINGS --------
+# ---- EDIT AS NEEDED ------
+
+# EDIT THIS: The name of the executable to run
+# LINUX: This is the name of the Unity game executable 
+# MACOS: This is the name of the game app folder, including the .app suffix
+# highlight-next-line
+executable_name="StreetsOfRogue"
+
+# The rest is automatically handled by BepInEx
+# ...
+```
+
+Откройте терминал в корневой папке игры и дайте скрипту разрешение на выполнение:
+
+<BrowserWindow>
+
+```bash
+chmod u+x run_bepinex.sh
+```
+
+</BrowserWindow>
+
+Теперь вы можете запустить BepInEx просто выполнив этот скрипт:
+
+<BrowserWindow>
+
+```bash
+./run_bepinex.sh
+```
+
+</BrowserWindow>
+
+</TabItem>
+<TabItem value="macos">
+
+Откройте приложженый скрипт `run_bepinex.sh` и измените в выделенной строчке название исполняемого файла игры **(вместе с `.app` расширением)**:
+
+```bash title="run_bepinex.sh"
+#!/bin/sh
+# BepInEx running script
+#
+# This script is used to run a Unity game with BepInEx enabled.
+#
+# Usage: Configure the script below and simply run this script when you want to run your game modded.
+
+# -------- SETTINGS --------
+# ---- EDIT AS NEEDED ------
+
+# EDIT THIS: The name of the executable to run
+# LINUX: This is the name of the Unity game executable 
+# MACOS: This is the name of the game app folder, including the .app suffix
+# highlight-next-line
+executable_name="StreetsOfRogue.app"
+
+# The rest is automatically handled by BepInEx
+# ...
+```
+
+Откройте терминал в корневой папке игры и дайте скрипту разрешение на выполнение:
+
+<BrowserWindow>
+
+```bash
+chmod u+x run_bepinex.sh
+```
+
+</BrowserWindow>
+
+Теперь вы можете запустить BepInEx просто выполнив этот скрипт:
+
+<BrowserWindow>
+
+```bash
+./run_bepinex.sh
+```
+
+</BrowserWindow>
+
+</TabItem>
+</Tabs>
+
+### Запускаем BepInEx через Steam {#bepinex-steam}
+
+<Tabs
+    groupId="os"
+    defaultValue="win"
+    values={[
+        {label: 'Windows', value: 'win'},
+        {label: 'Linux', value: 'linux'},
+        {label: 'macOS', value: 'macos'},
+    ]}>
+<TabItem value='win'>
+
+На Windows можно запускать BepInEx через Steam тоже. Не о чем беспокоиться.
+
+</TabItem>
+<TabItem value='linux'>
+
+Откройте библиотеку игр Steam, нажмите правой кнопкой по игре и выберите **Свойства...**:
+
+:::note
+Нужен скриншот
+:::
+
+Выберите **Параметры запуска...**:
+
+:::note
+Нужен скриншот
+:::
+
+И введите туда:
+
+```bash
+./run_bepinex.sh %command%
+```
+
+Нажмите **ОК** и запустите игру через Steam.
+
+</TabItem>
+<TabItem value='macos'>
+
+Откройте библиотеку игр Steam, нажмите правой кнопкой по игре и выберите **Свойства...**:
+
+:::note
+Нужен скриншот
+:::
+
+Выберите **Параметры запуска...**:
+
+:::note
+Нужен скриншот
+:::
+
+Теперь, откройте терминал в корневой папке игры и выполните:
+
+<BrowserWindow>
+
+```bash
+pwd
+```
+
+</BrowserWindow>
+
+Выведется полный путь к корневой папке игры. Скопируйте и вставьте его в поле параметров запуска и добавьте `/run_bepinex.sh %command%`:
+
+```bash
+"<PWD>/run_bepinex.sh" %command%
+```
+
+где `<PWD>` - полный путь к корневой папке игры.
+
+Нажмите **ОК** и запустите игру через Steam.
+
+</TabItem>
+</Tabs>
+
+## Installing RogueLibs {#roguelibs}
+
+<Tabs
+    defaultValue="v3"
+    values={[
+        {label:'RogueLibs v3.x.x', value:'v3'},
+        {label:'RogueLibs v2.x.x', value:'v2'},
+    ]}>
+<TabItem value="v3">
+
+**[Скачайте последнюю версию RogueLibs](https://github.com/Abbysssal/RogueLibs/releases/latest)**
+
+Вам надо скачать только два файла: `RogueLibsCore.dll` и `RogueLibsPatcher.dll`.
+
+:::note
+Нужен скриншот
+:::
+
+Перейдите к папке BepInEx и положите файл `RogueLibsCore.dll` в папку `plugins`:
+
+:::note
+Нужен скриншот/GIF
+:::
+
+И положите файл `RogueLibsPatcher.dll` в папку `patchers` ***(не `plugins`!)***:
+
+:::note
+Нужен скриншот/GIF
+:::
+
+</TabItem>
+<TabItem value="v2">
+
+:::caution
+RogueLibs v2.x.x уже устарел и несовместим с новыми модами! Только несколько старых модов его используют.
+:::
+
+**[Скачайте последнюю версию RogueLibs](https://github.com/Abbysssal/RogueLibs/releases/tag/v2.2-pre.2)**
+
+Вам надо скачать только один файл - `RogueLibs.dll`.
+
+:::note
+Нужен скриншот
+:::
+
+Перейдите к папке BepInEx и положите файл `RogueLibs.dll` в папку `plugins`:
+
+:::note
+Нужен скриншот/GIF
+:::
+
+</TabItem>
+</Tabs>
+
+## Устанавливаем плагины (моды) {#plugins}
+
+Скачайте плагины, которые вы хотите установить (файлы с расширением `.dll`).
+
+И положите эти `.dll` файлы в папку `BepInEx/plugins`.
+
+:::note
+Нужен скриншот
+:::

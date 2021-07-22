@@ -1,0 +1,104 @@
+# Объединяемые предметы
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import ColorSquare from '@site/src/components/ColorSquare';
+
+## Делаем предметы объединяемыми {#making-combinable}
+
+Просто реализуйте интерфейс `IItemCombinable` в классе вашего предмета:
+
+```csharp title="MyCombinableItem.cs"
+// highlight-next-line
+public class MyCombinableItem : CustomItem, IItemCombinable
+{
+    // highlight-start
+    public bool CombineFilter(InvItem other) { /* ... */ }
+    public bool CombineItems(InvItem other) { /* ... */ }
+    public CustomTooltip CombineTooltip(InvItem other) { /* ... */ }
+    public CustomTooltip CombineCursorText(InvItem other) { /* ... */ }
+    // highlight-end
+}
+```
+
+Плюс, тип предмета должен быть `"Combine"`:
+
+```csharp
+    public override void SetupDetails()
+    {
+        // highlight-next-line
+        Item.itemType = ItemTypes.Combine;
+        /* ... */
+    }
+```
+
+`CombineFilter` определяет какие предметы будут подсвечиваться, при объединении текущего предмета.
+
+`CombineItems` объединяет текущий предмет с другим. Возвращаемое значение определяет успешно ли были предметы объединены или нет. Обычно, если предметы не могут быть объединены, проигрывается звук `"CantDo"`. Возврат `true` также проигрывает анимацию.
+
+`CombineTooltip` определяет текст подсказки в левом верхнем углу слота инвентаря. `Text` выставленный на `null` определится как пустая строка, и Color выставленный на `null` определится как <ColorSquare color='#FFED00'/>. [Смотрите инструмент ниже](#slot-preview).
+
+`CombineCursorText` определяет текст возле курсора над выбранным предметом. `Text` выставленный на `null` определится как "Объединить", и `Color` выставленный на `null` определится как <ColorSquare color='#FFFFFF'/>.
+
+### Превью слота инвентаря {#slot-preview}
+
+Хотите увидеть как ваш `CombineTooltip` будет выглядеть в игре? Зацените этот маленький инструмент:
+
+import InventorySlot from '@site/src/components/InventorySlot';
+import { useState } from 'react';
+
+export function PreviewTooltip ({props}) {
+  const [sprite, setSprite] = useState(useBaseUrl(`/img/TestItem.png`));
+  const [tooltipColor, setTooltipColor] = useState("#FFED00");
+  const spriteHandler = e => {
+    if (e.target.files[0]) {
+      const reader = new FileReader();
+      reader.addEventListener("load", () => setSprite(reader.result));
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+  const [text, setText] = useState("$123");
+  return (
+    <div style={{padding: '10px', border: '5px dashed var(--ifm-menu-color-background-hover)', width: 'max-content'}}>
+      <input type="file" accept="image/*"
+        onChange={spriteHandler} style={{margin: '5px'}}/>
+      <div style={{margin: '5px'}}>
+        <InventorySlot sprite={sprite} tooltip={text} tooltipColor={tooltipColor}/>
+      </div>
+      <input type="text" placeholder="$123" onChange={e => setText(e.target.value)} style={{fontSize: '22px', margin: '5px'}}/>
+      <input type="color" value={tooltipColor} onChange={e => setTooltipColor(e.target.value)}/>
+    </div>
+  );
+};
+
+<PreviewTooltip/>
+
+## Примеры {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import AmmoBox from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/AmmoBox.cs';
+import SpiceRack from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/SpiceRack.cs';
+
+<Tabs
+    defaultValue="ammobox"
+    values={[
+        {label:'Ящик с боеприпасами', value:'ammobox'},
+        {label:'Стойка со специями', value:'spicerack'},
+    ]}>
+<TabItem value="ammobox">
+
+Довольно сложный пример с кучей математики.
+
+<CodeSnippet>{AmmoBox}</CodeSnippet>
+
+</TabItem>
+<TabItem value="spicerack">
+
+Простой пример, со *специ*альными хуками для отслеживания приправленной еды.
+
+<CodeSnippet>{SpiceRack}</CodeSnippet>
+
+</TabItem>
+</Tabs>
