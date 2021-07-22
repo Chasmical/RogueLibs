@@ -1,0 +1,40 @@
+# Заряжаемые способности*
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Делаем способности заряжаемыми {#making-chargeable}
+
+Просто реализуйте интерфейс `IAbilityChargeable` в классе вашей способности:
+
+```csharp title="MyChargeableAbility.cs"
+// highlight-next-line
+public class MyChargeableAbility : CustomAbility, IAbilityChargeable
+{
+    // highlight-start
+    public void OnHeld(AbilityHeldArgs e) { /* ... */ }
+    public void OnReleased(AbilityReleasedArgs e) { /* ... */ }
+    // highlight-end
+}
+```
+
+:::info Work-In-Progress
+:::
+
+## Примеры {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import Kamikaze from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Abilities/Kamikaze.cs';
+
+<Tabs defaultValue="kamikaze"
+  values={[
+    {label:'Kamikaze', value:'kamikaze'},
+  ]}>
+<TabItem value="kamikaze">
+
+<CodeSnippet>{Kamikaze}</CodeSnippet>
+
+</TabItem>
+</Tabs>

@@ -1,0 +1,51 @@
+# Направляемые способности
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Делаем способности направляемыми {#making-targetable}
+
+Просто реализуйте интерфейс `IAbilityTargetable` в классе вашей способности:
+
+```csharp title="MyTargetableAbility.cs"
+// highlight-next-line
+public class MyTargetableAbility : CustomAbility, IAbilityTargetable
+{
+    // highlight-next-line
+    public PlayfieldObject FindTarget() { /* ... */ }
+}
+```
+
+`FindTarget` определяет ближайшую цель, на которой можно использовать способность. Индикатор способности будет отображён над этим объектом. Если способность не может быть использована сейчас, возвращайте `null`.
+
+Потом вы можете использовать `CurrentTarget` в любом из методов:
+
+```csharp
+    public override void OnPressed()
+    {
+        if (CurrentTarget is null)
+        {
+            gc.audioHandler.Play(Owner, "CantDo");
+            return;
+        }
+        /* ... */
+    }
+```
+
+## Примеры {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import Hug from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Abilities/Hug.cs';
+
+<Tabs defaultValue="hug"
+  values={[
+    {label:'Обнимашки', value:'hug'},
+  ]}>
+<TabItem value="hug">
+
+<CodeSnippet>{Hug}</CodeSnippet>
+
+</TabItem>
+</Tabs>
