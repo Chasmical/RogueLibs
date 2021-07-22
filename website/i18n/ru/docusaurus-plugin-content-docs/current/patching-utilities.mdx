@@ -1,0 +1,339 @@
+# Утилиты для патчей
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Атрибут `RLSetup` {#rlsetup}
+
+Так как RogueLibs обрабатывает всё кастомное как классы, вы можете забыть инициализировать новый класс в `Awake` вашего плагина. Именно поэтому тут есть атрибут `RLSetup`. Вы можете добавить его к статическому методу и инициализировать ваш кастомный класс там.
+
+```csharp title="MyCustomItem.cs"
+public class MyCustomItem : CustomItem
+{
+    // highlight-start
+    [RLSetup]
+    public static void Setup()
+    // highlight-end
+    {
+        RogueLibs.CreateCustomItem<MyCustomItem>()
+            .WithName(new CustomNameInfo("Name"))
+            .WithDescription(new CustomNameInfo("Description"))
+            .WithSprite(Properties.Resources.Sprite)
+            .WithUnlock(new ItemUnlock());
+        
+        RogueLibs.CreateCustomName("SomeName", "Dialogue", new CustomNameInfo("Text"));
+    }
+}
+```
+
+Вам просто надо будет вызвать следующий метод в `Awake` вашего плагина:
+
+```csharp title="MyCoolPlugin.cs"
+    public void Awake()
+    {
+        // highlight-next-line
+        RogueLibs.LoadFromAssembly();
+        /* ... */
+    }
+```
+
+:::tip Совет от профи
+Серьёзно, используйте его. Это также помогает с версионингом. Всё в одном месте.
+:::
+
+## `RoguePatcher` {#roguepatcher}
+
+`RoguePatcher` - маленький вспомогательный класс, делающий написание патчей немного быстрее и проще. Если вам надо больше контроля (порядок патчей, приоритет и т.п.), тогда используйте оригинальные методы Harmony.
+
+<Tabs defaultValue="roguepatcher"
+    values={[
+        {label:'RoguePatcher', value:'roguepatcher'},
+        {label:'Harmony', value:'harmony'},
+    ]}>
+<TabItem value="roguepatcher">
+
+```csharp
+RoguePatcher patcher = new RoguePatcher(this);
+
+patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
+
+patcher.Postfix(typeof(InvDatabase), nameof(InvDatabase.ChooseArmor), new Type[1] { typeof(string) });
+```
+
+</TabItem>
+<TabItem value="harmony">
+
+```csharp
+Harmony harmony = new Harmony(pluginGUID);
+
+MethodInfo original = AccessTools.Method(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
+MethodInfo patch = AccessTools.Method(GetType(), nameof(MyPatchMethod));
+harmony.Patch(original, new HarmonyMethod(patch));
+
+original = AccessTools.Method(typeof(InvDatabase), nameof(InvDatabase.ChooseArmor), new Type[1] { typeof(string) });
+patch = AccessTools.Method(GetType(), nameof(MyPatchMethod2));
+harmony.Patch(original, new HarmonyMethod(patch));
+```
+
+</TabItem>
+</Tabs>
+
+:::tip Совет от профи
+Вместо указывания названий методов с помощью строк, указывайте их с помощью ключевого слова `nameof`. Используйте строковые названия только если метод, который вы хотите пропатчить, не публичный.
+:::
+
+Методы-патчи должны иметь следующее имя: `<ЦелевойТип>_<ЦелевойМетод>`. В примере выше, `RoguePatcher` будет искать методы-патчи с названиями `StatusEffects_hasStatusEffect` и `InvDatabase_ChooseArmor` в классе вашего плагина.
+
+Вы можете изменить тип, в котором будут искаться методы-патчи. Укажите его в конструкторе или выставьте свойство между патчами:
+
+<Tabs defaultValue="roguepatcher"
+    values={[
+        {label:'RoguePatcher', value:'roguepatcher'},
+        {label:'Harmony', value:'harmony'},
+    ]}>
+<TabItem value="roguepatcher">
+
+```csharp
+public class MyCoolPlugin : BaseUnityPlugin
+{
+    public void Awake()
+    {
+        // highlight-next-line
+        RoguePatcher patcher = new RoguePatcher(this, typeof(MyCoolPatches));
+
+        patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
+
+        // highlight-next-line
+        patcher.TypeWithPatches = typeof(MyEvenCoolerPatches);
+
+        patcher.Postfix(typeof(InvDatabase), nameof(InvDatabase.ChooseArmor), new Type[1] { typeof(string) });
+    }
+}
+public class MyCoolPatches
+{
+    public static void StatusEffects_hasStatusEffect(StatusEffects __instance)
+    {
+        /* ... */
+    }
+}
+public class MyEvenCoolerPatches
+{
+    public static void InvDatabase_ChooseArmor(InvDatabase __instance, string previousArmorName)
+    {
+        /* ... */
+    }
+}
+```
+
+</TabItem>
+<TabItem value="harmony">
+
+```csharp
+public class MyCoolPlugin : BaseUnityPlugin
+{
+    public void Awake()
+    {
+        Harmony harmony = new Harmony(pluginGUID);
+
+        MethodInfo original = AccessTools.Method(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
+        MethodInfo patch = AccessTools.Method(typeof(MyCoolPatches), nameof(MyPatchMethod));
+        harmony.Patch(original, new HarmonyMethod(patch));
+
+        original = AccessTools.Method(typeof(InvDatabase), nameof(InvDatabase.ChooseArmor), new Type[1] { typeof(string) });
+        patch = AccessTools.Method(typeof(MyEvenCoolerPatches), nameof(MyPatchMethod2));
+        harmony.Patch(original, new HarmonyMethod(patch));
+    }
+}
+public class MyCoolPatches
+{
+    public static void MyPatchMethod(StatusEffects __instance)
+    {
+        /* ... */
+    }
+}
+public class MyEvenCoolerPatches
+{
+    public static void MyPatchMethod2(InvDatabase __instance, string previousArmorName)
+    {
+        /* ... */
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
+## Вспомогательные методы для транспилирования {#transpiler-helper-methods}
+
+Транспиляторы довольно сложные.
+
+Вот пример из RogueLibs:
+
+<Tabs defaultValue="helper"
+    values={[
+        {label:'Вспомогательные методы', value:'helper'},
+        {label:'Harmony', value:'harmony'},
+    ]}>
+<TabItem value="helper">
+
+```csharp
+public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> codeEnumerable)
+    => codeEnumerable.AddRegionAfter(
+        new Func<CodeInstruction, bool>[]
+        {
+            i => i.IsLdloc(),
+            i => i.opcode == OpCodes.Ldarg_3,
+            i => i.opcode == OpCodes.Stfld && i.StoresField(causingAgentField),
+        },
+        new Func<CodeInstruction[], CodeInstruction>[]
+        {
+            a => a[0],
+            _ => new CodeInstruction(OpCodes.Ldarg_0),
+            _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook))),
+        });
+
+private static readonly FieldInfo causingAgentField = typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent));
+```
+
+</TabItem>
+<TabItem value="harmony">
+
+```csharp
+public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> code)
+{
+    bool searching = true;
+    int current = 0;
+    CodeInstruction[] matches = new CodeInstruction[after.Length];
+    foreach (CodeInstruction instr in code)
+    {
+        yield return instr;
+        if (searching)
+        {
+            if (current is 0 ? instr.IsLdloc()
+                : current is 1 ? instr.opcode == OpCodes.Ldarg_3
+                : instr.opcode == OpCodes.Stfld && instr.StoresField(causingAgentField))
+            {
+                matches[current] = instr;
+                if (++current is 3)
+                {
+                    searching = false;
+                    yield return matches[0];
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook)));
+                }
+            }
+            else current = 0;
+        }
+    }
+}
+
+private static readonly FieldInfo causingAgentField = typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent));
+```
+
+Да, выглядит просто. Но это только потому что это очень простой пример.
+
+</TabItem>
+</Tabs>
+
+:::tip Избегайте тяжёлых вычислений
+При написании предикатов, помните, что они могут быть вызваны сотни или тысячи раз. Например, вы можете заранее вычислить значение `FieldInfo`, используемое вашим предикатом, просто положите его в статическое поле, как в примере выше.
+
+Такие тяжёлые вычисления могут стоить вам **сотен миллисекунд** времени запуска (или даже целые секунды, если вы работаете над крупным проектом).
+:::
+
+Вот ещё один пример из RogueLibs:
+
+<Tabs defaultValue="helper"
+    values={[
+        {label:'Вспомогательные методы', value:'helper'},
+        {label:'Harmony', value:'harmony'},
+    ]}>
+
+<TabItem value="helper">
+
+```csharp
+public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
+    => codeEnumerable.ReplaceRegion(
+        new Func<CodeInstruction, bool>[]
+        {
+            i => i.opcode == OpCodes.Callvirt && i.Calls(List_Unlock_GetEnumerator),
+            i => i.IsStloc(),
+        },
+        new Func<CodeInstruction, bool>[]
+        {
+            i => i.opcode == OpCodes.Callvirt,
+            i => i.opcode == OpCodes.Endfinally,
+            i => i.opcode == OpCodes.Ldarg_0,
+        },
+        new CodeInstruction[]
+        {
+            new CodeInstruction(OpCodes.Pop),
+            new CodeInstruction(OpCodes.Pop),
+            new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)))
+        });
+
+private static readonly MethodInfo List_Unlock_GetEnumerator = typeof(List<Unlock>).GetMethod("GetEnumerator");
+```
+
+</TabItem>
+<TabItem value="harmony">
+
+```csharp
+public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> code)
+{
+    int state = 0;
+    int current = 0;
+    CodeInstruction[] beginCache = new CodeInstruction[2];
+    foreach (CodeInstruction instr in code)
+    {
+        if (state is 2)
+            yield return instr;
+        else if (state is 0)
+        {
+            if (current is 0 ? instr.opcode == OpCodes.Callvirt && instr.Calls(List_Unlock_GetEnumerator)
+                : instr.IsStloc())
+            {
+                beginCache[current] = instr;
+                if (++current == 2)
+                {
+                    state = 1;
+                    current = 0;
+                }
+            }
+            else
+            {
+                if (current > 0)
+                {
+                    for (int i = 0; i < current; i++)
+                        yield return beginCache[i];
+                    current = 0;
+                }
+                yield return instr;
+            }
+        }
+        else
+        {
+            if (current is 0 ? instr.opcode == OpCodes.Callvirt
+                : current is 1 ? instr.opcode == OpCodes.Endfinally
+                : instr.opcode == OpCodes.Ldarg_0)
+            {
+                if (++current == 3)
+                {
+                    yield return new CodeInstruction(OpCodes.Pop);
+                    yield return new CodeInstruction(OpCodes.Pop);
+                    yield return new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)));
+                }
+            }
+            else current = 0;
+        }
+    }
+}
+
+private static readonly MethodInfo List_Unlock_GetEnumerator = typeof(List<Unlock>).GetMethod("GetEnumerator");
+```
+
+Всё ещё относительно просто. Я просто не хочу тратить своё время на написание действительно сложного примера.
+
+</TabItem>
+</Tabs>

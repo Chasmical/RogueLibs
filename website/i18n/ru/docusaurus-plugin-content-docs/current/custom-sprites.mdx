@@ -1,0 +1,114 @@
+# Кастомные спрайты
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Добавляем спрайты как ресурсы {#sprites-as-resources}
+
+Во-первых, возьмите свои спрайты и конвертируйте их в PNG или JPEG, если они уже не в PNG или JPEG формате.
+
+Потом, измените расширения файлов на `.bin`. Таким образом Visual Studio определит файлы как двоичные данные вместо растровых изображений.
+
+:::note
+К сожалению, мы не можем импортировать изображения из растровых изображений, так как System.Drawing.dll Unity просто заполнен обрубками. И поэтому, нам придётся импортировать изображения как двоичные данные, пока кто-нибудь не найдёт решение получше.
+:::
+
+:::note
+Нужен скриншот.
+:::
+
+Нажмите правой кнопкой по своему проекту, перейдите в са-а-амый низ и выберите **Свойства**:
+
+<img src={useBaseUrl('/img/dev-extra/sprites/project-properties.png')} width='300'/>
+
+Перейдите во вкладку **Ресурсы** и нажмите на *ту* кнопку, чтобы создать файл с ресурсами:
+
+<img src={useBaseUrl('/img/dev-extra/sprites/create-resources.png')} width='800'/>
+
+Выберите **Добавить ресурс** на верху меню и нажмите **Добавить существующий файл...**:
+
+<img src={useBaseUrl('/img/dev-extra/sprites/add-resource.png')} width='600'/>
+
+Теперь найдите свои изображения (с расширением `.bin`) и добавьте их как ресурсы:
+
+:::note
+Нужен скриншот.
+:::
+
+Теперь вы можете ссылаться на данные ваших спрайтов из кода таким образом: `Properties.Resources.<НазваниеРесурса>`.
+
+:::note
+Если у вас ошибка, то убедитесь, что пространство имён по умолчанию, указанное в свойствах проекта во вкладке **Приложение**, то же самое, что вы и используете.
+:::
+
+## `RogueSprite` {#roguesprite}
+
+:::note
+Если вам интересно, почему он называется `RogueSprite`, а не `CustomSprite`, как почти все остальные штуки в RogueLibs (`CustomItem`, `CustomTrait`, `CustomEffect`), ну что ж, это потому что он ведёт себя немного по-другому. `CustomItem`, `CustomTrait` и др. - хуки, в то время как `RogueSprite`, технически, коллекция хуков. А ещё, я потратил невероятное количество времени и работы, чтобы разобраться в этой TK2D ерунде и я просто хотел отличить его от других классов.
+:::
+
+Обычно, новые `RogueSprite` создаются вот так:
+
+```csharp
+RogueLibs.CreateCustomItem<MyCustomItem>()
+    ...
+    // highlight-next-line
+    .WithSprite(Properties.Resources.MyCustomItem);
+```
+
+Но вы можете создать их напрямую тоже, но в таком случае вам придётся указать название и область действия. Область действия спрайта определяет в каких областях игры спрайт будет доступен. `SpriteScope.Items` будет работать только на предметах, `SpriteScope.Objects` - только на объектах, и т.д. Вы можете указать несколько областей тоже, объединив их с помощью оператора `|`.
+
+```csharp
+RogueLibs.CreateCustomSprite("name", SpriteScope.Items, Properties.Resources.ResourceName);
+```
+
+По умолчанию, RogueLibs использует весь файл для текстуры. Вы можете указать нужную область текстуры `Rect` параметром:
+
+```csharp
+RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceName,
+                                // highlight-next-line
+                                new Rect(32f, 32f, 64f, 64f));
+```
+
+Если вы используете текстуры размером, отличающимся от 64x64, то вам также надо указать PPU (pixels-per-unit) параметр:
+
+```csharp
+RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceName,
+                                // highlight-next-line
+                                new Rect(64f, 64f, 128f, 128f), 128f);
+```
+
+## Различные спрайты {#sprite-variations}
+
+Если у вашего предмета более одного спрайта, используйте `InvItem.LoadItemSprite` в `SetupDetails` вашего предмета:
+
+```csharp
+public class Present : CustomItem, IItemUsable
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomItem<Present>()
+            /* ... */
+            .WithSprite(Properties.Resources.Present);
+
+        RogueLibs.CreateCustomSprite("Present2", SpriteScope.Items, Properties.Resources.Present2);
+        RogueLibs.CreateCustomSprite("Present3", SpriteScope.Items, Properties.Resources.Present3);
+    }
+
+    public override void SetupDetails()
+	{
+        /* ... */
+		int rnd = new Random().Next(3) + 1;
+        // случайное целое число x, такое что 1 ≤ x ≤ 3
+
+        if (rnd != 1) // загрузить другой спрайт, если это 2 или 3
+		    Item.LoadItemSprite($"Present{rnd}");
+
+        // если это 1, спрайт "Present" будет использован по умолчанию
+	}
+}
+```
+
+Этот пример работает только если предмет действительно существует. В Обвесе и Меню наград у него всегда будет спрайт `Present`. Если вы хотите чтобы спрайт в меню также случайно выбирался, вам придётся [перегрузить метод `DisplayedUnlock.GetImage`](./unlocks/overriding-behavior#examples).

@@ -1,0 +1,115 @@
+# Дополнительно
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `IDoUpdate` и `IDoFixedUpdate` {#update-interfaces}
+
+Если вы хотите обновлять свои предметы/особенности/разблокировки с `Update` или `FixedUpdate` Unity, реализуйте эти интерфейсы:
+
+<Tabs
+    defaultValue="update"
+    values={[
+        {label:'IDoUpdate', value:'update'},
+        {label:'IDoFixedUpdate', value:'fixedupdate'},
+    ]}>
+<TabItem value="update">
+
+```csharp
+// highlight-next-line
+public class MyCustomItem : CustomItem, IDoUpdate
+{
+    // highlight-start
+    public void Update()
+    {
+        /* ... */
+    }
+    // highlight-end
+}
+```
+
+</TabItem>
+<TabItem value="fixedupdate">
+
+```csharp
+// highlight-next-line
+public class MyCustomItem : CustomItem, IDoFixedUpdate
+{
+    // highlight-start
+    public void FixedUpdate()
+    {
+        /* ... */
+    }
+    // highlight-end
+}
+```
+
+</TabItem>
+</Tabs>
+
+## PluginBuildEvents {#pluginbuildevents}
+
+### Копирование файлов плагина {#copying-plugin-files}
+
+Устали копировать файлы плагина в `BepInEx/plugins`? Ну что ж, есть решение.
+
+Во-первых, скачайте последнюю версию PluginBuildEvents:
+
+:::note
+Screenshot needed.
+:::
+
+Распакуйте папку `.events` в вашу папку с репозиториями:
+
+:::note
+Screenshot needed.
+:::
+
+Откройте свой проект, перейдите в его Свойства > События сборки:
+
+:::note
+Screenshot needed.
+:::
+
+И укажите следующие события после сборки:
+
+```bash
+"D:\repos\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"
+```
+
+Где `D:\repos\.events` - путь по которому вы положили PluginBuildEvents.
+
+:::note
+Если у вас не куплена Steam версия игры (или вы каким-то образом сломали путь установки Steam в реестре), тогда укажите полный путь к игре вместо просто имени:
+
+```bash
+"D:\repos\.events\PluginBuildEvents.exe" "$(TargetPath)" "C:\GOG Games\Streets of Rogue"
+```
+:::
+
+Затем, соберите свой плагин, и его файлы будут перемещены в `BepInEx/plugins` автоматически.
+
+### Запуск игры {#launching-game}
+
+Хотите запускать игру сразу после сборки?
+
+Добавьте это к вашим событиям после сборки на новой строчке:
+
+```bash
+"D:\repos\.events\PluginBuildEvents.exe" --launch 512900
+```
+
+:::note
+`512900` - айди Streets of Rogue в Steam. Если вы разрабатываете плагин для другой игры, перейдите к его странице в Steam - номер в URL это его айди: `https://store.steampowered.com/app/512900/Streets_of_Rogue/`.
+:::
+
+:::note
+Если у вас не куплена Steam версия игры, то просто вставьте туда путь к исполняемому файлу игры:
+
+```bash
+"C:\GOG Games\Streets of Rogue\StreetsOfRogue.exe"
+```
+:::
+
+Используйте это только на одном из проектов в решении. Иначе, исполняемый файл игры запустится больше одного раза, и вам выскочат предупреждения наподобие *"Другой процесс с этой игрой уже работает!"*.
