@@ -1,0 +1,307 @@
+# Перегрузка поведения по умолчанию
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Сортировка {#sorting}
+
+Если вы хотите, чтобы ваша разблокировка была на самом верху меню, выставите свойства `SortingOrder` и `SortingIndex`.
+
+Разблокировки сначала сортируются по своим `SortingOrder`, затем по своим состояниям (разблокирована, доступна для покупки, доступна и заблокирована), и затем по своим `SortingIndex`. Вы можете проигнорировать сортировку по состоянию, выставив `IgnoreStateSorting` на `true`.
+
+Вот пример того как это работает:
+
+- `SortingOrder = -400`:
+  - `Unlocked`:
+    - `SortingIndex = -3`;
+    - `SortingIndex = 1`;
+    - `SortingIndex = 2`;
+  - `Purchasable`:
+    - ...
+  - `Available`:
+    - ...
+  - `Locked`:
+    - ...
+- `SortingOrder = -3`:
+  - ...
+- `SortingOrder = 0` (ванильные разблокировки идут тут):
+  - ...
+- `SortingOrder = 1`:
+  - ...
+- `SortingOrder = 500`:
+  - ...
+
+:::caution
+Меню может стать странным или даже крашнуться, если не у всех разблокировок на текущем `SortingOrder` `IgnoreStateSorting` стоит на одном и том же значении. Так что убедитесь, что у всех других разблокировок `IgnoreStateSorting` стоит на `true` тоже.
+:::
+
+## Перегружаемые методы {#methods}
+
+### `UnlockWrapper`
+
+```csharp title="UnlockWrapper.cs"
+// вызывается когда разблокировка инициализируется и интегрируется в игру
+public virtual void SetupUnlock() { }
+
+// вызывается довольно часто для определения, можно ли открыть её прямо сейчас
+public virtual void UpdateUnlock()
+{
+    if ((Unlock.nowAvailable = !Unlock.unlocked && CanBeUnlocked()) && UnlockCost is 0)
+        gc.unlocks.DoUnlockForced(Name, Type);
+}
+
+// определяет можно ли открыть разблокировку прямо сейчас
+public virtual bool CanBeUnlocked() => UnlockCost > -1
+    && Unlock.prerequisites.All(c => gc.sessionDataBig.unlocks.Exists(u => u.unlockName == c && u.unlocked));
+
+// получает сырое название разблокировки, без богатого текста, стоимостей и значений
+public virtual string GetName() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockNameType) : "?????";
+
+// получает сырое описание разблокировки, без богатого текста, стоимостей и значений
+public virtual string GetDescription() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockDescriptionType) : "?????";
+
+// получает изображение разблокировки (отображается в меню)
+public virtual Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable)
+    && RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
+```
+
+:::tip Совет от профи
+Вы можете посмотреть как эти методы реализованы в [исходном коде RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibsCore/Hooks/Unlocks/UnlockWrapper.cs).
+:::
+
+### `DisplayedUnlock`
+
+```csharp title="DisplayedUnlock.cs"
+// вызывается при обновлении кнопки. `UpdateUnlock` вызывается прямо перед этим.
+public virtual void UpdateButton() => UpdateButton(IsEnabled, UnlockButtonState.Selected, UnlockButtonState.Normal);
+
+protected void UpdateButton(bool isEnabledOrSelected, UnlockButtonState selected, UnlockButtonState normal)
+{
+    Text = GetFancyName();
+    State = IsUnlocked ? isEnabledOrSelected ? selected : normal
+        : Unlock.nowAvailable && UnlockCost > -1 ? UnlockButtonState.Purchasable
+        : UnlockButtonState.Locked;
+}
+
+// вызывается при нажатии кнопки. Смотрите реализации других разблокировок.
+public abstract void OnPushedButton();
+
+// получает "красивое" название разблокировки, с богатым текстом, стоимостями и очками
+public virtual string GetFancyName()
+{
+    /* Куча всего, смотрите исходный код RogueLibs */
+}
+
+// получает "красивое" описание разблокировки, с богатым текстом, несовместимыми разблокировками, требованиями и рекоммендациями
+public virtual string GetFancyDescription()
+{
+    /* Куча всего, смотрите исходный код RogueLibs */
+}
+```
+
+:::tip Совет от профи
+Вы можете посмотреть как эти методы реализованы в [исходном коде RogueLibs](https://github.com/Abbysssal/RogueLibs/blob/master/RogueLibsCore/Hooks/Unlocks/DisplayedUnlock.cs).
+:::
+
+## Примеры {#examples}
+
+<Tabs defaultValue="present"
+  values={[
+    {label:'Подарок (различные спрайты)', value:'present'},
+    {label:'Кнопка "Случайные предметы"', value:'randomitems'},
+    {label:'Категории', value:'categories'},
+  ]}>
+<TabItem value="present">
+
+Допустим, вы хотите сделать [предмет под названием Подарок, и у него есть 3 разных спрайта](../custom-sprites#sprite-variations).
+
+Во-первых, вам надо создать класс разблокировки наследующий от `ItemUnlock`:
+
+```csharp title="PresentUnlock.cs"
+// highlight-next-line
+public class PresentUnlock : ItemUnlock
+{
+}
+```
+
+Теперь вы можете перегрузить метод `GetImage` класса `DisplayedUnlock`:
+
+```csharp title="PresentUnlock.cs"
+public class PresentUnlock : ItemUnlock
+{
+    public override Sprite GetImage()
+    {
+        int rnd = new System.Random().Next(3) + 1;
+        return (IsUnlocked || Unlock.nowAvailable) && rnd != 1
+            && gc.gameResources.itemDic.TryGetValue($"Present{rnd}", out Sprite sprite)
+            ? sprite : base.GetImage();
+    }
+}
+```
+
+Потом просто используйте вашу кастомную разблокировку в инициализации кастомного предмета:
+
+```csharp title="Present.cs"
+public class Present : CustomItem, IItemUsable
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomItem<Present>()
+            .WithName(new CustomNameInfo("Present"))
+            .WithDescription(new CustomNameInfo("Open it!"))
+            .WithSprite(Properties.Resources.Present)
+            // highlight-next-line
+            .WithUnlock(new PresentUnlock
+            {
+                UnlockCost = 5,
+                CharacterCreationCost = 3,
+                LoadoutCost = 3
+            });
+    }
+}
+```
+
+</TabItem>
+<TabItem value="randomitems">
+
+Простой пример - кнопка в меню Вещевого телепортера, дающая игроку 5 случайных предметов.
+
+```csharp title="RandomItemsButton.cs"
+public class RandomItemsButton : ItemUnlock
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomUnlock(new RandomItemsButton())
+            .WithName(new CustomNameInfo("Random Items")
+            .WithDescription(new CustomNameInfo("Gives you 5 random items"));
+    }
+
+    public RandomItemsButton()
+    {
+        SortingOrder = -100; // в самом верху меню
+        IsAvailable = false;
+        IsAvailableInCC = false;
+        IsAvailableInItemTeleporter = true; // только в Вещевом телепортере
+    }
+
+    public override void OnPushedButton()
+    {
+        System.Random rnd = new System.Random();
+        for (int i = 0; i < 5; i++)
+        {
+            UnlockWrapper item;
+            do
+            {
+                int index = rnd.Next(Menu.Unlocks.Count);
+                UnlockWrapper item = Menu.Unlocks[index];
+            }
+            // убедимся что мы случайно не купим заблокированный предмет
+            while (!item.IsUnlocked && item != this);
+
+            // будет гораздо лучше и безопаснее заспавнить предмет самому,
+            // но ради простоты примеры, мы просимулируем нажатие на кнопку
+            item.OnPushedButton();
+        }
+    }
+}
+```
+
+</TabItem>
+<TabItem value="categories">
+
+Ну что ж, хотите сделать категории, как в [aToM](https://github.com/Abbysssal/aToM)? Вот!
+
+```csharp title="MyCategory.cs"
+public class MyCategory : MutatorUnlock
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        MyCategory category = new MyCategory("MyCustomCategory1");
+        RogueLibs.CreateCustomUnlock(category)
+            .WithName(new CustomNameInfo("My Custom Category 1"))
+            .WithDescription(new CustomNameInfo("My Custom Category 1 is very cool and does a lot of great stuff"));
+
+        category.SortingOrder = -59;
+        category.SortingIndex = -1;
+        int i = 0;
+        foreach (MutatorUnlock mutator in mutators1)
+        {
+            mutator.SortingOrder = -59;
+            mutator.SortingIndex = i;
+            category.Contents.Add(mutator);
+        }
+        Categories.Add(category);
+        
+        category = new MyCategory("MyCustomCategory2");
+        RogueLibs.CreateCustomUnlock(category)
+            .WithName(new CustomNameInfo("My Custom Category 2"))
+            .WithDescription(new CustomNameInfo("My Custom Category 2 is really great and accomplishes a ton of cool things"));
+
+        category.SortingOrder = -58;
+        category.SortingIndex = -1;
+        i = 0;
+        foreach (MutatorUnlock mutator in mutators2)
+        {
+            mutator.SortingOrder = -58;
+            mutator.SortingIndex = i;
+            category.Contents.Add(mutator);
+        }
+        Categories.Add(category);
+        
+        RogueLibs.CreateCustomName("CategoryShow", "Interface", new CustomNameInfo("Show"));
+        RogueLibs.CreateCustomName("CategoryHide", "Interface", new CustomNameInfo("Hide"));
+    }
+
+    public MyCategory(string name) : base(name) { }
+
+    public List<UnlockWrapper> Contents = new List<UnlockWrapper>();
+    public static List<MyCategory> Categories = new List<MyCategory>();
+
+    private bool isExpanded;
+    public bool IsExpanded
+    {
+        get => isExpanded;
+        set
+        {
+            if (isExpanded != (isExpanded = value)) // если значение изменилось
+            {
+                // сделать мутаторы текущей категории доступными/недоступными
+                foreach (UnlockWrapper mutator in Contents)
+                    mutator.IsAvailable = value;
+                
+                // если категория была раскрыта, скрыть все другие категории
+                if (value)
+                    foreach (MyCategory category in Categories)
+                        if (category != this) category.IsExpanded = false;
+            }
+        }
+    }
+
+    public override void GetFancyName()
+    {
+        string name = base.GetFancyName();
+        name += " - " +  gc.nameDB.GetName(IsExpanded ? "CategoryHide" : "CategoryShow", "Interface");
+        return name;
+    }
+    public override void OnPushedButton()
+    {
+        if (Menu.Type == UnlocksMenuType.MutatorMenu)
+        {
+            PlaySound("ClickButton");
+            // переключить свойство IsExpanded
+            IsExpanded = !IsExpanded;
+            // переоткрыть меню чтобы обновить список кнопок
+            ((CustomScrollingMenu)Menu).Menu.OpenScrollingMenu();
+        }
+        else base.OnPushedButton();
+    }
+}
+```
+
+</TabItem>
+</Tabs>
+
