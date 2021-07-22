@@ -48,7 +48,7 @@ public class MyCustomItem : CustomItem
 ```
 
 :::tip Pro-tip: String consts
-Use static types with string consts, like `RogueCategories` and `ItemTypes`. This way you won't make a typo. Typos can be critical sometimes, since neither the game nor RogueLibs track all existing item categories *(although it's an interesting idea, maybe I'll do something like that)*.
+Use static types with string consts, like `RogueCategories` and `ItemTypes`. This way you won't make a typo. Typos can be critical sometimes, since neither the game nor RogueLibs track all existing item categories *([although it's an interesting idea, maybe I'll do something like that](https://github.com/Abbysssal/RogueLibs/issues/26))*.
 :::
 
 ## Initialization {#initialization}
@@ -115,31 +115,31 @@ See [Custom Names](../names/custom-names), [Custom Sprites](../custom-sprites) f
 
 You can use the following properties when initializing `ItemUnlock`s:
 
-Property | Default | Description
----------|---------|------------
-`UnlockCost` | `0` | Unlock cost of the item, in nuggets. If set to 0, it will unlock automatically, once all prerequisites are unlocked.
-`CharacterCreationCost` | `1` | Cost of the item in Character Creation, in points.
-`LoadoutCost` | `1` | Cost of the item in Loadout, in nuggets.
-`IsAvailable` | `true` | Determines whether the item is available in the Rewards menu.
-`IsAvailableInCC` | `true` | Determines whether the item is available in the Character Creation menu.
-`IsAvailableInItemTeleporter` | `true` | Determines whether the item is available in Item Teleporter's menu.
-`Prerequisites` | | Determines what unlocks must be unlocked in order to unlock this item.
-`Recommendations` | | Just shows these unlocks in a separate Recommendations paragraph in the menus.
+Property                      | Default | Description
+------------------------------|---------|------------
+`UnlockCost`                  | `0`     | Unlock cost of the item, in nuggets. If set to 0, it will unlock automatically, once all prerequisites are unlocked.
+`CharacterCreationCost`       | `1`     | Cost of the item in Character Creation, in points.
+`LoadoutCost`                 | `1`     | Cost of the item in Loadout, in nuggets.
+`IsAvailable`                 | `true`  | Determines whether the item is available in the Rewards menu.
+`IsAvailableInCC`             | `true`  | Determines whether the item is available in the Character Creation menu.
+`IsAvailableInItemTeleporter` | `true`  | Determines whether the item is available in Item Teleporter's menu.
+`Prerequisites`               |         | Determines what unlocks must be unlocked in order to unlock this item.
+`Recommendations`             |         | Just shows these unlocks in a separate Recommendations paragraph in the menus.
 
 Other properties should not be used during initialization.
 
 ## Implementing `SetupDetails` {#setupdetails}
 
-Alright, while the code generator is being worked on, use the following table(s):
+Alright, while the code generator is being worked on, use the following tables:
 
-Field name           | Description
----------------------|------------
-**`itemType`**       | **Determines how the item will work in the game and stuff.**
-**`initCount`**      | **Determines the initial amount of the item.**
-*`rewardCount`*      | *(optional) Determines the amount of the item that you will get from quests. Defaults to `initCount`*
-**`itemValue`**      | **Determines the cost of a single unit of the item. Costs of weapons are calculated differently - cost of a weapon with 100 durability, or cost of a weapon with its `maxAmmo`.**
-**`stackable`**      | **Determines whether the item is stackable or has charges or something like that. If not set, the item's count is not displayed.**
-*`noCountText`*      | *(optional) Determines whether the item's count should not be displayed.*
+Field name      | Description
+----------------|------------
+**`itemType`**  | **Determines how the item will work in the game and stuff.**
+**`initCount`** | **Determines the initial amount of the item.**
+*`rewardCount`* | *(optional) Determines the amount of the item that you will get from quests. Defaults to `initCount`*
+**`itemValue`** | **Determines the cost of a single unit of the item. Costs of weapons are calculated differently - cost of a weapon with 100 durability, or cost of a weapon with its `maxAmmo`.**
+**`stackable`** | **Determines whether the item is stackable or has charges or something like that. If not set, the item's count is not displayed.**
+*`noCountText`* | *(optional) Determines whether the item's count should not be displayed, even if the field above is set to `true`.*
 
 <Tabs defaultValue="foodconsumable"
   values={[
@@ -151,22 +151,22 @@ Field name           | Description
   ]}>
 <TabItem value="foodconsumable">
 
-Field name           | Description
----------------------|------------
-`healthChange`       | Determines how much health the item will restore.
-`statusEffect`       | Determines the status effect that the item has. Also means that the item can be used on the Air Conditioner.
-`contents`           | Just like `statusEffect`, but as a list.
-`stackableContents`  | ???
-`goesInToolbar`      | Determines whether the item can be set to the toolbar and then be used with 1-5 keys.
+Field name          | Description
+--------------------|------------
+`healthChange`      | Determines how much health the item will restore.
+`statusEffect`      | Determines the status effect that the item has. Also means that the item can be used on the Air Conditioner.
+`contents`          | Just like `statusEffect`, but as a list.
+`stackableContents` | ???
+`goesInToolbar`     | Determines whether the item can be set to the toolbar and then be used with 1-5 keys.
 
 </TabItem>
 <TabItem value="tool">
 
-Field name           | Description
----------------------|------------
-`goesInToolbar`      | Determines whether the item can be set to the toolbar and then be used with 1-5 keys.
-`hasCharges`         | Determines whether the item has charges. It means that the item cannot be splitted in multiplayer.
-`canBeUsedOn_____`   | Determines whether the item can be used on these objects.
+Field name         | Description
+-------------------|------------
+`goesInToolbar`    | Determines whether the item can be set to the toolbar and then be used with 1-5 keys.
+`hasCharges`       | Determines whether the item has charges. It means that the item cannot be splitted in multiplayer.
+`canBeUsedOn_____` | Determines whether the item can be used on these objects.
 
 </TabItem>
 <TabItem value="wearable">
@@ -187,9 +187,9 @@ Field name           | Description
   ]}>
 <TabItem value="body">
 
-Field name           | Description
----------------------|------------
-`isArmor`            | If your item is a body armor, set this to `true`.
+Field name | Description
+-----------|------------
+`isArmor`  | If your item is a body armor, set this to `true`.
 
 </TabItem>
 <TabItem value="head">
@@ -208,11 +208,11 @@ Field name           | Description
 </TabItem>
 <TabItem value="weapon">
 
-Field name           | Description
----------------------|------------
-`isWeapon`           | If your item is a weapon, set this to `true`.
-`weaponCode`         | Set this to your weapon type's code.
-`weaponToBeLoaded`   | Determines whether initially the item is not loaded, and has to be loaded/charged (like Water Pistol).
+Field name         | Description
+-------------------|------------
+`isWeapon`         | If your item is a weapon, set this to `true`.
+`weaponCode`       | Set this to your weapon type's code.
+`weaponToBeLoaded` | Determines whether initially the item is not loaded, and has to be loaded/charged (like Water Pistol).
 
 <Tabs defaultValue="weaponmelee"
   values={[
@@ -233,10 +233,10 @@ Field name            | Description
 </TabItem>
 <TabItem value="weaponthrown">
 
-Field name           | Description
----------------------|------------
-`throwDistance`      | Maximum distance that the item can be thrown at.
-`throwExtraDist`     | Determines whether the item should be thrown a little bit further than aimed at. Set this to `true`, if your item is a regular thrown weapon. Set this to `false`, if it's a trap, so it stays exactly in the position that you want to throw it in.
+Field name       | Description
+-----------------|------------
+`throwDistance`  | Maximum distance that the item can be thrown at.
+`throwExtraDist` | Determines whether the item should be thrown a little bit further than aimed at. Set this to `true`, if your item is a regular thrown weapon. Set this to `false`, if it's a trap, so it stays exactly in the position that you want to throw it in.
 
 <Tabs defaultValue="thrown"
   values={[
@@ -245,20 +245,20 @@ Field name           | Description
   ]}>
 <TabItem value="thrown">
 
-Field name           | Description
----------------------|------------
-`throwDamage`        | Set this to your weapon's damage.
+Field name    | Description
+--------------|------------
+`throwDamage` | Set this to your weapon's damage.
 
 </TabItem>
 <TabItem value="trap">
 
-Field name           | Description
----------------------|------------
-`touchDamage`        | Set this if your trap activates on touch.
-`incendiaryDamage`   | Set this if your trap activates when exploded.
-`otherDamage`        | Set this, if your trap deals some kind of non-touch non-explosion damage.
-`reactOnTouch`       | Set this if your trap activates when hit by something, anything at all.
-`dontFlash`          | Set to `true` if you don't want the trap to flash red once placed.
+Field name         | Description
+-------------------|------------
+`touchDamage`      | Set this if your trap activates on touch.
+`incendiaryDamage` | Set this if your trap activates when exploded.
+`otherDamage`      | Set this, if your trap deals some kind of non-touch non-explosion damage.
+`reactOnTouch`     | Set this if your trap activates when hit by something, anything at all.
+`dontFlash`        | Set to `true` if you don't want the trap to flash red once placed.
 
 </TabItem>
 </Tabs>
@@ -271,7 +271,7 @@ Field name             | Description
 `maxAmmo`              | Determines the weapon's max ammo. Defaults to `initCount`.
 `initCountAI`          | Determines how much of the item NPCs will get. Defaults to 1.
 `doesNoDamage`         | If it doesn't do damage, like Research Gun or Leaf Blower, set this to `true`.
-`gunKnockback`         | Determines the shooter's knockback. Machine Gun (15), Revoler (30), Rocket Launcher/Shotgun (60).
+`gunKnockback`         | Determines the shooter's knockback. Machine Gun (15), Revolver (30), Rocket Launcher/Shotgun (60).
 `rapidFire`            | Determines whether the left mouse button can be held to fire the weapon.
 `longerRapidFire`      | Determines if NPCs should shoot for about 1-2 seconds instead of just shooting a few projectiles.
 `shortRangeProjectile` | Determines whether NPCs should come closer to the opponent to use the weapon.
@@ -283,10 +283,10 @@ Field name             | Description
 </TabItem>
 <TabItem value="quest">
 
-Field name             | Description
------------------------|------------
-`questItem`            | Set this to `true` if it's a quest item.
-`questItemCanBuy`      | Set this to `true` if it can be bought.
+Field name        | Description
+------------------|------------
+`questItem`       | Set this to `true` if it's a quest item.
+`questItemCanBuy` | Set this to `true` if it can be bought.
 
 </TabItem>
 </Tabs>
@@ -306,32 +306,32 @@ Field name                            | Description
 `nonStackableInShop`                  | Determines whether shops should have only 1 item per slot.
 `cantBeCloned`                        | Determines whether the item shouldn't be cloneable with the Clone Machine.
 `cantStoreInATMMachine`               | Determines whether players shouldn't be able to store the item in the ATM.
-`notInLoadoutMachine`                 | Determines whether the item will appear in Loadout-O-Matic when selected as a starting item.
+`notInLoadoutMachine`                 | Determines whether the item will not appear in Loadout-O-Matic when selected as a starting item.
 `destroyAtLevelEnd`                   | Determines whether the item will be destroyed on the next level.
 `cantDrop`                            | Determines whether the item cannot be dropped.
 `doSpill`                             | Determines whether the item should drop from NPCs. Default: `true`.
 `cantDropNPC`                         | The opposite of `doSpill`. You probably should set these at the same time. Default: `false`.
 `cantDropSpecificCharacter`           | Set to the agent's name, if it shouldn't be droppable by that agent or by custom characters that have it as a starting item.
 `characterExclusive`                  | Set this to `true`, if your item is exclusive to a specific agent and custom characters.
-`characterExclusiveSpecificCharacter` | Se to the agent's name, if it's exclusive to a specific agent and custom characters.
+`characterExclusiveSpecificCharacter` | Set this to the agent's name, if it's exclusive to a specific agent and custom characters.
 
 </TabItem>
 <TabItem value="graphics">
 
-Field name             | Description
------------------------|------------
-`noCountText`          | Determines whether the item's count should not be displayed in the inventory.
-`noShadow`             | Determines whether the item shouldn't have a shadow.
-`shadowOffset`         | Determines the location of the shadow. *It's pretty complicated, so I'll make a preview for that in the code generator.*
-`lowCountThreshold`    | Determines after what count the 
+Field name          | Description
+--------------------|------------
+`noCountText`       | Determines whether the item's count should not be displayed in the inventory.
+`noShadow`          | Determines whether the item shouldn't have a shadow.
+`shadowOffset`      | Determines the location of the shadow. *It's pretty complicated, so I'll make a preview for that in the code generator.*
+`lowCountThreshold` | Determines below what count the text becomes red. Default: `0` - it doesn't become red.
 
 </TabItem>
 <TabItem value="other">
 
-Field name             | Description
------------------------|------------
-`colliderSize`         | Determines the size of the collider. `null` for default, or `"Big"` for a larger collider.
-`canCatchFire`         | Determines whether the item can catch fire. In the game it's used only on Factory Meat.
+Field name     | Description
+---------------|------------
+`colliderSize` | Determines the size of the collider. `null` for default, or `"Big"` for a larger collider.
+`canCatchFire` | Determines whether the item can catch fire. In the game it's used only on Factory Meat.
 
 </TabItem>
 <TabItem value="ai">

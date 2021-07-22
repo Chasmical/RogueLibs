@@ -25,7 +25,7 @@ public class MyTargetableItem : CustomItem, IItemTargetable
 
 `TargetObject` uses the current item on the target. The return value indicates whether it was a success or not. You can play a `"CantDo"` sound and make the player say something, if the item cannot be used. Returning `true` will also play an animation.
 
-`TargetCursorText` determines the text under the cursor when hovering over the specified object. You can also specify the cursor text's color. Text set to `null` will default to "Use", and Color set to `null` will default to <ColorSquare color='#FFFFFF'/>.
+`TargetCursorText` determines the text under the cursor when hovering over the specified object. `Text` set to `null` will default to "Use", and `Color` set to `null` will default to <ColorSquare color='#FFFFFF'/>.
 
 ## Examples {#examples}
 

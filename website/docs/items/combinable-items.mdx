@@ -37,9 +37,9 @@ Plus, your item's type must be `"Combine"`:
 
 `CombineItems` combines the current item with the other one. The return value indicates whether it was a success or not. Usually you'd just play a `"CantDo"` sound, if the items cannot be combined. Returning `true` will also play an animation.
 
-`CombineTooltip` determines the tooltip in the upper-left corner of the inventory slot. Text set to `null` will default to an empty string, and Color set to `null` will default to <ColorSquare color='#FFED00'/>. [See the tool below](#slot-preview).
+`CombineTooltip` determines the tooltip in the upper-left corner of the inventory slot. `Text` set to `null` will default to an empty string, and `Color` set to `null` will default to <ColorSquare color='#FFED00'/>. [See the tool below](#slot-preview).
 
-`CombineCursorText` determines the cursor text when hovering over the item. You can also specify the cursor text's color. Text set to `null` will default to "Combine", and Color set to `null` will default to <ColorSquare color='#FFFFFF'/>.
+`CombineCursorText` determines the cursor text when hovering over the item. `Text` set to `null` will default to "Combine", and `Color` set to `null` will default to <ColorSquare color='#FFFFFF'/>.
 
 ### Inventory Slot Preview {#slot-preview}
 
