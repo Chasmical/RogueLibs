@@ -1,0 +1,48 @@
+# Провайдеры кастомных имён
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+Если у вас какая-то сложная система наименований, то вам может пригодиться `INameProvider`. Таким образом вы можете контролировать, какие строки возвращаются методом `NameDB.GetName` в более обобщённом виде. Просто создайте класс реализующий `INameProvider` и добавьте его в `RogueFramework`.
+
+```csharp title="MyNameProvider.cs"
+public class MyNameProvider : INameProvider
+{
+    public void GetName(string name, string type, ref string result)
+    {
+        if (name.StartsWith("fake_"))
+        {
+            string sub = name.Substring("fake_".Length);
+            result = LanguageService.NameDB.GetName(sub, type);
+        }
+    }
+}
+```
+
+:::note
+Если оригинальный `NameDB.GetName` вернул строку с ошибкой (начинающуюся с `E_`), `result` выставляется на `null`.
+:::
+
+```csharp
+RogueFramework.NameProviders.Add(new MyNameProvider());
+```
+
+Вот более практичный и полезный пример, он, кстати, уже реализован в RogueLibs:
+
+```csharp
+public class DialogueNameProvider : INameProvider
+{
+	public void GetName(string name, string type, ref string result)
+	{
+		if (result is null && type == "Dialogue" && name.StartsWith("NA_"))
+		{
+			string sub = name.Substring("NA_".Length);
+			string newResult = LanguageService.NameDB.GetName(sub, type);
+			if (!newResult.StartsWith("E_")) result = newResult;
+		}
+	}
+}
+```
+
+Обычно, игра ищет диалоги в следующем формате: `<НазваниеПерсонажа>_<НазваниеДиалога>`. Если такого имени не существует, тогда `NA_<Название диалога>` (NA - No Agent - без персонажа) используется вместо него. Этот провайдер имён также ищет кастомное имя просто с названием диалога. Это позволяет разработчикам писать имена диалогов без этого надоедливого `NA_` в начале.

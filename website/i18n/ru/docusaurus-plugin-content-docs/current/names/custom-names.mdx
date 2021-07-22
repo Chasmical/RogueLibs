@@ -1,0 +1,138 @@
+# Кастомные имена
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `CustomNameInfo` {#customnameinfo}
+
+Структура `CustomNameInfo` используется для создания кастомных имён и транспортировки данных локализации.
+
+```csharp
+CustomNameInfo emptyInfo = new CustomNameInfo();
+CustomNameInfo nameInfo = new CustomNameInfo("english text");
+```
+
+Можно добавить переводы на другие языки тоже:
+
+<Tabs
+    defaultValue="indexer"
+    values={[
+        {label:'Свойство-индексатор', value:'indexer'},
+        {label:'Именованные свойства', value:'named'},
+    ]}>
+<TabItem value="indexer">
+
+```csharp
+nameInfo = new CustomNameInfo
+{
+    [LanguageCode.Russian] = "русский текст",
+    [LanguageCode.Spanish] = "texto en español",
+};
+// или
+nameInfo[LanguageCode.Russian] = "русский текст";
+nameInfo[LanguageCode.Spanish] = "texto en español";
+```
+
+Вы также можете использовать свои коды языков:
+
+```csharp
+nameInfo[(LanguageCode)123] = "日本語テキスト";
+```
+
+:::info
+Смотрите подробнее в [Кастомные языки](./custom-languages).
+:::
+
+</TabItem>
+<TabItem value="named">
+
+```csharp
+nameInfo = new CustomNameInfo
+{
+    Russian = "русский текст",
+    Spanish = "texto en español",
+};
+// or
+nameInfo.Russian = "русский текст";
+nameInfo.Spanish = "texto en español";
+```
+
+</TabItem>
+</Tabs>
+
+В отличие от словарей, и `CustomName`, и `CustomNameInfo` возвращают `null`, если они не содержат определённого `LanguageCode`:
+
+```csharp
+string translation = nameInfo[(LanguageCode)123];
+// возвращает null, если этот язык не определён
+string display = translation ?? nameInfo.English;
+```
+
+## `CustomName` {#customname}
+
+Обычно, `CustomName` создаются автоматически, когда добавляешь имена и описания своим предметам, особенностям, способностям и др.:
+
+```csharp
+RogueLibs.CreateCustomItem<MyCustomItem>()
+    .WithName(new CustomNameInfo("English name")
+    {
+        Russian = "русское название",
+        Spanish = "nombre español",
+    })
+    .WithDescription(new CustomNameInfo("English description")
+    {
+        Russian = "русское описание",
+        Spanish = "descripción en español",
+    });
+```
+
+Вы можете инициализировать их сами тоже, но тогда вам придётся указать название и тип `CustomName` самим:
+
+```csharp
+CustomName name = RogueLibs.CreateCustomName("Name", "Type", new CustomNameInfo("Info"));
+```
+
+Если вы будете использовать второй способ, то вот список типов используемых в игре:
+
+- `Item` - названия предметов и специальных способностей;
+- `Description` - описания предметов, специальных способностей, особенностей, статусных эффектов и персонажей;
+- `StatusEffect` - названия особенностей и статусных эффектов;
+- `Interface` - кнопки интерфейса, метки и всякое такое;
+- `Unlock` - названия и описания мутаторов и Больших Квестов;
+- `Object` - названия объектов и типов чанков;
+- `Agent` - названия персонажей;
+- `Dialogue` - диалоги и фразы персонажей;
+
+## Использование {#usage}
+
+Если хотите использовать ваши кастомные имена, используйте `NameDB.GetName()` или любые другие методы, использующие его:
+
+```csharp
+string dialogue = gc.nameDB.GetName("CryForHelp", "Dialogue");
+```
+
+```csharp
+Owner.SayDialogue("CryForHelp");
+```
+
+`CustomName` и `CustomNameInfo` также могут быть неявно преобразованы в `CustomTooltip`:
+
+```csharp
+public class Recycler : CustomItem, IItemCombinable
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        recycleTooltip = RogueLibs.CreateCustomName("Recycle", "Interface", new CustomNameInfo
+        {
+            English = "Recycle",
+            Russian = "Переработать",
+        });
+    }
+    private static CustomName recycleTooltip;
+
+    /* ... */
+    public CustomTooltip CombineTooltip(InvItem _) => recycleTooltip;
+}
+```
