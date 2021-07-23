@@ -89,8 +89,8 @@ namespace RogueLibsCore
 		{
 			if (hook is null) throw new ArgumentNullException(nameof(hook));
 			hook.Instance = Instance;
-			hook.Initialize();
 			hooks.Add(hook);
+			hook.Initialize();
 		}
 		/// <summary>
 		///   <para>Creates a hook of the specified <typeparamref name="THook"/> type using its default constructor and attaches it to the current instance.</para>
