@@ -114,7 +114,6 @@ namespace RogueLibsCore
 				hook = entry.Initializer();
 				if (hook is CustomEffect custom)
 					custom.EffectInfo = entry.EffectInfo;
-				hook.Instance = instance;
 				return true;
 			}
 			hook = null;

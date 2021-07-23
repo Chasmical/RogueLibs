@@ -82,7 +82,6 @@ namespace RogueLibsCore
 				hook = entry.Initializer();
 				if (hook is CustomTrait custom)
 					custom.TraitInfo = entry.TraitInfo;
-				hook.Instance = instance;
 				return true;
 			}
 			hook = null;

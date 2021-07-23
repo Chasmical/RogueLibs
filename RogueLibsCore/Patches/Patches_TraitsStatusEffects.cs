@@ -193,6 +193,7 @@ namespace RogueLibsCore
 				{
 					if (hook is CustomEffect custom2)
 						custom = custom2;
+					effect.AddHook(custom);
 				}
 			return custom?.GetEffectTime() ?? 9999;
 		}
@@ -206,6 +207,7 @@ namespace RogueLibsCore
 				{
 					if (hook is CustomEffect custom2)
 						custom = custom2;
+					effect.AddHook(custom);
 				}
 			if (custom != null)
 			{

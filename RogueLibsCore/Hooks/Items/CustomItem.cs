@@ -276,7 +276,6 @@ namespace RogueLibsCore
 				hook = entry.Initializer();
 				if (hook is CustomItem custom)
 					custom.ItemInfo = entry.ItemInfo;
-				hook.Instance = instance;
 				return true;
 			}
 			hook = null;
