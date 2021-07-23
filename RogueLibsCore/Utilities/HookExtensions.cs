@@ -10,7 +10,7 @@ namespace RogueLibsCore
 	/// </summary>
 	public static class HookExtensions
 	{
-		private static HookController<T> GetHookController<T>(T obj, ref object field, bool create)
+		private static IHookController<T> GetHookController<T>(T obj, ref object field, bool create)
 		{
 			HookController<T> controller = field as HookController<T>;
 			if (controller is null && create) field = controller = new HookController<T>(obj);
@@ -88,7 +88,9 @@ namespace RogueLibsCore
 		public static THook AddHook<THook>(this InvItem instance) where THook : IHook<InvItem>, new()
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook<THook>();
+			THook hook = new THook();
+			GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook(hook);
+			return hook;
 		}
 		/// <summary>
 		///   <para>Creates a hook of the specified <typeparamref name="THook"/> type and attaches it to the current <paramref name="instance"/>.</para>
@@ -100,7 +102,9 @@ namespace RogueLibsCore
 		public static THook AddHook<THook>(this Agent instance) where THook : IHook<Agent>, new()
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook<THook>();
+			THook hook = new THook();
+			GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook(hook);
+			return hook;
 		}
 		/// <summary>
 		///   <para>Creates a hook of the specified <typeparamref name="THook"/> type and attaches it to the current <paramref name="instance"/>.</para>
@@ -112,7 +116,9 @@ namespace RogueLibsCore
 		public static THook AddHook<THook>(this ObjectReal instance) where THook : IHook<ObjectReal>, new()
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook<THook>();
+			THook hook = new THook();
+			GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook(hook);
+			return hook;
 		}
 		/// <summary>
 		///   <para>Creates a hook of the specified <typeparamref name="THook"/> type and attaches it to the current <paramref name="instance"/>.</para>
@@ -124,7 +130,9 @@ namespace RogueLibsCore
 		public static THook AddHook<THook>(this StatusEffect instance) where THook : IHook<StatusEffect>, new()
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook<THook>();
+			THook hook = new THook();
+			GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook(hook);
+			return hook;
 		}
 		/// <summary>
 		///   <para>Creates a hook of the specified <typeparamref name="THook"/> type and attaches it to the current <paramref name="instance"/>.</para>
@@ -136,7 +144,9 @@ namespace RogueLibsCore
 		public static THook AddHook<THook>(this Trait instance) where THook : IHook<Trait>, new()
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook<THook>();
+			THook hook = new THook();
+			GetHookController(instance, ref instance.__RogueLibsHooks, true).AddHook(hook);
+			return hook;
 		}
 
 		/// <summary>
@@ -210,7 +220,10 @@ namespace RogueLibsCore
 		public static bool RemoveHook<THook>(this InvItem instance) where THook : IHook<InvItem>
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.RemoveHook<THook>() == true;
+			IHookController<InvItem> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			if (controller is null) return false;
+			IHook<InvItem> hook = controller.GetHook<THook>();
+			return controller.RemoveHook(hook);
 		}
 		/// <summary>
 		///   <para>Detaches a hook of the specified <typeparamref name="THook"/> type from the current <paramref name="instance"/>.</para>
@@ -222,7 +235,10 @@ namespace RogueLibsCore
 		public static bool RemoveHook<THook>(this Agent instance) where THook : IHook<Agent>
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.RemoveHook<THook>() == true;
+			IHookController<Agent> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			if (controller is null) return false;
+			IHook<Agent> hook = controller.GetHook<THook>();
+			return controller.RemoveHook(hook);
 		}
 		/// <summary>
 		///   <para>Detaches a hook of the specified <typeparamref name="THook"/> type from the current <paramref name="instance"/>.</para>
@@ -234,7 +250,10 @@ namespace RogueLibsCore
 		public static bool RemoveHook<THook>(this ObjectReal instance) where THook : IHook<ObjectReal>
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.RemoveHook<THook>() == true;
+			IHookController<ObjectReal> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			if (controller is null) return false;
+			IHook<ObjectReal> hook = controller.GetHook<THook>();
+			return controller.RemoveHook(hook);
 		}
 		/// <summary>
 		///   <para>Detaches a hook of the specified <typeparamref name="THook"/> type from the current <paramref name="instance"/>.</para>
@@ -246,7 +265,10 @@ namespace RogueLibsCore
 		public static bool RemoveHook<THook>(this StatusEffect instance) where THook : IHook<StatusEffect>
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.RemoveHook<THook>() == true;
+			IHookController<StatusEffect> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			if (controller is null) return false;
+			IHook<StatusEffect> hook = controller.GetHook<THook>();
+			return controller.RemoveHook(hook);
 		}
 		/// <summary>
 		///   <para>Detaches a hook of the specified <typeparamref name="THook"/> type from the current <paramref name="instance"/>.</para>
@@ -258,7 +280,10 @@ namespace RogueLibsCore
 		public static bool RemoveHook<THook>(this Trait instance) where THook : IHook<Trait>
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.RemoveHook<THook>() == true;
+			IHookController<Trait> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			if (controller is null) return false;
+			IHook<Trait> hook = controller.GetHook<THook>();
+			return controller.RemoveHook(hook);
 		}
 
 		/// <summary>
@@ -271,7 +296,7 @@ namespace RogueLibsCore
 		public static THook GetHook<THook>(this InvItem instance)
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			HookController<InvItem> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			IHookController<InvItem> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
 			return controller != null ? controller.GetHook<THook>() : default;
 		}
 		/// <summary>
@@ -284,7 +309,7 @@ namespace RogueLibsCore
 		public static THook GetHook<THook>(this Agent instance)
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			HookController<Agent> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			IHookController<Agent> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
 			return controller != null ? controller.GetHook<THook>() : default;
 		}
 		/// <summary>
@@ -297,7 +322,7 @@ namespace RogueLibsCore
 		public static THook GetHook<THook>(this ObjectReal instance)
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			HookController<ObjectReal> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			IHookController<ObjectReal> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
 			return controller != null ? controller.GetHook<THook>() : default;
 		}
 		/// <summary>
@@ -310,7 +335,7 @@ namespace RogueLibsCore
 		public static THook GetHook<THook>(this StatusEffect instance)
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			HookController<StatusEffect> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			IHookController<StatusEffect> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
 			return controller != null ? controller.GetHook<THook>() : default;
 		}
 		/// <summary>
@@ -323,7 +348,7 @@ namespace RogueLibsCore
 		public static THook GetHook<THook>(this Trait instance)
 		{
 			if (instance is null) throw new ArgumentNullException(nameof(instance));
-			HookController<Trait> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
+			IHookController<Trait> controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
 			return controller != null ? controller.GetHook<THook>() : default;
 		}
 		/// <summary>
