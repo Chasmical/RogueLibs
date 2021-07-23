@@ -1,4 +1,4 @@
-# Заряжаемые способности*
+# Заряжаемые способности
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
@@ -19,7 +19,10 @@ public class MyChargeableAbility : CustomAbility, IAbilityChargeable
 }
 ```
 
-:::info Work-In-Progress
+`OnHeld` вызывается каждый кадр *(вроде как?)* на котором кнопка специальной способности удерживается. `OnReleased` вызывается на кадре, на котором кнопка специальной способности отпускается. Используйте их вместе с `OnPressed` для зарядки вашей способности и всякое такое.
+
+:::caution
+Метод `AbilityHeldArgs.Interrupt()` ещё в процессе написания.
 :::
 
 ## Примеры {#examples}
