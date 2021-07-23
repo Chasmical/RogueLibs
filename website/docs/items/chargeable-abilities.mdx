@@ -1,4 +1,4 @@
-# Chargeable Abilities*
+# Chargeable Abilities
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
@@ -19,7 +19,10 @@ public class MyChargeableAbility : CustomAbility, IAbilityChargeable
 }
 ```
 
-:::info Work-In-Progress
+`OnHeld` is called every frame *(I think?)* that the special ability button is held. `OnReleased` is called on the frame that the special ability button is released. Use these in tandem with `OnPressed` to charge your ability and stuff.
+
+:::caution
+`AbilityHeldArgs.Interrupt()` method is still work-in-progress.
 :::
 
 ## Examples {#examples}
