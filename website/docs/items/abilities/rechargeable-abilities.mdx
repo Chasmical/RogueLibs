@@ -20,7 +20,7 @@ public class MyRechargeableAbility : CustomAbility, IAbilityRechargeable
 `Count` here works as a cooldown and represents the amount of time to wait until full recharge.
 
 :::tip Pro-tip
-You can just set it to 0 when it's fully recharged and to 1 when it's recharging (you can override the displayed count if you want), and use your own cooldown mechanism instead. See [Recharging Items](./recharging-items) for more info.
+You can just set it to 0 when it's fully recharged and to 1 when it's recharging (you can override the displayed count if you want), and use your own cooldown mechanism instead. See [Recharging Items](../recharging-items) for more info.
 :::
 
 `OnRecharging` works like Unity's `Update`, but with a settable interval (default is 1 second):
