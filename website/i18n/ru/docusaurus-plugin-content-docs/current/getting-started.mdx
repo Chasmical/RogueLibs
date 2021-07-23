@@ -16,11 +16,11 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Итак, откройте Visual Studio и **Создайте новый проект**:
 
-<img src={useBaseUrl('/img/setup/creating-project.png')} width='800'/>
+<img src={useBaseUrl('/img/i18n/ru/setup/creating-project.png')} width='800'/>
 
 Найдите и выберите шаблон **Библиотека классов (.NET Framework)**, и кликните **Далее**:
 
-<img src={useBaseUrl('/img/setup/selecting-template.png')} width='800'/>
+<img src={useBaseUrl('/img/i18n/ru/setup/selecting-template.png')} width='800'/>
 
 Введите название своего проекта, без пробелов или тире, только буквы. Выберите версию .NET Framework **4.5.2**, и кликните **Создать**.
 
@@ -28,13 +28,13 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 Вы можете создать папку для ваших репозиториев в корне одного из дисков, например, `D:\repos`. Это гораздо короче, доступнее и проще, чем стоящий по умолчанию `C:\Users\$USER\source\repos`.
 :::
 
-<img src={useBaseUrl('/img/setup/configuring-project.png')} width='800'/>
+<img src={useBaseUrl('/img/i18n/ru/setup/configuring-project.png')} width='800'/>
 
 ## Привязывание RogueLibs и сборки игры {#references}
 
 Создайте папку **`Libraries`** в папке вашего решения. Мы будем ложить все `.dll` файлы, на которые будем ссылаться.
 
-<img src={useBaseUrl('/img/setup/libraries-folder.png')} width='800'/>
+<img src={useBaseUrl('/img/i18n/ru/setup/libraries-folder.png')} width='800'/>
 
 Перейдите в `<GameName>_Data/Managed` в корне игры, возьмите следующие файлы и положите их в `Libraries`:
 
@@ -55,19 +55,19 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 Вам понадобится только два файла: **`RogueLibsCore.dll` и `RogueLibsCore.xml`**. Положите их в `Libraries` тоже:
 
-<img src={useBaseUrl('/img/setup/libraries-folder-2.png')} width='800'/>
+<img src={useBaseUrl('/img/i18n/ru/setup/libraries-folder-2.png')} width='800'/>
 
-Теперь откройте Visual Studio, найдите свой проект в **Обозревателе решений**, нажмите правой кнопкой по **Зависимостям** и выберите **Добавить зависимость...**:
+Теперь откройте Visual Studio, найдите свой проект в **Обозревателе решений**, нажмите правой кнопкой по **Ссылки** и выберите **Добавить ссылку...**:
 
 :::note
-Кстати, можете убрать все зависимости по умолчанию.
+Кстати, можете убрать все ссылки по умолчанию.
 :::
 
-<img src={useBaseUrl('/img/setup/references.png')} width='400'/>
+<img src={useBaseUrl('/img/i18n/ru/setup/references.png')} width='400'/>
 
 В **Менеджере зависимостей** выберите **Обзор...**, выделите все `.dll` файлы в папке `Libraries` и кликните **Добавить**.
 
-<img src={useBaseUrl('/img/setup/references-2.png')} width='800'/>
+<img src={useBaseUrl('/img/i18n/ru/setup/references-2.png')} width='800'/>
 
 ## Пишем простой плагин {#basic-plugin}
 
