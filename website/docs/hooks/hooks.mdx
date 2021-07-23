@@ -1,8 +1,101 @@
-# Hooks*
+# Hooks
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-:::info Work-In-Progress
+## `IHook` interface {#ihook}
+
+So, a hook is an object that is attached to another object. In RogueLibs hook types derive from `IHook` and `IHook<T>`.
+
+RogueLibsPatcher.dll creates fields called `__RogueLibsHooks` in all hookable types. An instance of `IHookController` class is then assigned to the `__RogueLibsHooks` field to manage the attached hooks. It provides methods to get, attach and detach hooks from the current instance. Think of it as a collection of hooks.
+
+You can create your own hooks by deriving either from `IHook<T>` or from `HookBase<T>`:
+
+```csharp title="MyCustomHook.cs"
+public class MyCustomHook : HookBase<InvItem>
+{
+    protected override void Initialize() { }
+    
+    public void StoreInfo(string data)
+    {
+        Debug.Log($"Stored {data}.");
+        Data = data;
+    }
+    public string LoadInfo()
+    {
+        Debug.Log($"Loaded {Data}.");
+        return Data;
+    }
+    private string Data;
+}
+```
+
+## Usage {#usage}
+
+You can use hooks to store various stuff:
+
+```csharp
+MyCustomHook hook = item.AddHook<MyCustomHook>();
+hook.StoreInfo("some-information");
+```
+
+Then you can use that stuff somewhere else:
+
+```csharp
+MyCustomHook hook = item.GetHook<MyCustomHook>();
+if (hook != null)
+{
+    string data = hook.LoadInfo();
+}
+```
+
+You can attach more than one hook of a type too:
+
+```csharp
+MyCustomHook hook = item.AddHook<MyCustomHook>();
+hook.StoreInfo("some-information");
+MyCustomHook hook = item.AddHook<MyCustomHook>();
+hook.StoreInfo("some-other-stuff");
+MyCustomHook hook = item.AddHook<MyCustomHook>();
+hook.StoreInfo("something-else");
+```
+
+```csharp
+foreach (MyCustomHook hook in item.GetHooks<MyCustomHook>())
+{
+    string data = hook.LoadInfo();
+}
+```
+
+:::tip Pro-tip: Hook Factories
+If you want to attach hooks to instances right when they are initialized, use [Hook Factories](./hook-factories).
 :::
+
+## Examples {#examples}
+
+Custom classes (`CustomItem`, `CustomTrait`, `CustomEffect`, `CustomAbility` and others) are hooks, by the way:
+
+:::info
+See custom classes' implementation in the [RogueLibs' source code](https://github.com/Abbysssal/RogueLibs/tree/master/RogueLibsCore/Hooks).
+:::
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import SpiceRack from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/SpiceRack.cs';
+
+<Tabs
+    defaultValue="spicerack"
+    values={[
+        {label:'Spice Rack', value:'spicerack'},
+    ]}>
+<TabItem value="spicerack">
+
+A great example with custom hooks keeping track of seasoned items.
+
+See the combinable item example [here](../items/combinable-items#examples).
+
+<CodeSnippet>{SpiceRack}</CodeSnippet>
+
+</TabItem>
+</Tabs>
