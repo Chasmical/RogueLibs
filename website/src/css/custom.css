@@ -24,6 +24,13 @@
   padding: 0 var(--ifm-pre-padding);
 }
 
+.menu__list .menu__list .menu__link {
+  color: var(--ifm-font-color-base);
+  font-weight: 400;
+  font-size: 14px;
+  padding: 3px 12px;
+}
+
 .header-github-link:hover {
   opacity: 0.6;
 }
