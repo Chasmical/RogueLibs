@@ -1,0 +1,86 @@
+# `InventoryRow`
+
+import { useState } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import BrowserWindow from '@site/src/components/BrowserWindow';
+
+import InventorySlot from '@site/src/components/InventorySlot';
+import InventoryRow from '@site/src/components/InventoryRow';
+
+### Props
+
+```ts
+export type Props = {
+  items?: SlotProps[],        // InventorySlot props
+  children?: React.ReactNode, // alternatively, you can add InventorySlot children to the element
+  width?: number,             // minimum width of the row
+  interactable?: boolean,     // determines whether it's interactable or not
+  onChange?: (index: number) => void,
+}
+```
+
+### Typical usage
+
+```jsx
+<InventoryRow items={[
+    {sprite: useBaseUrl("/img/TestItem.png"), tooltip: "$70"},
+    {sprite: useBaseUrl("/img/TestItem.png"), count: 13},
+  ]}/>
+```
+
+<BrowserWindow>
+<InventoryRow items={[
+    {sprite: useBaseUrl("/img/TestItem.png"), tooltip: "$70"},
+    {sprite: useBaseUrl("/img/TestItem.png"), count: 13},
+  ]}/>
+</BrowserWindow>
+
+### Using children instead
+
+```jsx
+<InventoryRow>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$70"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count={13}/>
+</InventoryRow>
+```
+
+<BrowserWindow>
+<InventoryRow>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$70"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count={13}/>
+</InventoryRow>
+</BrowserWindow>
+
+### Set minimum width
+
+```jsx
+<InventoryRow items={[
+    {sprite: useBaseUrl("/img/TestItem.png"), tooltip: "$70"},
+    {sprite: useBaseUrl("/img/TestItem.png"), count: 13},
+  ]} width={5}/>
+```
+
+<BrowserWindow>
+<InventoryRow items={[
+    {sprite: useBaseUrl("/img/TestItem.png"), tooltip: "$70"},
+    {sprite: useBaseUrl("/img/TestItem.png"), count: 13},
+  ]} width={5}/>
+</BrowserWindow>
+
+### Interactable
+
+```jsx
+<InventoryRow items={[
+    {sprite: useBaseUrl("/img/TestItem.png"), tooltip: "$70"},
+    {sprite: useBaseUrl("/img/TestItem.png"), count: 13},
+    {sprite: useBaseUrl("/img/TestItem.png"), count: 77, countColor: "#55BB11"},
+  ]} width={5} interactable={true}/>
+```
+
+<BrowserWindow>
+<InventoryRow items={[
+    {sprite: useBaseUrl("/img/TestItem.png"), tooltip: "$70"},
+    {sprite: useBaseUrl("/img/TestItem.png"), count: 13},
+    {sprite: useBaseUrl("/img/TestItem.png"), count: 77, countColor: "#55BB11"},
+  ]} width={5} interactable={true}/>
+</BrowserWindow>

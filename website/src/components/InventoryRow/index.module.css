@@ -1,4 +1,4 @@
-.row {
+.container {
   display: inline-flex;
   flex-wrap: nowrap;
 }

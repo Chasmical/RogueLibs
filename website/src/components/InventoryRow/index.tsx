@@ -1,50 +1,58 @@
-import React, { useState } from "react";
-import InventorySlot, { Props as SlotProps } from "../InventorySlot";
+import React, { useState } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './index.module.css';
+import InventorySlot, { Props as SlotProps } from '../InventorySlot';
 
 export type Props = {
+  items?: SlotProps[],
   children?: React.ReactNode,
   width?: number,
+  interactable?: boolean,
+  onChange?: (index: number) => void,
 }
 
-export function getSlots(children: React.ReactNode, width?: number): SlotProps[] {
-  let items: SlotProps[] = [];
+export function GetSlots(items?: SlotProps[], children?: React.ReactNode, width?: number): SlotProps[] {
+  let slots = items || [];
 
   for (let child of React.Children.toArray(children)) {
     let c = child as any;
     let type = c?.props?.mdxType;
-    if (type === "InventorySlot")
-      items.push(c.props);
-  }
-
-  if (width !== undefined) {
-    if (items.length < width) {
-      for (let i = items.length; i < width; i++)
-        items.push({type: null});
-    }
-    else if (items.length > width) {
-      items.splice(items.length - 1, items.length - width);
+    if (type == "InventorySlot") {
+      slots.push({...c.props});
     }
   }
 
-  return items;
+  if (width)
+    for (let i = slots.length; i < width; i++)
+      slots.push({type: null});
+
+  return slots;
 }
 
-export default function ({children, width}: Props): JSX.Element {
+export default function ({items, children, width, interactable, onChange}: Props): JSX.Element {
 
-  width = width || 5;
-  let items = getSlots(children, width);
+  let slots = GetSlots(items, children, width);
 
   const [index, setIndex] = useState(-1);
 
   const clickHandler = (myIndex: number): void => {
-    if (index == myIndex) setIndex(-1);
+    if (myIndex == index) setIndex(-1);
     else setIndex(myIndex);
+    if (onChange) onChange(myIndex);
   }
 
   return (
-    <div className={styles.row}>
-      {items.map((item, i) => <InventorySlot type={index == i ? "selected" : "normal"} onClick={() => clickHandler(i)} key={i} {...item}/>)}
+    <div className={styles.container}>
+      {slots.map((slot, i) => {
+
+        let hoverable = interactable && slot.type !== null;
+        if (hoverable) slot.type = interactable && index == i ? "selected" : "normal";
+
+        return (
+          <InventorySlot key={i} {...slot}
+            onClick={hoverable ? () => clickHandler(i) : undefined}/>
+        );
+      })}
     </div>
   );
 }

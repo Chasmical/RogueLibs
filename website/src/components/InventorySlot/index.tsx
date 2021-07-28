@@ -14,7 +14,7 @@ export type Props = {
 
 export default function ({sprite, tooltip, tooltipColor, count, countColor, type, onClick}: Props): JSX.Element {
 
-  let interactable = type !== undefined;
+  let interactable = !!type;
   type = type || "normal";
 
   return (
