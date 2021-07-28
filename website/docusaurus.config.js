@@ -21,7 +21,6 @@ module.exports = {
       },
     },
   },
-  // plugins: ['docusaurus-plugin-fontloader'],
   themeConfig: {
     hideableSidebar: true,
     prism: {
@@ -48,7 +47,7 @@ module.exports = {
           position: 'left',
         },
         {
-          to: 'docs/getting-started',
+          to: 'docs/dev/getting-started',
           label: 'Documentation',
           position: 'left',
         },
