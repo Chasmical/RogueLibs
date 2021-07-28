@@ -71,7 +71,7 @@ public class MyCustomAbility : CustomAbility
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomAbility<MyCustomAbility>();
+        RogueLibs.CreateCustomAbility<MyCustomAbility>()
             // highlight-start
             .WithName(new CustomNameInfo("My Custom Ability"))
             .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"));
@@ -88,7 +88,7 @@ public class MyCustomAbility : CustomAbility
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomAbility<MyCustomAbility>();
+        RogueLibs.CreateCustomAbility<MyCustomAbility>()
             .WithName(new CustomNameInfo("My Custom Ability"))
             .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"));
             // highlight-start
