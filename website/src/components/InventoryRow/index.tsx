@@ -36,9 +36,9 @@ export default function ({items, children, width, interactable, onChange}: Props
   const [index, setIndex] = useState(-1);
 
   const clickHandler = (myIndex: number): void => {
-    if (myIndex == index) setIndex(-1);
-    else setIndex(myIndex);
-    if (onChange) onChange(myIndex);
+    let newIndex = myIndex == index ? -1 : myIndex;
+    setIndex(newIndex);
+    if (onChange) onChange(newIndex);
   }
 
   return (

@@ -4,9 +4,9 @@ import styles from './index.module.css';
 
 export type Props = {
   sprite?: string,
-  tooltip?: string,
+  tooltip?: number | string,
   tooltipColor?: string,
-  count?: string,
+  count?: number | string,
   countColor?: string,
   type?: "normal" | "selected" | "locked" | null,
   onClick?: () => void,

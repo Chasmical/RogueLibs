@@ -61,8 +61,11 @@ module.exports = {
         },
       ],
       'Site Components': [
+        'components/index',
         'components/inventoryslot',
         'components/inventoryrow',
+        'components/inventorytoolbar',
+        'components/inventorygrid',
       ],
     },
   ],

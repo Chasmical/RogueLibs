@@ -49,7 +49,11 @@ export type Props = {
 
 ### Hoverable
 
-Set `type` to anything but `null` or `undefined`.
+Set `type` to `"normal"`, `"selected"` or `"locked"`.
+
+:::info
+It's used inside other components, like [`InventoryRow`](./inventoryrow) and [`Inventory`](./inventory).
+:::
 
 ```jsx
 <InventorySlot sprite={useBaseUrl("/img/TestItem.png")}
@@ -60,4 +64,3 @@ Set `type` to anything but `null` or `undefined`.
 <InventorySlot sprite={useBaseUrl("/img/TestItem.png")}
   count={13} tooltip="$70" type="normal"/>
 </BrowserWindow>
-

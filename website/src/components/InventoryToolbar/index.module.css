@@ -1,0 +1,5 @@
+.toolbar {
+  margin-top: 2px;
+  outline: 2px solid #214965;
+  display: inline-flex;
+}

@@ -1,0 +1,17 @@
+# Test Page
+
+import { useState } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import InventorySlot from '@site/src/components/InventorySlot';
+import InventoryRow from '@site/src/components/InventoryRow';
+import InventoryToolbar from '@site/src/components/InventoryToolbar';
+
+<InventoryToolbar items={[{}]} interactable={true} width={5}>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count="1"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count="77" tooltip="$3"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count="13"/>
+</InventoryToolbar>
+
+
+
+

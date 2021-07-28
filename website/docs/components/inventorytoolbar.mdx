@@ -1,0 +1,25 @@
+# `InventoryToolbar`
+
+import { useState } from 'react';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import BrowserWindow from '@site/src/components/BrowserWindow';
+
+import InventoryToolbar from '@site/src/components/InventoryToolbar';
+
+It's the same as the [`InventoryRow`](./inventoryrow), just with an outline and tooltip numbers.
+
+```jsx
+<InventoryToolbar width={5} interactable={true}>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$70"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count={13}/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count={77} countColor="#55BB11"/>
+</InventoryToolbar>
+```
+
+<BrowserWindow>
+<InventoryToolbar width={5} interactable={true}>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$70"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count={13}/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count={77} countColor="#55BB11"/>
+</InventoryToolbar>
+</BrowserWindow>
