@@ -58,9 +58,21 @@ It's used inside other components, like [`InventoryRow`](./inventoryrow) and [`I
 ```jsx
 <InventorySlot sprite={useBaseUrl("/img/TestItem.png")}
   count={13} tooltip="$70" type="normal"/>
+  
+<InventorySlot sprite={useBaseUrl("/img/TestItem.png")}
+  count={13} tooltip="$70" type="selected"/>
+  
+<InventorySlot sprite={useBaseUrl("/img/TestItem.png")}
+  count={13} tooltip="$70" type="locked"/>
 ```
 
 <BrowserWindow>
 <InventorySlot sprite={useBaseUrl("/img/TestItem.png")}
   count={13} tooltip="$70" type="normal"/>
+  
+<InventorySlot sprite={useBaseUrl("/img/TestItem.png")}
+  count={13} tooltip="$70" type="selected"/>
+  
+<InventorySlot sprite={useBaseUrl("/img/TestItem.png")}
+  count={13} tooltip="$70" type="locked"/>
 </BrowserWindow>
