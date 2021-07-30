@@ -10,11 +10,11 @@ import InventorySlot from '@site/src/components/InventorySlot';
 
 ```ts
 export type Props = {
-  sprite?: string,       // item's sprite
-  tooltip?: string,      // item's tooltip text
-  tooltipColor?: string, // item's tooltip color
-  count?: string,        // item's count text
-  countColor?: string,   // item's count color
+  sprite?: string,           // item's sprite
+  tooltip?: string | number, // item's tooltip text
+  tooltipColor?: string,     // item's tooltip color
+  count?: string | number,   // item's count text
+  countColor?: string,       // item's count color
   type?: "normal" | "selected" | "locked" | null,
     // if set to any string, the slot will react to the cursor
   onClick?: () => void,  // click handler
