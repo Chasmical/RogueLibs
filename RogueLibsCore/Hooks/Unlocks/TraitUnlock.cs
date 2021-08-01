@@ -54,6 +54,23 @@ namespace RogueLibsCore
 			}
 		}
 
+		/// <summary>
+		///   <para>Gets or sets the list containing the trait's required abilities.</para>
+		/// </summary>
+		public List<string> SpecialAbilities { get => Unlock.specialAbilities; set => Unlock.specialAbilities = value; }
+		/// <summary>
+		///   <para>Gets or sets the list containing items, that increase the likelihood of the trait to appear on level-up.</para>
+		/// </summary>
+		public List<string> LeadingItems { get => Unlock.leadingItems; set => Unlock.leadingItems = value; }
+		/// <summary>
+		///   <para>Gets or sets the list containing traits, that increase the likelihood of the trait to appear on level-up.</para>
+		/// </summary>
+		public List<string> LeadingTraits { get => Unlock.leadingTraits; set => Unlock.leadingTraits = value; }
+		/// <summary>
+		///   <para>Gets or sets the list containing Big Quests, that increase the likelihood of the trait to appear on level-up.</para>
+		/// </summary>
+		public List<string> LeadingBigQuests { get => Unlock.leadingBigQuests; set => Unlock.leadingBigQuests = value; }
+
 		/// <inheritdoc/>
 		public override bool IsAvailable
 		{
