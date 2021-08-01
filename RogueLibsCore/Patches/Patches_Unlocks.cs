@@ -148,6 +148,7 @@ namespace RogueLibsCore
 				RogueFramework.Unlocks.Add(wrapper);
 				AddUnlockFull(wrapper, true);
 			}
+			FixPrerequisites();
 			foreach (UnlockWrapper wrapper in RogueFramework.CustomUnlocks)
 			{
 				if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
@@ -188,6 +189,37 @@ namespace RogueLibsCore
 				RogueFramework.Logger.LogError(e);
 			}
 		}
+		private static void FixPrerequisites()
+		{
+			AddPrerequisite("MachineGun", "Item", "Shotgun");
+
+			AddPrerequisite("GrenadeWarp", "Item", "Grenade");
+			AddPrerequisite("GrenadeEMP", "Item", "Grenade");
+			AddPrerequisite("GrenadeDizzy", "Item", "Grenade");
+			AddPrerequisite("LandMine", "Item", "BearTrap");
+			RemovePrerequisite("LandMine", "Item", "GrenadeDizzy");
+			RemovePrerequisite("MolotovCocktail", "Item", "GrenadeEMP");
+			AddPrerequisite("MolotovCocktail", "Item", "OilContainer");
+
+			AddPrerequisite("KillerThrower", "Item", "CritterUpper");
+			AddPrerequisite("Antidote", "Item", "IdentifyWand");
+
+			AddPrerequisite("CubeOfLampey", "Item", "FourLeafClover");
+			AddPrerequisite("FoodProcessor", "Item", "MiniFridge");
+			RemovePrerequisite("KillProfiterAmmo", "Item", "AmmoStealer");
+			AddPrerequisite("HiringVoucher", "Item", "FreeItemVoucher");
+
+			AddPrerequisite("WindowCutter", "Item", "Lockpick");
+			AddPrerequisite("HologramItem", "Item", "CardboardBox");
+		}
+		private static void AddPrerequisite(string unlockName, string unlockType, string prerequisite)
+			=> GameController.gameController.sessionDataBig.unlocks
+			.Find(u => u.unlockName == unlockName && u.unlockType == unlockType)
+			.prerequisites.Add(prerequisite);
+		private static void RemovePrerequisite(string unlockName, string unlockType, string prerequisite)
+			=> GameController.gameController.sessionDataBig.unlocks
+			.Find(u => u.unlockName == unlockName && u.unlockType == unlockType)
+			.prerequisites.Remove(prerequisite);
 
 		public static bool Unlocks_CanDoUnlocks(ref bool __result)
 		{
