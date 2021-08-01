@@ -32,7 +32,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="name">The unlock's and mutator's name.</param>
 		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-		public MutatorUnlock(string name, bool unlockedFromStart) : base(name, "Challenge", unlockedFromStart) { }
+		public MutatorUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Mutator, unlockedFromStart) { }
 		internal MutatorUnlock(Unlock unlock) : base(unlock) { }
 
 		/// <inheritdoc/>
@@ -78,7 +78,7 @@ namespace RogueLibsCore
 			{
 				if (gc.serverPlayer)
 				{
-					PlaySound("ClickButton");
+					PlaySound(VanillaAudio.ClickButton);
 					if (IsEnabled = !IsEnabled)
 						foreach (DisplayedUnlock du in EnumerateCancellations())
 							du.IsEnabled = false;
@@ -86,17 +86,17 @@ namespace RogueLibsCore
 					UpdateButton();
 					UpdateMenu();
 				}
-				else PlaySound("CantDo");
+				else PlaySound(VanillaAudio.CantDo);
 			}
 			else if (Unlock.nowAvailable && UnlockCost <= gc.sessionDataBig.nuggets)
 			{
-				PlaySound("BuyUnlock");
+				PlaySound(VanillaAudio.BuyUnlock);
 				gc.unlocks.SubtractNuggets(UnlockCost);
 				gc.unlocks.DoUnlockForced(Name, Type);
 				UpdateAllUnlocks();
 				UpdateMenu();
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 		}
 
 		/// <inheritdoc/>
@@ -105,7 +105,8 @@ namespace RogueLibsCore
 			if (IsUnlocked || Unlock.nowAvailable)
 			{
 				if (!Name.Contains("NoD_")) return gc.nameDB.GetName(Name, Unlock.unlockNameType);
-				return gc.nameDB.GetName("Remove", "Interface") + " - " + gc.nameDB.GetName("LevelFeeling" + Name.Replace("NoD_", "") + "_Name", "Interface");
+				return gc.nameDB.GetName("Remove", NameTypes.Interface) + " - "
+					+ gc.nameDB.GetName("LevelFeeling" + Name.Replace("NoD_", string.Empty) + "_Name", NameTypes.Interface);
 			}
 			else return "?????";
 		}
@@ -113,7 +114,7 @@ namespace RogueLibsCore
 		public override string GetDescription()
 			=> IsUnlocked || Unlock.nowAvailable
 			? Name.Contains("NoD_")
-				? gc.nameDB.GetName("NoDisasterDescription", "Unlock")
+				? gc.nameDB.GetName("NoDisasterDescription", NameTypes.Unlock)
 				: gc.nameDB.GetName("D_" + Name, Unlock.unlockDescriptionType)
 			: "?????";
 	}

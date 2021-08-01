@@ -10,6 +10,7 @@ using BepInEx;
 using HarmonyLib;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using static RogueLibsCore.VanillaItems;
 
 namespace RogueLibsCore
 {
@@ -37,7 +38,7 @@ namespace RogueLibsCore
 				return;
 			}
 
-			RogueLibs.CreateCustomName("UnlockFor", "Unlock", new CustomNameInfo
+			RogueLibs.CreateCustomName("UnlockFor", NameTypes.Unlock, new CustomNameInfo
 			{
 				English = "Unlock for",
 				Russian = "Разблокировать за",
@@ -92,7 +93,7 @@ namespace RogueLibsCore
 			foreach (Unlock unlock in sdb.unlocks.ToList())
 			{
 				// wrapping original unlocks
-				if (gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock) != "")
+				if (string.IsNullOrEmpty(gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock)))
 				{
 					unlock.cost = -2;
 					if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
@@ -100,12 +101,12 @@ namespace RogueLibsCore
 				}
 
 				UnlockWrapper wrapper;
-				if (unlock.unlockType == "Challenge")
+				if (unlock.unlockType == UnlockTypes.Mutator)
 				{
 					unlock.unavailable = false;
 					wrapper = new MutatorUnlock(unlock);
 				}
-				else if (unlock.unlockType == "Item")
+				else if (unlock.unlockType == UnlockTypes.Item)
 				{
 					if (unlock.onlyInCharacterCreation && !unlock.unavailable)
 						unlock.unavailable = true;
@@ -113,30 +114,31 @@ namespace RogueLibsCore
 						unlock.onlyInCharacterCreation = unlock.freeItem = true;
 					wrapper = new ItemUnlock(unlock);
 				}
-				else if (unlock.unlockType == "Trait")
+				else if (unlock.unlockType == UnlockTypes.Trait)
 				{
 					if (unlock.onlyInCharacterCreation && !unlock.unavailable)
 						unlock.unavailable = true;
 					wrapper = new TraitUnlock(unlock);
 				}
-				else if (unlock.unlockType == "Ability")
+				else if (unlock.unlockType == UnlockTypes.Ability)
 				{
 					if (unlock.onlyInCharacterCreation && !unlock.unavailable)
 						unlock.unavailable = true;
 					wrapper = new AbilityUnlock(unlock);
 				}
-				else if (unlock.unlockType == "Achievement") wrapper = new AchievementUnlock(unlock);
-				else if (unlock.unlockType == "Floor") wrapper = new FloorUnlock(unlock);
-				else if (unlock.unlockType == "BigQuest") wrapper = new BigQuestUnlock(unlock);
-				else if (unlock.unlockType == "HomeBase") wrapper = new HomeBaseUnlock(unlock);
-				else if (unlock.unlockType == "Extra") wrapper = new ExtraUnlock(unlock);
-				else if (unlock.unlockType == "Agent")
+				else if (unlock.unlockType == UnlockTypes.Floor) wrapper = new FloorUnlock(unlock);
+				else if (unlock.unlockType == UnlockTypes.BigQuest) wrapper = new BigQuestUnlock(unlock);
+				else if (unlock.unlockType == UnlockTypes.Extra) wrapper = new ExtraUnlock(unlock);
+				else if (unlock.unlockType == UnlockTypes.Agent)
 				{
 					wrapper = new AgentUnlock(unlock)
 					{
-						IsSSA = unlock.unlockName == "Cop2" || unlock.unlockName == "UpperCruster" || unlock.unlockName == "Guard2"
+						IsSSA = unlock.unlockName == VanillaAgents.SuperCop || unlock.unlockName == VanillaAgents.UpperCruster
+							|| unlock.unlockName == VanillaAgents.Supergoon
 					};
 				}
+				else if (unlock.unlockType == "Achievement") wrapper = new AchievementUnlock(unlock);
+				else if (unlock.unlockType == "HomeBase") wrapper = new HomeBaseUnlock(unlock);
 				else if (unlock.unlockType == "Loadout") wrapper = new LoadoutUnlock(unlock);
 				else
 				{
@@ -191,26 +193,26 @@ namespace RogueLibsCore
 		}
 		private static void FixPrerequisites()
 		{
-			AddPrerequisite("MachineGun", "Item", "Shotgun");
+			AddPrerequisite(MachineGun, UnlockTypes.Item, Shotgun);
 
-			AddPrerequisite("GrenadeWarp", "Item", "Grenade");
-			AddPrerequisite("GrenadeEMP", "Item", "Grenade");
-			AddPrerequisite("GrenadeDizzy", "Item", "Grenade");
-			AddPrerequisite("LandMine", "Item", "BearTrap");
-			RemovePrerequisite("LandMine", "Item", "GrenadeDizzy");
-			RemovePrerequisite("MolotovCocktail", "Item", "GrenadeEMP");
-			AddPrerequisite("MolotovCocktail", "Item", "OilContainer");
+			AddPrerequisite(WarpGrenade, UnlockTypes.Item, Grenade);
+			AddPrerequisite(EMPGrenade, UnlockTypes.Item, Grenade);
+			AddPrerequisite(DizzyGrenade, UnlockTypes.Item, Grenade);
+			AddPrerequisite(LandMine, UnlockTypes.Item, BearTrap);
+			RemovePrerequisite(LandMine, UnlockTypes.Item, DizzyGrenade);
+			RemovePrerequisite(MolotovCocktail, UnlockTypes.Item, EMPGrenade);
+			AddPrerequisite(MolotovCocktail, UnlockTypes.Item, OilContainer);
 
-			AddPrerequisite("KillerThrower", "Item", "CritterUpper");
-			AddPrerequisite("Antidote", "Item", "IdentifyWand");
+			AddPrerequisite(KillerThrower, UnlockTypes.Item, CritterUpper);
+			AddPrerequisite(Antidote, UnlockTypes.Item, IdentifyWand);
 
-			AddPrerequisite("CubeOfLampey", "Item", "FourLeafClover");
-			AddPrerequisite("FoodProcessor", "Item", "MiniFridge");
-			RemovePrerequisite("KillProfiterAmmo", "Item", "AmmoStealer");
-			AddPrerequisite("HiringVoucher", "Item", "FreeItemVoucher");
+			AddPrerequisite(CubeOfLampey, UnlockTypes.Item, FourLeafClover);
+			AddPrerequisite(FoodProcessor, UnlockTypes.Item, MiniFridge);
+			RemovePrerequisite(KillAmmunizer, UnlockTypes.Item, AmmoStealer);
+			AddPrerequisite(HiringVoucher, UnlockTypes.Item, FreeItemVoucher);
 
-			AddPrerequisite("WindowCutter", "Item", "Lockpick");
-			AddPrerequisite("HologramItem", "Item", "CardboardBox");
+			AddPrerequisite(WindowCutter, UnlockTypes.Item, Lockpick);
+			AddPrerequisite(HologramBigfoot, UnlockTypes.Item, CardboardBox);
 		}
 		private static void AddPrerequisite(string unlockName, string unlockType, string prerequisite)
 			=> GameController.gameController.sessionDataBig.unlocks

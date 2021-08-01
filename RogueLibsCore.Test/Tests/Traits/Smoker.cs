@@ -12,9 +12,9 @@ namespace RogueLibsCore.Test
 				.WithDescription(new CustomNameInfo("Randomly cough, alerting enemies"))
 				.WithUnlock(new TraitUnlock { CharacterCreationCost = -4, });
 
-			RogueLibs.CreateCustomName("Smoker_Cough1", "Dialogue", new CustomNameInfo("*Cough*"));
-			RogueLibs.CreateCustomName("Smoker_Cough2", "Dialogue", new CustomNameInfo("*Cough* *CouGH*"));
-			RogueLibs.CreateCustomName("Smoker_Cough3", "Dialogue", new CustomNameInfo("*coUGH* *COUgh*"));
+			RogueLibs.CreateCustomName("Smoker_Cough1", NameTypes.Dialogue, new CustomNameInfo("*Cough*"));
+			RogueLibs.CreateCustomName("Smoker_Cough2", NameTypes.Dialogue, new CustomNameInfo("*Cough* *CouGH*"));
+			RogueLibs.CreateCustomName("Smoker_Cough3", NameTypes.Dialogue, new CustomNameInfo("*coUGH* *COUgh*"));
 		}
 
 		public override void OnAdded() { }
@@ -28,7 +28,7 @@ namespace RogueLibsCore.Test
 			{
 				rnd = new Random().Next(3) + 1;
 				Owner.SayDialogue($"Smoker_Cough{rnd}");
-				gc.audioHandler.Play(Owner, "AgentAnnoyed");
+				gc.audioHandler.Play(Owner, VanillaAudio.AgentAnnoyed);
 
 				Noise noise = gc.spawnerMain.SpawnNoise(Owner.tr.position, 1f, Owner, "Attract", Owner);
 				noise.distraction = true;

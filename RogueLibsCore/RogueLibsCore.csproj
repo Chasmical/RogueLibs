@@ -130,6 +130,7 @@
     <Compile Include="RogueSprite.cs" />
     <Compile Include="Utilities\RogueUtilities.cs" />
     <Compile Include="Utilities\TranspilerHelper.cs" />
+    <Compile Include="Utilities\VanillaIdentifiers.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

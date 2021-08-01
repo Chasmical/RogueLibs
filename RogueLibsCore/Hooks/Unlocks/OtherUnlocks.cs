@@ -78,7 +78,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="name">The unlock's and achievement's name.</param>
 		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-		public ExtraUnlock(string name, bool unlockedFromStart) : base(name, "Extra", unlockedFromStart) { }
+		public ExtraUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Extra, unlockedFromStart) { }
 		internal ExtraUnlock(Unlock unlock) : base(unlock) { }
 
 		/// <inheritdoc/>
@@ -170,7 +170,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="name">The unlock's and agent's name.</param>
 		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-		public AgentUnlock(string name, bool unlockedFromStart) : base(name, "Agent", unlockedFromStart) { }
+		public AgentUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Agent, unlockedFromStart) { }
 		internal AgentUnlock(Unlock unlock) : base(unlock) { }
 
 		/// <summary>

@@ -17,10 +17,10 @@ namespace RogueLibsCore.Test
 					UnlockCost = 10,
 					LoadoutCost = 3,
 					CharacterCreationCost = 2,
-					Prerequisites = { "FoodProcessor" },
+					Prerequisites = { VanillaItems.FoodProcessor },
 				});
 
-			SeasonCursorText = RogueLibs.CreateCustomName("Season", "Interface", new CustomNameInfo("Season"));
+			SeasonCursorText = RogueLibs.CreateCustomName("SeasonItem", NameTypes.Interface, new CustomNameInfo("Season"));
 		}
 		private static CustomName SeasonCursorText;
 
@@ -49,7 +49,7 @@ namespace RogueLibsCore.Test
 			hook.IncreaseSpiciness();
 
 			Count--;
-			gc.audioHandler.Play(Owner, "CombineItem");
+			gc.audioHandler.Play(Owner, VanillaAudio.CombineItem);
 			return true;
 		}
 		public CustomTooltip CombineCursorText(InvItem other) => SeasonCursorText;

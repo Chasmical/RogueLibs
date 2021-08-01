@@ -13,9 +13,9 @@ namespace RogueLibsCore.Test
 				.WithDescription(new CustomNameInfo("You smell really bad for some reason"))
 				.WithUnlock(new TraitUnlock { CharacterCreationCost = -5 });
 
-			RogueLibs.CreateCustomName("StinkReaction1", "Dialogue", new CustomNameInfo("Ew!"));
-			RogueLibs.CreateCustomName("StinkReaction2", "Dialogue", new CustomNameInfo("Ew! You stink!"));
-			RogueLibs.CreateCustomName("StinkReaction3", "Dialogue", new CustomNameInfo("ARGHH! Get away from me!"));
+			RogueLibs.CreateCustomName("StinkReaction1", NameTypes.Dialogue, new CustomNameInfo("Ew!"));
+			RogueLibs.CreateCustomName("StinkReaction2", NameTypes.Dialogue, new CustomNameInfo("Ew! You stink!"));
+			RogueLibs.CreateCustomName("StinkReaction3", NameTypes.Dialogue, new CustomNameInfo("ARGHH! Get away from me!"));
 		}
 
 		public override void OnAdded() { }

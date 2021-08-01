@@ -15,7 +15,7 @@
 					UnlockCost = 10,
 					LoadoutCost = 5,
 					CharacterCreationCost = 3,
-					Prerequisites = { "Comedian_BQ" },
+					Prerequisites = { VanillaAgents.Comedian + "_BQ" },
 				});
 		}
 
@@ -34,7 +34,7 @@
 			if (Owner.statusEffects.makingJoke) return false;
 
 			string prev = Owner.specialAbility;
-			Owner.specialAbility = "Joke";
+			Owner.specialAbility = VanillaAbilities.Joke;
 			Owner.statusEffects.PressedSpecialAbility();
 			Owner.specialAbility = prev;
 

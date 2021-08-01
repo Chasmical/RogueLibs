@@ -32,7 +32,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="name">The unlock's and floor's name.</param>
 		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-		public FloorUnlock(string name, bool unlockedFromStart) : base(name, "Floor", unlockedFromStart) { }
+		public FloorUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Floor, unlockedFromStart) { }
 		internal FloorUnlock(Unlock unlock) : base(unlock) { }
 
 		/// <inheritdoc/>
@@ -67,7 +67,7 @@ namespace RogueLibsCore
 			{
 				Menu.Agent.mainGUI.HideScrollingMenu();
 				gc.mainGUI.ShowCharacterSelect();
-				bool quick = gc.challenges.Contains("QuickGame");
+				bool quick = gc.challenges.Contains(VanillaMutators.QuickGame);
 				gc.sessionDataBig.elevatorLevel = Name == "Floor5" ? (quick ? 9 : 13)
 					: Name == "Floor4" ? (quick ? 7 : 10)
 					: Name == "Floor3" ? (quick ? 5 : 7)
@@ -83,7 +83,7 @@ namespace RogueLibsCore
 					else gc.playerAgent.objectMult.CallCmdForceShowCharacterSelect(Name);
 				}
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 		}
 
 		/// <inheritdoc/>

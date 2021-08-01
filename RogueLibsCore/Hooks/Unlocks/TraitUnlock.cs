@@ -32,7 +32,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="name">The unlock's and trait's name.</param>
 		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-		public TraitUnlock(string name, bool unlockedFromStart) : base(name, "Trait", unlockedFromStart) => IsAvailableInCC = true;
+		public TraitUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Trait, unlockedFromStart) => IsAvailableInCC = true;
 		internal TraitUnlock(Unlock unlock) : base(unlock) { }
 
 		/// <inheritdoc/>
@@ -138,12 +138,12 @@ namespace RogueLibsCore
 					ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
 					if (IsEnabled && menu.activeTraitCount <= menu.minTraits)
 					{
-						PlaySound("CantDo");
+						PlaySound(VanillaAudio.CantDo);
 						menu.ActiveCountFlash();
 					}
 					else
 					{
-						PlaySound("ClickButton");
+						PlaySound(VanillaAudio.ClickButton);
 						IsEnabled = !IsEnabled;
 						gc.unlocks.SaveUnlockData(true);
 						UpdateButton();
@@ -152,7 +152,7 @@ namespace RogueLibsCore
 				}
 				else if (Menu.Type == UnlocksMenuType.CharacterCreation)
 				{
-					PlaySound("ClickButton");
+					PlaySound(VanillaAudio.ClickButton);
 					if (IsAddedToCC = !IsAddedToCC)
 						foreach (DisplayedUnlock du in EnumerateCancellations())
 							((IUnlockInCC)du).IsAddedToCC = false;
@@ -198,7 +198,7 @@ namespace RogueLibsCore
 					Menu.Agent.addedEndLevelTrait = true;
 					Menu.Agent.skillPoints.levelsGained--;
 					gc.sessionData.levelsGained[Menu.Agent.isPlayer]--;
-					PlaySound("AddTrait");
+					PlaySound(VanillaAudio.AddTrait);
 					Menu.Agent.objectMult.SendChatAnnouncement("ChoseTrait", Name, "");
 					menu.canPressButtons = false;
 					if (Menu.Agent.skillPoints.levelsGained is 0)
@@ -229,11 +229,11 @@ namespace RogueLibsCore
 					{
 						Menu.Agent.usingAugmentationBooth = true;
 						Menu.Agent.statusEffects.AddTrait(Unlock.upgrade);
-						PlaySound("AddTrait");
+						PlaySound(VanillaAudio.AddTrait);
 						Menu.Agent.mainGUI.HideScrollingMenuPersonal();
 						Menu.Agent.usingAugmentationBooth = false;
 					}
-					else PlaySound("CantDo");
+					else PlaySound(VanillaAudio.CantDo);
 				}
 				else if (Menu.Type == UnlocksMenuType.AB_RemoveTrait)
 				{
@@ -244,7 +244,7 @@ namespace RogueLibsCore
 						Menu.Agent.mainGUI.HideScrollingMenuPersonal();
 						Menu.Agent.usingAugmentationBooth = false;
 					}
-					else PlaySound("CantDo");
+					else PlaySound(VanillaAudio.CantDo);
 				}
 				else if (Menu.Type == UnlocksMenuType.AB_SwapTrait)
 				{
@@ -257,7 +257,7 @@ namespace RogueLibsCore
 					if (list.Count is 0)
 					{
 						Menu.Agent.SayDialogue("CantChangeTraitRandomEquivalent");
-						PlaySound("CantDo");
+						PlaySound(VanillaAudio.CantDo);
 					}
 					else if (Menu.Agent.interactionHelper.interactionObjectReal.moneySuccess(GetSwapCost()))
 					{
@@ -265,22 +265,22 @@ namespace RogueLibsCore
 						Unlock unlock6 = list[UnityEngine.Random.Range(0, list.Count)];
 						Menu.Agent.statusEffects.RemoveTrait(Name);
 						Menu.Agent.statusEffects.AddTrait(unlock6.unlockName);
-						PlaySound("AddTrait");
+						PlaySound(VanillaAudio.AddTrait);
 						Menu.Agent.mainGUI.HideScrollingMenuPersonal();
 						Menu.Agent.usingAugmentationBooth = false;
 					}
-					else PlaySound("CantDo");
+					else PlaySound(VanillaAudio.CantDo);
 				}
 			}
 			else if (Unlock.nowAvailable && UnlockCost <= gc.sessionDataBig.nuggets)
 			{
-				PlaySound("BuyUnlock");
+				PlaySound(VanillaAudio.BuyUnlock);
 				gc.unlocks.SubtractNuggets(UnlockCost);
 				gc.unlocks.DoUnlockForced(Name, Type);
 				UpdateAllUnlocks();
 				UpdateMenu();
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 		}
 	}
 }

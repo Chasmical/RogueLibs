@@ -20,7 +20,7 @@ namespace RogueLibsCore.Test
 					UnlockCost = 10,
 					LoadoutCost = 5,
 					CharacterCreationCost = 3,
-					Prerequisites = { "Antidote" },
+					Prerequisites = { VanillaItems.Antidote },
 				});
 		}
 
@@ -35,11 +35,11 @@ namespace RogueLibsCore.Test
 
 		private static readonly Dictionary<string, string> invertDictionary = new Dictionary<string, string>
 		{
-			["Poisoned"] = "RegenerateHealth",
-			["Slow"] = "Fast",
-			["Weak"] = "Strength",
-			["Acid"] = "Invincible",
-			["Confused"] = "Invisible",
+			[VanillaEffects.Poisoned] = VanillaEffects.RegenerateHealth,
+			[VanillaEffects.Slow] = VanillaEffects.Fast,
+			[VanillaEffects.Weak] = VanillaEffects.Strength,
+			[VanillaEffects.Acid] = VanillaEffects.Invincible,
+			[VanillaEffects.Confused] = VanillaEffects.Invisible,
 		};
 		static Centrifuge()
 		{
@@ -47,7 +47,7 @@ namespace RogueLibsCore.Test
 				invertDictionary.Add(pair.Value, pair.Key);
 		}
 
-		public bool CombineFilter(InvItem other) => other.invItemName == "Syringe"
+		public bool CombineFilter(InvItem other) => other.invItemName == VanillaItems.Syringe
 			&& other.contents.Count > 0 && invertDictionary.ContainsKey(other.contents[0]);
 		public bool CombineItems(InvItem other)
 		{
@@ -56,7 +56,7 @@ namespace RogueLibsCore.Test
 			other.contents[0] = invertDictionary[other.contents[0]];
 
 			Count--;
-			gc.audioHandler.Play(Owner, "CombineItem");
+			gc.audioHandler.Play(Owner, VanillaAudio.CombineItem);
 			return true;
 		}
 		public CustomTooltip CombineCursorText(InvItem other) => default;

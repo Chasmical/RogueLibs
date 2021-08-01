@@ -90,7 +90,7 @@ namespace RogueLibsCore
 						if (!originalAgent.inventory.HasItem(item.invItemName)
 							&& originalAgent.inventory.equippedSpecialAbility?.invItemName != item.invItemName)
 							return false;
-						else if (!item.used && (item.Categories.Contains("Usable") || item.itemType == "Consumable"))
+						else if (!item.used && (item.Categories.Contains(RogueCategories.Usable) || item.itemType == ItemTypes.Consumable))
 						{
 							item.used = true;
 							if (agent.isPlayer > 0) agent.gc.sessionData.endStats[agent.isPlayer].itemsUsed++;
@@ -126,7 +126,7 @@ namespace RogueLibsCore
 			if (__instance.stackable && __instance.invItemName == otherItem.invItemName
 				&& InventoryChecks.IsCheckAllowed(custom, "AutoStacking"))
 			{
-				if (__instance.invItemName == "Syringe" && __instance.contents[0] != otherItem.contents[0])
+				if (__instance.invItemName == VanillaItems.Syringe && __instance.contents[0] != otherItem.contents[0])
 				{
 					__result = false;
 					return false;
@@ -139,7 +139,7 @@ namespace RogueLibsCore
 						RogueFramework.LogDebug("---- Combining was prevented by an inventory check.");
 					}
 					if (myAgent.controllerType != "Keyboard")
-						myAgent.gc.audioHandler.Play(myAgent, "BeginCombine");
+						myAgent.gc.audioHandler.Play(myAgent, VanillaAudio.BeginCombine);
 					otherItem.agent.mainGUI.invInterface.PutDraggedItemBack();
 				}
 				__result = true;
@@ -275,7 +275,7 @@ namespace RogueLibsCore
 		{
 			__instance.cursorTextString3.color = Color.white;
 
-			if (item.itemType != "Combine")
+			if (item.itemType != ItemTypes.Combine)
 			{
 				CustomItem custom = item.GetHook<CustomItem>();
 				if (custom is IItemTargetable targetable)
@@ -326,7 +326,7 @@ namespace RogueLibsCore
 
 			if (__instance.slotType == "Player" || __instance.slotType == "Toolbar" || __instance.slotType == "Chest" || __instance.slotType == "NPCChest")
 			{
-				if (combinee.invItemName != null && combiner.itemType == "Combine")
+				if (combinee.invItemName != null && combiner.itemType == ItemTypes.Combine)
 				{
 					if (combiner.CombineItems(combinee, __instance.slotNumber, string.Empty, __instance.agent) && __instance.slotType != "NPCChest")
 					{
@@ -350,7 +350,7 @@ namespace RogueLibsCore
 						__instance.toolbarNumText.color = tooltip.Color ?? new Color32(255, 237, 0, 255);
 					}
 				}
-				else if (__instance.slotType != "NPCChest" && (combinee.invItemName != null || combiner.itemType != "Combine"))
+				else if (__instance.slotType != "NPCChest" && (combinee.invItemName != null || combiner.itemType != ItemTypes.Combine))
 				{
 					__instance.myImage.color = __instance.overSlot
 						? (Color)new Color32(0, __instance.br, __instance.br, __instance.standardAlpha)

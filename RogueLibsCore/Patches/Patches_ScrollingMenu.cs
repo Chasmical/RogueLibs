@@ -40,8 +40,8 @@ namespace RogueLibsCore
 
 			Patcher.AnyErrors();
 
-			RogueLibs.CreateCustomName("GiveNuggetsDebug", "Unlock", new CustomNameInfo("[DEBUG] +10 Nuggets"));
-			RogueLibs.CreateCustomName("D_GiveNuggetsDebug", "Unlock", new CustomNameInfo("A debug tool that gives you 10 nuggets."));
+			RogueLibs.CreateCustomName("GiveNuggetsDebug", NameTypes.Unlock, new CustomNameInfo("[DEBUG] +10 Nuggets"));
+			RogueLibs.CreateCustomName("D_GiveNuggetsDebug", NameTypes.Unlock, new CustomNameInfo("A debug tool that gives you 10 nuggets."));
 		}
 
 		public static void ScrollingMenu_OpenScrollingMenu_Prefix(ScrollingMenu __instance, out float __state)
@@ -280,7 +280,7 @@ namespace RogueLibsCore
 						__result = false;
 						return;
 					}
-					Unlock traitUnlock = RogueLibs.GetUnlock(trait.traitName, "Trait")?.Unlock;
+					Unlock traitUnlock = RogueLibs.GetUnlock(trait.traitName, UnlockTypes.Trait)?.Unlock;
 					if (traitUnlock?.cancellations.Contains(myUnlock.unlockName) == true)
 					{
 						__result = false;
@@ -300,7 +300,7 @@ namespace RogueLibsCore
 			if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
 				RogueFramework.LogDebug("Added 10 nuggets with the debug tool.");
 			gc.unlocks.AddNuggets(10);
-			PlaySound("BuyItem");
+			PlaySound(VanillaAudio.BuyItem);
 			UpdateMenu();
 		}
 	}

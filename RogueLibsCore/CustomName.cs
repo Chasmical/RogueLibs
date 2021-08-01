@@ -212,6 +212,18 @@ namespace RogueLibsCore
 		/// </summary>
 		Korean    = 7,
 	}
+	public static class NameTypes
+	{
+		public const string
+			Item = "Item",
+			Description = "Description",
+			StatusEffect = "StatusEffect",
+			Interface = "Interface",
+			Unlock = "Unlock",
+			Object = "Object",
+			Agent = "Agent",
+			Dialogue = "Dialogue";
+	}
 	/// <summary>
 	///   <para>Provides static methods and properties for localization and translation.</para>
 	/// </summary>
@@ -352,7 +364,7 @@ namespace RogueLibsCore
 		/// <inheritdoc/>
 		public void GetName(string name, string type, ref string result)
 		{
-			if (result is null && type == "Dialogue" && name.StartsWith("NA_"))
+			if (result is null && type == NameTypes.Dialogue && name.StartsWith("NA_"))
 			{
 				string sub = name.Substring("NA_".Length);
 				string newResult = LanguageService.NameDB.GetName(sub, type);

@@ -17,7 +17,7 @@ namespace RogueLibsCore.Test
 					UnlockCost = 10,
 					LoadoutCost = 7,
 					CharacterCreationCost = 3,
-					Prerequisites = { "WallBypasser" },
+					Prerequisites = { VanillaItems.WallBypasser },
 				});
 		}
 
@@ -46,7 +46,7 @@ namespace RogueLibsCore.Test
 
 			if (limit > 250)
 			{
-				gc.audioHandler.Play(Owner, "CantDo");
+				gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
 				return false;
 			}
 
@@ -54,14 +54,14 @@ namespace RogueLibsCore.Test
 			Owner.Teleport(Owner.agentHelperTr.position, false, true);
 			Owner.rb.velocity = Vector2.zero;
 
-			if (!(Owner.HasTrait("ThiefToolsMayNotSubtract2")
+			if (!(Owner.HasTrait(VanillaTraits.IntrusionArtist)
 					&& gc.percentChance(Owner.DetermineLuck(80, "ThiefToolsMayNotSubtract", true)))
-				&& !(Owner.HasTrait("ThiefToolsMayNotSubtract")
+				&& !(Owner.HasTrait(VanillaTraits.IntrusionArtist2)
 					&& gc.percentChance(Owner.DetermineLuck(40, "ThiefToolsMayNotSubtract", true))))
 				Count--;
 
 			Owner.SpawnParticleEffect("Spawn", Owner.tr.position, false);
-			gc.audioHandler.Play(Owner, "Spawn");
+			gc.audioHandler.Play(Owner, VanillaAudio.Spawn);
 			return true;
 		}
 	}

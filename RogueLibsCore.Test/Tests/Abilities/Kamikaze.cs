@@ -21,7 +21,7 @@ namespace RogueLibsCore.Test
 		public override void OnPressed()
 		{
 			IsCharging = true;
-			gc.audioHandler.Play(Owner, "GeneratorHiss");
+			gc.audioHandler.Play(Owner, VanillaAudio.GeneratorHiss);
 			Owner.objectMult.chargingSpecialLunge = true;
 		}
 		public override CustomTooltip GetCountString()
@@ -51,11 +51,11 @@ namespace RogueLibsCore.Test
 			Owner.objectMult.chargingSpecialLunge = false;
 			if (e.HeldTime > 10f)
 			{
-				Owner.AddEffect("Resurrection", new CreateEffectInfo(1) { DontShowText = true, IgnoreElectronic = true });
+				Owner.AddEffect(VanillaEffects.Resurrection, new CreateEffectInfo(1) { DontShowText = true, IgnoreElectronic = true });
 				gc.spawnerMain.SpawnExplosion(Owner, Owner.tr.position, "Huge", false, -1, false, true).noOwnCheck = true;
 				Charge = 0f;
 			}
-			gc.audioHandler.Stop(Owner, "GeneratorHiss");
+			gc.audioHandler.Stop(Owner, VanillaAudio.GeneratorHiss);
 		}
 		public void Update()
 		{

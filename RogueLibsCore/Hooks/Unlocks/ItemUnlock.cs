@@ -32,8 +32,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="name">The unlock's and item's name.</param>
 		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-		public ItemUnlock(string name, bool unlockedFromStart)
-			: base(name, "Item", unlockedFromStart)
+		public ItemUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Item, unlockedFromStart)
 		{
 			IsAvailableInCC = true;
 			IsAvailableInItemTeleporter = true;
@@ -132,7 +131,7 @@ namespace RogueLibsCore
 				UpdateButton(IsSelectedLoadout);
 				InvItem invItem = new InvItem { invItemName = Name };
 				invItem.SetupDetails(false);
-				if (invItem.rewardCount != 1 && !invItem.isArmor && !invItem.isArmorHead && invItem.itemType != "WeaponMelee")
+				if (invItem.rewardCount != 1 && !invItem.isArmor && !invItem.isArmorHead && invItem.itemType != ItemTypes.WeaponMelee)
 					Text += $" ({invItem.rewardCount})";
 				Text += $" - ${LoadoutCost}";
 			}
@@ -149,12 +148,12 @@ namespace RogueLibsCore
 					ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
 					if (IsEnabled && menu.activeRewardCount <= menu.minRewards)
 					{
-						PlaySound("CantDo");
+						PlaySound(VanillaAudio.CantDo);
 						menu.ActiveCountFlash();
 					}
 					else
 					{
-						PlaySound("ClickButton");
+						PlaySound(VanillaAudio.ClickButton);
 						IsEnabled = !IsEnabled;
 						gc.unlocks.SaveUnlockData(true);
 						UpdateButton();
@@ -163,16 +162,16 @@ namespace RogueLibsCore
 				}
 				else if (Menu.Type == UnlocksMenuType.ItemTeleporter)
 				{
-					PlaySound("UseItemTeleporter");
+					PlaySound(VanillaAudio.UseItemTeleporter);
 					InvItem invItem = new InvItem() { invItemName = Name };
 					invItem.SetupDetails(false);
 					invItem.invItemCount = invItem.initCount;
 					Menu.Agent.inventory.DontPlayPickupSounds(true);
 					Menu.Agent.inventory.AddItemOrDrop(invItem);
 					Menu.Agent.inventory.DontPlayPickupSounds(false);
-					if (invItem.invItemName == "BombMaker" && !Menu.Agent.inventory.HasItem("BombTrigger"))
+					if (invItem.invItemName == VanillaItems.BombProcessor && !Menu.Agent.inventory.HasItem(VanillaItems.RemoteBombTrigger))
 					{
-						invItem = new InvItem() { invItemName = "BombTrigger" };
+						invItem = new InvItem() { invItemName = VanillaItems.RemoteBombTrigger };
 						invItem.SetupDetails(false);
 						invItem.invItemCount = invItem.initCount;
 						Menu.Agent.inventory.DontPlayPickupSounds(true);
@@ -184,7 +183,7 @@ namespace RogueLibsCore
 				{
 					if (IsSelectedLoadout)
 					{
-						PlaySound("BuyItem");
+						PlaySound(VanillaAudio.BuyItem);
 						gc.sessionDataBig.loadoutNuggetsSpent = 0;
 						IsSelectedLoadout = false;
 						gc.unlocks.AddNuggets(LoadoutCost);
@@ -207,16 +206,16 @@ namespace RogueLibsCore
 							gc.sessionDataBig.loadoutNuggetsSpent = LoadoutCost;
 							IsSelectedLoadout = true;
 							gc.unlocks.SubtractNuggets(LoadoutCost);
-							PlaySound("BuyItem");
+							PlaySound(VanillaAudio.BuyItem);
 							UpdateButton();
 							UpdateMenu();
 						}
-						else PlaySound("CantDo");
+						else PlaySound(VanillaAudio.CantDo);
 					}
 				}
 				else if (Menu.Type == UnlocksMenuType.CharacterCreation)
 				{
-					PlaySound("ClickButton");
+					PlaySound(VanillaAudio.ClickButton);
 					if (IsAddedToCC = !IsAddedToCC)
 						foreach (DisplayedUnlock du in EnumerateCancellations())
 							((IUnlockInCC)du).IsAddedToCC = false;
@@ -226,13 +225,13 @@ namespace RogueLibsCore
 			}
 			else if (Unlock.nowAvailable && UnlockCost <= gc.sessionDataBig.nuggets)
 			{
-				PlaySound("BuyUnlock");
+				PlaySound(VanillaAudio.BuyUnlock);
 				gc.unlocks.SubtractNuggets(UnlockCost);
 				gc.unlocks.DoUnlockForced(Name, Type);
 				UpdateAllUnlocks();
 				UpdateMenu();
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 		}
 
 		/// <inheritdoc/>

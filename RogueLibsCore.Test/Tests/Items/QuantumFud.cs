@@ -17,7 +17,7 @@ namespace RogueLibsCore.Test
 					UnlockCost = 10,
 					LoadoutCost = 15,
 					CharacterCreationCost = 10,
-				   Prerequisites = { "FoodProcessor" },
+				   Prerequisites = { VanillaItems.FoodProcessor },
 				});
 		}
 
@@ -40,11 +40,11 @@ namespace RogueLibsCore.Test
 			int heal = new ItemFunctions().DetermineHealthChange(Item, Owner);
 			Owner.statusEffects.ChangeHealth(heal);
 
-			if (Owner.HasTrait("HealthItemsGiveFollowersExtraHealth")
-				|| Owner.HasTrait("HealthItemsGiveFollowersExtraHealth2"))
+			if (Owner.HasTrait(VanillaTraits.ShareTheHealth)
+				|| Owner.HasTrait(VanillaTraits.ShareTheHealth2))
 				new ItemFunctions().GiveFollowersHealth(Owner, heal);
 
-			gc.audioHandler.Play(Owner, "UseFood");
+			gc.audioHandler.Play(Owner, VanillaAudio.UseFood);
 			Cooldown = 0.5f;
 			return true;
 		}

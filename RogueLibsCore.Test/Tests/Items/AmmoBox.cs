@@ -17,7 +17,7 @@ namespace RogueLibsCore.Test
 					UnlockCost = 10,
 					LoadoutCost = 5,
 					CharacterCreationCost = 3,
-					Prerequisites = { "KillProfiterAmmo" },
+					Prerequisites = { VanillaItems.KillAmmunizer },
 				});
 		}
 
@@ -35,19 +35,19 @@ namespace RogueLibsCore.Test
 		{
 			if (!CombineFilter(other))
 			{
-				gc.audioHandler.Play(Owner, "CantDo");
+				gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
 				return false;
 			}
 			if (other.invItemCount >= other.maxAmmo)
 			{
 				Owner.SayDialogue("AmmoDispenserFull");
-				gc.audioHandler.Play(Owner, "CantDo");
+				gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
 				return false;
 			}
 
 			int amountToRefill = other.maxAmmo - other.invItemCount;
 			float singleCost = (float)other.itemValue / other.maxAmmo;
-			if (Owner.oma.superSpecialAbility && (Owner.agentName == "Soldier" || Owner.agentName == "Doctor"))
+			if (Owner.oma.superSpecialAbility && (Owner.agentName == VanillaAgents.Soldier || Owner.agentName == VanillaAgents.Doctor))
 				singleCost = 0f;
 
 			int affordableAmount = (int)Mathf.Ceil(Count / singleCost);
@@ -57,7 +57,7 @@ namespace RogueLibsCore.Test
 			Count -= willBeReduced;
 			other.invItemCount += willBeBought;
 			Owner.SayDialogue("AmmoDispenserFilled");
-			gc.audioHandler.Play(Owner, "BuyItem");
+			gc.audioHandler.Play(Owner, VanillaAudio.BuyItem);
 			return true;
 		}
 
@@ -69,7 +69,7 @@ namespace RogueLibsCore.Test
 			if (amountToRefill == 0) return default;
 
 			float singleCost = (float)other.itemValue / other.maxAmmo;
-			if (Owner.oma.superSpecialAbility && (Owner.agentName == "Soldier" || Owner.agentName == "Doctor"))
+			if (Owner.oma.superSpecialAbility && (Owner.agentName == VanillaAgents.Soldier || Owner.agentName == VanillaAgents.Doctor))
 				singleCost = 0f;
 			int cost = (int)Mathf.Floor(amountToRefill * singleCost);
 			int canAfford = (int)Mathf.Ceil(Count / singleCost);
@@ -77,7 +77,7 @@ namespace RogueLibsCore.Test
 			return "+" + Mathf.Min(amountToRefill, canAfford) + " (" + Mathf.Min(cost, Count) + ")";
 		}
 
-		public CustomTooltip CombineCursorText(InvItem other) => gc.nameDB.GetName("RefillGun", "Interface");
+		public CustomTooltip CombineCursorText(InvItem other) => gc.nameDB.GetName("RefillGun", NameTypes.Interface);
 		// it's one of the vanilla dialogues, so there's no need to define it in the mod
 	}
 }

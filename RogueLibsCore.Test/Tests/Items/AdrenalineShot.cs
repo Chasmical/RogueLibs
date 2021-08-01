@@ -15,10 +15,10 @@
 					UnlockCost = 10,
 					LoadoutCost = 5,
 					CharacterCreationCost = 3,
-					Prerequisites = { "RagePoison", "Antidote" },
+					Prerequisites = { VanillaItems.RagePoison, VanillaItems.Antidote },
 				});
 
-			RogueLibs.CreateCustomName("AdrenalineElectronic", "Dialogue",
+			RogueLibs.CreateCustomName("AdrenalineElectronic", NameTypes.Dialogue,
 				new CustomNameInfo("I don't have a circulatory system."));
 		}
 
@@ -38,11 +38,11 @@
 			if (Owner.electronic)
 			{
 				Owner.SayDialogue("AdrenalineElectronic");
-				gc.audioHandler.Play(Owner, "CantDo");
+				gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
 				return false;
 			}
 			Owner.AddEffect<Adrenaline>();
-			gc.audioHandler.Play(Owner, "UseSyringe");
+			gc.audioHandler.Play(Owner, VanillaAudio.UseSyringe);
 			Count--;
 			return true;
 		}

@@ -32,7 +32,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="name">The unlock's and Big Quest's name. Must be of format: "&lt;AgentUnlock&gt;_BQ".</param>
 		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-		public BigQuestUnlock(string name, bool unlockedFromStart) : base(name, "BigQuest", unlockedFromStart) => IsAvailableInCC = true;
+		public BigQuestUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.BigQuest, unlockedFromStart) => IsAvailableInCC = true;
 		internal BigQuestUnlock(Unlock unlock) : base(unlock) { }
 
 		/// <inheritdoc/>
@@ -115,7 +115,7 @@ namespace RogueLibsCore
 			{
 				if (Menu.Type == UnlocksMenuType.CharacterCreation)
 				{
-					PlaySound("ClickButton");
+					PlaySound(VanillaAudio.ClickButton);
 					BigQuestUnlock previous = (BigQuestUnlock)Menu.Unlocks.Find(u => u is BigQuestUnlock bigQuest && bigQuest.IsAddedToCC);
 					IsAddedToCC = !IsAddedToCC;
 					UpdateButton();
@@ -125,13 +125,13 @@ namespace RogueLibsCore
 			}
 			else if (Unlock.nowAvailable && UnlockCost <= gc.sessionDataBig.nuggets)
 			{
-				PlaySound("BuyUnlock");
+				PlaySound(VanillaAudio.BuyUnlock);
 				gc.unlocks.SubtractNuggets(UnlockCost);
 				gc.unlocks.DoUnlockForced(Name, Type);
 				UpdateAllUnlocks();
 				UpdateMenu();
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 		}
 
 		/// <inheritdoc/>
@@ -139,14 +139,14 @@ namespace RogueLibsCore
 		{
 			if (IsUnlocked || Unlock.nowAvailable)
 			{
-				string name = gc.nameDB.GetName(Name, "Unlock");
-				if (Agent.Name == "Gangbanger" || Agent.Name == "GangbangerB")
-					name += $" ({gc.nameDB.GetName(Agent.Name + "_N", "Agent")})";
+				string name = gc.nameDB.GetName(Name, NameTypes.Unlock);
+				if (Agent.Name == VanillaAgents.GangsterCrepe || Agent.Name == VanillaAgents.GangsterBlahd)
+					name += $" ({gc.nameDB.GetName(Agent.Name + "_N", NameTypes.Agent)})";
 				return name;
 			}
 			else return "?????";
 		}
 		/// <inheritdoc/>
-		public override string GetDescription() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName("D_" + Name, "Unlock") : "?????";
+		public override string GetDescription() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName("D_" + Name, NameTypes.Unlock) : "?????";
 	}
 }

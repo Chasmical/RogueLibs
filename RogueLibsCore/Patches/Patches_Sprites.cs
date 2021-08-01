@@ -81,7 +81,7 @@ namespace RogueLibsCore
 					Debug.LogError("Couldn't set highlight for item 4: " + newItem);
 				}
 			}
-			if (item.invItemName == "Money")
+			if (item.invItemName == VanillaItems.Money)
 			{
 				if (item.invItemCount is 1)
 				{
@@ -274,6 +274,6 @@ namespace RogueLibsCore
 
 		public static void NuggetSlot_UpdateNuggetText(Image ___itemImage)
 			=> ___itemImage.sprite = GameController.gameController.gameResources.itemDic
-				.TryGetValue("Nugget", out Sprite sprite) ? sprite : null;
+				.TryGetValue(VanillaItems.Nugget, out Sprite sprite) ? sprite : null;
 	}
 }

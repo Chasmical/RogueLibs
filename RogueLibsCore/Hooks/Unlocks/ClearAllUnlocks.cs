@@ -27,12 +27,12 @@ namespace RogueLibsCore
 		{
 			if (IsUnlocked && gc.serverPlayer)
 			{
-				PlaySound("ClickButton");
+				PlaySound(VanillaAudio.ClickButton);
 				foreach (DisplayedUnlock du in Menu.Unlocks)
 					if (du.IsEnabled != (du.IsEnabled = false)) du.UpdateButton();
 				UpdateMenu();
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 		}
 	}
 	/// <summary>
@@ -59,7 +59,7 @@ namespace RogueLibsCore
 		{
 			if (IsUnlocked && gc.serverPlayer)
 			{
-				PlaySound("ClickButton");
+				PlaySound(VanillaAudio.ClickButton);
 				if (Menu.Type == UnlocksMenuType.RewardsMenu)
 				{
 					foreach (DisplayedUnlock du in Menu.Unlocks)
@@ -75,7 +75,7 @@ namespace RogueLibsCore
 				}
 				UpdateMenu();
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 		}
 	}
 	/// <summary>
@@ -102,7 +102,7 @@ namespace RogueLibsCore
 		{
 			if (IsUnlocked && gc.serverPlayer)
 			{
-				PlaySound("ClickButton");
+				PlaySound(VanillaAudio.ClickButton);
 				if (Menu.Type == UnlocksMenuType.TraitsMenu)
 				{
 					foreach (DisplayedUnlock du in Menu.Unlocks)
@@ -118,7 +118,7 @@ namespace RogueLibsCore
 				}
 				UpdateMenu();
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 		}
 	}
 }

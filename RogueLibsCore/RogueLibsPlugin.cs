@@ -8,7 +8,6 @@ using BepInEx;
 using HarmonyLib;
 using System.IO;
 using System.Threading;
-using Light2D.Examples;
 
 namespace RogueLibsCore
 {

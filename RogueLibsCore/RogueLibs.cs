@@ -39,12 +39,12 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Version of RogueLibs that the current assembly is compiled with.</para>
 		/// </summary>
-		public const string CompiledVersion = "3.0.1";
+		public const string CompiledVersion = "3.0.2";
 		/// <summary>
 		///   <para>Semantic version of RogueLibs that the current assembly is compiled with. Don't use it in BepInPlugin.</para>
 		/// </summary>
-		public const string CompiledSemanticVersion = "3.0.1";
-		internal const string AssemblyVersion = "3.0.1.0";
+		public const string CompiledSemanticVersion = "3.0.2";
+		internal const string AssemblyVersion = "3.0.2.0";
 
 		/// <summary>
 		///   <para>Currently installed and running version of RogueLibs.</para>
@@ -229,7 +229,7 @@ namespace RogueLibsCore
 						}
 						if (!method.IsStatic)
 						{
-							RogueFramework.LogWarning($"{assembly.FullName}: Methods marked with [RLSetup] must be static!");
+							RogueFramework.LogError($"{assembly.FullName}: Methods marked with [RLSetup] must be static!");
 							ConstructorInfo ctor = method.DeclaringType.GetConstructor(new Type[0]);
 							if (ctor != null)
 							{
@@ -291,7 +291,7 @@ namespace RogueLibsCore
 		/// <exception cref="ArgumentException">A localizable string that acts as the item's name already exists.</exception>
 		public ItemBuilder WithName(CustomNameInfo info)
 		{
-			Name = RogueLibs.CreateCustomName(Info.Name, "Item", info);
+			Name = RogueLibs.CreateCustomName(Info.Name, NameTypes.Item, info);
 			return this;
 		}
 		/// <summary>
@@ -302,7 +302,7 @@ namespace RogueLibsCore
 		/// <exception cref="ArgumentException">A localizable string that acts as the item's description already exists.</exception>
 		public ItemBuilder WithDescription(CustomNameInfo info)
 		{
-			Description = RogueLibs.CreateCustomName(Info.Name, "Description", info);
+			Description = RogueLibs.CreateCustomName(Info.Name, NameTypes.Description, info);
 			return this;
 		}
 		/// <summary>
@@ -392,7 +392,7 @@ namespace RogueLibsCore
 		/// <exception cref="ArgumentException">A localizable string that acts as the ability's name already exists.</exception>
 		public AbilityBuilder WithName(CustomNameInfo info)
 		{
-			Name = RogueLibs.CreateCustomName(Info.Name, "Item", info);
+			Name = RogueLibs.CreateCustomName(Info.Name, NameTypes.Item, info);
 			return this;
 		}
 		/// <summary>
@@ -403,7 +403,7 @@ namespace RogueLibsCore
 		/// <exception cref="ArgumentException">A localizable string that acts as the ability's description already exists.</exception>
 		public AbilityBuilder WithDescription(CustomNameInfo info)
 		{
-			Description = RogueLibs.CreateCustomName(Info.Name, "Description", info);
+			Description = RogueLibs.CreateCustomName(Info.Name, NameTypes.Description, info);
 			return this;
 		}
 		/// <summary>
@@ -493,7 +493,7 @@ namespace RogueLibsCore
 		/// <exception cref="ArgumentException">A localizable string that acts as the trait's name already exists.</exception>
 		public TraitBuilder WithName(CustomNameInfo info)
 		{
-			Name = RogueLibs.CreateCustomName(Info.Name, "StatusEffect", info);
+			Name = RogueLibs.CreateCustomName(Info.Name, NameTypes.StatusEffect, info);
 			return this;
 		}
 		/// <summary>
@@ -504,7 +504,7 @@ namespace RogueLibsCore
 		/// <exception cref="ArgumentException">A localizable string that acts as the trait's description already exists.</exception>
 		public TraitBuilder WithDescription(CustomNameInfo info)
 		{
-			Description = RogueLibs.CreateCustomName(Info.Name, "Description", info);
+			Description = RogueLibs.CreateCustomName(Info.Name, NameTypes.Description, info);
 			return this;
 		}
 		/// <summary>
@@ -590,7 +590,7 @@ namespace RogueLibsCore
 		/// <exception cref="ArgumentException">A localizable string that acts as the effect's name already exists.</exception>
 		public EffectBuilder WithName(CustomNameInfo info)
 		{
-			Name = RogueLibs.CreateCustomName(Info.Name, "StatusEffect", info);
+			Name = RogueLibs.CreateCustomName(Info.Name, NameTypes.StatusEffect, info);
 			return this;
 		}
 		/// <summary>
@@ -601,7 +601,7 @@ namespace RogueLibsCore
 		/// <exception cref="ArgumentException">A localizable string that acts as the effect's description already exists.</exception>
 		public EffectBuilder WithDescription(CustomNameInfo info)
 		{
-			Description = RogueLibs.CreateCustomName(Info.Name, "Description", info);
+			Description = RogueLibs.CreateCustomName(Info.Name, NameTypes.Description, info);
 			return this;
 		}
 		/// <summary>
@@ -676,7 +676,7 @@ namespace RogueLibsCore
 		public UnlockBuilder WithDescription(CustomNameInfo info)
 		{
 			Description = RogueLibs.CreateCustomName(Unlock is MutatorUnlock || Unlock is BigQuestUnlock ? "D_" + Unlock.Name : Unlock.Name,
-				Unlock is BigQuestUnlock ? "Unlock" : Unlock.Unlock.unlockDescriptionType, info);
+				Unlock is BigQuestUnlock ? NameTypes.Unlock : Unlock.Unlock.unlockDescriptionType, info);
 			return this;
 		}
 	}

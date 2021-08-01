@@ -17,11 +17,12 @@ namespace RogueLibsCore.Test
                     UnlockCost = 10,
                     LoadoutCost = 9,
                     CharacterCreationCost = 5,
-                    Prerequisites = { "QuickEscapeTeleporter", nameof(WildBypasser) },
+                    Prerequisites = { VanillaItems.QuickEscapeTeleporter, nameof(WildBypasser) },
                 });
 
-            RogueLibs.CreateCustomName("TeleportHere", "Interface", new CustomNameInfo("Teleport here"));
+            TeleportCursorText = RogueLibs.CreateCustomName("TeleportHere", NameTypes.Interface, new CustomNameInfo("Teleport here"));
         }
+        private static CustomName TeleportCursorText;
 
         public override void SetupDetails()
         {
@@ -45,11 +46,11 @@ namespace RogueLibsCore.Test
             Owner.Teleport(position, false, true);
             Owner.rb.velocity = Vector2.zero;
             Owner.SpawnParticleEffect("Spawn", Owner.tr.position, false);
-            gc.audioHandler.Play(Owner, "Spawn");
+            gc.audioHandler.Play(Owner, VanillaAudio.Spawn);
 
             Count--;
             return true;
         }
-        public CustomTooltip TargetCursorText(Vector2 position) => gc.nameDB.GetName("TeleportHere", "Interface");
+        public CustomTooltip TargetCursorText(Vector2 position) => TeleportCursorText;
     }
 }

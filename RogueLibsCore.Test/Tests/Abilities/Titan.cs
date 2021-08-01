@@ -13,7 +13,7 @@
 				{
 					UnlockCost = 10,
 					CharacterCreationCost = 10,
-					Prerequisites = { "Giantizer" },
+					Prerequisites = { VanillaItems.Giantizer },
 				});
 		}
 
@@ -22,10 +22,10 @@
 		{
 			if (Count != 0)
 			{
-				gc.audioHandler.Play(Owner, "CantDo");
+				gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
 				return;
 			}
-			Owner.statusEffects.AddStatusEffect("Giant", 15);
+			Owner.statusEffects.AddStatusEffect(VanillaEffects.Giant, 15);
 			Count = 30;
 		}
 		public void OnRecharging(AbilityRechargingArgs e)

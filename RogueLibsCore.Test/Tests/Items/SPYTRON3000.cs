@@ -16,11 +16,12 @@
 					UnlockCost = 10,
 					LoadoutCost = 2,
 					CharacterCreationCost = 3,
-					Prerequisites = { "BodySwapper" },
+					Prerequisites = { VanillaItems.BodySwapper },
 				});
 
-			RogueLibs.CreateCustomName("Disguise", "Interface", new CustomNameInfo("Disguise as"));
+			DisguiseCursorText = RogueLibs.CreateCustomName("Disguise", NameTypes.Interface, new CustomNameInfo("Disguise as"));
 		}
+		private static CustomName DisguiseCursorText;
 
 		public override void SetupDetails()
 		{
@@ -60,13 +61,13 @@
 
 			Owner.agentName = prev;
 
-			Owner.gc.audioHandler.Play(Owner, "Spawn");
+			Owner.gc.audioHandler.Play(Owner, VanillaAudio.Spawn);
 			Owner.gc.spawnerMain.SpawnParticleEffect("Spawn", Owner.tr.position, 0f);
 
 			Count--;
 			Item.invInterface.HideTarget();
 			return true;
 		}
-		public CustomTooltip TargetCursorText(PlayfieldObject _) => gc.nameDB.GetName("Disguise", "Interface");
+		public CustomTooltip TargetCursorText(PlayfieldObject _) => DisguiseCursorText;
 	}
 }

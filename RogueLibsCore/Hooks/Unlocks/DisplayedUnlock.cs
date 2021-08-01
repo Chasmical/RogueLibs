@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using HarmonyLib;
+using System.Security.AccessControl;
 
 namespace RogueLibsCore
 {
@@ -194,7 +195,7 @@ namespace RogueLibsCore
 				if (description is null) description = string.Empty;
 				else description += "\n\n";
 
-				description += $"<color=orange>{gc.nameDB.GetName("Cancels", "Interface")}:</color>\n" +
+				description += $"<color=orange>{gc.nameDB.GetName("Cancels", NameTypes.Interface)}:</color>\n" +
 					string.Join(", ", Unlock.cancellations.ConvertAll(unlockName =>
 					{
 						UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
@@ -213,7 +214,7 @@ namespace RogueLibsCore
 				if (description is null) description = string.Empty;
 				else description += "\n\n";
 
-				description += $"<color=cyan>{gc.nameDB.GetName("Recommends", "Interface")}:</color>\n" +
+				description += $"<color=cyan>{gc.nameDB.GetName("Recommends", NameTypes.Interface)}:</color>\n" +
 					string.Join(", ", Unlock.recommendations.ConvertAll(unlockName =>
 					{
 						UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
@@ -249,14 +250,14 @@ namespace RogueLibsCore
 			if (Unlock.cost > 0)
 			{
 				string costColor = gc.sessionDataBig.nuggets >= Unlock.cost ? "cyan" : "red";
-				prereqs.Add($"\n{gc.nameDB.GetName("UnlockFor", "Unlock")} <color={costColor}>${Unlock.cost}</color>");
+				prereqs.Add($"\n{gc.nameDB.GetName("UnlockFor", NameTypes.Unlock)} <color={costColor}>${Unlock.cost}</color>");
 			}
 			if (prereqs.Count > 0)
 			{
 				if (description is null) description = string.Empty;
 				else description += "\n\n";
 
-				description += $"<color=cyan>{gc.nameDB.GetName("Prerequisites", "Unlock")}:</color>\n" + string.Join("\n", prereqs);
+				description += $"<color=cyan>{gc.nameDB.GetName("Prerequisites", NameTypes.Unlock)}:</color>\n" + string.Join("\n", prereqs);
 			}
 		}
 

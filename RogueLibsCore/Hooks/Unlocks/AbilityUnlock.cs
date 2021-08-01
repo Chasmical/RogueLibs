@@ -32,7 +32,7 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <param name="name">The unlock's and special ability's name.</param>
 		/// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-		public AbilityUnlock(string name, bool unlockedFromStart) : base(name, "Ability", unlockedFromStart) => IsAvailableInCC = true;
+		public AbilityUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Ability, unlockedFromStart) => IsAvailableInCC = true;
 		internal AbilityUnlock(Unlock unlock) : base(unlock) { }
 
 		/// <inheritdoc/>
@@ -85,7 +85,7 @@ namespace RogueLibsCore
 			{
 				if (Menu.Type == UnlocksMenuType.CharacterCreation)
 				{
-					PlaySound("ClickButton");
+					PlaySound(VanillaAudio.ClickButton);
 					AbilityUnlock previous = (AbilityUnlock)Menu.Unlocks.Find(u => u is AbilityUnlock ability && ability.IsAddedToCC);
 					IsAddedToCC = !IsAddedToCC;
 					UpdateButton();
@@ -95,13 +95,13 @@ namespace RogueLibsCore
 			}
 			else if (Unlock.nowAvailable && UnlockCost <= gc.sessionDataBig.nuggets)
 			{
-				PlaySound("BuyUnlock");
+				PlaySound(VanillaAudio.BuyUnlock);
 				gc.unlocks.SubtractNuggets(UnlockCost);
 				gc.unlocks.DoUnlockForced(Name, Type);
 				UpdateAllUnlocks();
 				UpdateMenu();
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 		}
 
 		/// <inheritdoc/>

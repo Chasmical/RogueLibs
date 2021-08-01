@@ -30,7 +30,7 @@ namespace RogueLibsCore
 		public static void StatusEffects_GiveSpecialAbility(StatusEffects __instance)
 		{
 			if (GameController.gameController.levelType == "HomeBase"
-				&& !__instance.agent.isDummy && __instance.agent.agentName != "MechEmpty") return;
+				&& !__instance.agent.isDummy && __instance.agent.agentName != VanillaAgents.MechEmpty) return;
 			CustomAbility custom = __instance.agent.GetAbility();
 			if (custom is null) return;
 
@@ -131,7 +131,7 @@ namespace RogueLibsCore
 						if (showBuffText)
 						{
 							__instance.CreateBuffText("Recharged", __instance.agent.objectNetID);
-							GameController.gameController.audioHandler.Play(__instance.agent, "Recharge");
+							GameController.gameController.audioHandler.Play(__instance.agent, VanillaAudio.Recharge);
 						}
 
 						if (!(ability is IAbilityTargetable))

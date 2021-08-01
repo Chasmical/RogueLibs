@@ -60,10 +60,10 @@ namespace RogueLibsCore
 				else if (menu.agent.isPlayer is 4)
 					gc.sessionDataBig.loadouts4.Clear();
 
-				PlaySound("BuyItem");
+				PlaySound(VanillaAudio.BuyItem);
 				gc.unlocks.SaveUnlockData(true);
 			}
-			else PlaySound("CantDo");
+			else PlaySound(VanillaAudio.CantDo);
 
 			UpdateMenu();
 		}

@@ -15,15 +15,15 @@ namespace RogueLibsCore.Test
 				.WithSprite(Properties.Resources.Hug)
 				.WithUnlock(new AbilityUnlock { UnlockCost = 5, CharacterCreationCost = 5, });
 
-			RogueLibs.CreateCustomName("HugNegative1", "Dialogue", new CustomNameInfo("Huh? What are you doing?"));
-			RogueLibs.CreateCustomName("HugNegative2", "Dialogue", new CustomNameInfo("Excuse me?!"));
-			RogueLibs.CreateCustomName("HugNegative3", "Dialogue", new CustomNameInfo("Stop it!"));
-			RogueLibs.CreateCustomName("HugPositive1", "Dialogue", new CustomNameInfo("Oh.. Thanks."));
-			RogueLibs.CreateCustomName("HugPositive2", "Dialogue", new CustomNameInfo("Um.. Okay.."));
-			RogueLibs.CreateCustomName("HugPositive3", "Dialogue", new CustomNameInfo("?.."));
-			RogueLibs.CreateCustomName("HugForgive1", "Dialogue", new CustomNameInfo("Oh.. Okay, I forgive you."));
-			RogueLibs.CreateCustomName("HugForgive2", "Dialogue", new CustomNameInfo("Alright, I forgive you."));
-			RogueLibs.CreateCustomName("HugForgive3", "Dialogue", new CustomNameInfo("Okay... Don't worry about that.."));
+			RogueLibs.CreateCustomName("HugNegative1", NameTypes.Dialogue, new CustomNameInfo("Huh? What are you doing?"));
+			RogueLibs.CreateCustomName("HugNegative2", NameTypes.Dialogue, new CustomNameInfo("Excuse me?!"));
+			RogueLibs.CreateCustomName("HugNegative3", NameTypes.Dialogue, new CustomNameInfo("Stop it!"));
+			RogueLibs.CreateCustomName("HugPositive1", NameTypes.Dialogue, new CustomNameInfo("Oh.. Thanks."));
+			RogueLibs.CreateCustomName("HugPositive2", NameTypes.Dialogue, new CustomNameInfo("Um.. Okay.."));
+			RogueLibs.CreateCustomName("HugPositive3", NameTypes.Dialogue, new CustomNameInfo("?.."));
+			RogueLibs.CreateCustomName("HugForgive1", NameTypes.Dialogue, new CustomNameInfo("Oh.. Okay, I forgive you."));
+			RogueLibs.CreateCustomName("HugForgive2", NameTypes.Dialogue, new CustomNameInfo("Alright, I forgive you."));
+			RogueLibs.CreateCustomName("HugForgive3", NameTypes.Dialogue, new CustomNameInfo("Okay... Don't worry about that.."));
 		}
 
 		public override void OnAdded() { }
@@ -51,7 +51,7 @@ namespace RogueLibsCore.Test
 		{
 			if (CurrentTarget is null)
 			{
-				gc.audioHandler.Play(Owner, "CantDo");
+				gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
 }
 			else
 			{
@@ -79,7 +79,7 @@ namespace RogueLibsCore.Test
 					target.relationships.SetRel(Owner, "Annoyed");
 					target.relationships.SetStrikes(Owner, 2);
 					target.statusEffects.annoyeders.Add(Owner);
-					gc.audioHandler.Play(target, "AgentAnnoyed");
+					gc.audioHandler.Play(target, VanillaAudio.AgentAnnoyed);
 					return;
 				}
 				else if (code == relStatus.Annoyed)
@@ -92,7 +92,7 @@ namespace RogueLibsCore.Test
 					return;
 				}
 				target.relationships.SetStrikes(Owner, 0);
-				gc.audioHandler.Play(target, "AgentOK");
+				gc.audioHandler.Play(target, VanillaAudio.AgentOK);
 				huggedList.Add(target);
 			}
 		}
