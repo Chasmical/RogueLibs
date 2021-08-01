@@ -13,9 +13,9 @@
 				.WithUnlock(new ItemUnlock
 				{
 					UnlockCost = 10,
-					CharacterCreationCost = 4,
-					LoadoutCost = 4,
-					Prerequisites = { "KillerThrower", "Antidote", "RagePoison" },
+					LoadoutCost = 5,
+					CharacterCreationCost = 3,
+					Prerequisites = { "RagePoison", "Antidote" },
 				});
 
 			RogueLibs.CreateCustomName("AdrenalineElectronic", "Dialogue",

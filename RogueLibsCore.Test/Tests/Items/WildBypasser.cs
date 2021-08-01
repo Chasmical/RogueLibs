@@ -15,8 +15,8 @@ namespace RogueLibsCore.Test
 				.WithUnlock(new ItemUnlock
 				{
 					UnlockCost = 10,
-					CharacterCreationCost = 2,
-					LoadoutCost = 2,
+					LoadoutCost = 7,
+					CharacterCreationCost = 3,
 					Prerequisites = { "WallBypasser" },
 				});
 		}
@@ -25,8 +25,8 @@ namespace RogueLibsCore.Test
 		{
 			Item.itemType = ItemTypes.Tool;
 			Item.itemValue = 60;
-			Item.initCount = 1;
-			Item.rewardCount = 1;
+			Item.initCount = 2;
+			Item.rewardCount = 3;
 			Item.stackable = true;
 			Item.goesInToolbar = true;
 		}

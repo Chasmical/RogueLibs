@@ -15,9 +15,9 @@ namespace RogueLibsCore.Test
                 .WithUnlock(new ItemUnlock
                 {
                     UnlockCost = 10,
-                    CharacterCreationCost = 3,
-                    LoadoutCost = 3,
-                    Prerequisites = { "QuickEscapeTeleporter" },
+                    LoadoutCost = 9,
+                    CharacterCreationCost = 5,
+                    Prerequisites = { "QuickEscapeTeleporter", nameof(WildBypasser) },
                 });
 
             RogueLibs.CreateCustomName("TeleportHere", "Interface", new CustomNameInfo("Teleport here"));
@@ -26,7 +26,7 @@ namespace RogueLibsCore.Test
         public override void SetupDetails()
         {
             Item.itemType = ItemTypes.Tool;
-            Item.itemValue = 30;
+            Item.itemValue = 80;
             Item.initCount = 2;
             Item.rewardCount = 3;
             Item.stackable = true;

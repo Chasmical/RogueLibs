@@ -13,8 +13,8 @@
 				.WithUnlock(new ItemUnlock
 				{
 					UnlockCost = 10,
+					LoadoutCost = 5,
 					CharacterCreationCost = 3,
-					LoadoutCost = 3,
 					Prerequisites = { "Comedian_BQ" },
 				});
 		}
@@ -22,7 +22,7 @@
 		public override void SetupDetails()
 		{
 			Item.itemType = ItemTypes.Tool;
-			Item.itemValue = 40;
+			Item.itemValue = 15;
 			Item.initCount = 10;
 			Item.rewardCount = 10;
 			Item.stackable = true;

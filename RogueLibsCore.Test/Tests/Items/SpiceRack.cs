@@ -15,9 +15,9 @@ namespace RogueLibsCore.Test
 				.WithUnlock(new ItemUnlock
 				{
 					UnlockCost = 10,
-					CharacterCreationCost = 3,
 					LoadoutCost = 3,
-					Prerequisites = { "FoodProcessor", nameof(QuantumFud) },
+					CharacterCreationCost = 2,
+					Prerequisites = { "FoodProcessor" },
 				});
 
 			SeasonCursorText = RogueLibs.CreateCustomName("Season", "Interface", new CustomNameInfo("Season"));

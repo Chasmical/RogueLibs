@@ -14,8 +14,9 @@
 				.WithUnlock(new ItemUnlock
 				{
 					UnlockCost = 10,
-					CharacterCreationCost = 3,
 					LoadoutCost = 2,
+					CharacterCreationCost = 3,
+					Prerequisites = { "BodySwapper" },
 				});
 
 			RogueLibs.CreateCustomName("Disguise", "Interface", new CustomNameInfo("Disguise as"));

@@ -15,9 +15,9 @@ namespace RogueLibsCore.Test
 				.WithUnlock(new ItemUnlock
 				{
 					UnlockCost = 10,
+					LoadoutCost = 5,
 					CharacterCreationCost = 3,
-					LoadoutCost = 3,
-					Prerequisites = { "AmmoProcessor", "KillProfiterAmmo", "AmmoCapacityMod" },
+					Prerequisites = { "KillProfiterAmmo" },
 				});
 		}
 
