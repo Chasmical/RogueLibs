@@ -42,6 +42,7 @@
     <Compile Include="Tests\Effects\Adrenaline.cs" />
     <Compile Include="Tests\Items\AdrenalineShot.cs" />
     <Compile Include="Tests\Items\AmmoBox.cs" />
+    <Compile Include="Tests\Items\Centrifuge.cs" />
     <Compile Include="Tests\Items\JokeBook.cs" />
     <Compile Include="Tests\Items\QuantumFud.cs" />
     <Compile Include="Tests\Items\SpiceRack.cs" />
