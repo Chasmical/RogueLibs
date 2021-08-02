@@ -104,12 +104,16 @@ CustomName name = RogueLibs.CreateCustomName("Name", "Type", new CustomNameInfo(
 - `Agent` - названия персонажей;
 - `Dialogue` - диалоги и фразы персонажей;
 
+:::tip Pro-tip: Строки-константы типов имён
+Используйте строки-константы в статическом классе `NameTypes` для избежания опечаток.
+:::
+
 ## Использование {#usage}
 
 Если хотите использовать ваши кастомные имена, используйте `NameDB.GetName()` или любые другие методы, использующие его:
 
 ```csharp
-string dialogue = gc.nameDB.GetName("CryForHelp", "Dialogue");
+string dialogue = gc.nameDB.GetName("CryForHelp", NameTypes.Dialogue);
 ```
 
 ```csharp
@@ -124,7 +128,7 @@ public class Recycler : CustomItem, IItemCombinable
     [RLSetup]
     public static void Setup()
     {
-        recycleTooltip = RogueLibs.CreateCustomName("Recycle", "Interface", new CustomNameInfo
+        recycleTooltip = RogueLibs.CreateCustomName("Recycle", NameTypes.Interface, new CustomNameInfo
         {
             English = "Recycle",
             Russian = "Переработать",

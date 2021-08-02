@@ -104,12 +104,16 @@ If you're going to use the second method, here's the list of types used in the g
 - `Agent` - agent names;
 - `Dialogue` - agent dialogue lines;
 
+:::tip Pro-tip: Name type const strings
+Use string consts in the `NameTypes` static class to avoid typos.
+:::
+
 ## Usage {#usage}
 
 If you want to use your custom names in the game, use `NameDB.GetName()` or any other methods that use it:
 
 ```csharp
-string dialogue = gc.nameDB.GetName("CryForHelp", "Dialogue");
+string dialogue = gc.nameDB.GetName("CryForHelp", NameTypes.Dialogue);
 ```
 
 ```csharp
@@ -124,7 +128,7 @@ public class Recycler : CustomItem, IItemCombinable
     [RLSetup]
     public static void Setup()
     {
-        recycleTooltip = RogueLibs.CreateCustomName("Recycle", "Interface", new CustomNameInfo
+        recycleTooltip = RogueLibs.CreateCustomName("Recycle", NameTypes.Interface, new CustomNameInfo
         {
             English = "Recycle",
             Russian = "Переработать",
