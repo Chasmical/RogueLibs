@@ -78,20 +78,22 @@ export function PreviewTooltip ({props}) {
 
 import CodeSnippet from '@site/src/components/CodeSnippet';
 
-import AmmoBox from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/AmmoBox.cs';
+import Centrifuge from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/Centrifuge.cs';
 import SpiceRack from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/SpiceRack.cs';
+import AmmoBox from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/AmmoBox.cs';
 
 <Tabs
     defaultValue="ammobox"
     values={[
-        {label:'Ammo Box', value:'ammobox'},
+        {label:'Centrifuge', value:'centrifuge'},
         {label:'Spice Rack', value:'spicerack'},
+        {label:'Ammo Box', value:'ammobox'},
     ]}>
-<TabItem value="ammobox">
+<TabItem value="centrifuge">
 
-A pretty complicated example with a lot of math.
+A simple example that inverts the Syringes' effects.
 
-<CodeSnippet>{AmmoBox}</CodeSnippet>
+<CodeSnippet>{Centrifuge}</CodeSnippet>
 
 </TabItem>
 <TabItem value="spicerack">
@@ -101,6 +103,13 @@ A simple example, with custom hooks to keep track of seasoned items.
 See more about custom hooks [here](../hooks/hooks).
 
 <CodeSnippet>{SpiceRack}</CodeSnippet>
+
+</TabItem>
+<TabItem value="ammobox">
+
+A pretty complicated example with a lot of math.
+
+<CodeSnippet>{AmmoBox}</CodeSnippet>
 
 </TabItem>
 </Tabs>

@@ -78,20 +78,22 @@ export function PreviewTooltip ({props}) {
 
 import CodeSnippet from '@site/src/components/CodeSnippet';
 
-import AmmoBox from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/AmmoBox.cs';
+import Centrifuge from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/Centrifuge.cs';
 import SpiceRack from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/SpiceRack.cs';
+import AmmoBox from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/AmmoBox.cs';
 
 <Tabs
     defaultValue="ammobox"
     values={[
-        {label:'Ящик с боеприпасами', value:'ammobox'},
+        {label:'Центрифуга', value:'centrifuge'},
         {label:'Стойка со специями', value:'spicerack'},
+        {label:'Ящик с боеприпасами', value:'ammobox'},
     ]}>
-<TabItem value="ammobox">
+<TabItem value="centrifuge">
 
-Довольно сложный пример с кучей математики.
+Простой пример, обращающий эффекты в Шприцах.
 
-<CodeSnippet>{AmmoBox}</CodeSnippet>
+<CodeSnippet>{Centrifuge}</CodeSnippet>
 
 </TabItem>
 <TabItem value="spicerack">
@@ -99,6 +101,13 @@ import SpiceRack from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/Spic
 Простой пример, со *специ*альными хуками для отслеживания приправленной еды.
 
 <CodeSnippet>{SpiceRack}</CodeSnippet>
+
+</TabItem>
+<TabItem value="ammobox">
+
+Довольно сложный пример с кучей математики.
+
+<CodeSnippet>{AmmoBox}</CodeSnippet>
 
 </TabItem>
 </Tabs>
