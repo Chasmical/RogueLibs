@@ -167,8 +167,10 @@ namespace RogueLibsCore
 					if ((item.invItemCount == 0 || !(ability is IAbilityRechargeable)) && __instance.CanShowSpecialAbilityIndicator()
 						&& ability.CurrentTarget != null)
 					{
+						abilitySlot = __instance.agent.inventory.buffDisplay.specialAbilitySlot;
 						__instance.agent.specialAbilityIndicator.ShowIndicator(ability.CurrentTarget, ability.Item.invItemName);
-						__instance.agent.inventory.buffDisplay.specialAbilitySlot.MakeUsable();
+						abilitySlot.MakeUsable();
+						abilitySlot = null;
 					}
 					else
 					{
@@ -179,9 +181,17 @@ namespace RogueLibsCore
 			}
 			__instance.startedSpecialAbilityInterfaceCheck = false;
 		}
+		private static EquippedItemSlot abilitySlot;
 
 		public static void SpecialAbilityIndicator_ShowIndicator(SpecialAbilityIndicator __instance, string specialAbilityType)
-			=> __instance.image.sprite = GameController.gameController.gameResources.itemDic
-				.TryGetValue(specialAbilityType, out Sprite sprite) ? sprite : null;
+		{
+			CustomAbility ability = abilitySlot.item.GetHook<CustomAbility>();
+			if (ability != null)
+			{
+				Sprite spr = ability.GetIndicator();
+				__instance.image.sprite = spr;
+				__instance.image.enabled = spr != null;
+			}
+		}
 	}
 }
