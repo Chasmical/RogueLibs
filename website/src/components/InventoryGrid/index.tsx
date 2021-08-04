@@ -1,137 +1,156 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import clsx from 'clsx';
+import InventorySlot, { Props as SlotProps } from "../InventorySlot";
+import InventoryRow, { getSlots } from '../InventoryRow';
 import styles from './index.module.css';
-import InventorySlot, { Props as SlotProps } from '../InventorySlot';
-import InventoryRow, { GetSlots } from '../InventoryRow';
 
 export type Props = {
   items?: (SlotProps | SlotProps[])[],
   children?: React.ReactNode,
-  width?: number,
   height?: number,
+  width?: number,
+
   interactable?: boolean,
-  onChange?: (e: InventoryChangeProps) => void,
+  defaultValues?: string | string[],
+  minChoices?: number,
+  maxChoices?: number,
+  lockChoices?: boolean,
+  onClick?: (e: GridSlotArgs) => void,
+  onChange?: (values: string[]) => void,
 }
-export type InventoryChangeProps = {
-  index: number,
+export type GridSlotArgs = {
+  uid: string,
   row: number,
   column: number,
 }
 
-export function GetSlotsInRows(items?: (SlotProps | SlotProps[])[], children?: React.ReactNode, width?: number, height?: number): SlotProps[][] {
-  let slots: SlotProps[][] = [];
-  let newRow: SlotProps[] = [];
+export type RowInfo = {
+  items: SlotProps[],
+  type: "normal" | "toolbar",
+}
+
+export function getRows(items?: (SlotProps | SlotProps[])[], children?: React.ReactNode, height?: number, width?: number) {
+  let rows: RowInfo[] = [];
+  let tempRow: SlotProps[] = [];
+
+  const flushRow = (type?: "normal" | "toolbar") => {
+    if (width)
+      for (let i = tempRow.length; i < width; i++)
+        tempRow.push({interactable: false});
+    flushRowWithoutFill(type);
+  }
+  const flushRowWithoutFill = (type?: "normal" | "toolbar") => {
+    rows.push({
+      items: tempRow,
+      type: type || "normal",
+    });
+    tempRow = [];
+  }
 
   if (items)
     for (let item of items) {
       if (Array.isArray(item)) {
-        if (newRow.length > 0) {
-          if (width)
-            for (let i = newRow.length; i < width; i++)
-              newRow.push({type: null});
-          slots.push(newRow);
-          newRow = [];
-        }
-        let row = [...item];
-        if (width)
-          for (let i = row.length; i < width; i++)
-            row.push({type: null});
-        slots.push(row);
+        if (tempRow.length > 0) flushRow();
+        for (let subitem of item)
+          tempRow.push(subitem);
+        flushRow();
       }
-      else if (item !== null && item !== undefined && item !== false && item !== true) {
-        newRow.push(item);
-        if (newRow.length === width) {
-          slots.push(newRow);
-          newRow = [];
-        }
+      else {
+        tempRow.push(item);
+        if (tempRow.length === width) flushRow();
       }
     }
 
-  if (newRow.length > 0) {
-    if (width)
-      for (let i = newRow.length; i < width; i++)
-        newRow.push({type: null});
-    slots.push(newRow);
-    newRow = [];
-  }
+  if (tempRow.length > 0) flushRow();
 
   for (let child of React.Children.toArray(children)) {
     let c = child as any;
-    let type = c?.props?.mdxType;
-    if (type == "InventoryRow") {
-      if (newRow.length > 0) {
-        if (width)
-          for (let i = newRow.length; i < width; i++)
-            newRow.push({type: null});
-        slots.push(newRow);
-        newRow = [];
-      }
-      let row = GetSlots(c.props.items, c.props.children, c.props.width || width);
-      slots.push(row);
+    let type: string | null = c?.props?.mdxType;
+    if (type === "InventorySlot") {
+      tempRow.push({...c.props});
+      if (tempRow.length === width) flushRow();
     }
-    else if (type == "InventorySlot") {
-      newRow.push({...c.props});
-      if (newRow.length === width) {
-        slots.push(newRow);
-        newRow = [];
-      }
+    else if (type === "InventoryRow") {
+      if (tempRow.length > 0) flushRow();
+      let rowSlots = getSlots(c.props.items, c.props.children, c.props.width || width);
+      tempRow.push(...rowSlots);
+      flushRowWithoutFill(c.props.type);
     }
   }
 
-  if (newRow.length > 0) {
-    if (width)
-      for (let i = newRow.length; i < width; i++)
-        newRow.push({type: null});
-    slots.push(newRow);
-    newRow = [];
-  }
+  if (tempRow.length > 0) flushRow();
 
   if (height)
-    for (let i = slots.length; i < height; i++) {
-      let row: SlotProps[] = [];
-      if (width)
-        for (let j = 0; j < width; j++)
-          row.push({type: null});
-      else row.push({type: null});
-      slots.push(row);
+    for (let i = rows.length; i < height; i++) {
+      for (let j = 0; j < (width || 1); j++)
+      tempRow.push({interactable: false});
+      flushRow();
     }
 
-  return slots;
+  return rows;
 }
 
-export default function ({items, children, width, height, interactable, onChange}: Props): JSX.Element {
+export default function ({items, children, height, width,
+  interactable, defaultValues, minChoices, maxChoices, lockChoices, onClick, onChange}: Props): JSX.Element {
 
-  let rows = GetSlotsInRows(items, children, width, height);
+  let MinChoices = minChoices || 0;
+  let MaxChoices = maxChoices || 1;
 
-  const [index, setIndex] = useState(-1);
+  let rows: RowInfo[] = getRows(items, children, height, width);
 
-  const clickHandler = (myIndex: number, rowIndex: number, columnIndex: number): void => {
-    let newIndex = myIndex == index ? -1 : myIndex;
-    setIndex(newIndex);
-    if (onChange) onChange({
-      index: myIndex,
-      row: rowIndex,
-      column: columnIndex,
-    })
+  let [values, setValues] = useState(() => {
+    if (!interactable) return [];
+    let uids: string[];
+
+    if (defaultValues === undefined) {
+      uids = [];
+      let withUids = rows.map(r => r.items).reduce((a, b) => a.concat(b)).filter(s => s.uid !== undefined);
+      for (let i = 0; i < Math.min(MinChoices, withUids.length); i++)
+        uids.push(withUids[i].uid!);
+    }
+    else {
+      uids = Array.isArray(defaultValues) ? defaultValues : [defaultValues];
+    }
+
+    if (MinChoices > uids.length || MaxChoices < uids.length)
+      throw new Error(`Invalid amount of default values: ${MinChoices} ≤ *${uids.length}* ≤ ${MaxChoices}.`);
+    return uids;
+  });
+  
+  const handleChange = (index: number, uid: string) => {
+    let newValues: string[];
+    if (index == -1) {
+      if (lockChoices && values.length >= MaxChoices) return;
+      newValues = values.slice();
+      while (newValues.length >= MaxChoices)
+        newValues.shift();
+      newValues.push(uid);
+      setValues(newValues);
+    }
+    else {
+      if (values.length <= MinChoices) return;
+      newValues = values.slice();
+      newValues.splice(index, 1);
+      setValues(newValues);
+    }
+    if (onChange) onChange(newValues);
+  }
+  const clickHandler = (row: number, column: number, uid: string) => {
+    if (interactable) handleChange(values.indexOf(uid), uid);
+    if (onClick) onClick({ uid: uid, row: row, column: column });
   }
 
-  let slotIndex = 0;
   return (
     <div className={styles.container}>
-      {rows.map((row, rowIndex) => (
-        <div className={styles.row}>
-          {row.map((slot, columnIndex) => {
-            let i = slotIndex++;
-
-            let hoverable = interactable && slot.type !== null;
-            if (hoverable) slot.type = interactable && index == i ? "selected" : "normal";
-
-            return (
-              <InventorySlot key={i} {...slot}
-                onClick={hoverable ? () => clickHandler(i, rowIndex, columnIndex) : undefined}/>
-            );
-          })}
-        </div>
-      ))}
+      {rows.map((row, rowIndex) => {
+        for (let slot of row.items) {
+          if (interactable && slot.interactable === undefined) slot.interactable = true;
+          let selected = slot.uid && values.includes(slot.uid);
+          if (selected) slot.type = "selected";
+        }
+        return <InventoryRow key={rowIndex} type={row.type} items={row.items}
+          onClick={e => clickHandler(rowIndex, e.index, e.uid)}/>;
+      })}
     </div>
   );
 }

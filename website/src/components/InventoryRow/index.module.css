@@ -1,4 +1,8 @@
-.container {
+.row {
   display: inline-flex;
-  flex-wrap: nowrap;
+  flex-direction: row;
+}
+.toolbar {
+  margin-top: 2px;
+  outline: 2px solid #214965;
 }

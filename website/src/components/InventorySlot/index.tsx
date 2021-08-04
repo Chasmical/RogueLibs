@@ -3,18 +3,21 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './index.module.css';
 
 export type Props = {
+  uid?: string,
+
   sprite?: string,
-  tooltip?: number | string,
+  tooltip?: string | number,
   tooltipColor?: string,
-  count?: number | string,
+  count?: string | number,
   countColor?: string,
-  type?: "normal" | "selected" | "locked" | null,
+
+  interactable?: boolean,
+  type?: "normal" | "selected" | "locked",
   onClick?: () => void,
 }
 
-export default function ({sprite, tooltip, tooltipColor, count, countColor, type, onClick}: Props): JSX.Element {
+export default function ({sprite, tooltip, tooltipColor, count, countColor, interactable, type, onClick}: Props): JSX.Element {
 
-  let interactable = !!type;
   type = type || "normal";
 
   return (

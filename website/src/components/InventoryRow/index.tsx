@@ -1,57 +1,106 @@
-import React, { useState } from 'react';
-import useBaseUrl from '@docusaurus/useBaseUrl';
+import React, { useState } from "react";
+import clsx from 'clsx';
+import InventorySlot, { Props as SlotProps } from "../InventorySlot";
 import styles from './index.module.css';
-import InventorySlot, { Props as SlotProps } from '../InventorySlot';
 
 export type Props = {
   items?: SlotProps[],
   children?: React.ReactNode,
   width?: number,
+
   interactable?: boolean,
-  onChange?: (index: number) => void,
+  defaultValues?: string | string[],
+  minChoices?: number,
+  maxChoices?: number,
+  lockChoices?: boolean,
+  type?: "normal" | "toolbar",
+  onClick?: (e: RowSlotArgs) => void,
+  onChange?: (values: string[]) => void,
+}
+export type RowSlotArgs = {
+  uid: string,
+  index: number,
 }
 
-export function GetSlots(items?: SlotProps[], children?: React.ReactNode, width?: number): SlotProps[] {
-  let slots = items || [];
+export function getSlots(items?: SlotProps[], children?: React.ReactNode, width?: number) {
+  let slots: SlotProps[] = items || [];
 
   for (let child of React.Children.toArray(children)) {
     let c = child as any;
-    let type = c?.props?.mdxType;
-    if (type == "InventorySlot") {
+    let type: string | null = c?.props?.mdxType;
+    if (type === "InventorySlot") {
       slots.push({...c.props});
     }
   }
 
   if (width)
     for (let i = slots.length; i < width; i++)
-      slots.push({type: null});
+      slots.push({interactable: false});
 
   return slots;
 }
 
-export default function ({items, children, width, interactable, onChange}: Props): JSX.Element {
+export default function ({items, children, width,
+  interactable, defaultValues, minChoices, maxChoices, lockChoices, type, onClick, onChange}: Props): JSX.Element {
 
-  let slots = GetSlots(items, children, width);
+  let MinChoices = minChoices || 0;
+  let MaxChoices = maxChoices || 1;
 
-  const [index, setIndex] = useState(-1);
+  let slots = getSlots(items, children, width);
 
-  const clickHandler = (myIndex: number): void => {
-    let newIndex = myIndex == index ? -1 : myIndex;
-    setIndex(newIndex);
-    if (onChange) onChange(newIndex);
+  const [values, setValues] = useState(() => {
+    if (!interactable) return [];
+    let uids: string[];
+
+    if (defaultValues === undefined) {
+      uids = [];
+      let withUids = slots.filter(s => s.uid !== undefined);
+      for (let i = 0; i < Math.min(MinChoices, withUids.length); i++)
+        uids.push(withUids[i].uid!);
+    }
+    else {
+      uids = Array.isArray(defaultValues) ? defaultValues : [defaultValues];
+    }
+
+    if (MinChoices > uids.length || MaxChoices < uids.length)
+      throw new Error(`Invalid amount of default values: ${MinChoices} ≤ *${uids.length}* ≤ ${MaxChoices}.`);
+    return uids;
+  });
+
+  const handleChange = (index: number, uid: string) => {
+    let newValues: string[];
+    if (index == -1) {
+      if (lockChoices && values.length >= MaxChoices) return;
+      newValues = values.slice();
+      while (newValues.length >= MaxChoices)
+        newValues.shift();
+      newValues.push(uid);
+      setValues(newValues);
+    }
+    else {
+      if (values.length <= MinChoices) return;
+      newValues = values.slice();
+      newValues.splice(index, 1);
+      setValues(newValues);
+    }
+    if (onChange) onChange(newValues);
+  }
+  const clickHandler = (index: number, uid: string) => {
+    if (interactable) handleChange(values.indexOf(uid), uid);
+    if (onClick) onClick({ uid: uid, index: index });
   }
 
   return (
-    <div className={styles.container}>
-      {slots.map((slot, i) => {
-
-        let hoverable = interactable && slot.type !== null;
-        if (hoverable) slot.type = interactable && index == i ? "selected" : "normal";
-
-        return (
-          <InventorySlot key={i} {...slot}
-            onClick={hoverable ? () => clickHandler(i) : undefined}/>
-        );
+    <div className={clsx(styles.row, type == "toolbar" && styles.toolbar)}>
+      {slots.map((slot, num) => {
+        if (slot.uid && values.includes(slot.uid)) slot.type = "selected";
+        if (type == "toolbar") {
+          slot.tooltip = num + 1;
+          slot.tooltipColor = undefined;
+        }
+        if (interactable && slot.interactable === undefined) slot.interactable = true;
+        return <InventorySlot key={slot.uid} {...slot}
+          onClick={() => slot.uid !== undefined && clickHandler(num, slot.uid)}/>;
       })}
     </div>
   );

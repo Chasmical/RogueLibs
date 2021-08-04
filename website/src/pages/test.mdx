@@ -2,16 +2,56 @@
 
 import { useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
+
 import InventorySlot from '@site/src/components/InventorySlot';
 import InventoryRow from '@site/src/components/InventoryRow';
-import InventoryToolbar from '@site/src/components/InventoryToolbar';
+import InventoryGrid from '@site/src/components/InventoryGrid';
 
-<InventoryToolbar items={[{}]} interactable={true} width={5}>
-  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count="1"/>
-  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count="77" tooltip="$3"/>
-  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count="13"/>
-</InventoryToolbar>
+## `InventoryRow`
 
+<InventoryRow interactable={true} width={6}>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="1"/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="2"/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="3"/>
+</InventoryRow>
 
+## `InventoryRow` (`type="toolbar"`)
 
+<InventoryRow interactable={true} type="toolbar" width={6}>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="1"/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count={50} uid="2"/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$13" uid="3"/>
+</InventoryRow>
+
+## `InventoryGrid`
+
+<InventoryGrid interactable={true} width={10} height={3}>
+  <InventoryRow>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="1"/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count={50} uid="2"/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$13" uid="3"/>
+  </InventoryRow>
+  <InventoryRow>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="4"/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="5"/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="6"/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="7"/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="8"/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="9"/>
+  </InventoryRow>
+  <InventoryRow type="toolbar">
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="10"/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="11"/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="12"/>
+  </InventoryRow>
+</InventoryGrid>
 
