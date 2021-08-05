@@ -3,41 +3,35 @@ import useStorage, { context, StorageUpdatedArgs } from './useStorage';
 
 export default function (slotName?: string, defaultValue?: string[] | (() => string[])): [string[], React.Dispatch<React.SetStateAction<string[]>>] {
 
+  if (slotName && slotName.includes(";")) throw new Error("Storage slot name cannot contain ';'!");
   const controller = useContext(context);
 
   const setValue = (newValue: React.SetStateAction<string[]>) => {
-    if (slotName == null) return;
+    setValueFull(newValue, true);
+  }
+  const setValueFull = (newValue: React.SetStateAction<string[]>, shareState: boolean) => {
     if (typeof newValue === "function") newValue = newValue(value);
-    if (newValue !== null) controller.set(slotName, newValue.join(";"));
+    setValueInternal(newValue);
+    if (slotName == null || !shareState) return;
+    if (newValue != null) controller.set(slotName, newValue.join(";"));
     else controller.delete(slotName);
   }
 
-  useEffect(() => {
-    if (slotName == null) return () => { };
-    controller.subscribe(storageListener);
-    return () => controller.unsubscribe(storageListener);
+  const [value, setValueInternal] = useState(() => {
+    if (typeof defaultValue === "function") defaultValue = defaultValue();
+    return defaultValue ?? [];
   });
 
-  const [value, setValueInternal] = useState(() => {
+  useEffect(() => {
+    if (slotName == null) return () => { };
+
+    let stored = controller.get(slotName);
+    if (stored != null) setValueFull(stored.split(";"), false);
+    else setValueFull(defaultValue ?? [], true);
     
-    let stored = slotName != null ? controller.get(slotName) : null;
-    let storedArray: string[];
-    if (stored !== null) {
-      storedArray = stored.split(";");
-    }
-    else {
-      if (defaultValue != null) {
-        if (typeof defaultValue === "function")
-          defaultValue = defaultValue();
-        storedArray = defaultValue;
-      }
-      else {
-        storedArray = [];
-      }
-      setValue(storedArray);
-    }
-    return storedArray;
-  });
+    controller.subscribe(storageListener);
+    return () => controller.unsubscribe(storageListener);
+  }, [controller]);
 
   const storageListener = (e: StorageUpdatedArgs) => {
     if (e.slotName == slotName) {

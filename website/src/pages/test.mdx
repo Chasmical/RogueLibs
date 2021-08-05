@@ -36,9 +36,22 @@ import InventoryGrid from '@site/src/components/InventoryGrid';
     <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="4"/>
     <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="5"/>
   </InventoryRow>
-  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$13" uid="3"/>
-  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="4"/>
-  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="5"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$13" uid="6"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="7"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="8"/>
+</InventoryGrid>
+
+<br/>
+
+<InventoryGrid group="grid2" interactable={true} width={4}>
+  <InventoryRow>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="1"/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} count={50} uid="2"/>
+    <InventorySlot interactable={false}/>
+    <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$13" uid="3"/>
+  </InventoryRow>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} tooltip="$13" uid="6"/>
+  <InventorySlot sprite={useBaseUrl("/img/TestItem.png")} uid="7"/>
 </InventoryGrid>
 
 <br/>

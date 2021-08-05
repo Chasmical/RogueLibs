@@ -23,23 +23,24 @@ export type Props = {
 const STORAGE_PREFIX = "roguestorage.";
 
 function useStorageInternal(): StorageController {
-  const [storage, setStorage] = useState({} as Storage);
+  const [storage, setStorage] = useState(null as (Storage | null));
   const [subscribers, setSubscribers] = useState([] as ((e: StorageUpdatedArgs) => void)[]);
 
   const getSlot = (slotName: string) => {
+    if (storage === null) return null;
     let value: string | null = storage[slotName] ?? null;
-    console.log(`Retrieved ${slotName}: ${value}`);
     return value;
   }
   const setSlot = useCallback((slotName: string, value: string) => {
+    if (storage === null) return;
     storage[slotName] = value;
     createStorageSlot(`${STORAGE_PREFIX}${slotName}`).set(value);
     setStorage(storage);
     let args = {slotName, value};
     subscribers.forEach(s => s(args));
-    console.log(`Stored ${slotName}: ${value}`);
-  }, []);
+  }, [storage]);
   const deleteSlot = (slotName: string) => {
+    if (storage === null) return;
     delete storage[slotName];
     createStorageSlot(`${STORAGE_PREFIX}${slotName}`).del();
     setStorage(storage);
@@ -47,14 +48,14 @@ function useStorageInternal(): StorageController {
     subscribers.forEach(s => s(args));
   }
 
-  let [ready, setReady] = useState(false);
-  if (!ready) {
+  useEffect(() => {
     let localStorage = {};
     try {
       listStorageKeys().forEach(key => {
         if (key.startsWith(STORAGE_PREFIX)) {
           let slotName = key.substring(STORAGE_PREFIX.length);
-          localStorage[slotName] = createStorageSlot(key).get();
+          let val = createStorageSlot(key).get();
+          if (val !== null) localStorage[slotName] = val;
         }
       });
       setStorage(localStorage);
@@ -62,8 +63,8 @@ function useStorageInternal(): StorageController {
     catch (err) {
       console.error(err);
     }
-    setReady(true);
-  }
+    console.log("Storage set");
+  }, []);
 
   return {
     get: slot => getSlot(slot),
@@ -87,31 +88,35 @@ export function StorageProvider ({children}: Props): JSX.Element {
 
 export default function (slotName?: string, defaultValue?: string | (() => string)): [string | null, React.Dispatch<React.SetStateAction<string | null>>] {
 
+  if (slotName && slotName.includes(";")) throw new Error("Storage slot name cannot contain ';'!");
   const controller = useContext(context);
 
   const setValue = (newValue: React.SetStateAction<string | null>) => {
-    if (slotName == null) return;
+    setValueFull(newValue, true);
+  }
+  const setValueFull = (newValue: React.SetStateAction<string | null>, shareState: boolean) => {
     if (typeof newValue === "function") newValue = newValue(value);
-    if (newValue !== null) controller.set(slotName, newValue);
+    setValueInternal(newValue);
+    if (slotName == null || !shareState) return;
+    if (newValue != null) controller.set(slotName, newValue);
     else controller.delete(slotName);
   }
 
-  useEffect(() => {
-    if (slotName == null) return () => { };
-    controller.subscribe(storageListener);
-    return () => controller.unsubscribe(storageListener);
+  const [value, setValueInternal] = useState(() => {
+    if (typeof defaultValue === "function") defaultValue = defaultValue();
+    return defaultValue ?? null;
   });
 
-  const [value, setValueInternal] = useState(() => {
+  useEffect(() => {
+    if (slotName == null) return () => { };
+
+    let stored = controller.get(slotName);
+    if (stored != null) setValueFull(stored, false);
+    else setValueFull(defaultValue ?? null, true);
     
-    let stored = slotName != null ? controller.get(slotName) : null;
-    if (stored === null && defaultValue != null) {
-      if (typeof defaultValue === "function") defaultValue = defaultValue();
-      setValue(defaultValue);
-      return defaultValue;
-    }
-    return stored;
-  });
+    controller.subscribe(storageListener);
+    return () => controller.unsubscribe(storageListener);
+  }, [controller]);
 
   const storageListener = (e: StorageUpdatedArgs) => {
     if (e.slotName == slotName) {
