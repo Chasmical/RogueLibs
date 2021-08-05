@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import clsx from 'clsx';
+import React, { useEffect, useState } from "react";
+import useStorageArray from '../hooks/useStorageArray';
 import InventorySlot, { Props as SlotProps } from "../InventorySlot";
 import InventoryRow, { getSlots } from '../InventoryRow';
 import styles from './index.module.css';
@@ -15,6 +15,7 @@ export type Props = {
   minChoices?: number,
   maxChoices?: number,
   lockChoices?: boolean,
+  group?: string,
   onClick?: (e: GridSlotArgs) => void,
   onChange?: (values: string[]) => void,
 }
@@ -91,14 +92,14 @@ export function getRows(items?: (SlotProps | SlotProps[])[], children?: React.Re
 }
 
 export default function ({items, children, height, width,
-  interactable, defaultValues, minChoices, maxChoices, lockChoices, onClick, onChange}: Props): JSX.Element {
+  interactable, defaultValues, minChoices, maxChoices, lockChoices, group, onClick, onChange}: Props): JSX.Element {
 
   let MinChoices = minChoices || 0;
   let MaxChoices = maxChoices || 1;
 
   let rows: RowInfo[] = getRows(items, children, height, width);
 
-  let [values, setValues] = useState(() => {
+  let [values, setValues] = useStorageArray(group ? `inventoryGroups.${group}` : undefined, () => {
     if (!interactable) return [];
     let uids: string[];
 

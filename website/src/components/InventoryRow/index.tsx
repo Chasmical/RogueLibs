@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import useStorageArray from "../hooks/useStorageArray";
 import clsx from 'clsx';
 import InventorySlot, { Props as SlotProps } from "../InventorySlot";
 import styles from './index.module.css';
@@ -13,6 +14,7 @@ export type Props = {
   minChoices?: number,
   maxChoices?: number,
   lockChoices?: boolean,
+  group?: string,
   type?: "normal" | "toolbar",
   onClick?: (e: RowSlotArgs) => void,
   onChange?: (values: string[]) => void,
@@ -41,14 +43,14 @@ export function getSlots(items?: SlotProps[], children?: React.ReactNode, width?
 }
 
 export default function ({items, children, width,
-  interactable, defaultValues, minChoices, maxChoices, lockChoices, type, onClick, onChange}: Props): JSX.Element {
+  interactable, defaultValues, minChoices, maxChoices, lockChoices, group, type, onClick, onChange}: Props): JSX.Element {
 
   let MinChoices = minChoices || 0;
   let MaxChoices = maxChoices || 1;
 
   let slots = getSlots(items, children, width);
 
-  const [values, setValues] = useState(() => {
+  const [values, setValues] = useStorageArray(group ? `inventoryGroups.${group}` : undefined, () => {
     if (!interactable) return [];
     let uids: string[];
 
@@ -99,7 +101,7 @@ export default function ({items, children, width,
           slot.tooltipColor = undefined;
         }
         if (interactable && slot.interactable === undefined) slot.interactable = true;
-        return <InventorySlot key={slot.uid} {...slot}
+        return <InventorySlot key={num} {...slot}
           onClick={() => slot.uid !== undefined && clickHandler(num, slot.uid)}/>;
       })}
     </div>
