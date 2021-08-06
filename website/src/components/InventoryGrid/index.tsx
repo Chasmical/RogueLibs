@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import useStorageArray from '../hooks/useStorageArray';
+import useSelector from "../hooks/useSelector";
 import InventorySlot, { Props as SlotProps } from "../InventorySlot";
 import InventoryRow, { getSlots } from '../InventoryRow';
 import styles from './index.module.css';
@@ -11,12 +11,13 @@ export type Props = {
   width?: number,
 
   interactable?: boolean,
-  defaultValues?: string | string[],
+  onClick?: (e: GridSlotArgs) => void,
+
+  defaultValues?: string | string[] | null | (() => string | string[] | null),
   minChoices?: number,
   maxChoices?: number,
   lockChoices?: boolean,
   group?: string,
-  onClick?: (e: GridSlotArgs) => void,
   onChange?: (values: string[]) => void,
 }
 export type GridSlotArgs = {
@@ -91,53 +92,19 @@ export function getRows(items?: (SlotProps | SlotProps[])[], children?: React.Re
   return rows;
 }
 
-export default function ({items, children, height, width,
-  interactable, defaultValues, minChoices, maxChoices, lockChoices, group, onClick, onChange}: Props): JSX.Element {
-
-  let MinChoices = minChoices || 0;
-  let MaxChoices = maxChoices || 1;
+export default function ({items, children, height, width, interactable, onClick, group, ...props}: Props): JSX.Element {
 
   let rows: RowInfo[] = getRows(items, children, height, width);
 
-  let [values, setValues] = useStorageArray(group ? `inventoryGroups.${group}` : undefined, () => {
-    if (!interactable) return [];
-    let uids: string[];
-
-    if (defaultValues === undefined) {
-      uids = [];
-      let withUids = rows.map(r => r.items).reduce((a, b) => a.concat(b)).filter(s => s.uid !== undefined);
-      for (let i = 0; i < Math.min(MinChoices, withUids.length); i++)
-        uids.push(withUids[i].uid!);
-    }
-    else {
-      uids = Array.isArray(defaultValues) ? defaultValues : [defaultValues];
-    }
-
-    if (MinChoices > uids.length || MaxChoices < uids.length)
-      throw new Error(`Invalid amount of default values: ${MinChoices} ≤ *${uids.length}* ≤ ${MaxChoices}.`);
-    return uids;
+  let Group = group ? `inventory.${group}` : undefined;
+  const [values, controller] = useSelector({
+    ...props,
+    group: Group,
+    defaultValuesLookup: () => rows.map(r => r.items).reduce((a, b) => a.concat(b)).map(i => i.uid),
   });
-  
-  const handleChange = (index: number, uid: string) => {
-    let newValues: string[];
-    if (index == -1) {
-      if (lockChoices && values.length >= MaxChoices) return;
-      newValues = values.slice();
-      while (newValues.length >= MaxChoices)
-        newValues.shift();
-      newValues.push(uid);
-      setValues(newValues);
-    }
-    else {
-      if (values.length <= MinChoices) return;
-      newValues = values.slice();
-      newValues.splice(index, 1);
-      setValues(newValues);
-    }
-    if (onChange) onChange(newValues);
-  }
+
   const clickHandler = (row: number, column: number, uid: string) => {
-    if (interactable) handleChange(values.indexOf(uid), uid);
+    if (interactable) controller.toggle(uid);
     if (onClick) onClick({ uid: uid, row: row, column: column });
   }
 
@@ -146,8 +113,10 @@ export default function ({items, children, height, width,
       {rows.map((row, rowIndex) => {
         for (let slot of row.items) {
           if (interactable && slot.interactable === undefined) slot.interactable = true;
-          let selected = slot.uid && values.includes(slot.uid);
-          if (selected) slot.type = "selected";
+          if (slot.uid) {
+            if (values.includes(slot.uid)) slot.type = "selected";
+            else if (controller.isLocked(slot.uid)) slot.type = "locked";
+          }
         }
         return <InventoryRow key={rowIndex} type={row.type} items={row.items}
           onClick={e => clickHandler(rowIndex, e.index, e.uid)}/>;

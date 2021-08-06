@@ -1,28 +1,25 @@
 import React, { useState, cloneElement } from 'react';
 import clsx from 'clsx';
 import styles from './index.module.css';
-import useFocus from '../useFocus';
+import useFocus from '../hooks/useFocus';
 
 export type DropdownProps = {
+  children: React.ReactNode,
+
+  interactable?: boolean,
   defaultValues?: string[],
   minChoices?: number,
   maxChoices?: number,
   lockChoices?: boolean,
-  children: React.ReactNode,
-  onChange?: (e: ChangeEventData) => void,
-}
-export type ChangeEventData = {
-  changeType: "added" | "removed",
-  changedValue: string,
-  changedLabel: string,
-  values: string[],
-  labels: string[],
+  group?: string,
+  onClick?: (value: string) => void,
+  onChange?: (values: string[]) => void,
 }
 
 export function Dropdown({defaultValues, minChoices, maxChoices, lockChoices, children, onChange}: DropdownProps): JSX.Element {
 
-  let MinChoices = minChoices != undefined ? minChoices : 1;
-  let MaxChoices = maxChoices != undefined ? maxChoices : MinChoices;
+  let MinChoices = minChoices != undefined ? minChoices : 0;
+  let MaxChoices = maxChoices != undefined ? maxChoices : 1;
   if (MinChoices == MaxChoices && lockChoices) throw Error("Cannot lock choices with the minimum amount equal to the maximum!");
 
   let Children = React.Children.toArray(children);
@@ -71,13 +68,7 @@ export function Dropdown({defaultValues, minChoices, maxChoices, lockChoices, ch
       changeType = "removed";
     }
     
-    if (onChange) onChange({
-      changeType: changeType,
-      changedValue: me.value,
-      changedLabel: me.label || me.value,
-      values: newIndexes.map(i => (options[i] as any).props).map(p => p.value),
-      labels: newIndexes.map(i => (options[i] as any).props).map(p => p.label || p.value),
-    });
+    if (onChange) onChange(newIndexes.map(i => (options[i] as any).props).map(p => p.value));
   }
 
   const [ref, focused, setFocused] = useFocus(false);
@@ -146,7 +137,7 @@ export function DropdownHeader({children} : HeaderProps) : JSX.Element {
 export type OptionProps = {
   value: string,
   label?: string,
-  children: React.ReactNode,
+  children?: React.ReactNode,
 }
 
 export function DropdownOption({value, label, children} : OptionProps) : JSX.Element {

@@ -28,7 +28,7 @@ export default function ({sprite, tooltip, tooltipColor, count, countColor, inte
       <img key="slot" className={styles.slot} src={useBaseUrl(`/img/components/InventorySlot/${type}.png`)}/>
 
       {sprite &&
-        <img key="sprite" className={styles.sprite} src={sprite}/>
+        <img key="sprite" style={{opacity: type == "locked" ? 0.15625 : 1}} className={styles.sprite} src={sprite}/>
       }
 
       {tooltip &&

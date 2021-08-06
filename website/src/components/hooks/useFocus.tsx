@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-export default function (initialFocused : boolean) : [React.MutableRefObject<any>, boolean, React.Dispatch<React.SetStateAction<boolean>>] {
+export default function (initialFocused: boolean): [React.MutableRefObject<any>, boolean, React.Dispatch<React.SetStateAction<boolean>>] {
   const [focused, setFocused] = useState(initialFocused);
   const ref = useRef(null as any);
 
@@ -17,11 +17,11 @@ export default function (initialFocused : boolean) : [React.MutableRefObject<any
   };
 
   useEffect(() => {
-    document.addEventListener("keydown", handleHideDropdown, true);
     document.addEventListener("click", handleClickOutside, true);
+    document.addEventListener("keydown", handleHideDropdown, true);
     return () => {
-      document.removeEventListener("keydown", handleHideDropdown, true);
       document.removeEventListener("click", handleClickOutside, true);
+      document.removeEventListener("keydown", handleHideDropdown, true);
     };
   });
 
