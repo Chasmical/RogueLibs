@@ -1,0 +1,54 @@
+# Components Index
+
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+Want to add some cool SoR-styled components to your site?
+
+### [`InventorySlot`](./components/InventorySlot) {#inventoryslot}
+
+import InventorySlot from '@site/src/components/InventorySlot';
+
+<InventorySlot hoverable={true} type="normal"/>
+<InventorySlot hoverable={true} type="selected"/>
+<InventorySlot hoverable={true} type="locked"/>
+<br/>
+<InventorySlot hoverable={true} type="normal" sprite={useBaseUrl("/img/Generic.png")}/>
+<InventorySlot hoverable={true} type="selected" sprite={useBaseUrl("/img/Generic2.png")}/>
+<InventorySlot hoverable={true} type="locked" sprite={useBaseUrl("/img/Generic3.png")}/>
+
+### [`InventoryRow`](./components/InventoryRow) {#inventoryrow}
+
+import InventoryRow from '@site/src/components/InventoryRow';
+
+<InventoryRow interactive={true}>
+  <InventorySlot uid="1" sprite={useBaseUrl("/img/Generic.png")}/>
+  <InventorySlot uid="2" sprite={useBaseUrl("/img/Generic2.png")} count={25}/>
+  <InventorySlot uid="3" sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
+  <InventorySlot uid="4" sprite={useBaseUrl("/img/Generic4.png")} count="$13" tooltip={25}/>
+  <InventorySlot uid="5" sprite={useBaseUrl("/img/Generic5.png")} tooltip={25}/>
+  <InventorySlot uid="6" sprite={useBaseUrl("/img/Generic6.png")}/>
+</InventoryRow>
+<br/>
+<InventoryRow type="toolbar" interactive={true}>
+  <InventorySlot uid="1" sprite={useBaseUrl("/img/Generic.png")}/>
+  <InventorySlot uid="2" sprite={useBaseUrl("/img/Generic2.png")} count={25}/>
+  <InventorySlot uid="3" sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
+  <InventorySlot uid="4" sprite={useBaseUrl("/img/Generic4.png")} count="$13" tooltip={25}/>
+  <InventorySlot uid="5" sprite={useBaseUrl("/img/Generic5.png")} tooltip={25}/>
+  <InventorySlot uid="6" sprite={useBaseUrl("/img/Generic6.png")}/>
+</InventoryRow>
+
+### [`InventoryGrid`](./components/InventoryGrid) {#inventorygrid}
+
+import InventoryGrid from '@site/src/components/InventoryGrid';
+
+<InventoryGrid interactive={true} width={4}>
+  <InventorySlot uid="1" sprite={useBaseUrl("/img/Generic.png")}/>
+  <InventorySlot uid="2" sprite={useBaseUrl("/img/Generic2.png")} count={25}/>
+  <InventoryRow>
+    <InventorySlot uid="3" sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
+    <InventorySlot uid="4" sprite={useBaseUrl("/img/Generic4.png")} count="$13" tooltip={25}/>
+    <InventorySlot uid="5" sprite={useBaseUrl("/img/Generic5.png")} tooltip={25}/>
+    <InventorySlot uid="6" sprite={useBaseUrl("/img/Generic6.png")}/>
+  </InventoryRow>
+</InventoryGrid>

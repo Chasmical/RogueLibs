@@ -42,8 +42,8 @@ module.exports = {
       },
       items: [
         {
-          to: 'docs/intro',
-          label: 'Introduction',
+          to: 'docs/user/installation',
+          label: 'Installation',
           position: 'left',
         },
         {
@@ -52,8 +52,8 @@ module.exports = {
           position: 'left',
         },
         {
-          to: 'docs/intro',
-          label: 'API',
+          to: 'docs/site/intro',
+          label: 'Components',
           position: 'left',
         },
         {
