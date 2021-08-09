@@ -47,13 +47,13 @@ You'll find the keys in your profile's directory (`C:\Users\[[UserName]]\.ssh` o
 
 ### Create a deploy key on GitHub {#create-deploy-key}
 1. Go to your GitHub repository's **Settings > Deploy Keys > Add deploy key**;
-2. Paste the contents of the `id_rsa.pub` file;
+2. Paste the contents of the `id_ed25519.pub` file;
 3. Check the "Allow write access" box;
 4. Save (the key's name doesn't matter, you can call it `DeployKey1` or something like that);
 
 ### Create a GitHub secret {#create-secret}
 1. Go to your GitHub repository's **Settings > Secrets > New repository secret**;
-2. Paste the contents of the `id_rsa` file;
+2. Paste the contents of the `id_ed25519` file;
 3. Call the secret `GH_PAGES_DEPLOY`;
 4. Save your secret;
 
