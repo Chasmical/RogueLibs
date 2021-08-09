@@ -89,7 +89,7 @@ export function StorageProvider ({children}: Props): JSX.Element {
   );
 }
 
-export default function (slotName?: string, defaultValue?: string | (() => string), onChange?: (value: string | null) => void): [string | null, React.Dispatch<React.SetStateAction<string | null>>] {
+export default function (slotName: string | null, defaultValue?: string | (() => string), onChange?: (value: string | null) => void): [string | null, React.Dispatch<React.SetStateAction<string | null>>] {
 
   if (slotName && slotName.includes(";")) throw new Error("Storage slot name cannot contain ';'!");
   const controller = useContext(context);

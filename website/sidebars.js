@@ -71,6 +71,7 @@ module.exports = {
           ],
           'Hooks': [
             'site/hooks/useSelector',
+            'site/hooks/useStorage',
           ],
         },
       ],
