@@ -1,27 +1,20 @@
 import React, { useEffect, useState } from "react";
-import useSelector from "../hooks/useSelector";
+import useSelector, { SelectorParameters } from "../hooks/useSelector";
 import InventorySlot, { Props as SlotProps } from "../InventorySlot";
 import InventoryRow, { getSlots } from '../InventoryRow';
 import styles from './index.module.css';
 
-export type Props = {
+export type Props = SelectorParameters & {
   items?: (SlotProps | SlotProps[])[],
   children?: React.ReactNode,
   height?: number,
   width?: number,
 
-  interactable?: boolean,
   onClick?: (e: GridSlotArgs) => void,
-
-  defaultValues?: string | string[] | null | (() => string | string[] | null),
-  minChoices?: number,
-  maxChoices?: number,
-  lockChoices?: boolean,
-  group?: string,
-  onChange?: (values: string[]) => void,
+  interactive?: boolean,
 }
 export type GridSlotArgs = {
-  uid: string,
+  uid: string | undefined,
   row: number,
   column: number,
 }
@@ -38,7 +31,7 @@ export function getRows(items?: (SlotProps | SlotProps[])[], children?: React.Re
   const flushRow = (type?: "normal" | "toolbar") => {
     if (width)
       for (let i = tempRow.length; i < width; i++)
-        tempRow.push({interactable: false});
+        tempRow.push({hoverable: false});
     flushRowWithoutFill(type);
   }
   const flushRowWithoutFill = (type?: "normal" | "toolbar") => {
@@ -85,26 +78,27 @@ export function getRows(items?: (SlotProps | SlotProps[])[], children?: React.Re
   if (height)
     for (let i = rows.length; i < height; i++) {
       for (let j = 0; j < (width || 1); j++)
-      tempRow.push({interactable: false});
+      tempRow.push({hoverable: false});
       flushRow();
     }
 
   return rows;
 }
 
-export default function ({items, children, height, width, interactable, onClick, group, ...props}: Props): JSX.Element {
+export default function ({items, children, height, width, onClick, interactive, ...selectorParameters}: Props): JSX.Element {
 
   let rows: RowInfo[] = getRows(items, children, height, width);
 
-  let Group = group ? `inventory.${group}` : undefined;
-  const [values, controller] = useSelector({
-    ...props,
-    group: Group,
-    defaultValuesLookup: () => rows.map(r => r.items).reduce((a, b) => a.concat(b)).map(i => i.uid),
-  });
+  let availableValues: (string | undefined)[] = [];
+  for (let row of rows)
+    for (let slot of row.items)
+      availableValues.push(slot.uid);
 
-  const clickHandler = (row: number, column: number, uid: string) => {
-    if (interactable) controller.toggle(uid);
+  if (selectorParameters.group) selectorParameters.group = `inventory.${selectorParameters.group}`;
+  const [values, controller] = useSelector(availableValues, selectorParameters);
+
+  const clickHandler = (row: number, column: number, uid: string | undefined) => {
+    if (interactive && uid) controller.toggle(uid);
     if (onClick) onClick({ uid: uid, row: row, column: column });
   }
 
@@ -112,7 +106,7 @@ export default function ({items, children, height, width, interactable, onClick,
     <div className={styles.container}>
       {rows.map((row, rowIndex) => {
         for (let slot of row.items) {
-          if (interactable && slot.interactable === undefined) slot.interactable = true;
+          if (interactive && slot.hoverable === undefined) slot.hoverable = true;
           if (slot.uid) {
             if (values.includes(slot.uid)) slot.type = "selected";
             else if (controller.isLocked(slot.uid)) slot.type = "locked";

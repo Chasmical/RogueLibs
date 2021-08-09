@@ -56,6 +56,9 @@ function useStorageInternal(): StorageController {
           let slotName = key.substring(STORAGE_PREFIX.length);
           let val = createStorageSlot(key).get();
           if (val !== null) localStorage[slotName] = val;
+
+          let args = {slotName, value: val};
+          subscribers.forEach(s => s(args));
         }
       });
       setStorage(localStorage);
@@ -80,49 +83,47 @@ export const context = React.createContext({} as StorageController);
 export function StorageProvider ({children}: Props): JSX.Element {
   const controller = useStorageInternal();
   return (
-    <context.Provider value={controller}>
+    <context.Provider key="storageProvider" value={controller}>
       {children}
     </context.Provider>
   );
 }
 
-export default function (slotName?: string, defaultValue?: string | (() => string)): [string | null, React.Dispatch<React.SetStateAction<string | null>>] {
+export default function (slotName?: string, defaultValue?: string | (() => string), onChange?: (value: string | null) => void): [string | null, React.Dispatch<React.SetStateAction<string | null>>] {
 
   if (slotName && slotName.includes(";")) throw new Error("Storage slot name cannot contain ';'!");
   const controller = useContext(context);
-
-  const setValue = (newValue: React.SetStateAction<string | null>) => {
-    setValueFull(newValue, true);
-  }
-  const setValueFull = (newValue: React.SetStateAction<string | null>, shareState: boolean) => {
-    if (typeof newValue === "function") newValue = newValue(value);
-    setValueInternal(newValue);
-    if (slotName == null || !shareState) return;
-    if (newValue != null) controller.set(slotName, newValue);
-    else controller.delete(slotName);
-  }
 
   const [value, setValueInternal] = useState(() => {
     if (typeof defaultValue === "function") defaultValue = defaultValue();
     return defaultValue ?? null;
   });
 
-  useEffect(() => {
-    if (slotName == null) return () => { };
-
-    let stored = controller.get(slotName);
-    if (stored != null) setValueFull(stored, false);
-    else setValueFull(defaultValue ?? null, true);
-    
-    controller.subscribe(storageListener);
-    return () => controller.unsubscribe(storageListener);
-  }, [controller]);
+  const setValue = (newValue: React.SetStateAction<string | null>) => {
+    if (typeof newValue === "function") newValue = newValue(value);
+    if (slotName != null) {
+      if (newValue != null) controller.set(slotName, newValue);
+      else controller.delete(slotName);
+    }
+    else {
+      setValueInternal(newValue);
+      onChange && onChange(newValue);
+    }
+  }
 
   const storageListener = (e: StorageUpdatedArgs) => {
     if (e.slotName == slotName) {
       setValueInternal(e.value);
+      onChange && onChange(e.value);
     }
   }
+
+  useEffect(() => {
+    if (slotName == null) return () => { };
+    
+    controller.subscribe(storageListener);
+    return () => controller.unsubscribe(storageListener);
+  }, []);
 
   return [value, setValue];
 }

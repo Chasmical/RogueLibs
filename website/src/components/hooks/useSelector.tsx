@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import useStorageArray from "./useStorageArray";
 
-export type Props = {
-  defaultValues?: string | string[] | null | (() => string | string[] | null),
-  defaultValuesLookup?: (string | undefined)[] | (() => (string | undefined)[]),
+export interface SelectorParameters {
+  defaultValues?: string | string[] | (() => string | string[] | undefined),
   minChoices?: number,
   maxChoices?: number,
   lockChoices?: boolean,
@@ -18,30 +17,33 @@ export type SelectorController = {
   isLocked: (value: string) => boolean,
 }
 
-export default function ({defaultValues, defaultValuesLookup, minChoices, maxChoices, lockChoices, group, onChange}: Props) : [string[], SelectorController] {
+export default function (availableValues: (string | undefined)[] | null, pars: SelectorParameters) : [string[], SelectorController] {
+
+  let {defaultValues, minChoices, maxChoices, lockChoices, group, onChange} = pars;
 
   let MinChoices = minChoices != undefined ? minChoices : 0;
   let MaxChoices = maxChoices != undefined ? maxChoices : 1;
+  if (MaxChoices == -1) MaxChoices = Infinity;
 
   const [valuesInternal, setValuesInternal] = useStorageArray(group, () => {
     if (typeof defaultValues === "function") defaultValues = defaultValues();
-    if (defaultValues == null) {
+    if (defaultValues === undefined) {
       defaultValues = [];
-      if (typeof defaultValuesLookup === "function") defaultValuesLookup = defaultValuesLookup();
-      if (defaultValuesLookup) {
-        let lookup = defaultValuesLookup.filter(v => v !== undefined) as string[];
+      if (availableValues) {
+        let lookup = availableValues.filter(v => v !== undefined) as string[];
         let len = Math.min(lookup.length, MinChoices);
         for (let i = 0; i < len; i++)
           defaultValues.push(lookup[i]);
       }
     }
-    if (!Array.isArray(defaultValues)) defaultValues = [defaultValues];
+    else if (!Array.isArray(defaultValues)) defaultValues = [defaultValues];
+
     if (defaultValues.length < MinChoices || defaultValues.length > MaxChoices)
       throw new Error(`Invalid default values count: ${MinChoices} ≤ ${defaultValues.length} ≤ ${MaxChoices}`);
     if (lockChoices && MinChoices == MaxChoices)
       throw new Error(`Cannot lock choices when Min and Max choices are equal.`);
     return defaultValues;
-  });
+  }, e => onChange && onChange(e));
 
   const addValue = (value: string) => {
     if (valuesInternal.includes(value)) return;
@@ -51,7 +53,6 @@ export default function ({defaultValues, defaultValuesLookup, minChoices, maxCho
     let newValues = valuesInternal.concat(value);
 
     setValuesInternal(newValues);
-    if (onChange) onChange(newValues);
   }
   const removeValue = (value: string) => {
     let index = valuesInternal.indexOf(value);
@@ -61,7 +62,6 @@ export default function ({defaultValues, defaultValuesLookup, minChoices, maxCho
     newValues.splice(index, 1);
 
     setValuesInternal(newValues);
-    if (onChange) onChange(newValues);
   }
   const toggleValue = (value: string) => {
     let selected = valuesInternal.includes(value);
@@ -75,7 +75,6 @@ export default function ({defaultValues, defaultValuesLookup, minChoices, maxCho
       throw new Error(`Invalid default values count: ${MinChoices} ≤ ${values.length} ≤ ${MaxChoices}`);
 
     setValuesInternal(values);
-    if (onChange) onChange(values);
   }
   const isLockedValue = (value: string) => {
     if (!lockChoices) return false;

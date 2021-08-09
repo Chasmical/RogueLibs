@@ -1,43 +1,43 @@
 import React, { useState, useEffect, useContext } from 'react';
 import useStorage, { context, StorageUpdatedArgs } from './useStorage';
 
-export default function (slotName?: string, defaultValue?: string[] | (() => string[])): [string[], React.Dispatch<React.SetStateAction<string[]>>] {
+export default function (slotName?: string, defaultValue?: string[] | (() => string[]), onChange?: (values: string[]) => void): [string[], React.Dispatch<React.SetStateAction<string[] | null>>] {
 
   if (slotName && slotName.includes(";")) throw new Error("Storage slot name cannot contain ';'!");
   const controller = useContext(context);
-
-  const setValue = (newValue: React.SetStateAction<string[]>) => {
-    setValueFull(newValue, true);
-  }
-  const setValueFull = (newValue: React.SetStateAction<string[]>, shareState: boolean) => {
-    if (typeof newValue === "function") newValue = newValue(value);
-    setValueInternal(newValue);
-    if (slotName == null || !shareState) return;
-    if (newValue != null) controller.set(slotName, newValue.join(";"));
-    else controller.delete(slotName);
-  }
 
   const [value, setValueInternal] = useState(() => {
     if (typeof defaultValue === "function") defaultValue = defaultValue();
     return defaultValue ?? [];
   });
 
-  useEffect(() => {
-    if (slotName == null) return () => { };
-
-    let stored = controller.get(slotName);
-    if (stored != null) setValueFull(stored.split(";"), false);
-    else setValueFull(defaultValue ?? [], true);
-    
-    controller.subscribe(storageListener);
-    return () => controller.unsubscribe(storageListener);
-  }, [controller]);
+  const setValue = (newValue: React.SetStateAction<string[] | null>) => {
+    if (typeof newValue === "function") newValue = newValue(value);
+    if (slotName != null) {
+      if (newValue != null) controller.set(slotName, newValue.join(";"));
+      else controller.delete(slotName);
+    }
+    else {
+      if (newValue === null) newValue = [];
+      setValueInternal(newValue);
+      onChange && onChange(newValue);
+    }
+  }
 
   const storageListener = (e: StorageUpdatedArgs) => {
     if (e.slotName == slotName) {
-      setValueInternal(e.value ? e.value.split(";") : []);
+      let newValue = e.value ? e.value.split(";") : [];
+      setValueInternal(newValue);
+      onChange && onChange(newValue);
     }
   }
+
+  useEffect(() => {
+    if (slotName == null) return () => { };
+    
+    controller.subscribe(storageListener);
+    return () => controller.unsubscribe(storageListener);
+  }, []);
 
   return [value, setValue];
 }

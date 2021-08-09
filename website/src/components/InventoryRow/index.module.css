@@ -1,6 +1,8 @@
 .row {
   display: inline-flex;
   flex-direction: row;
+  flex-wrap: wrap;
+  align-self: flex-start;
 }
 .toolbar {
   margin-top: 2px;

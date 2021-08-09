@@ -1,27 +1,20 @@
 import React, { useState } from "react";
-import useSelector from "../hooks/useSelector";
+import useSelector, { SelectorParameters } from "../hooks/useSelector";
 import clsx from 'clsx';
 import InventorySlot, { Props as SlotProps } from "../InventorySlot";
 import styles from './index.module.css';
 
-export type Props = {
+export type Props = SelectorParameters & {
   items?: SlotProps[],
   children?: React.ReactNode,
   width?: number,
 
-  interactable?: boolean,
   type?: "normal" | "toolbar",
   onClick?: (e: RowSlotArgs) => void,
-
-  defaultValues?: string | string[] | null | (() => string | string[] | null),
-  minChoices?: number,
-  maxChoices?: number,
-  lockChoices?: boolean,
-  group?: string,
-  onChange?: (values: string[]) => void,
+  interactive?: boolean,
 }
 export type RowSlotArgs = {
-  uid: string,
+  uid: string | undefined,
   index: number,
 }
 
@@ -38,41 +31,48 @@ export function getSlots(items?: SlotProps[], children?: React.ReactNode, width?
 
   if (width)
     for (let i = slots.length; i < width; i++)
-      slots.push({interactable: false});
+      slots.push({hoverable: false});
 
   return slots;
 }
 
-export default function ({items, children, width, interactable, type, onClick, group, ...props}: Props): JSX.Element {
+export default function ({items, children, width, type, onClick, interactive, ...selectorParameters}: Props): JSX.Element {
 
   let slots = getSlots(items, children, width);
 
-  let Group = group ? `inventory.${group}` : undefined;
-  const [values, controller] = useSelector({
-    ...props,
-    group: Group,
-    defaultValuesLookup: () => slots.map(i => i.uid),
-  });
+  if (selectorParameters.group) selectorParameters.group = `inventory.${selectorParameters.group}`;
+  const [values, controller] = useSelector(slots.map(s => s.uid), selectorParameters);
 
-  const clickHandler = (index: number, uid: string) => {
-    if (interactable) controller.toggle(uid);
+  const clickHandler = (index: number, uid: string | undefined) => {
+    if (interactive && uid) controller.toggle(uid);
     if (onClick) onClick({ uid: uid, index: index });
   }
 
   return (
     <div className={clsx(styles.row, type == "toolbar" && styles.toolbar)}>
       {slots.map((slot, num) => {
-        if (interactable && slot.interactable === undefined) slot.interactable = true;
-        if (slot.uid) {
-          if (values.includes(slot.uid)) slot.type = "selected";
-          else if (controller.isLocked(slot.uid)) slot.type = "locked";
+        if (interactive && slot.uid) {
+          let overrideHoverable: boolean;
+
+          if (values.includes(slot.uid)) { // is selected
+            slot.type = "selected";
+            overrideHoverable = true;
+          }
+          else if (controller.isLocked(slot.uid)) { // not selected, but the maximum is reached
+            slot.type = "locked";
+            overrideHoverable = false;
+          }
+          else {
+            overrideHoverable = true;
+          }
+          if (slot.hoverable === undefined) slot.hoverable = overrideHoverable;
         }
         if (type == "toolbar") {
           slot.tooltip = num + 1;
           slot.tooltipColor = undefined;
         }
         return <InventorySlot key={num} {...slot}
-          onClick={() => slot.uid !== undefined && clickHandler(num, slot.uid)}/>;
+          onClick={() => clickHandler(num, slot.uid)}/>;
       })}
     </div>
   );
