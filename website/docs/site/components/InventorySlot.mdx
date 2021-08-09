@@ -4,7 +4,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import InventorySlot from '@site/src/components/InventorySlot';
 
-## Props
+## Props {#props}
 
 ```ts
 export type Props = {
@@ -14,7 +14,7 @@ export type Props = {
   count?: string | number,   // count text
   countColor?: string,       // count text color (default: #FFFFFF)
 
-  type?: "normal" | "selected" | "locked", // type of the slot
+  type?: "normal" | "selected" | "locked" | null, // type of the slot
   onClick?: () => void, // click event handler
   hoverable?: boolean, // determines whether to change the slot image, when hovered over
   
@@ -22,7 +22,7 @@ export type Props = {
 }
 ```
 
-## Typical usages
+## Typical usages {#typical-usages}
 
 ```jsx
 <InventorySlot sprite={useBaseUrl("/img/Generic.png")}/>
@@ -36,43 +36,47 @@ export type Props = {
 <InventorySlot sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
 </BrowserWindow>
 
-## With colors
+## With colors {#with-colors}
 
 ```jsx
-<InventorySlot sprite={useBaseUrl("/img/Generic4.png")}
+<InventorySlot sprite={useBaseUrl("/img/Generic5.png")}
   count={25} countColor="#552299"
   tooltip="$13" tooltipColor="#9922BB77"/>
 ```
 
 <BrowserWindow>
-<InventorySlot sprite={useBaseUrl("/img/Generic4.png")}
+<InventorySlot sprite={useBaseUrl("/img/Generic5.png")}
   count={25} countColor="#BB2211"
   tooltip="$13" tooltipColor="#FFFFFF77"/>
 </BrowserWindow>
 
-## Slot types
+## Slot types {#slot-types}
 
 ```jsx
 <InventorySlot type="normal"/>
 <InventorySlot type="selected"/>
 <InventorySlot type="locked"/>
+<InventorySlot type={null}/>
 <br/>
 <InventorySlot type="normal" sprite={useBaseUrl("/img/Generic.png")}/>
 <InventorySlot type="selected" sprite={useBaseUrl("/img/Generic2.png")}/>
 <InventorySlot type="locked" sprite={useBaseUrl("/img/Generic3.png")}/>
+<InventorySlot type={null} sprite={useBaseUrl("/img/Generic4.png")}/>
 ```
 
 <BrowserWindow>
 <InventorySlot type="normal"/>
 <InventorySlot type="selected"/>
 <InventorySlot type="locked"/>
+<InventorySlot type={null}/>
 <br/>
 <InventorySlot type="normal" sprite={useBaseUrl("/img/Generic.png")}/>
 <InventorySlot type="selected" sprite={useBaseUrl("/img/Generic2.png")}/>
 <InventorySlot type="locked" sprite={useBaseUrl("/img/Generic3.png")}/>
+<InventorySlot type={null} sprite={useBaseUrl("/img/Generic4.png")}/>
 </BrowserWindow>
 
-## onClick event
+## onClick event {#onclick-event}
 
 ```jsx
 <InventorySlot sprite={useBaseUrl("/img/Generic4.png")} hoverable={true} count={25} tooltip="$13"
@@ -88,7 +92,7 @@ export type Props = {
 See the output in **Developer Tools > Console**.
 :::
 
-## Hoverable
+## Hoverable {#hoverable}
 
 :::info
 It's usually used inside other components to make them look nicer, but you can use it yourself too.
@@ -98,18 +102,22 @@ It's usually used inside other components to make them look nicer, but you can u
 <InventorySlot hoverable={true} type="normal"/>
 <InventorySlot hoverable={true} type="selected"/>
 <InventorySlot hoverable={true} type="locked"/>
+<InventorySlot hoverable={true} type={null}/>
 <br/>
 <InventorySlot hoverable={true} type="normal" sprite={useBaseUrl("/img/Generic.png")}/>
 <InventorySlot hoverable={true} type="selected" sprite={useBaseUrl("/img/Generic2.png")}/>
 <InventorySlot hoverable={true} type="locked" sprite={useBaseUrl("/img/Generic3.png")}/>
+<InventorySlot hoverable={true} type={null} sprite={useBaseUrl("/img/Generic4.png")}/>
 ```
 
 <BrowserWindow>
 <InventorySlot hoverable={true} type="normal"/>
 <InventorySlot hoverable={true} type="selected"/>
 <InventorySlot hoverable={true} type="locked"/>
+<InventorySlot hoverable={true} type={null}/>
 <br/>
 <InventorySlot hoverable={true} type="normal" sprite={useBaseUrl("/img/Generic.png")}/>
 <InventorySlot hoverable={true} type="selected" sprite={useBaseUrl("/img/Generic2.png")}/>
 <InventorySlot hoverable={true} type="locked" sprite={useBaseUrl("/img/Generic3.png")}/>
+<InventorySlot hoverable={true} type={null} sprite={useBaseUrl("/img/Generic4.png")}/>
 </BrowserWindow>

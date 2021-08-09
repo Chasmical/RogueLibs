@@ -62,17 +62,15 @@ module.exports = {
       ],
       'Site Stuff': [
         'site/intro',
-        {
-          'Hooks': [
-            'site/hooks/useSelector',
-          ],
-        },
         'site/index',
         {
           'Components': [
             'site/components/InventorySlot',
             'site/components/InventoryRow',
             'site/components/InventoryGrid',
+          ],
+          'Hooks': [
+            'site/hooks/useSelector',
           ],
         },
       ],

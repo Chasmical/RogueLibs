@@ -6,7 +6,7 @@ import InventorySlot from '@site/src/components/InventorySlot';
 import InventoryRow from '@site/src/components/InventoryRow';
 import InventoryGrid from '@site/src/components/InventoryGrid';
 
-## Props
+## Props {#props}
 
 ```ts
 import { Props as SlotProps } from '@site/src/components/InventorySlot';
@@ -18,17 +18,17 @@ export type Props = SelectorParameters & {
   height?: number, // minimum height of the grid
   width?: number,  // minimum width of the grid
 
-  onClick?: (e: GridSlotArgs) => void,
-  interactive?: boolean,
+  onClick?: (e: GridSlotArgs) => void, // click event handler
+  interactive?: boolean, // determines whether slots can be selected
 }
 export type GridSlotArgs = {
-  uid: string | undefined,
-  row: number,
-  column: number,
+  uid: string | undefined, // Unique Identifier of the clicked slot
+  row: number,    // index of the clicked slot's row
+  column: number, // index of the clicked slot's column
 }
 ```
 
-## Typical usage
+## Typical usage {#typical-usage}
 
 ```jsx
 <InventoryGrid>
@@ -56,7 +56,7 @@ export type GridSlotArgs = {
 </InventoryGrid>
 </BrowserWindow>
 
-## Minimum width and height
+## Minimum width and height {#minimum-width-height}
 
 ```jsx
 <InventoryGrid width={5} height={3}>
@@ -84,7 +84,7 @@ export type GridSlotArgs = {
 </InventoryGrid>
 </BrowserWindow>
 
-## onClick event
+## onClick event {#onclick-event}
 
 ```jsx
 <InventoryGrid interactive={true} onClick={e => console.log(e)}>
@@ -116,7 +116,7 @@ export type GridSlotArgs = {
 See the output in **Developer Tools > Console**.
 :::
 
-## Interactive
+## Interactive {#interactive}
 
 `interactive={true}` makes all of the slots hoverable, and allows you to use `useSelector` parameters.
 

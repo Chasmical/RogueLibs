@@ -1,6 +1,5 @@
 # `useSelector`
 
-import { useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import InventoryGrid from '@site/src/components/InventoryGrid';
@@ -26,7 +25,7 @@ For example, it's used inside `InventoryRow`, `InventoryGrid` and other interact
   </InventoryRow>
 </InventoryGrid>
 
-## Props
+## Props {#props}
 
 ```ts
 export type Props = SelectorParameters & {
@@ -42,7 +41,7 @@ export interface SelectorParameters {
 }
 ```
 
-## Usage
+## Usage {#usage}
 
 <Tabs defaultValue="ts"
   values={[
@@ -106,15 +105,15 @@ export type SelectorController = {
 
 In the examples below we'll be using `InventoryRow` to show some of the features.
 
-## `minChoices` and `maxChoices`
+## `minChoices` and `maxChoices` {#minchoices-maxchoices}
 
 ```ts
   minChoices?: number, // default: 0
   maxChoices?: number, // default: 1
 ```
 
-`minChoices` specifies the amount of slots that must be selected.  
-`maxChoices` specifies the maximum amount of selected slot. -1 ≡ ∞.
+`minChoices` specifies the minimum amount of selected slots.  
+`maxChoices` specifies the maximum amount of selected slots. -1 ≡ ∞.
 
 ```jsx
 <InventoryRow interactive={true} minChoices={1} maxChoices={3}>
@@ -138,7 +137,7 @@ In the examples below we'll be using `InventoryRow` to show some of the features
 </InventoryRow>
 </BrowserWindow>
 
-## `defaultValues`
+## `defaultValues` {#default-values}
 
 ```ts
   defaultValues?: string | string[] | (() => string | string[] | undefined),
@@ -192,13 +191,13 @@ If not set, or if the lazy function returns `undefined`, picks the first `minCho
 </InventoryRow>
 </BrowserWindow>
 
-## `lockChoices`
+## `lockChoices` {#lockchoices}
 
 You can "lock" the selected values with `lockChoices`.  
 When the maximum selectable amount is reached, non-selected slots change to `"locked"` type.
 
 ```jsx
-<InventoryRow interactive={true} minChoices={2} maxChoices={4} lockChoices={true}>
+<InventoryRow interactive={true} maxChoices={2} lockChoices={true}>
   <InventorySlot uid="1" sprite={useBaseUrl("/img/Generic.png")}/>
   <InventorySlot uid="2" sprite={useBaseUrl("/img/Generic2.png")} count={25}/>
   <InventorySlot uid="3" sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
@@ -209,7 +208,7 @@ When the maximum selectable amount is reached, non-selected slots change to `"lo
 ```
 
 <BrowserWindow>
-<InventoryRow interactive={true} minChoices={2} maxChoices={4} lockChoices={true}>
+<InventoryRow interactive={true} maxChoices={2} lockChoices={true}>
   <InventorySlot uid="1" sprite={useBaseUrl("/img/Generic.png")}/>
   <InventorySlot uid="2" sprite={useBaseUrl("/img/Generic2.png")} count={25}/>
   <InventorySlot uid="3" sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
@@ -219,7 +218,7 @@ When the maximum selectable amount is reached, non-selected slots change to `"lo
 </InventoryRow>
 </BrowserWindow>
 
-## `group`
+## `group` {#group}
 
 You can use `group` to save the selected values in the local storage.  
 Try selecting some slots and then reloading the page.
@@ -250,7 +249,50 @@ Try selecting some slots and then reloading the page.
 See the stored data in **Developer Tools > Application > Storage > Local Storage**.
 :::
 
-## `onChange`
+You can also use `group` to synchronize choices between different instances of components:
+
+```jsx
+<InventoryRow interactive={true} group="useSelectorDemo2" maxChoices={2}>
+  <InventorySlot uid="1" sprite={useBaseUrl("/img/Generic.png")}/>
+  <InventorySlot uid="2" sprite={useBaseUrl("/img/Generic2.png")} count={25}/>
+  <InventorySlot uid="3" sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
+  <InventorySlot uid="4" sprite={useBaseUrl("/img/Generic4.png")} count="$13" tooltip={25}/>
+  <InventorySlot type={null}/>
+  <InventorySlot type={null}/>
+</InventoryRow>
+<InventoryRow interactive={true} group="useSelectorDemo2" maxChoices={2}>
+  <InventorySlot type={null}/>
+  <InventorySlot type={null}/>
+  <InventorySlot uid="3" sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
+  <InventorySlot uid="4" sprite={useBaseUrl("/img/Generic4.png")} count="$13" tooltip={25}/>
+  <InventorySlot uid="5" sprite={useBaseUrl("/img/Generic5.png")} tooltip={25}/>
+  <InventorySlot uid="6" sprite={useBaseUrl("/img/Generic6.png")}/>
+</InventoryRow>
+```
+
+<BrowserWindow>
+<InventoryRow interactive={true} group="useSelectorDemo2" maxChoices={2}>
+  <InventorySlot uid="1" sprite={useBaseUrl("/img/Generic.png")}/>
+  <InventorySlot uid="2" sprite={useBaseUrl("/img/Generic2.png")} count={25}/>
+  <InventorySlot uid="3" sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
+  <InventorySlot uid="4" sprite={useBaseUrl("/img/Generic4.png")} count="$13" tooltip={25}/>
+  <InventorySlot type={null}/>
+  <InventorySlot type={null}/>
+</InventoryRow>
+<InventoryRow interactive={true} group="useSelectorDemo2" maxChoices={2}>
+  <InventorySlot type={null}/>
+  <InventorySlot type={null}/>
+  <InventorySlot uid="3" sprite={useBaseUrl("/img/Generic3.png")} count={25} tooltip="$13"/>
+  <InventorySlot uid="4" sprite={useBaseUrl("/img/Generic4.png")} count="$13" tooltip={25}/>
+  <InventorySlot uid="5" sprite={useBaseUrl("/img/Generic5.png")} tooltip={25}/>
+  <InventorySlot uid="6" sprite={useBaseUrl("/img/Generic6.png")}/>
+</InventoryRow>
+</BrowserWindow>
+
+:::note
+Note the behavior, when a slot that doesn't exist in one of the rows is selected in another row.
+:::
+
+## `onChange` event {#onchange-event}
 
 `onChange` doesn't necessarily mean that the values changed. Just that they **could** be different.
-
