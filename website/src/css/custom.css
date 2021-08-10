@@ -41,6 +41,17 @@ html[data-theme='dark'] .header-github-link:before {
     no-repeat;
 }
 
+@media (min-width: 1440px) {
+  .container {
+    max-width: inherit !important;
+  }
+}
+.row .col.col--8 {
+  flex: 1 1;
+  max-width: inherit;
+  margin-left: 15%;
+}
+
 @font-face {
   font-family: 'Munro';
   src: url('./Munro/Munro.eot');
