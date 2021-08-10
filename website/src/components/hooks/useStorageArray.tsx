@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import useStorage, { context, StorageUpdatedArgs } from './useStorage';
 
-export default function (slotName: string | null, defaultValue?: string[] | (() => string[]), onChange?: (values: string[]) => void): [string[], React.Dispatch<React.SetStateAction<string[] | null>>] {
+export default function (slotName: string | null, defaultValues?: string[] | (() => string[] | undefined), onChange?: (values: string[]) => void): [string[], React.Dispatch<React.SetStateAction<string[]>>] {
 
-  if (slotName && slotName.includes(";")) throw new Error("Storage slot name cannot contain ';'!");
   const controller = useContext(context);
 
   const [value, setValueInternal] = useState(() => {
-    if (typeof defaultValue === "function") defaultValue = defaultValue();
-    return defaultValue ?? [];
+    if (typeof defaultValues === "function") defaultValues = defaultValues();
+    return defaultValues ?? [];
   });
 
-  const setValue = (newValue: React.SetStateAction<string[] | null>) => {
+  const setValue = (newValue: React.SetStateAction<string[]>) => {
     if (typeof newValue === "function") newValue = newValue(value);
     if (slotName != null) {
       if (newValue != null) controller.set(slotName, newValue.join(";"));
