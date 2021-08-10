@@ -109,12 +109,12 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/Abbysssal/RogueLibs/edit/master/website/',
+            'https://github.com/Abbysssal/RogueLibs/edit/main/website/',
         },
         blog: {
           showReadingTime: true,
           editUrl:
-            'https://github.com/Abbysssal/RogueLibs/edit/master/website/blog/',
+            'https://github.com/Abbysssal/RogueLibs/edit/main/website/blog/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
