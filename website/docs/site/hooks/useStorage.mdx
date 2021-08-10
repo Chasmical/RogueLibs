@@ -10,7 +10,7 @@ It also synchronizes all instances using the same storage slot.
 
 ```ts
 function (
-  slotName: string | null,             // name of the storage slot to use
+  slotName: string | null,                  // name of the storage slot to use
   defaultValue?: string | (() => string),   // default value of the storage slot
   onChange?: (value: string | null) => void // change event handler
 ): [
