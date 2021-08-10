@@ -25,7 +25,7 @@ export default function (availableValues: (string | undefined)[] | null, pars: S
   let MaxChoices = maxChoices != undefined ? maxChoices : 1;
   if (MaxChoices == -1) MaxChoices = Infinity;
 
-  const [valuesInternal, setValuesInternal] = useStorageArray(group, () => {
+  const [valuesInternal, setValuesInternal] = useStorageArray(group ?? null, () => {
     if (typeof defaultValues === "function") defaultValues = defaultValues();
     if (defaultValues === undefined) {
       defaultValues = [];

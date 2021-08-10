@@ -10,8 +10,8 @@ It also synchronizes all instances using the same storage slot.
 
 ```ts
 function (
-  slotName: string | null,                  // name of the storage slot to use
-  defaultValue?: string | (() => string),   // default value of the storage slot
+  slotName: string | null, // name of the storage slot to use
+  defaultValue?: string | null | (() => string | null), // default value of the storage slot
   onChange?: (value: string | null) => void // change event handler
 ): [
     string | null, // current value (null ≡ the storage slot doesn't exist)
@@ -20,10 +20,6 @@ function (
 ```
 
 ## Usage {#usage}
-
-:::caution
-The value is read from the local storage in an `useEffect` hook, so, on the first render, the value will have the default value.
-:::
 
 :::info
 If `slotName` is `null`, the hook works just like a `useState`.
@@ -63,3 +59,7 @@ export default function ({/* your props */}) {
 
 </TabItem>
 </Tabs>
+
+:::caution
+The value is read from the local storage in an `useEffect` hook, so, on the first render, the value will have the default value.
+:::
