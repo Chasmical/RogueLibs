@@ -2,6 +2,19 @@ import React, { useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './index.module.css';
 
+import normal from './normal.png';
+import normalHover from './normalHover.png';
+import selected from './selected.png';
+import selectedHover from './selectedHover.png';
+import locked from './locked.png';
+import lockedHover from './lockedHover.png';
+
+const images: {readonly [type: string]: [slot: string, slotHover: string]} = {
+  normal: [normal, normalHover],
+  selected: [selected, selectedHover],
+  locked: [locked, lockedHover],
+}
+
 export type Props = {
   sprite?: string,
   tooltip?: string | number,
@@ -18,8 +31,7 @@ export type Props = {
 
 export default function ({sprite, tooltip, tooltipColor, count, countColor, hoverable, type = "normal", onClick}: Props): JSX.Element {
 
-  const slotSrc = type ? useBaseUrl(`/img/components/InventorySlot/${type}.png`) : undefined;
-  const slotHoverSrc = type ? useBaseUrl(`/img/components/InventorySlot/${type}Hover.png`) : undefined;
+  const [slotSrc, slotHoverSrc] = type ? images[type] : [];
   const opacity = type == "locked" ? 0.15625 : 1;
 
   return (
@@ -27,9 +39,9 @@ export default function ({sprite, tooltip, tooltipColor, count, countColor, hove
       {type &&
         <>
           {hoverable &&
-            <img key="hoverslot" className={styles.hoverslot} src={slotHoverSrc}/>
+            <img key="hoverslot" width={80} className={styles.hoverslot} src={slotHoverSrc}/>
           }
-          <img key="slot" className={styles.slot} src={slotSrc}/>
+          <img key="slot" width={80} className={styles.slot} src={slotSrc}/>
         </>
       }
 

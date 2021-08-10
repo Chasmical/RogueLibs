@@ -7,13 +7,11 @@
 }
 
 .slot {
-  position: relative;
   user-select: none;
   -webkit-user-drag: none;
 }
 .hoverslot {
   display: none;
-  position: relative;
   user-select: none;
   -webkit-user-drag: none;
 }
