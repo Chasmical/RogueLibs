@@ -2,10 +2,10 @@ name: documentation
 
 on:
   pull_request:
-    branches: [master]
+    branches: [main]
     paths: ['website/**']
   push:
-    branches: [master]
+    branches: [main]
     paths: ['website/**']
   workflow_dispatch:
 
