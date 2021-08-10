@@ -42,7 +42,7 @@ html[data-theme='dark'] .header-github-link:before {
 }
 
 @media (min-width: 1440px) {
-  .container {
+  .mdx-wrapper .container {
     max-width: inherit !important;
   }
 }
