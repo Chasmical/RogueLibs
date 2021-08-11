@@ -77,9 +77,9 @@ export default function (availableValues: (string | undefined)[] | null, pars: S
     setValuesInternal(values);
   }
   const isLockedValue = (value: string) => {
-    if (!lockChoices) return false;
     let selected = valuesInternal.includes(value);
-    return valuesInternal.length == (selected ? MinChoices : MaxChoices);
+    if (selected) return valuesInternal.length == MinChoices;
+    return !!lockChoices && valuesInternal.length == MaxChoices;
   }
 
   return [valuesInternal, {

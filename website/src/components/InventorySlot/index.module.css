@@ -7,6 +7,13 @@
   image-rendering: pixelated;
 }
 
+.cursorNormal {
+  cursor: url("url-loader!./assets/normal.cur"), pointer;
+}
+.cursorLocked {
+  cursor: url("url-loader!./assets/red.cur"), not-allowed;
+}
+
 .slot {
   user-select: none;
   -webkit-user-drag: none;

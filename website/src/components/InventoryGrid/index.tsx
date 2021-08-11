@@ -108,8 +108,11 @@ export default function ({items, children, height, width, onClick, interactive, 
         for (let slot of row.items) {
           if (interactive && slot.hoverable === undefined) slot.hoverable = true;
           if (slot.uid) {
-            if (values.includes(slot.uid)) slot.type = "selected";
-            else if (controller.isLocked(slot.uid)) slot.type = "locked";
+            let selected = values.includes(slot.uid);
+            let isLocked = controller.isLocked(slot.uid);
+            if (selected) slot.type = "selected";
+            else if (isLocked) slot.type = "locked";
+            if (isLocked) slot.cantClick = true;
           }
         }
         return <InventoryRow key={rowIndex} type={row.type} items={row.items}

@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
+import clsx from 'clsx';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './index.module.css';
 
-import normal from './normal.png';
-import normalHover from './normalHover.png';
-import selected from './selected.png';
-import selectedHover from './selectedHover.png';
-import locked from './locked.png';
-import lockedHover from './lockedHover.png';
+import normal from './assets/normal.png';
+import normalHover from './assets/normalHover.png';
+import selected from './assets/selected.png';
+import selectedHover from './assets/selectedHover.png';
+import locked from './assets/locked.png';
+import lockedHover from './assets/lockedHover.png';
 
 const images: {readonly [type: string]: [slot: string, slotHover: string]} = {
   normal: [normal, normalHover],
@@ -25,17 +26,20 @@ export type Props = {
   type?: "normal" | "selected" | "locked" | null,
   onClick?: () => void,
   hoverable?: boolean,
+  cantClick?: boolean,
   
   uid?: string,
 }
 
-export default function ({sprite, tooltip, tooltipColor, count, countColor, hoverable, type = "normal", onClick}: Props): JSX.Element {
+export default function ({sprite, tooltip, tooltipColor, count, countColor, hoverable, cantClick, type = "normal", onClick}: Props): JSX.Element {
 
   const [slotSrc, slotHoverSrc] = type ? images[type] : [];
   const opacity = type == "locked" ? 0.15625 : 1;
 
+  const cursor = cantClick ? styles.cursorLocked : styles.cursorNormal;
+
   return (
-    <div className={styles.container} onClick={onClick} style={{cursor: hoverable ? "pointer" : "inherit"}}>
+    <div onClick={onClick} className={clsx(styles.container, cursor)}>
       {type &&
         <>
           {hoverable &&

@@ -51,21 +51,13 @@ export default function ({items, children, width, type, onClick, interactive, ..
   return (
     <div className={clsx(styles.row, type == "toolbar" && styles.toolbar)}>
       {slots.map((slot, num) => {
-        if (interactive && slot.uid) {
-          let overrideHoverable: boolean;
-
-          if (values.includes(slot.uid)) { // is selected
-            slot.type = "selected";
-            overrideHoverable = true;
-          }
-          else if (controller.isLocked(slot.uid)) { // not selected, but the maximum is reached
-            slot.type = "locked";
-            overrideHoverable = false;
-          }
-          else {
-            overrideHoverable = true;
-          }
-          if (slot.hoverable === undefined) slot.hoverable = overrideHoverable;
+        if (interactive && slot.hoverable === undefined) slot.hoverable = true;
+        if (slot.uid) {
+          let selected = values.includes(slot.uid);
+          let isLocked = controller.isLocked(slot.uid);
+          if (selected) slot.type = "selected";
+          else if (isLocked) slot.type = "locked";
+          if (isLocked) slot.cantClick = true;
         }
         if (type == "toolbar") {
           slot.tooltip = num + 1;
