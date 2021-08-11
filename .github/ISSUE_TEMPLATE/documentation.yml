@@ -1,6 +1,6 @@
 name: Documentation Issue
 description: Anything related to documentation.
-title: "[Documentation]: "
+title: "[Documentation] "
 labels: [documentation]
 assignees:
   - Abbysssal
