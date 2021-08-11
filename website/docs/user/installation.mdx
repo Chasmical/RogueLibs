@@ -23,18 +23,17 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
     ]}>
 <TabItem value="win">
 
-Download the version of BepInEx for your system's type:
+Download the version of BepInEx for your game's executable's type:
 
-- **`BepInEx_x64_5.x.y.z.zip`** is for **64-bit** systems.
-- **`BepInEx_x86_5.x.y.z.zip`** is for **32-bit** systems.
+- **`BepInEx_x64_5.x.y.z.zip`** is for **64-bit** executables.
+- **`BepInEx_x86_5.x.y.z.zip`** is for **32-bit** executables.
 
 <img src={useBaseUrl('/img/installation/downloading-windows.png')}/>
 
 Here's a few pointers:
 
-- If you have **more than 4 Gb of RAM**, then you definitely have a **64-bit OS**. A 32-bit version simply cannot use more than 4 Gb of RAM, because of, you know, 32 bits (2^32 bytes = 4 gigabytes).
-- If you have Windows 10, <MicrosoftButton link="ms-settings:about">Open About settings</MicrosoftButton> (or `⊞ Win`+`I` > **System** > **About**). You'll see what version of Windows you're running under **Device specifications: System type**.
-- If you have Windows 7 or 8, then [go here](https://support.microsoft.com/en-us/windows/which-version-of-windows-operating-system-am-i-running-628bec99-476a-2c13-5296-9dd081cdd808#ID0EBBD=Windows_7).
+- You might notice some files in the game's root directory: **`Galaxy64.dll`**, **`UnityCrashHandler64.exe`**. If you have these, then I'm pretty sure it means that the game's executable is also **64-bit**.
+- Launch the game and open the Task Manager. If you see "(32 bit)" in the name of the game's process, then it's **32-bit**; otherwise, it's **64-bit**.
 
 </TabItem>
 <TabItem values={["linux", "macos"]}>
