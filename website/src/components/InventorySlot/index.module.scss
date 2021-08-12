@@ -5,39 +5,40 @@
   height: 80px;
   overflow: hidden;
   image-rendering: pixelated;
-}
-
-.cursorNormal {
+  background-size: 100%;
   cursor: url("url-loader!./assets/normal.cur"), pointer;
 }
+
 .cursorLocked {
   cursor: url("url-loader!./assets/red.cur"), not-allowed;
 }
 
-.slot {
-  user-select: none;
-  -webkit-user-drag: none;
+.normal {
+  background-image: url("./assets/normal.png");
+  &.hoverable:hover {
+    background-image: url("./assets/normalHover.png");
+  }
 }
-.hoverslot {
-  display: none;
-  user-select: none;
-  -webkit-user-drag: none;
+.selected {
+  background-image: url("./assets/selected.png");
+  &.hoverable:hover {
+    background-image: url("./assets/selectedHover.png");
+  }
 }
-
-.container:hover > .hoverslot {
-  display: inherit;
-}
-.container:hover > .hoverslot + .slot {
-  display: none;
+.locked {
+  background-image: url("./assets/locked.png");
+  &.hoverable:hover {
+    background-image: url("./assets/lockedHover.png");
+  }
+  * {
+    opacity: calc(40 / 256);
+  }
 }
 
 .sprite {
   position: absolute;
   margin: auto;
-  left: 8px;
-  top: 8px;
-  right: 8px;
-  bottom: 8px;
+  inset: 8px;
   max-width: 64px;
   max-height: 64px;
   user-select: none;
