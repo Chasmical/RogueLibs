@@ -42,5 +42,13 @@
   "sidebar.documentationSidebar.category.Hooks": {
     "message": "Хуки",
     "description": "The label for category Hooks in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Site Stuff": {
+    "message": "Site Stuff",
+    "description": "The label for category Site Stuff in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Components": {
+    "message": "Components",
+    "description": "The label for category Components in sidebar documentationSidebar"
   }
 }

@@ -1,14 +1,14 @@
 {
-  "item.label.Introduction": {
-    "message": "Введение",
-    "description": "Navbar item with label Introduction"
+  "item.label.Installation": {
+    "message": "Установка",
+    "description": "Navbar item with label Installation"
   },
   "item.label.Documentation": {
     "message": "Документация",
     "description": "Navbar item with label Documentation"
   },
-  "item.label.API": {
-    "message": "API",
-    "description": "Navbar item with label API"
+  "item.label.Components": {
+    "message": "Компоненты",
+    "description": "Navbar item with label Components"
   }
 }

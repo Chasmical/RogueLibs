@@ -16,7 +16,7 @@
     "description": "The label of footer link with label=Introduction linking to docs/intro"
   },
   "link.item.label.Streets of Rogue Discord": {
-    "message": "Streets of Rogue Discord",
+    "message": "Discord Streets of Rogue",
     "description": "The label of footer link with label=Streets of Rogue Discord linking to https://discord.com/invite/streetsofrogue"
   },
   "link.item.label.GitHub": {
