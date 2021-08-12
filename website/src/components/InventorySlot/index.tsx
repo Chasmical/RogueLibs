@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import clsx from 'clsx';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 import styles from './index.module.scss';
 
 export type Props = {
