@@ -21,6 +21,7 @@ module.exports = {
       },
     },
   },
+  plugins: ['docusaurus-plugin-sass'],
   themeConfig: {
     hideableSidebar: true,
     prism: {
