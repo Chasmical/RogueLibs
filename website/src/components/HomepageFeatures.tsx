@@ -1,11 +1,11 @@
 import React from 'react';
 import clsx from 'clsx';
 import styles from './HomepageFeatures.module.css';
-import Translate, {translate} from '@docusaurus/Translate';
+import Translate from '@docusaurus/Translate';
 import svg1 from '@site/static/img/undraw_docusaurus_mountain.png';
 import svg2 from '@site/static/img/undraw_docusaurus_tree.png';
 
-const FeatureList = [
+const FeatureList: FeatureProps[] = [
   {
     title: (
       <Translate id="features.easy.title">
@@ -42,11 +42,17 @@ const FeatureList = [
   },
 ];
 
-function Feature({svg, title, description}) {
+type FeatureProps = {
+  title: React.ReactNode,
+  description: React.ReactNode,
+  svg?: string,
+}
+
+function Feature({svg, title, description}: FeatureProps): JSX.Element {
   return (
     <div className={clsx('col col--4')}>
       <div className="text--center">
-        <img src={svg} className={styles.featureSvg} alt={title}/>
+        <img src={svg} className={styles.featureSvg} alt={typeof title === "string" ? title : undefined}/>
       </div>
       <div className="text--center padding-horiz--md">
         <h3>{title}</h3>
@@ -56,7 +62,7 @@ function Feature({svg, title, description}) {
   );
 }
 
-export default function HomepageFeatures() {
+export default function HomepageFeatures(): JSX.Element {
   return (
     <section className={styles.features}>
       <div className="container">

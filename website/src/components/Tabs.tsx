@@ -1,4 +1,4 @@
-import React, {useState, cloneElement, Children, ReactElement} from 'react';
+import React, { useState } from 'react';
 import useUserPreferencesContext from '@theme/hooks/useUserPreferencesContext';
 import clsx from 'clsx';
 import styles from './Tabs.module.css';
@@ -14,13 +14,20 @@ const keys = {
   left: 37,
   right: 39,
 }
+export type Props = {
+  children?: React.ReactNode,
+  lazy?: boolean,
+  defaultValue?: string,
+  values: {value: string, label: string}[],
+  groupId?: string,
+}
 
-function Tabs(props) {
-  const {lazy, block, defaultValue, values, groupId, className} = props;
+export default function(props: Props) {
+  const { lazy, defaultValue, values, groupId } = props;
   const {tabGroupChoices, setTabGroupChoices} = useUserPreferencesContext();
   const [selectedValue, setSelectedValue] = useState(defaultValue);
-  const children = Children.toArray(props.children);
-  const tabRefs = [];
+  const children = React.Children.toArray(props.children);
+  const tabRefs: (EventTarget | HTMLLIElement)[] = [];
 
   if (groupId != null) {
     const relevantTabGroupChoice = tabGroupChoices[groupId];
@@ -33,7 +40,7 @@ function Tabs(props) {
     }
   }
 
-  const handleTabChange = (event) => {
+  const handleTabChange = (event: React.FocusEvent<HTMLLIElement> | React.MouseEvent<HTMLLIElement>) => {
     const selectedTab = event.currentTarget;
     const selectedTabIndex = tabRefs.indexOf(selectedTab);
     const selectedTabValue = values[selectedTabIndex].value;
@@ -62,9 +69,8 @@ function Tabs(props) {
     }
   };
 
-  const handleKeydown = (event) => {
-    let focusElement;
-
+  const handleKeydown = (event: React.KeyboardEvent<HTMLLIElement>) => {
+    let focusElement: EventTarget | HTMLLIElement;
     switch (event.keyCode) {
       case keys.right: {
         const nextTab = tabRefs.indexOf(event.target) + 1;
@@ -77,26 +83,19 @@ function Tabs(props) {
         break;
       }
       default:
-        break;
+        return;
     }
-
-    focusElement?.focus();
+    (focusElement as any).focus();
   };
 
-  const isShown = (selected, props) => props.value === selected || props.values && props.values.indexOf(selected) != -1;
+  const isShown = (selected: string | undefined, props: any) => props.value === selected || props.values && props.values.indexOf(selected) != -1;
 
   return (
     <div className="tabs-container">
       <ul
         role="tablist"
         aria-orientation="horizontal"
-        className={clsx(
-          'tabs',
-          {
-            'tabs--block': block,
-          },
-          className,
-        )}>
+        className="tabs">
         {values.map(({value, label}) => (
           <li
             role="tab"
@@ -106,7 +105,7 @@ function Tabs(props) {
               'tabs__item--active': selectedValue === value,
             })}
             key={value}
-            ref={(tabControl) => tabRefs.push(tabControl)}
+            ref={(tabControl) => tabControl && tabRefs.push(tabControl)}
             onKeyDown={handleKeydown}
             onFocus={handleTabChange}
             onClick={handleTabChange}>
@@ -116,18 +115,16 @@ function Tabs(props) {
       </ul>
 
       {lazy ? (
-        cloneElement(
-          children.filter(
-            (tabItem) => isShown(selectedValue, tabItem.props),
-          )[0],
+        React.cloneElement(
+          children.find((tabItem: any) => isShown(selectedValue, tabItem.props)) as React.ReactElement,
           {
             className: styles.tab,
           },
         )
       ) : (
         <div>
-          {children.map((tabItem, i) =>
-            cloneElement(tabItem, {
+          {children.map((tabItem: any, i: number) =>
+            React.cloneElement(tabItem, {
               key: i,
               hidden: !isShown(selectedValue, tabItem.props),
               className: styles.tab,
@@ -139,5 +136,3 @@ function Tabs(props) {
     </div>
   );
 }
-
-export default Tabs;
