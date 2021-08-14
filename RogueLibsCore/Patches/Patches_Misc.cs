@@ -18,7 +18,7 @@ namespace RogueLibsCore
 			// initialize LanguageService
 			Patcher.Postfix(typeof(NameDB), nameof(NameDB.RealAwake));
 			// CustomNames
-			Patcher.Postfix(typeof(NameDB), nameof(NameDB.GetName));
+			Patcher.Prefix(typeof(NameDB), nameof(NameDB.GetName));
 
 			// IDoUpdate.Update
 			Patcher.Postfix(typeof(Updater), "Update");
@@ -35,6 +35,7 @@ namespace RogueLibsCore
 			Patcher.AnyErrors();
 		}
 
+		private static bool firstRun = true;
 		public static void NameDB_RealAwake(NameDB __instance)
 		{
 			if (!LanguageService.Languages.TryGetValue(__instance.language, out LanguageCode code))
@@ -43,17 +44,28 @@ namespace RogueLibsCore
 				RogueFramework.LogDebug($"Current language: {LanguageService.GetLanguageName(code)} ({(int)code})");
 
 			LanguageService.NameDB = __instance;
-			LanguageService.Current = code;
+			if (firstRun)
+			{
+				LanguageService.current = code;
+				firstRun = false;
+				Localization.Init();
+			}
+			else
+			{
+				LanguageService.Current = code;
+			}
 		}
-		public static void NameDB_GetName(string myName, string type, ref string __result)
+		public static bool NameDB_GetName(string myName, string type, ref string __result)
 		{
-			string orig = __result;
-			if (__result.StartsWith("E_")) __result = null;
+			string orig = Localization.GetName(myName, type);
+			__result = orig;
+			if (__result?.StartsWith("E_") == true) __result = null;
 
 			foreach (INameProvider provider in RogueFramework.NameProviders)
 				provider.GetName(myName, type, ref __result);
 
 			if (__result is null) __result = orig;
+			return __result is null;
 		}
 
 		public static void Updater_Update()

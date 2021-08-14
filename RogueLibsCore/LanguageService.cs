@@ -20,7 +20,7 @@ namespace RogueLibsCore
 		///   <para>Gets the currently used instance of <see cref="global::NameDB"/>.</para>
 		/// </summary>
 		public static NameDB NameDB { get; internal set; }
-		private static LanguageCode current;
+		internal static LanguageCode current;
 		/// <summary>
 		///   <para>Gets the currently selected language.</para>
 		/// </summary>
@@ -35,7 +35,7 @@ namespace RogueLibsCore
 				OnCurrentChanged?.Invoke(new OnLanguageChangedArgs(prev, value));
 			}
 		}
-		private static LanguageCode fallBack;
+		internal static LanguageCode fallBack;
 		/// <summary>
 		///   <para>Gets or sets the fall-back language that will be used, when the current language's localization string is not found. Default: <see cref="LanguageCode.English"/>.</para>
 		/// </summary>
@@ -186,7 +186,7 @@ namespace RogueLibsCore
 			string vanillaLanguagesPath = Path.Combine(localePath, "vanilla");
 			Directory.CreateDirectory(vanillaLanguagesPath);
 
-			foreach (KeyValuePair<string, int> entry in Versions.Entries)
+			foreach (KeyValuePair<string, int> entry in Versions.Entries.ToList())
 			{
 				string id = entry.Key;
 				int latest = entry.Value;
@@ -242,11 +242,14 @@ namespace RogueLibsCore
 
 		private static void InitializeLanguages()
 		{
+			ReInitializeLanguages();
+			LanguageService.OnCurrentChanged += e => Current = ReloadLanguage(CurrentWatcher = SetupWatcher(e.Value));
+			LanguageService.OnFallBackChanged += e => FallBack = ReloadLanguage(FallBackWatcher = SetupWatcher(e.Value));
+		}
+		public static void ReInitializeLanguages()
+		{
 			CurrentWatcher = SetupWatcher(LanguageService.Current);
 			FallBackWatcher = SetupWatcher(LanguageService.FallBack);
-
-			LanguageService.OnCurrentChanged += _ => ReloadCurrent(null, null);
-			LanguageService.OnFallBackChanged += _ => ReloadFallBack(null, null);
 
 			ReloadCurrent(null, null);
 			ReloadFallBack(null, null);
@@ -254,23 +257,22 @@ namespace RogueLibsCore
 		private static FileSystemWatcher SetupWatcher(LanguageCode code)
 		{
 			string name = LanguageService.GetLanguageName(code);
-			string path = Path.Combine(localePath, name + ".xml");
+			string path = localePath;
 
-			if (!File.Exists(path)
+			if (!File.Exists(Path.Combine(path, name + ".xml"))
 				&& LanguageService.Current >= LanguageCode.English
 				&& LanguageService.Current <= LanguageCode.Korean)
 			{
-				path = Path.Combine(localePath, "vanilla", name + ".xml");
-				if (!File.Exists(path))
+				path = Path.Combine(localePath, "vanilla");
+				if (!File.Exists(Path.Combine(path, name + ".xml")))
 				{
 					RogueFramework.LogError("Could not find the current language file.");
 					return null;
 				}
 			}
-			return new FileSystemWatcher(localePath)
+			return new FileSystemWatcher(path)
 			{
 				Filter = name + ".xml",
-				NotifyFilter = NotifyFilters.FileName | NotifyFilters.LastWrite | NotifyFilters.Size,
 				EnableRaisingEvents = true,
 			};
 		}
@@ -278,7 +280,12 @@ namespace RogueLibsCore
 		private static LocaleLanguage ReloadLanguage(FileSystemWatcher watcher)
 		{
 			if (watcher is null) return null;
-			string path = Path.Combine(watcher.Path, watcher.Filter);
+			return ReloadLanguage(watcher.Path, watcher.Filter);
+		}
+		private static LocaleLanguage ReloadLanguage(string directory, string name)
+		{
+			RogueFramework.LogDebug($"Live-reloading {name}");
+			string path = Path.Combine(directory, name);
 			if (!File.Exists(path)) return null;
 			try
 			{
@@ -354,7 +361,7 @@ namespace RogueLibsCore
 		}
 	}
 	[XmlRoot("Language")]
-	public class LocaleLanguage : IXmlSerializable
+	public sealed class LocaleLanguage : IXmlSerializable
 	{
 		private LocaleLanguage() { }
 		public string Id { get; private set; }
@@ -405,7 +412,7 @@ namespace RogueLibsCore
 		public string this[string category, string name] => categories.TryGetValue(category, out LocaleCategory cat) ? cat[name] : null;
 	}
 	[XmlRoot("Category")]
-	public class LocaleCategory : IXmlSerializable
+	public sealed class LocaleCategory : IXmlSerializable
 	{
 		internal LocaleCategory() { }
 		public string Id { get; private set; }
@@ -451,7 +458,7 @@ namespace RogueLibsCore
 
 		public string this[string name] => entries.TryGetValue(name, out string text) ? text : null;
 	}
-	internal class LanguageVersions : IXmlSerializable
+	public sealed class LanguageVersions : IXmlSerializable
 	{
 		private LanguageVersions() { }
 		public Dictionary<string, int> Entries { get; private set; }
@@ -470,6 +477,7 @@ namespace RogueLibsCore
 		public void ReadXml(XmlReader xml)
 		{
 			bool nonEmpty = !xml.IsEmptyElement;
+			RogueFramework.LogDebug($"Start {xml.Name}");
 			xml.ReadStartElement();
 			Entries = new Dictionary<string, int>();
 			if (nonEmpty)
@@ -483,9 +491,10 @@ namespace RogueLibsCore
 						string versionAttr = xml.GetAttribute("Version");
 						Entries.Add(id, int.Parse(versionAttr));
 					}
-					else xml.Skip();
+					xml.Skip();
 					xml.MoveToContent();
 				}
+				xml.ReadEndElement();
 			}
 
 		}
