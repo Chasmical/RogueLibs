@@ -51,6 +51,9 @@
       <HintPath>..\Libraries\netstandard.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Xml">
+      <HintPath>..\Libraries\System.Xml.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\Libraries\UnityEngine.dll</HintPath>
     </Reference>
@@ -84,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hooks\Items\DefaultInventoryChecks.cs" />
+    <Compile Include="LanguageService.cs" />
     <Compile Include="Patches\Patches_Agents.cs" />
     <Compile Include="Utilities\HookExtensions.cs" />
     <Compile Include="Hooks\Items\CustomAbility.cs" />
