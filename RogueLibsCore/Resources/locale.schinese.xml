@@ -1,4 +1,4 @@
-<Language Id="schinese" Version="2">
+<Language Id="schinese" Version="3">
   <Category Id="Agent">
     <Entry Id="Playerr">玩家</Entry>
     <Entry Id="Actor">演员</Entry>
@@ -4131,7 +4131,7 @@
     <Entry Id="Deactivate">无效化奴隶头盔</Entry>
     <Entry Id="AdministerTreatment">进行治疗</Entry>
     <Entry Id="BorderlessWindowButton">无边界窗口化指南</Entry>
-    <Entry Id="BorderlessWindowButton_Instr">"要让游戏以无边界窗口化运行，在游戏启动时使用命令行参数 ""-popupwindow""。"</Entry>
+    <Entry Id="BorderlessWindowButton_Instr">要让游戏以无边界窗口化运行，在游戏启动时使用命令行参数 "-popupwindow"</Entry>
     <Entry Id="CantTeleportLockdown">封锁期间无法传送</Entry>
     <Entry Id="MugDrugsAlcohol">上交毒品与酒</Entry>
     <Entry Id="MugWeapons">上交法律不允许的武器</Entry>
@@ -4189,12 +4189,12 @@
     <Entry Id="ChangeSaveSlotButton_Instr">你房间里还有别人吗？你是否不想要共享存档？干脆给他们自己的存档槽吧！</Entry>
     <Entry Id="Kick">踢出</Entry>
     <Entry Id="Ban">封禁</Entry>
-    <Entry Id="WhichPlayerKick">"输入 ""/kick 1"", ""/kick 2""或者 ""/kick &lt;player name&gt;""来踢出玩家。"</Entry>
+    <Entry Id="WhichPlayerKick">输入 "/kick 1", "/kick 2"或者 "/kick &lt;player name&gt;"来踢出玩家</Entry>
     <Entry Id="NoPlayersToKick">（没有玩家可供踢出！）</Entry>
     <Entry Id="Banned">你被这个房间封禁了。</Entry>
     <Entry Id="MultMsg_BannedPlayer">被房间封禁了，拜拜喽！</Entry>
     <Entry Id="Chat_HelpBan">/ban将一名玩家封禁（只有房主可以使用）</Entry>
-    <Entry Id="WhichPlayerBan">"输入 ""/ban 1"", ""/ban 2""或 ""/ban &lt;player name&gt;""来封禁玩家。"</Entry>
+    <Entry Id="WhichPlayerBan">输入 "/ban 1", "/ban 2"或 "/ban &lt;player name&gt;"来封禁玩家</Entry>
     <Entry Id="NoPlayersToBan">（没有玩家可供封禁！）</Entry>
     <Entry Id="DrinksServed">接受过酒水服务的</Entry>
     <Entry Id="Freed">解放的</Entry>
