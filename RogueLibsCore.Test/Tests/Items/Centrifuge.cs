@@ -11,6 +11,7 @@ namespace RogueLibsCore.Test
 		[RLSetup]
 		public static void Setup()
 		{
+			/*
 			RogueLibs.CreateCustomItem<Centrifuge>()
 				.WithName(new CustomNameInfo("Centrifuge"))
 				.WithDescription(new CustomNameInfo("Combine with a syringe to invert its effect."))
@@ -22,6 +23,7 @@ namespace RogueLibsCore.Test
 					CharacterCreationCost = 3,
 					Prerequisites = { VanillaItems.Antidote },
 				});
+			*/
 		}
 
 		public override void SetupDetails()
