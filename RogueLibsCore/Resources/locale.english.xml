@@ -1,4 +1,4 @@
-<Language Id="english" Version="1">
+<Language Id="english" Version="2">
   <Category Id="Agent">
     <Entry Id="Playerr">Player</Entry>
     <Entry Id="Actor">Actor</Entry>
