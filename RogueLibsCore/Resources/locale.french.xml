@@ -1,4 +1,4 @@
-<Language Id="french" Version="3">
+<Language Id="french" Version="4">
   <Category Id="Agent">
     <Entry Id="Playerr">Joueur</Entry>
     <Entry Id="Actor">Acteur</Entry>

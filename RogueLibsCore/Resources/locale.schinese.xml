@@ -1,4 +1,4 @@
-<Language Id="schinese" Version="3">
+<Language Id="schinese" Version="4">
   <Category Id="Agent">
     <Entry Id="Playerr">玩家</Entry>
     <Entry Id="Actor">演员</Entry>

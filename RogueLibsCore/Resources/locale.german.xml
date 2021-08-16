@@ -1,4 +1,4 @@
-<Language Id="german" Version="3">
+<Language Id="german" Version="4">
   <Category Id="Agent">
     <Entry Id="Playerr">Spieler</Entry>
     <Entry Id="Actor">Schauspieler</Entry>

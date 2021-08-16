@@ -1,4 +1,4 @@
-<Language Id="russian" Version="3">
+<Language Id="russian" Version="4">
   <Category Id="Agent">
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актер</Entry>
