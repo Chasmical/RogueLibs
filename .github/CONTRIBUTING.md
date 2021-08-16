@@ -20,9 +20,9 @@ If something like this has not been suggested yet, then [file a feature request]
 
 ## Contributions
 
-Want to implement something cool, fix a bug or improve documentation or in-game localization?  
-[Then find or create an issue on GitHub Issues](https://github.com/Abbysssal/RogueLibs/issues?q=is%3Aissue).  
-If what you're planning on doing is a small change (a typo or a really insignificant change), then there's no need to create an issue.
+Want to implement something cool, fix a bug or improve documentation or in-game localization?
+
+You should [find or create an issue on GitHub Issues](https://github.com/Abbysssal/RogueLibs/issues?q=is%3Aissue). It'll be easier to track and discuss changes. Plus, if someone else notices the same bug, or wants to suggest something similar, they'll see your issue.
 
 #### How to create a Pull Request
 
