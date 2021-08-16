@@ -10,6 +10,7 @@ using System.IO;
 using System.Threading;
 using UnityEngine.Networking;
 using BepInEx;
+using JetBrains.Annotations;
 
 namespace RogueLibsCore
 {
@@ -249,6 +250,7 @@ namespace RogueLibsCore
 	/// <summary>
 	///   <para>Indicates that this method should be executed when <see cref="RogueLibs.LoadFromAssembly()"/> is called.</para>
 	/// </summary>
+	[MeansImplicitUse]
 	[AttributeUsage(AttributeTargets.Method)]
 	public class RLSetupAttribute : Attribute { }
 	/// <summary>
