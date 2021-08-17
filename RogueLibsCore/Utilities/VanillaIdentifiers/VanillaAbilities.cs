@@ -1,5 +1,6 @@
 ﻿namespace RogueLibsCore
 {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
 	public static class VanillaAbilities
 	{
 		public const string
