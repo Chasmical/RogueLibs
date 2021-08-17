@@ -44,9 +44,10 @@ jobs:
         env:
           USE_SSH: true
           GIT_USER: git
+          MY_EMAIL: ${{ secrets.MY_EMAIL }}
         working-directory: ./website
         run: |
-          git config --global user.email "hillankeyxl2@yandex.ru"
+          git config --global user.email "$MY_EMAIL"
           git config --global user.name "Abbysssal"
           if [ -e yarn.lock ]; then
           yarn install --frozen-lockfile
