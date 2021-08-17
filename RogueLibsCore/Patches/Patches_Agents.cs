@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RogueLibsCore
 {
@@ -26,10 +22,5 @@ namespace RogueLibsCore
 			LastFiredBulletHook hook = __instance.agent.GetHook<LastFiredBulletHook>() ?? __instance.agent.AddHook<LastFiredBulletHook>();
 			hook.LastFiredBullet = __result;
 		}
-	}
-	internal class LastFiredBulletHook : HookBase<Agent>
-	{
-		public Bullet LastFiredBullet { get; set; }
-		protected override void Initialize() { }
 	}
 }

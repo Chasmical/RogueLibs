@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Collections.ObjectModel;
-using System.Reflection.Emit;
 using System.Threading;
 using System.Linq;
 using BepInEx;

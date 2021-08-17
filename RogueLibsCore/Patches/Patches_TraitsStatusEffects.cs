@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Threading.Tasks;
 using HarmonyLib;
 using UnityEngine.Networking;
 using UnityEngine;
-using System.Diagnostics;
-using static UnityEngine.Random;
 
 namespace RogueLibsCore
 {

@@ -1,12 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using UnityEngine;
+﻿using System.Diagnostics;
 using BepInEx;
-using HarmonyLib;
-using System.IO;
 using System.Threading;
 
 namespace RogueLibsCore

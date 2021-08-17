@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -130,31 +129,5 @@ namespace RogueLibsCore
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]
 		public static GameController gc => GameController.gameController;
-	}
-	/// <summary>
-	///   <para>Represents an unlock that is available in the Character Creation menu.</para>
-	/// </summary>
-	public interface IUnlockInCC
-	{
-		/// <summary>
-		///   <para>Gets or sets whether the unlock is added to a custom character.</para>
-		/// </summary>
-		bool IsAddedToCC { get; set; }
-		/// <summary>
-		///   <para>Gets or sets whether the unlock is available in the Character Creation menu.</para>
-		/// </summary>
-		bool IsAvailableInCC { get; set; }
-	}
-	public static class UnlockTypes
-	{
-		public const string
-			Item = "Item",
-			Ability = "Ability",
-			Trait = "Trait",
-			Mutator = "Challenge",
-			Agent = "Agent",
-			BigQuest = "BigQuest",
-			Extra = "Extra",
-			Floor = "Floor";
 	}
 }

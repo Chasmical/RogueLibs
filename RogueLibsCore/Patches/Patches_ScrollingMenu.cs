@@ -1,13 +1,8 @@
 ﻿using System;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using BepInEx;
-using HarmonyLib;
 
 namespace RogueLibsCore
 {
@@ -288,20 +283,6 @@ namespace RogueLibsCore
 					}
 				}
 			}
-		}
-	}
-	internal class GiveNuggetsButton : MutatorUnlock
-	{
-		public GiveNuggetsButton() : base("GiveNuggetsDebug", true) { }
-
-		public override string GetFancyName() => $"<color=cyan>{GetName()}</color>";
-		public override void OnPushedButton()
-		{
-			if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
-				RogueFramework.LogDebug("Added 10 nuggets with the debug tool.");
-			gc.unlocks.AddNuggets(10);
-			PlaySound(VanillaAudio.BuyItem);
-			UpdateMenu();
 		}
 	}
 }

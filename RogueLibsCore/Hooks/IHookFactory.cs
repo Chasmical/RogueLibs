@@ -1,10 +1,4 @@
-﻿using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
-namespace RogueLibsCore
+﻿namespace RogueLibsCore
 {
 	/// <summary>
 	///   <para>Represents a hook factory.</para>
@@ -32,20 +26,5 @@ namespace RogueLibsCore
 		/// <param name="hook">A hook created for the specified <paramref name="instance"/> of type <typeparamref name="T"/>.</param>
 		/// <returns><see langword="true"/>, if a hook was successfully created; otherwise, <see langword="false"/>.</returns>
 		bool TryCreate(T instance, out IHook<T> hook);
-	}
-	/// <summary>
-	///   <para>Represents a hook factory base. Implements the interfaces, leaving only one abstract method to implement.</para>
-	/// </summary>
-	/// <typeparam name="T">The type of objects that the created hooks can be attached to.</typeparam>
-	public abstract class HookFactoryBase<T> : IHookFactory<T>
-	{
-		/// <inheritdoc/>
-		public abstract bool TryCreate(T instance, out IHook<T> hook);
-		bool IHookFactory.TryCreate(object instance, out IHook hook)
-		{
-			bool res = TryCreate((T)instance, out IHook<T> hookT);
-			hook = hookT;
-			return res;
-		}
 	}
 }
