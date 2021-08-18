@@ -54,6 +54,6 @@ namespace RogueLibsCore
 		}
 		public System.Xml.Schema.XmlSchema GetSchema() => null;
 
-		public string this[string category, string name] => categories.TryGetValue(category, out LocaleCategory cat) ? cat[name] : null;
+		public string this[string category, string name] => category != null && categories.TryGetValue(category, out LocaleCategory cat) ? cat[name] : null;
 	}
 }

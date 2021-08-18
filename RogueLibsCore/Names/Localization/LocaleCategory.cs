@@ -50,6 +50,6 @@ namespace RogueLibsCore
 		}
 		public System.Xml.Schema.XmlSchema GetSchema() => null;
 
-		public string this[string name] => entries.TryGetValue(name, out string text) ? text : null;
+		public string this[string name] => name != null && entries.TryGetValue(name, out string text) ? text : null;
 	}
 }
