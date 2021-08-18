@@ -197,7 +197,7 @@
     <Compile Include="Utilities\RogueCategories.cs" />
     <Compile Include="Utilities\RogueExtensions.cs" />
     <Compile Include="RogueFramework.cs" />
-    <Compile Include="Main\RogueLibs.cs" />
+    <Compile Include="RogueLibs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RogueLibsPlugin.cs" />
     <Compile Include="Utilities\RoguePatcher.cs" />
