@@ -23,7 +23,6 @@ namespace RogueLibsCore
 		public void ReadXml(XmlReader xml)
 		{
 			bool nonEmpty = !xml.IsEmptyElement;
-			RogueFramework.LogDebug($"Start {xml.Name}");
 			xml.ReadStartElement();
 			Entries = new Dictionary<string, int>();
 			if (nonEmpty)

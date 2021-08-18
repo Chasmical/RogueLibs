@@ -112,6 +112,7 @@ namespace RogueLibsCore
 		}
 		private static void UpdateLanguage(string language, string filePath, int newVersion)
 		{
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Names)) RogueFramework.LogDebug($"Updating ${language} to version ${newVersion}");
 			string url = $"https://raw.githubusercontent.com/Abbysssal/RogueLibs/main/RogueLibsCore/Resources/locale.{language}.xml";
 			string downloadPath = filePath + ".download";
 			WebClient web = new WebClient();
@@ -176,7 +177,7 @@ namespace RogueLibsCore
 		}
 		private static LocaleLanguage ReloadLanguage(string directory, string name)
 		{
-			RogueFramework.LogDebug($"Live-reloading {name}");
+			if (RogueFramework.IsDebugEnabled(DebugFlags.Names)) RogueFramework.LogDebug($"Live-reloading {name}");
 			string path = Path.Combine(directory, name);
 			if (!File.Exists(path)) return null;
 			try
