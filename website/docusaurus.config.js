@@ -58,6 +58,11 @@ module.exports = {
           position: 'left',
         },
         {
+          to: 'blog',
+          label: 'Blog',
+          position: 'left'
+        },
+        {
           type: 'localeDropdown',
           position: 'right',
         },
