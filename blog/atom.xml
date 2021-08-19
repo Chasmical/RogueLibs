@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <id>https://abbysssal.github.io/RogueLibs/blog</id>
+    <title>RogueLibs Documentation Blog</title>
+    <updated>2021-08-18T00:00:00.000Z</updated>
+    <generator>https://github.com/jpmonette/feed</generator>
+    <link rel="alternate" href="https://abbysssal.github.io/RogueLibs/blog"/>
+    <subtitle>RogueLibs Documentation Blog</subtitle>
+    <icon>https://abbysssal.github.io/RogueLibs/img/favicon.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[RogueLibs v3.1.0 released!]]></title>
+        <id>RogueLibs v3.1.0 released!</id>
+        <link href="https://abbysssal.github.io/RogueLibs/blog/2021/08/18/roguelibs-v3.1.0"/>
+        <updated>2021-08-18T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[Completely replaced the vanilla localization system.]]></summary>
+    </entry>
+</feed>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>RogueLibs Documentation Blog</title>
+        <link>https://abbysssal.github.io/RogueLibs/ru/blog</link>
+        <description>RogueLibs Documentation Blog</description>
+        <lastBuildDate>Wed, 18 Aug 2021 00:00:00 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[RogueLibs v3.1.0 released!]]></title>
+            <link>https://abbysssal.github.io/RogueLibs/ru/blog/2021/08/18/roguelibs-v3.1.0</link>
+            <guid>RogueLibs v3.1.0 released!</guid>
+            <pubDate>Wed, 18 Aug 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[Completely replaced the vanilla localization system.]]></description>
+        </item>
+    </channel>
+</rss>
