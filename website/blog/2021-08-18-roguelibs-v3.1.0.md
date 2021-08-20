@@ -21,6 +21,8 @@ A brand new localization system will completely replace the vanilla one!
 - Automatic updates;
 - Live Reloading!
 
+![Locales opened in VSCode](https://i.imgur.com/XaNGCx7.png)
+
 <!--truncate-->
 
 ### Upgrading/downgrading to XML
