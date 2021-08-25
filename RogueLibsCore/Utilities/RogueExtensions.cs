@@ -78,6 +78,73 @@ namespace RogueLibsCore
 		}
 
 		/// <summary>
+		///   <para>Adds the specified <paramref name="amount"/> of the item of the specified <paramref name="itemType"/> to the current <paramref name="inventory"/>.</para>
+		/// </summary>
+		/// <param name="inventory">The current inventory.</param>
+		/// <param name="itemType">The type of the item to add to the <paramref name="inventory"/>.</param>
+		/// <param name="amount">The amount of the item to add.</param>
+		/// <returns>The added item, if found in the inventory; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="inventory"/> is <see langword="null"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException"><paramref name="amount"/> is less than or equal to 0.</exception>
+		public static CustomItem AddItem(this InvDatabase inventory, Type itemType, int amount)
+		{
+			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
+			if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), amount, $"{nameof(amount)} is less than or equal to 0.");
+			InvItem item = inventory.AddItem(ItemInfo.Get(itemType).Name, amount);
+			return item?.GetHooks<CustomItem>().FirstOrDefault(itemType.IsInstanceOfType);
+		}
+		/// <summary>
+		///   <para>Finds an item hook that is assignable to a variable of the specified <paramref name="itemType"/> in the current <paramref name="inventory"/>.</para>
+		/// </summary>
+		/// <param name="inventory">The current inventory.</param>
+		/// <param name="itemType">The type of the item hook to search for.</param>
+		/// <returns>An item hook assignable to a variable of the specified <paramref name="itemType"/>, if found; otherwise, <see langword="default"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="inventory"/> is <see langword="null"/>.</exception>
+		public static IHook<InvItem> GetItem(this InvDatabase inventory, Type itemType)
+		{
+			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
+			return inventory.InvItemList.SelectMany(i => i.GetHooks<IHook<InvItem>>()).FirstOrDefault(itemType.IsInstanceOfType);
+		}
+		/// <summary>
+		///   <para>Finds all item hooks that are assignable to a variable of the specified <paramref name="itemType"/> in the current <paramref name="inventory"/>.</para>
+		/// </summary>
+		/// <param name="inventory">The current inventory.</param>
+		/// <param name="itemType">The type of the item hook to search for.</param>
+		/// <returns>An enumerable collection of item hooks that are assignable to a variable of the specified <paramref name="itemType"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="inventory"/> is <see langword="null"/>.</exception>
+		public static IEnumerable<IHook<InvItem>> GetItems(this InvDatabase inventory, Type itemType)
+		{
+			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
+			return inventory.InvItemList.SelectMany(i => i.GetHooks<IHook<InvItem>>()).Where(itemType.IsInstanceOfType).ToArray();
+		}
+		/// <summary>
+		///   <para>Determines whether the current <paramref name="inventory"/> contains an item hook that is assignable to a variable of the specified <paramref name="itemType"/>.</para>
+		/// </summary>
+		/// <param name="inventory">The current inventory.</param>
+		/// <param name="itemType">The type of the item hook to search for.</param>
+		/// <returns><see langword="true"/>, if the <paramref name="inventory"/> contains an item that has a hook that is assignable to a variable of the specified <paramref name="itemType"/>; otherwise, <see langword="false"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="inventory"/> is <see langword="null"/>.</exception>
+		public static bool HasItem(this InvDatabase inventory, Type itemType)
+		{
+			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
+			return inventory.InvItemList.Exists(i => i.GetHooks<IHook<InvItem>>().Any(itemType.IsInstanceOfType));
+		}
+		/// <summary>
+		///   <para>Determines whether the sum of item counts of the items, that have hooks that are assignable to a variable of the specified <paramref name="itemType"/>, is larger than or equal to the specified <paramref name="amount"/>.</para>
+		/// </summary>
+		/// <param name="inventory">The current inventory.</param>
+		/// <param name="itemType">The type of the item hook to search for.</param>
+		/// <param name="amount">The required amount of items.</param>
+		/// <returns><see langword="true"/>, if the sum of item counts of the found items is larger than or equal to the specified <paramref name="amount"/>; otherwise, <see langword="false"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="inventory"/> is <see langword="null"/>.</exception>
+		public static bool HasItem(this InvDatabase inventory, Type itemType, int amount)
+		{
+			if (inventory is null) throw new ArgumentNullException(nameof(inventory));
+			int sum = inventory.InvItemList.Where(i => i.GetHooks<IHook<InvItem>>().Any(itemType.IsInstanceOfType)).Sum(i => i.invItemCount);
+			return sum >= amount;
+		}
+
+		/// <summary>
 		///   <para>Gives the specified <typeparamref name="TAbility"/> ability to the current <paramref name="agent"/>.</para>
 		/// </summary>
 		/// <typeparam name="TAbility">The ability type to give to the <paramref name="agent"/>.</typeparam>
@@ -114,6 +181,33 @@ namespace RogueLibsCore
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
 			InvItem item = agent.inventory.equippedSpecialAbility;
 			return item != null ? item.GetHook<TAbility>() : default;
+		}
+
+		/// <summary>
+		///   <para>Gives an ability of the specified <paramref name="abilityType"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="abilityType">Type of the ability to give to the <paramref name="agent"/>.</param>
+		/// <returns>The given ability.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static CustomAbility GiveAbility(this Agent agent, Type abilityType)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			string abilityName = ItemInfo.Get(abilityType).Name;
+			agent.statusEffects.GiveSpecialAbility(abilityName);
+			return agent.inventory.equippedSpecialAbility.GetHooks<CustomAbility>().FirstOrDefault(abilityType.IsInstanceOfType);
+		}
+		/// <summary>
+		///   <para>Finds an item hook assignable to a variable of the specified <paramref name="abilityType"/> associated with the current <paramref name="agent"/>'s special ability.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="abilityType">Type of the ability to give to the <paramref name="agent"/>.</param>
+		/// <returns>The item hook assignable to a variable of the specified <paramref name="abilityType"/> associated with the <paramref name="agent"/>'s special ability, if found; otherwise, <see langword="default"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static IHook<InvItem> GetAbility(this Agent agent, Type abilityType)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.inventory.equippedSpecialAbility?.GetHooks<IHook<InvItem>>().FirstOrDefault(abilityType.IsInstanceOfType);
 		}
 
 		/// <summary>
@@ -166,6 +260,57 @@ namespace RogueLibsCore
 		{
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
 			return agent.statusEffects.TraitList.Exists(t => t.GetHook<TTrait>() != null);
+		}
+
+		/// <summary>
+		///   <para>Adds a trait of the specified <paramref name="traitType"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="traitType">The type of the trait to add to the <paramref name="agent"/>.</param>
+		/// <returns>The added trait, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static CustomTrait AddTrait(this Agent agent, Type traitType)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			string traitName = TraitInfo.Get(traitType).Name;
+			agent.statusEffects.AddTrait(traitName);
+			return (CustomTrait)agent.GetTrait(traitType);
+		}
+		/// <summary>
+		///   <para>Finds a trait hook that is assignable to a variable of the specified <paramref name="traitType"/> on the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="traitType">The type of the trait hook to search for.</param>
+		/// <returns>A trait hook assignable to a variable of the specified <paramref name="traitType"/>, if found; otherwise, <see langword="default"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static IHook<Trait> GetTrait(this Agent agent, Type traitType)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.TraitList.SelectMany(t => t.GetHooks<IHook<Trait>>()).FirstOrDefault(traitType.IsInstanceOfType);
+		}
+		/// <summary>
+		///   <para>Finds all trait hooks that are assignable to a variable of the specified <paramref name="traitType"/> on the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="traitType">The type of the trait hook to search for.</param>
+		/// <returns>An enumerable collection of trait hooks that are assignable to a variable of the specified <paramref name="traitType"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static IEnumerable<IHook<Trait>> GetTraits(this Agent agent, Type traitType)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.TraitList.SelectMany(t => t.GetHooks<IHook<Trait>>()).Where(traitType.IsInstanceOfType).ToArray();
+		}
+		/// <summary>
+		///   <para>Determines whether the current <paramref name="agent"/> has a trait with a hook that is assignable to a variable of the specified <paramref name="traitType"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="traitType">The type of the trait hook to search for.</param>
+		/// <returns><see langword="true"/>, if the <paramref name="agent"/> has a trait that has a hook that is assignable to a variable of the specified <paramref name="traitType"/>; otherwise, <see langword="false"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static bool HasTrait(this Agent agent, Type traitType)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.TraitList.Exists(t => t.GetHooks<IHook<Trait>>().Any(traitType.IsInstanceOfType));
 		}
 
 		/// <summary>
@@ -264,6 +409,22 @@ namespace RogueLibsCore
 		}
 
 		/// <summary>
+		///   <para>Adds an effect of the specified <paramref name="effectType"/> with the specified <paramref name="info"/> to the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectType">The type of the effect to add to the <paramref name="agent"/>.</param>
+		/// <param name="info">The struct containing effect initialization info.</param>
+		/// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static CustomEffect AddEffect(this Agent agent, Type effectType, CreateEffectInfo info)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			string effectName = EffectInfo.Get(effectType).Name;
+			agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent, agent.objectMult.IsFromClient(), info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
+			return (CustomEffect)agent.GetEffect(effectType);
+		}
+
+		/// <summary>
 		///   <para>Finds an effect hook that is assignable to a variable of <typeparamref name="TEffect"/> type on the current <paramref name="agent"/>.</para>
 		/// </summary>
 		/// <typeparam name="TEffect">The type of the effect hook to search for.</typeparam>
@@ -299,6 +460,45 @@ namespace RogueLibsCore
 		{
 			if (agent is null) throw new ArgumentNullException(nameof(agent));
 			return agent.statusEffects.StatusEffectList.Exists(s => s.GetHook<TEffect>() != null);
+		}
+
+		/// <summary>
+		///   <para>Finds an effect hook that is assignable to a variable of the specified <paramref name="effectType"/> on the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectType">The type of the effect hook to search for.</param>
+		/// <returns>An effect hook assignable to a variable of the specified <paramref name="effectType"/>, if found; otherwise, <see langword="default"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static IHook<StatusEffect> GetEffect(this Agent agent, Type effectType)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.StatusEffectList.SelectMany(s => s.GetHooks<IHook<StatusEffect>>())
+			            .FirstOrDefault(effectType.IsInstanceOfType);
+		}
+		/// <summary>
+		///   <para>Finds all effect hooks that are assignable to a variable of the specified <paramref name="effectType"/> on the current <paramref name="agent"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectType">The type of the effect hook to search for.</param>
+		/// <returns>An enumerable collection of effect hooks that are assignable to a variable of the specified <paramref name="effectType"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static IEnumerable<IHook<StatusEffect>> GetEffects(this Agent agent, Type effectType)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.StatusEffectList.SelectMany(s => s.GetHooks<IHook<StatusEffect>>())
+			            .Where(effectType.IsInstanceOfType).ToArray();
+		}
+		/// <summary>
+		///   <para>Determines whether the current <paramref name="agent"/> has an effect with a hook that is assignable to a variable of the specified <paramref name="effectType"/>.</para>
+		/// </summary>
+		/// <param name="agent">The current agent.</param>
+		/// <param name="effectType">The type of the effect hook to search for.</param>
+		/// <returns><see langword="true"/>, if the <paramref name="agent"/> has an effect that has a hook that is assignable to a variable of the specified <paramref name="effectType"/>; otherwise, <see langword="false"/>.</returns>
+		/// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+		public static bool HasEffect(this Agent agent, Type effectType)
+		{
+			if (agent is null) throw new ArgumentNullException(nameof(agent));
+			return agent.statusEffects.StatusEffectList.Any(s => s.GetHooks<IHook<StatusEffect>>().Any(effectType.IsInstanceOfType));
 		}
 
 		/// <summary>
