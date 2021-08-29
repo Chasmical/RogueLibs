@@ -116,6 +116,7 @@ namespace RogueLibsCore
 				{
 					if (unlock.onlyInCharacterCreation && !unlock.unavailable)
 						unlock.unavailable = true;
+					if (!unlock.unavailable) unlock.onlyInCharacterCreation = true;
 					wrapper = new TraitUnlock(unlock);
 				}
 				else if (unlock.unlockType == UnlockTypes.Ability)
@@ -158,6 +159,25 @@ namespace RogueLibsCore
 			}
 		}
 #pragma warning restore CS0618 // Type or member is obsolete
+		private static void ReverseRogueLibsEffects(Unlock unlock)
+		{
+			if (unlock.unlockType == UnlockTypes.Item)
+			{
+				if (unlock.unavailable && unlock.freeItem && unlock.onlyInCharacterCreation)
+					unlock.unavailable = false;
+				else if (unlock.unavailable && !unlock.freeItem && unlock.onlyInCharacterCreation)
+					unlock.unavailable = false;
+				else if (!unlock.unavailable && unlock.freeItem && unlock.onlyInCharacterCreation)
+					unlock.freeItem = unlock.onlyInCharacterCreation = false;
+			}
+			else if (unlock.unlockType == UnlockTypes.Trait)
+			{
+				if (!unlock.unavailable && unlock.onlyInCharacterCreation)
+					unlock.onlyInCharacterCreation = false;
+				if (unlock.unavailable && unlock.onlyInCharacterCreation)
+					unlock.unavailable = false;
+			}
+		}
 		public static void AddUnlockFull(UnlockWrapper wrapper, bool alreadyLoaded = false)
 		{
 			try
@@ -260,9 +280,12 @@ namespace RogueLibsCore
 					Directory.CreateDirectory(text + "/CloudData/");
 				}
 				SessionDataBig sdb = GameController.gameController.sessionDataBig;
+
+				List<Unlock> unlocks = sdb.unlocks.ConvertAll(CloneUnlock);
+				unlocks.ForEach(ReverseRogueLibsEffects);
 				UnlockSaveData unlockSaveData = new UnlockSaveData
 				{
-					unlocks = sdb.unlocks,
+					unlocks = unlocks,
 					highScores = sdb.highScores,
 					customCharacterSlots = sdb.customCharacterSlots,
 					storedItem = sdb.storedItem,
@@ -667,5 +690,37 @@ namespace RogueLibsCore
 			}
 			return false;
 		}
+
+		public static Unlock CloneUnlock(Unlock unlock) => new Unlock(unlock.unlockName, unlock.unlockType, unlock.unlocked)
+		{
+			__RogueLibsCustom = null,
+			agents = unlock.agents.ToList(),
+			cancellations = unlock.cancellations.ToList(),
+			cantLose = unlock.cantLose,
+			cantSwap = unlock.cantSwap,
+			categories = unlock.categories.ToList(),
+			cost = unlock.cost,
+			cost2 = unlock.cost2,
+			cost3 = unlock.cost3,
+			dcUnlock = unlock.dcUnlock,
+			freeItem = unlock.freeItem,
+			isUpgrade = unlock.isUpgrade,
+			leadingBigQuests = unlock.leadingBigQuests.ToList(),
+			leadingItems = unlock.leadingItems.ToList(),
+			leadingTraits = unlock.leadingTraits.ToList(),
+			notActive = unlock.notActive,
+			notOnClient = unlock.notOnClient,
+			nowAvailable = unlock.nowAvailable,
+			onlyInCharacterCreation = unlock.onlyInCharacterCreation,
+			prerequisites = unlock.prerequisites.ToList(),
+			progressCount = unlock.progressCount,
+			progressList = unlock.progressList.ToList(),
+			recommendations = unlock.recommendations.ToList(),
+			removal = unlock.removal,
+			replacing = unlock.replacing,
+			specialAbilities = unlock.specialAbilities.ToList(),
+			unavailable = unlock.unavailable,
+			upgrade = unlock.upgrade,
+		};
 	}
 }
