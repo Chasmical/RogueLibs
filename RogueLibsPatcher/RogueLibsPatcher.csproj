@@ -51,5 +51,11 @@
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RogueLibsCore\RogueLibsCore.csproj">
+      <Project>{43a221f2-a56c-4f59-8c3c-828de75259c4}</Project>
+      <Name>RogueLibsCore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
