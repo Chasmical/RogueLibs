@@ -4,9 +4,16 @@
         <title>RogueLibs Documentation Blog</title>
         <link>https://abbysssal.github.io/RogueLibs/ru/blog</link>
         <description>RogueLibs Documentation Blog</description>
-        <lastBuildDate>Wed, 18 Aug 2021 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 31 Aug 2021 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
+        <item>
+            <title><![CDATA[What I hate about SoR]]></title>
+            <link>https://abbysssal.github.io/RogueLibs/ru/blog/2021/08/31/what-i-hate-about-sor</link>
+            <guid>What I hate about SoR</guid>
+            <pubDate>Tue, 31 Aug 2021 00:00:00 GMT</pubDate>
+            <description><![CDATA[The code is really hard and wet.]]></description>
+        </item>
         <item>
             <title><![CDATA[RogueLibs v3.1.0 released!]]></title>
             <link>https://abbysssal.github.io/RogueLibs/ru/blog/2021/08/18/roguelibs-v3.1.0</link>
