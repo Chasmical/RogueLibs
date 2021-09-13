@@ -1,0 +1,1 @@
+(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[6081],{9439:function(s){"use strict";s.exports=JSON.parse('{"allTagsPath":"/RogueLibs/ru/blog/tags","slug":"/RogueLibs/ru/blog/tags/sor-2","name":"sor2","count":1,"permalink":"/RogueLibs/ru/blog/tags/sor-2"}')}}]);
