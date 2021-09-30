@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine.UI;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -99,6 +100,26 @@ namespace RogueLibsCore
 		public static bool CharacterCreation_ShowDetails(CharacterCreation __instance, ButtonHelper myButton)
 		{
 			if (__instance.loadMenu.gameObject.activeSelf) return true;
+			if (__instance.agent.controllerType == "Gamepad" && !__instance.refreshing)
+			{
+				__instance.scrollBarLoad.value = Mathf.Clamp01(1f - __instance.yOffset / ((__instance.numButtonsLoad - __instance.numButtonsOnScreen + 1f) * __instance.yOffset) * (myButton.scrollingButtonNum - (__instance.numButtonsOnScreen / 2f - 1f)));
+
+				Scrollbar bar;
+				float numButtons;
+				if (myButton.scrollingButtonUnlock.unlockType == UnlockTypes.Item)
+				{ bar = __instance.scrollBarItems; numButtons = __instance.numButtonsItems; }
+				else if (myButton.scrollingButtonUnlock.unlockType == UnlockTypes.Trait)
+				{ bar = __instance.scrollBarTraits; numButtons = __instance.numButtonsTraits; }
+				else if (myButton.scrollingButtonUnlock.unlockType == UnlockTypes.Ability)
+				{ bar = __instance.scrollBarAbilities; numButtons = __instance.numButtonsAbilities; }
+				else if (myButton.scrollingButtonUnlock.unlockType == UnlockTypes.BigQuest)
+				{ bar = __instance.scrollBarBigQuests; numButtons = __instance.numButtonsBigQuests; }
+				else
+				{ bar = null; numButtons = 0f; }
+
+				if (bar != null)
+					bar.value = Mathf.Clamp01(1f - __instance.yOffset / ((numButtons - __instance.numButtonsOnScreen + 2f) * __instance.yOffset) * (myButton.scrollingButtonNum - (__instance.numButtonsOnScreen / 2f - 1f)));
+			}
 
 			Image image = null; Text title = null; Text text = null;
 			if (myButton.scrollingButtonUnlock.unlockType == UnlockTypes.Item)

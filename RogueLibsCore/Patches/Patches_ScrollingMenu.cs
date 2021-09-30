@@ -243,6 +243,27 @@ namespace RogueLibsCore
 			__instance.detailsImage.sprite = du.GetImage();
 			__instance.detailsImage.gameObject.SetActive(__instance.detailsImage.sprite != null);
 
+			// Gamepad scrolling fix
+			__instance.curSelectedButtonNum = myButton.scrollingButtonNum;
+			if (__instance.menuType == "FreeItems" && __instance.setInitialSelectedChildFreeItems)
+				__instance.curSelectedChildFreeItems = myButton.scrollingButtonNum;
+			__instance.curSelectedButton = myButton;
+			if (__instance.agent.controllerType == "Gamepad")
+			{
+				if (!__instance.refreshing)
+				{
+					__instance.scrollBar.value = Mathf.Clamp01(1f - __instance.yOffset / ((__instance.numButtons - __instance.numButtonsOnScreen + 1f) * __instance.yOffset) * ((float)myButton.scrollingButtonNum - (__instance.numButtonsOnScreen / 2f - 1f)));
+				}
+				if ((__instance.menuType == "TraitUnlocks" || __instance.menuType == "Items") && !__instance.isPersonal)
+				{
+					__instance.instructionText2.text
+						= myButton.scrollingButtonUnlock.unlocked
+							  ? __instance.gc.nameDB.GetName(myButton.scrollingButtonUnlock.notActive
+								                                 ? "AddToPool" : "RemoveFromPool", "Interface")
+							  : __instance.gc.nameDB.GetName("ScrollingInstr4", "Interface");
+				}
+			}
+
 			return false;
 		}
 
