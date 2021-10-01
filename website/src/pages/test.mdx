@@ -6,31 +6,13 @@ import { useState } from 'react';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import InventorySlot from '@site/src/components/InventorySlot';
-import InventoryRow from '@site/src/components/InventoryRow';
-import InventoryGrid from '@site/src/components/InventoryGrid';
 
-export function TestComponent({}) {
-  return (
-    <div style={{display: "inline-flex", flexDirection: "column", padding: "10px", border: "2px solid #303030", borderRadius: "0.5em"}}>
-      <img width="320px" src="https://via.placeholder.com/640x320?text=Placeholder+Image"/>
-      <span style={{fontSize: "24px", textAlign: "center"}}>Placeholder Title</span>
-      <div style={{display: "inline-flex", flexDirection: "row"}}>
-        <button style={{padding: "2.5px", backgroundColor: "#80808080", display: "inline-flex", flexDirection: "row", "align-content": "center", "justify-content": "center", "align-items": "center"}}>
-          <img width="16px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAMAAABEpIrGAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAqUExURQAAAExADvrhPPnAJ/m4C/vsa/zwkPzzpProTvrNMPvrY+yuBuOnBQAAAEAfaxoAAAAOdFJOU/////////////////8ARcDcyAAAAAlwSFlzAAAOwwAADsMBx2+oZAAAAItJREFUOE/Vz1sOhDAIQFEs0ha0+9/uQB/ReaVEv7w/KpyECOVHUOvv7fGeAyzLPWBkHLkOQkA0cg+sa7/z3QQAED0dAMR4FeinlhJRzsxecC6lqBGJtPW29cXoD2DOWYRqorFmaztQz04BInM4Ndb77gNm8KNj7QNGAGw4ar9nGy+wbHTUh9oElPICpDYf2dtX7DIAAAAASUVORK5CYII="/>
-          <span style={{margin: "5px"}}>GameBanana</span>
-        </button>
-        <button style={{padding: "2.5px", backgroundColor: "#80808080", display: "inline-flex", flexDirection: "row", "align-content": "center", "justify-content": "center", "align-items": "center"}}>
-          <img width="16px" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAHdSURBVHgBvVeLbYNADDVdoHSDG4ENwgjpBMkG6QbtBkknIBtEnaDdADoBbEA6gWuXQ3GR7wOc8qSnSPhvkzuTQSQQMaefLXFDLIiGmFvxldgRG+IX8SPLsiukAAU2xDOxx3mo2BaWgismHnE9jrZ7s6tuMR1ajO0GKRaYNrhMorh35VoSBjwzbxWDCy5Lil/ailgrPnMtAe2F2wn5Hm+J9Nbxp2AvZNKuVPwetdZrKJQuGfCPMI/0baTSOai0EJ4EKlmVC3tYCdRHwOBR5Q8wHK8aOhiO1bVorK8phqPd0/4dJIKnCxULa4dw3vEZTkK7S2oegVH0u2S3mfCpPDOcQNJKPdAK+nsJ7wW10Ixn4xA+pRwDD1x5fOUOdA6bDaQLXjpEHSfw7RC+QDrsHc+b8ZJxYXUS5OPg8b8bj2LfvvcKCxEIzshHRXkavhG3+H8HaK2zMiJoYXXrQPBKGplJsK3tjObk4gl+wXiYqfFJCHublLailZ4EysjgJ814upKdRHc4uYp4gPAIQmjRdc8oFRcwExHBjdTPFAcclOc8Kp5huNN/iI90Or5DIAGHqCM+k30DEVU41/MI26jKo4DDX3JtAidcs1vg7eM0NoEeb98EBlIBAyu50DNzKv4F8Mg9kvfoSM0AAAAASUVORK5CYII="/>
-          <span style={{margin: "5px"}}>GitHub</span>
-        </button>
-      </div>
-    </div>
-  );
-}
+import ItemFrame from '@site/src/components/ItemFrame';
 
-<TestComponent/>
-<TestComponent/>
-<TestComponent/>
-<TestComponent/>
-<TestComponent/>
-<TestComponent/>
+<ItemFrame title="Item Name"
+  description="Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description. Item Description."
+  slot={<InventorySlot sprite={useBaseUrl("/img/Generic.png")}/>}
+  unlockCost={10}
+  CCPV={5}
+  extra={"More details. More details. More details. More details. More details. More details. More details. More details. More details."}
+  />
