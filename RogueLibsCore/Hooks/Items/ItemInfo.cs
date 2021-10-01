@@ -18,7 +18,7 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Gets the custom item's categories.</para>
 		/// </summary>
-		public ReadOnlyCollection<string> Categories { get; } = RogueUtilities.Empty;
+		public ReadOnlyCollection<string> Categories { get; }
 
 		/// <summary>
 		///   <para>Gets the collection of inventory checks, ignored by the custom item.</para>
