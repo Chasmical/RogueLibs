@@ -25,6 +25,12 @@ namespace RogueLibsCore
 		/// </summary>
 		public ReadOnlyCollection<string> IgnoredChecks { get; } = RogueUtilities.Empty;
 
+		public CustomName GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Item);
+		public CustomName GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
+		public ItemUnlock GetUnlock() => RogueLibs.GetUnlock<ItemUnlock>(Name);
+		internal RogueSprite sprite;
+		public RogueSprite GetSprite() => sprite;
+
 		private static readonly Dictionary<Type, ItemInfo> infos = new Dictionary<Type, ItemInfo>();
 		/// <summary>
 		///   <para>Gets the specified <see cref="CustomItem"/> <paramref name="type"/>'s metadata.</para>

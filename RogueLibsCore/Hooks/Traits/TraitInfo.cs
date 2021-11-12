@@ -15,6 +15,12 @@ namespace RogueLibsCore
 		/// </summary>
 		public string Name { get; }
 
+		public CustomName GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.StatusEffect);
+		public CustomName GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
+		public TraitUnlock GetUnlock() => RogueLibs.GetUnlock<TraitUnlock>(Name);
+		internal RogueSprite sprite;
+		public RogueSprite GetSprite() => sprite;
+
 		private static readonly Dictionary<Type, TraitInfo> infos = new Dictionary<Type, TraitInfo>();
 		/// <summary>
 		///   <para>Gets the specified <see cref="CustomTrait"/> <paramref name="type"/>'s metadata.</para>

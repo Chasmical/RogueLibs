@@ -68,6 +68,7 @@ namespace RogueLibsCore
 		public ItemBuilder WithSprite(byte[] rawData, float ppu = 64f)
 		{
 			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, ppu);
+			Info.sprite = Sprite;
 			return this;
 		}
 		/// <summary>
@@ -82,6 +83,7 @@ namespace RogueLibsCore
 		public ItemBuilder WithSprite(byte[] rawData, Rect region, float ppu = 64f)
 		{
 			Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, region, ppu);
+			Info.sprite = Sprite;
 			return this;
 		}
 		/// <summary>

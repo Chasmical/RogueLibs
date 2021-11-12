@@ -50,10 +50,10 @@ namespace RogueLibsCore
 		/// </summary>
 		public static string SemanticVersion { [MethodImpl(MethodImplOptions.NoInlining)] get => CompiledSemanticVersion; }
 
-		private static readonly CustomItemFactory ItemFactory = new CustomItemFactory();
-		private static readonly CustomTraitFactory TraitFactory = new CustomTraitFactory();
-		private static readonly CustomEffectFactory EffectFactory = new CustomEffectFactory();
-		private static readonly CustomNameProvider NameProvider = new CustomNameProvider();
+		internal static readonly CustomItemFactory ItemFactory = new CustomItemFactory();
+		internal static readonly CustomTraitFactory TraitFactory = new CustomTraitFactory();
+		internal static readonly CustomEffectFactory EffectFactory = new CustomEffectFactory();
+		internal static readonly CustomNameProvider NameProvider = new CustomNameProvider();
 
 		/// <summary>
 		///   <para>Creates a <typeparamref name="TItem"/> custom item. Chain "With" methods to attach extra information.</para>
