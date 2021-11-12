@@ -86,6 +86,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Hooks\Items\CustomWeaponMelee.cs" />
     <Compile Include="Main\AbilityBuilder.cs" />
     <Compile Include="DebugFlags.cs" />
     <Compile Include="Main\EffectBuilder.cs" />
