@@ -1,6 +1,13 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Linq;
+using System.Text;
 using BepInEx;
 using System.Threading;
+using System.Threading.Tasks;
+using UnityEngine;
+using UnityEngine.Diagnostics;
 
 namespace RogueLibsCore
 {
@@ -74,6 +81,32 @@ namespace RogueLibsCore
 				Logger.LogError("A second instance of RogueLibs was awakened, so it was terminated immediately.");
 				return;
 			}
+
+			string invalidPatcherPath = Path.Combine(Paths.PluginPath, "RogueLibsPatcher.dll");
+			if (File.Exists(invalidPatcherPath))
+			{
+				Logger.LogWarning("Moved RogueLibsPatcher.dll from \\BepInEx\\plugins to \\BepInEx\\patchers.");
+				File.Move(invalidPatcherPath, Path.Combine(Paths.PatcherPluginPath, "RogueLibsPatcher.dll"));
+
+				string[] cmdArgs = Environment.GetCommandLineArgs();
+				string fileName = cmdArgs[0];
+				StringBuilder args = new StringBuilder();
+				for (int i = 1; i < cmdArgs.Length; i++)
+					args.Append(' ').Append('\"').Append(cmdArgs[i].Replace("\"", "\\\"")).Append('\"');
+
+				Directory.Delete(Application.temporaryCachePath, true);
+
+				// Process.Start(fileName, args.ToString());
+
+				Application.Quit(0);
+				Logger.LogError("\n==================================" +
+				                "\n‖‖‖ Restart the game manually! ‖‖‖" +
+				                "\n==================================");
+				Thread.Sleep(3000);
+				Process.GetCurrentProcess().Kill();
+				return;
+			}
+
 			Logger.LogInfo($"Running RogueLibs v{RogueLibs.CompiledSemanticVersion}.");
 			Stopwatch sw = new Stopwatch();
 			sw.Start();

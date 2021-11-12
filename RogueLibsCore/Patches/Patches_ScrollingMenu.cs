@@ -10,6 +10,12 @@ namespace RogueLibsCore
 	{
 		public void PatchScrollingMenu()
 		{
+			clearAllMutators = new ClearAllMutatorsUnlock();
+			clearAllItems = new ClearAllItemsUnlock();
+			clearAllTraits = new ClearAllTraitsUnlock();
+			reRollLoadouts = new ReRollLoadoutsUnlock();
+			giveNuggets = new GiveNuggetsButton();
+
 			Patcher.Prefix(typeof(ScrollingMenu), nameof(ScrollingMenu.OpenScrollingMenu), nameof(ScrollingMenu_OpenScrollingMenu_Prefix));
 			Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.OpenScrollingMenu));
 
@@ -156,11 +162,11 @@ namespace RogueLibsCore
 			return false;
 		}
 
-		public static readonly ClearAllMutatorsUnlock clearAllMutators = new ClearAllMutatorsUnlock();
-		public static readonly ClearAllItemsUnlock clearAllItems = new ClearAllItemsUnlock();
-		public static readonly ClearAllTraitsUnlock clearAllTraits = new ClearAllTraitsUnlock();
-		public static readonly ReRollLoadoutsUnlock reRollLoadouts = new ReRollLoadoutsUnlock();
-		private static readonly GiveNuggetsButton giveNuggets = new GiveNuggetsButton();
+		public static ClearAllMutatorsUnlock clearAllMutators;
+		public static ClearAllItemsUnlock clearAllItems;
+		public static ClearAllTraitsUnlock clearAllTraits;
+		public static ReRollLoadoutsUnlock reRollLoadouts;
+		private static GiveNuggetsButton giveNuggets;
 
 		public static bool ScrollingMenu_SortUnlocks(ScrollingMenu __instance, List<Unlock> myUnlockList, List<Unlock> ___listUnlocks)
 		{
