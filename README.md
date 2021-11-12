@@ -27,7 +27,7 @@
 This modding library does nothing on its own, but it provides methods for other mods to easily create custom mutators, items, traits, status effects, abilities, unlocks, menus and even integrate custom sounds and sprites (yep, even TK2D ones)!
 
 - **[Installation guide](https://abbysssal.github.io/RogueLibs/docs/user/installation)**
-- **[Making mods with RogueLibs](https://abbysssal.github.io/RogueLibs/docs/getting-started)**
+- **[Making mods with RogueLibs](https://abbysssal.github.io/RogueLibs/docs/dev/getting-started)**
 
 ## [See RogueLibs' site for more info](https://abbysssal.github.io/RogueLibs)
 
