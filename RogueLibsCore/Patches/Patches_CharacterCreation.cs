@@ -135,9 +135,10 @@ namespace RogueLibsCore
 			{
 				DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock.__RogueLibsCustom;
 
-				title.text = du.GetName();
-				text.text = du.GetFancyDescription();
-				image.sprite = du.GetImage();
+                bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu.ShowLockedUnlocks;
+                title.text = show ? du.GetName() : "?????";
+				text.text = show ? du.GetFancyDescription() : "?????";
+				image.sprite = show ? du.GetImage() : null;
 				image.gameObject.SetActive(image.sprite != null);
 			}
 

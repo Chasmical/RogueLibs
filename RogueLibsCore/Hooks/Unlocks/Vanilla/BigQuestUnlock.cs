@@ -129,16 +129,12 @@
 		/// <inheritdoc/>
 		public override string GetName()
 		{
-			if (IsUnlocked || Unlock.nowAvailable)
-			{
-				string name = gc.nameDB.GetName(Name, NameTypes.Unlock);
-				if (Agent.Name == VanillaAgents.GangsterCrepe || Agent.Name == VanillaAgents.GangsterBlahd)
-					name += $" ({gc.nameDB.GetName(Agent.Name + "_N", NameTypes.Agent)})";
-				return name;
-			}
-			else return "?????";
+            string name = gc.nameDB.GetName(Name, NameTypes.Unlock);
+            if (Agent.Name == VanillaAgents.GangsterCrepe || Agent.Name == VanillaAgents.GangsterBlahd)
+                name += $" ({gc.nameDB.GetName(Agent.Name + "_N", NameTypes.Agent)})";
+            return name;
 		}
 		/// <inheritdoc/>
-		public override string GetDescription() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName("D_" + Name, NameTypes.Unlock) : "?????";
+		public override string GetDescription() => gc.nameDB.GetName("D_" + Name, NameTypes.Unlock);
 	}
 }

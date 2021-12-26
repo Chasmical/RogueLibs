@@ -116,27 +116,55 @@ namespace RogueLibsCore
 
 		/// <inheritdoc/>
 		public override void UpdateButton()
-		{
-			if (Menu.Type == UnlocksMenuType.RewardsMenu)
-				UpdateButton(IsEnabled, UnlockButtonState.Normal, UnlockButtonState.Disabled);
-			else if (Menu.Type == UnlocksMenuType.ItemTeleporter)
-				UpdateButton(false);
-			else if (Menu.Type == UnlocksMenuType.Loadouts)
-			{
-				UpdateButton(IsSelectedLoadout);
-				InvItem invItem = new InvItem { invItemName = Name };
-				invItem.SetupDetails(false);
-				if (invItem.rewardCount != 1 && !invItem.isArmor && !invItem.isArmorHead && invItem.itemType != ItemTypes.WeaponMelee)
-					Text += $" ({invItem.rewardCount})";
-				Text += $" - ${LoadoutCost}";
-			}
-			else if (Menu.Type == UnlocksMenuType.CharacterCreation)
-				UpdateButton(IsAddedToCC);
-		}
+        {
+            Text = GetFancyName();
+            if (Menu.Type == UnlocksMenuType.RewardsMenu)
+                UpdateButton(IsEnabled, UnlockButtonState.Normal, UnlockButtonState.Disabled);
+            else if (Menu.Type == UnlocksMenuType.ItemTeleporter)
+                UpdateButton(false);
+            else if (Menu.Type == UnlocksMenuType.Loadouts)
+                UpdateButton(IsSelectedLoadout);
+            else if (Menu.Type == UnlocksMenuType.CharacterCreation)
+                UpdateButton(IsAddedToCC);
+        }
 		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
-			if (IsUnlocked)
+            if (Menu.Type == UnlocksMenuType.Loadouts)
+            {
+                if (IsSelectedLoadout)
+                {
+                    PlaySound(VanillaAudio.BuyItem);
+                    gc.sessionDataBig.loadoutNuggetsSpent = 0;
+                    IsSelectedLoadout = false;
+                    gc.unlocks.AddNuggets(LoadoutCost);
+                    UpdateButton();
+                    UpdateMenu();
+                }
+                else
+                {
+                    ItemUnlock selected = (ItemUnlock)Menu.Unlocks.Find(u => u is ItemUnlock item && item.IsSelectedLoadout);
+                    int availableNuggets = gc.sessionDataBig.nuggets;
+                    if (selected != null) availableNuggets += selected.LoadoutCost;
+                    if (LoadoutCost <= availableNuggets)
+                    {
+                        if (selected != null)
+                        {
+                            gc.sessionDataBig.nuggets += selected.LoadoutCost;
+                            selected.IsSelectedLoadout = false;
+                            selected.UpdateButton();
+                        }
+                        gc.sessionDataBig.loadoutNuggetsSpent = LoadoutCost;
+                        IsSelectedLoadout = true;
+                        gc.unlocks.SubtractNuggets(LoadoutCost);
+                        PlaySound(VanillaAudio.BuyItem);
+                        UpdateButton();
+                        UpdateMenu();
+                    }
+                    else PlaySound(VanillaAudio.CantDo);
+                }
+            }
+			else if (IsUnlocked)
 			{
 				if (Menu.Type == UnlocksMenuType.RewardsMenu)
 				{
@@ -174,40 +202,6 @@ namespace RogueLibsCore
 						Menu.Agent.inventory.DontPlayPickupSounds(false);
 					}
 				}
-				else if (Menu.Type == UnlocksMenuType.Loadouts)
-				{
-					if (IsSelectedLoadout)
-					{
-						PlaySound(VanillaAudio.BuyItem);
-						gc.sessionDataBig.loadoutNuggetsSpent = 0;
-						IsSelectedLoadout = false;
-						gc.unlocks.AddNuggets(LoadoutCost);
-						UpdateButton();
-						UpdateMenu();
-					}
-					else
-					{
-						ItemUnlock selected = (ItemUnlock)Menu.Unlocks.Find(u => u is ItemUnlock item && item.IsSelectedLoadout);
-						int availableNuggets = gc.sessionDataBig.nuggets;
-						if (selected != null) availableNuggets += selected.LoadoutCost;
-						if (LoadoutCost <= availableNuggets)
-						{
-							if (selected != null)
-							{
-								gc.sessionDataBig.nuggets += selected.LoadoutCost;
-								selected.IsSelectedLoadout = false;
-								selected.UpdateButton();
-							}
-							gc.sessionDataBig.loadoutNuggetsSpent = LoadoutCost;
-							IsSelectedLoadout = true;
-							gc.unlocks.SubtractNuggets(LoadoutCost);
-							PlaySound(VanillaAudio.BuyItem);
-							UpdateButton();
-							UpdateMenu();
-						}
-						else PlaySound(VanillaAudio.CantDo);
-					}
-				}
 				else if (Menu.Type == UnlocksMenuType.CharacterCreation)
 				{
 					PlaySound(VanillaAudio.ClickButton);
@@ -218,7 +212,7 @@ namespace RogueLibsCore
 					UpdateMenu();
 				}
 			}
-			else if (Unlock.nowAvailable && UnlockCost <= gc.sessionDataBig.nuggets)
+			else if (Unlock.nowAvailable && UnlockCost > 0 && UnlockCost <= gc.sessionDataBig.nuggets)
 			{
 				PlaySound(VanillaAudio.BuyUnlock);
 				gc.unlocks.SubtractNuggets(UnlockCost);
@@ -229,8 +223,7 @@ namespace RogueLibsCore
 			else PlaySound(VanillaAudio.CantDo);
 		}
 
-		/// <inheritdoc/>
-		public override Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable)
-			&& GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
+        /// <inheritdoc/>
+		public override Sprite GetImage() => GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
 	}
 }

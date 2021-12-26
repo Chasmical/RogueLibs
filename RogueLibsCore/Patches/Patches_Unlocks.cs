@@ -91,7 +91,7 @@ namespace RogueLibsCore
 			foreach (Unlock unlock in sdb.unlocks.ToList())
 			{
 				// wrapping original unlocks
-				if (string.IsNullOrEmpty(gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock)))
+				if (!string.IsNullOrEmpty(gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock)))
 				{
 					unlock.cost = -2;
 					if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))

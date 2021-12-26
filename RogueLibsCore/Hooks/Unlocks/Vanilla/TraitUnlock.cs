@@ -267,7 +267,7 @@ namespace RogueLibsCore
 					UpdateMenu();
 				}
 			}
-			else if (Unlock.nowAvailable && UnlockCost <= gc.sessionDataBig.nuggets)
+			else if (Unlock.nowAvailable && UnlockCost > 0 && UnlockCost <= gc.sessionDataBig.nuggets)
 			{
 				PlaySound(VanillaAudio.BuyUnlock);
 				gc.unlocks.SubtractNuggets(UnlockCost);

@@ -99,8 +99,6 @@ namespace RogueLibsCore
 		}
 
 		/// <inheritdoc/>
-		public override Sprite GetImage() => IsUnlocked || Unlock.nowAvailable
-			? GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage()
-			: null;
+		public override Sprite GetImage() => GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
 	}
 }

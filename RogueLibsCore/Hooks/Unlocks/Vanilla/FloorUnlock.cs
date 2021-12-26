@@ -79,8 +79,8 @@
 		}
 
 		/// <inheritdoc/>
-		public override string GetName() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name + "Name", Unlock.unlockNameType) : "?????";
+		public override string GetName() => gc.nameDB.GetName(Name + "Name", Unlock.unlockNameType);
 		/// <inheritdoc/>
-		public override string GetDescription() => IsUnlocked || Unlock.nowAvailable ? string.Empty : "?????";
+		public override string GetDescription() => string.Empty;
 	}
 }

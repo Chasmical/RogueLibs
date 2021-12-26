@@ -35,5 +35,12 @@ namespace RogueLibsCore
 		///   <para>When overriden in a derived class, updates the contents of the menu.</para>
 		/// </summary>
 		public abstract void UpdateMenu();
-	}
+
+        public bool ShowLockedUnlocks => Type == UnlocksMenuType.Loadouts || Type == UnlocksMenuType.NewLevelTraits
+                                                                        || Type == UnlocksMenuType.AB_RemoveTrait
+                                                                        || Type == UnlocksMenuType.AB_SwapTrait
+                                                                        || Type == UnlocksMenuType.AB_UpgradeTrait
+                                                                        || Type == UnlocksMenuType.TwitchRewards
+                                                                        || Type == UnlocksMenuType.TwitchDisasters;
+    }
 }

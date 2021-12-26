@@ -90,9 +90,15 @@ namespace RogueLibsCore
 		protected void UpdateButton(bool isEnabledOrSelected, UnlockButtonState selected, UnlockButtonState normal)
 		{
 			Text = GetFancyName();
-			State = IsUnlocked ? isEnabledOrSelected ? selected : normal
-				: Unlock.nowAvailable && UnlockCost > -1 ? UnlockButtonState.Purchasable
-				: UnlockButtonState.Locked;
+            if (Menu.ShowLockedUnlocks)
+            {
+                State = isEnabledOrSelected ? selected : normal;
+            }
+            else
+            {
+                State = IsUnlocked ? isEnabledOrSelected ? selected : normal
+                    : Unlock.nowAvailable && UnlockCost > 0 ? UnlockButtonState.Purchasable : UnlockButtonState.Locked;
+            }
 		}
 
 		/// <summary>
@@ -141,22 +147,30 @@ namespace RogueLibsCore
 					name = $"{name} <color=yellow>#{num + 1}</color> <color=cyan>({gc.twitchFunctions.voteCount[num]})</color>";
 				}
 			}
+			else if (Menu.Type == UnlocksMenuType.Loadouts && this is ItemUnlock itemUnlock)
+            {
+                InvItem invItem = new InvItem { invItemName = Name };
+                invItem.SetupDetails(false);
+                if (invItem.rewardCount != 1 && !invItem.isArmor && !invItem.isArmorHead && invItem.itemType != ItemTypes.WeaponMelee)
+                    Text += $" ({invItem.rewardCount})";
+                Text += $" - ${LoadoutCost}";
+            }
 			else
-			{
-                if (!IsUnlocked && !Unlock.nowAvailable)
+            {
+                if (IsUnlocked || Unlock.nowAvailable)
                 {
-                    return "???";
+                    if (Menu.Type == UnlocksMenuType.CharacterCreation)
+                    {
+                        if (CharacterCreationCost != 0)
+                            name += $" | <color={(CharacterCreationCost < 0 ? "lime" : "orange")}>{CharacterCreationCost}</color>";
+                    }
+                    if (!IsUnlocked && Unlock.nowAvailable && UnlockCost > 0)
+                    {
+                        name += $" - ${UnlockCost}";
+                    }
                 }
-				if (!IsUnlocked && Unlock.nowAvailable && UnlockCost > 0)
-				{
-					name += $" - ${UnlockCost}";
-				}
-				if (Menu.Type == UnlocksMenuType.CharacterCreation)
-				{
-					if (CharacterCreationCost != 0)
-						name += $" | <color={(CharacterCreationCost < 0 ? "lime" : "orange")}>{CharacterCreationCost}</color>";
-				}
-			}
+                else name = "?????";
+            }
 			return name;
 		}
 		/// <summary>
@@ -164,23 +178,23 @@ namespace RogueLibsCore
 		/// </summary>
 		/// <returns>The unlock's localized description, with cancellations and recommendations, if it's unlocked; otherwise, the unlock's localized description, with cancellations, recommendations and prerequisites, if it can be unlocked; otherwise, "?????", with prerequisites.</returns>
 		public virtual string GetFancyDescription()
-		{
-			if (IsUnlocked || Unlock.nowAvailable)
-			{
-				string text = GetDescription();
-				AddCancellationsTo(ref text);
-				AddRecommendationsTo(ref text);
-				if (!IsUnlocked || RogueFramework.IsDebugEnabled(DebugFlags.Unlocks | DebugFlags.UnlockMenus))
-					AddPrerequisitesTo(ref text);
-				return text;
-			}
-			else
-			{
-				string text = "?????";
-				AddPrerequisitesTo(ref text);
-				return text;
-			}
-		}
+        {
+            if (IsUnlocked || Unlock.nowAvailable || Menu.ShowLockedUnlocks)
+            {
+                string text = GetDescription();
+                AddCancellationsTo(ref text);
+                AddRecommendationsTo(ref text);
+                if (!IsUnlocked || RogueFramework.IsDebugEnabled(DebugFlags.Unlocks | DebugFlags.UnlockMenus))
+                    AddPrerequisitesTo(ref text);
+                return text;
+            }
+            else
+            {
+                string text = "?????";
+                AddPrerequisitesTo(ref text);
+                return text;
+            }
+        }
 
 		/// <summary>
 		///   <para>Adds cancellations to the end of the specified <paramref name="description"/>.</para>
@@ -197,7 +211,9 @@ namespace RogueLibsCore
 					string.Join(", ", Unlock.cancellations.ConvertAll(unlockName =>
 					{
 						UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
-						return unlock?.GetName();
+                        if (unlock != null)
+                            return unlock.IsUnlocked || unlock.Unlock.nowAvailable ? unlock.GetName() : "?????";
+                        return unlockName;
 					}));
 			}
 		}
@@ -216,7 +232,9 @@ namespace RogueLibsCore
 					string.Join(", ", Unlock.recommendations.ConvertAll(unlockName =>
 					{
 						UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
-						return unlock?.GetName();
+                        if (unlock != null)
+                            return unlock.IsUnlocked || unlock.Unlock.nowAvailable ? unlock.GetName() : "?????";
+                        return unlockName;
 					}));
 			}
 		}
@@ -234,7 +252,7 @@ namespace RogueLibsCore
 					UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
 					if (unlock != null)
 					{
-						string name = unlock.GetName();
+						string name = unlock.IsUnlocked || unlock.Unlock.nowAvailable ? unlock.GetName() : "?????";
 						if (unlock.IsUnlocked) name = $"<color=#EEEEEE55>{name}</color>";
 						return name;
 					}
@@ -248,7 +266,7 @@ namespace RogueLibsCore
 			if (Unlock.cost > 0)
 			{
 				string costColor = gc.sessionDataBig.nuggets >= Unlock.cost ? "cyan" : "red";
-				prereqs.Add($"\n{gc.nameDB.GetName("UnlockFor", NameTypes.Unlock)} <color={costColor}>${Unlock.cost}</color>");
+				prereqs.Add($"{gc.nameDB.GetName("UnlockFor", NameTypes.Unlock)} <color={costColor}>${Unlock.cost}</color>");
 			}
 			if (prereqs.Count > 0)
 			{

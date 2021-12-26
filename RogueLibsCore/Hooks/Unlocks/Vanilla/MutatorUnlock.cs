@@ -94,20 +94,14 @@
 		/// <inheritdoc/>
 		public override string GetName()
 		{
-			if (IsUnlocked || Unlock.nowAvailable)
-			{
-				if (!Name.Contains("NoD_")) return gc.nameDB.GetName(Name, Unlock.unlockNameType);
-				return gc.nameDB.GetName("Remove", NameTypes.Interface) + " - "
-					+ gc.nameDB.GetName("LevelFeeling" + Name.Replace("NoD_", string.Empty) + "_Name", NameTypes.Interface);
-			}
-			else return "?????";
-		}
-		/// <inheritdoc/>
-		public override string GetDescription()
-			=> IsUnlocked || Unlock.nowAvailable
-			? Name.Contains("NoD_")
-				? gc.nameDB.GetName("NoDisasterDescription", NameTypes.Unlock)
-				: gc.nameDB.GetName("D_" + Name, Unlock.unlockDescriptionType)
-			: "?????";
-	}
+            if (!Name.Contains("NoD_")) return gc.nameDB.GetName(Name, Unlock.unlockNameType);
+            return gc.nameDB.GetName("Remove", NameTypes.Interface)
+                 + " - " + gc.nameDB.GetName("LevelFeeling" + Name.Replace("NoD_", string.Empty) + "_Name", NameTypes.Interface);
+        }
+        /// <inheritdoc/>
+        public override string GetDescription()
+            => Name.Contains("NoD_")
+                ? gc.nameDB.GetName("NoDisasterDescription", NameTypes.Unlock)
+                : gc.nameDB.GetName("D_" + Name, Unlock.unlockDescriptionType);
+    }
 }

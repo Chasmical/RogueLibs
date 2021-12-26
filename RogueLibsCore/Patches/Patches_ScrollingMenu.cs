@@ -244,9 +244,10 @@ namespace RogueLibsCore
 				return true;
 			DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock.__RogueLibsCustom;
 
-			__instance.detailsTitle.text = du.GetName();
-			__instance.detailsText.text = du.GetFancyDescription();
-			__instance.detailsImage.sprite = du.GetImage();
+            bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu.ShowLockedUnlocks;
+            __instance.detailsTitle.text = show ? du.GetName() : "?????";
+			__instance.detailsText.text = show ? du.GetFancyDescription() : "?????";
+			__instance.detailsImage.sprite = show ? du.GetImage() : null;
 			__instance.detailsImage.gameObject.SetActive(__instance.detailsImage.sprite != null);
 
 			// Gamepad scrolling fix
