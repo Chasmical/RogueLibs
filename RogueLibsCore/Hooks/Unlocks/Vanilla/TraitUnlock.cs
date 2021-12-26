@@ -116,8 +116,6 @@ namespace RogueLibsCore
 				UpdateButton(IsEnabled, UnlockButtonState.Normal, UnlockButtonState.Disabled);
 			else if (Menu.Type == UnlocksMenuType.CharacterCreation)
 				UpdateButton(IsAddedToCC);
-			else if (Menu.Type == UnlocksMenuType.NewLevelTraits)
-				UpdateButton(false);
 			else if (Menu.Type == UnlocksMenuType.AB_UpgradeTrait)
 				Text = $"{GetName()} | ${GetUpgradeCost()}";
 			else if (Menu.Type == UnlocksMenuType.AB_RemoveTrait)
