@@ -64,11 +64,11 @@
 			set => Unlock.onlyInCharacterCreation = value;
 		}
 
-		/// <summary>
-		///   <para>Gets or sets whether the Big Quest is unlocked. This is synchronized with its <see cref="AgentUnlock"/>.</para>
-		/// </summary>
-		public override bool IsUnlocked { get => Agent.IsUnlocked; set => Agent.IsUnlocked = value; }
-		/// <summary>
+        /// <summary>
+        ///   <para>Gets or sets whether the Big Quest is unlocked. This is synchronized with its <see cref="AgentUnlock"/>.</para>
+        /// </summary>
+        public override bool IsUnlocked { get => Agent.IsUnlocked; set => Agent.IsUnlocked = value; }
+        /// <summary>
 		///   <para>Gets or sets whether the Big Quest is complete.</para>
 		/// </summary>
 		public bool IsCompleted { get => Unlock.unlocked; set => Unlock.unlocked = value; }
@@ -115,7 +115,7 @@
 					UpdateMenu();
 				}
 			}
-			else if (Unlock.nowAvailable && UnlockCost <= gc.sessionDataBig.nuggets)
+			else if (Unlock.nowAvailable && UnlockCost > 0 && UnlockCost <= gc.sessionDataBig.nuggets)
 			{
 				PlaySound(VanillaAudio.BuyUnlock);
 				gc.unlocks.SubtractNuggets(UnlockCost);
@@ -130,11 +130,14 @@
 		public override string GetName()
 		{
             string name = gc.nameDB.GetName(Name, NameTypes.Unlock);
+            string agentName = Agent.GetName();
             if (Agent.Name == VanillaAgents.GangsterCrepe || Agent.Name == VanillaAgents.GangsterBlahd)
-                name += $" ({gc.nameDB.GetName(Agent.Name + "_N", NameTypes.Agent)})";
-            return name;
+                agentName += $", {gc.nameDB.GetName(Agent.Name + "_N", NameTypes.Agent)}";
+            return $"{name} ({agentName})";
 		}
 		/// <inheritdoc/>
 		public override string GetDescription() => gc.nameDB.GetName("D_" + Name, NameTypes.Unlock);
-	}
+
+        public override bool ShowInPrerequisites => true;
+    }
 }

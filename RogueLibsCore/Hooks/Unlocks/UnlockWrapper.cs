@@ -128,5 +128,8 @@ namespace RogueLibsCore
 		/// </summary>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]
 		public static GameController gc => GameController.gameController;
-	}
+
+        public virtual bool ShowInPrerequisites => false;
+
+    }
 }

@@ -51,7 +51,7 @@
 			}
 		}
 
-		/// <summary>
+        /// <summary>
 		///   <para>Gets or sets whether this unlock's agent is a Super Special Abilities variant of another agent.</para>
 		/// </summary>
 		public bool IsSSA
@@ -73,5 +73,7 @@
 				BigQuest.IsAvailableInCC = !IsSSA;
 			}
 		}
-	}
+
+        public override bool ShowInPrerequisites => true;
+    }
 }

@@ -24,6 +24,7 @@ namespace RogueLibsCore
 			Patcher.Transpiler(typeof(Unlocks), nameof(Unlocks.LoadInitialUnlocks));
 
 			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.CanDoUnlocks));
+            Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.isBigQuestCompleted));
 
 			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.SaveUnlockData2));
 			Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.LoadUnlockData2));
@@ -41,7 +42,17 @@ namespace RogueLibsCore
 				English = "Unlock for",
 				Russian = "Разблокировать за",
 			});
-		}
+            RogueLibs.CreateCustomName("AgentUnlock", NameTypes.Unlock, new CustomNameInfo
+            {
+                English = "{0} Character",
+                Russian = "Персонаж {0}",
+            });
+            RogueLibs.CreateCustomName("BigQuestUnlock", NameTypes.Unlock, new CustomNameInfo
+            {
+                English = "\"{0}\" Big Quest",
+                Russian = "Большой Квест \"{0}\"",
+            });
+        }
 
 		public static void Unlocks_AddUnlock(Unlock createdUnlock, Unlock __result)
 		{
@@ -250,6 +261,13 @@ namespace RogueLibsCore
 			}
 			return true;
 		}
+        public static bool Unlocks_isBigQuestCompleted(string agentName, ref bool __result)
+        {
+            UnlockWrapper unlock = RogueLibs.GetUnlock(agentName + "_BQ", "BigQuest");
+            if (!(unlock is BigQuestUnlock bq)) return true;
+            __result = bq.IsCompleted;
+            return false;
+        }
 
 		private static bool curSaving;
 		private static bool saveOnNext;
