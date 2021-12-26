@@ -110,19 +110,18 @@ namespace RogueLibsCore
 		/// <summary>
 		///   <para>Gets the unlock's displayed name.</para>
 		/// </summary>
-		/// <returns>The unlock's localized name, if it's unlocked or can be unlocked; otherwise, "?????".</returns>
-		public virtual string GetName() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockNameType) : "?????";
+		/// <returns>The unlock's localized name.</returns>
+		public virtual string GetName() => gc.nameDB.GetName(Name, Unlock.unlockNameType);
 		/// <summary>
 		///   <para>Gets the unlock's displayed description.</para>
 		/// </summary>
-		/// <returns>The unlock's localized description, if it's unlocked or can be unlocked; otherwise, "?????".</returns>
-		public virtual string GetDescription() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockDescriptionType) : "?????";
+		/// <returns>The unlock's localized description.</returns>
+		public virtual string GetDescription() => gc.nameDB.GetName(Name, Unlock.unlockDescriptionType);
 		/// <summary>
 		///   <para>Gets the unlock's displayed image.</para>
 		/// </summary>
 		/// <returns>The unlock's image, if it's unlocked or can be unlocked; otherwise, <see langword="null"/>.</returns>
-		public virtual Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable)
-			&& RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
+		public virtual Sprite GetImage() => RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
 
 		/// <summary>
 		///   <para>Gets the currently used instance of <see cref="GameController"/>.</para>

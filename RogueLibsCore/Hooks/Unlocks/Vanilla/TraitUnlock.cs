@@ -128,7 +128,119 @@ namespace RogueLibsCore
 		/// <inheritdoc/>
 		public override void OnPushedButton()
 		{
-			if (IsUnlocked)
+			if (Menu.Type == UnlocksMenuType.NewLevelTraits)
+            {
+                ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
+                if (menu.twitchCountdownOn) return;
+                State = UnlockButtonState.Selected;
+                UpdateMenu();
+                if (gc.twitchMode || gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchTraits)
+                    gc.twitchFunctions.ShowWinner(Name, "StatusEffect", Menu.Agent.isPlayer);
+                if (Name == "EnduranceTrait")
+                {
+                    Menu.Agent.SetEndurance(Menu.Agent.enduranceStatMod + 1, true);
+                    if (!Menu.Agent.finishedLevel)
+                        gc.spawnerMain.SpawnStatusText(Menu.Agent, "BuffSpecial", "Endurance", "BuffSpecial", "");
+                }
+                else if (Name == "SpeedTrait")
+                {
+                    Menu.Agent.SetSpeed(Menu.Agent.speedStatMod + 1, true);
+                    if (!Menu.Agent.finishedLevel)
+                        gc.spawnerMain.SpawnStatusText(Menu.Agent, "BuffSpecial", "Speed", "BuffSpecial", "");
+                }
+                else if (Name == "StrengthTrait")
+                {
+                    Menu.Agent.SetStrength(Menu.Agent.strengthStatMod + 1, true);
+                    if (!Menu.Agent.finishedLevel)
+                        gc.spawnerMain.SpawnStatusText(Menu.Agent, "BuffSpecial", "Strength", "BuffSpecial", "");
+                }
+                else if (Name == "AccuracyTrait")
+                {
+                    Menu.Agent.SetAccuracy(Menu.Agent.accuracyStatMod + 1, true);
+                    if (!Menu.Agent.finishedLevel)
+                        gc.spawnerMain.SpawnStatusText(Menu.Agent, "BuffSpecial", "Accuracy", "BuffSpecial", "");
+                }
+                else
+                {
+                    Menu.Agent.statusEffects.AddTrait(Name);
+                }
+                Menu.Agent.addedEndLevelTrait = true;
+                Menu.Agent.skillPoints.levelsGained--;
+                gc.sessionData.levelsGained[Menu.Agent.isPlayer]--;
+                PlaySound(VanillaAudio.AddTrait);
+                Menu.Agent.objectMult.SendChatAnnouncement("ChoseTrait", Name, "");
+                menu.canPressButtons = false;
+                if (Menu.Agent.skillPoints.levelsGained is 0)
+                {
+                    if (gc.fourPlayerMode || gc.coopMode)
+                    {
+                        menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("PersonalMenuDelay").Invoke(menu, new object[0]));
+                    }
+                    else if (gc.levelFeelingsScript.DoesNextLevelHaveFeeling(false) && (gc.sessionDataBig.twitchOn || gc.twitchMode) && (gc.sessionDataBig.twitchLevelFeelings || gc.twitchMode) && (gc.sessionData.nextLevelFeeling?.Length is 0 || gc.sessionData.nextLevelFeeling is null) && !gc.challenges.Contains("NoLevelFeelings") && !gc.levelFeelingsScript.CanceledAllLevelFeelings() && gc.serverPlayer && gc.levelFeelingsScript.GetLevelFeeling() != "")
+                    {
+                        menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("ShowMenuDelay").Invoke(menu, new object[2] { "LevelFeelings", Menu.Agent }));
+                    }
+                    else
+                    {
+                        menu.StartCoroutine(menu.NextLevelDelay());
+                    }
+                }
+                else
+                {
+                    foreach (ButtonData buttonData4 in menu.buttonsData)
+                        buttonData4.isActive = false;
+                    menu.Invoke("OpenScrollingMenu", 0.1f);
+                }
+            }
+            else if (Menu.Type == UnlocksMenuType.AB_UpgradeTrait)
+            {
+                if (Menu.Agent.interactionHelper.interactionObjectReal.moneySuccess(GetUpgradeCost()))
+                {
+                    Menu.Agent.usingAugmentationBooth = true;
+                    Menu.Agent.statusEffects.AddTrait(Unlock.upgrade);
+                    PlaySound(VanillaAudio.AddTrait);
+                    Menu.Agent.mainGUI.HideScrollingMenuPersonal();
+                    Menu.Agent.usingAugmentationBooth = false;
+                }
+                else PlaySound(VanillaAudio.CantDo);
+            }
+            else if (Menu.Type == UnlocksMenuType.AB_RemoveTrait)
+            {
+                if (Menu.Agent.interactionHelper.interactionObjectReal.moneySuccess(GetRemovalCost()))
+                {
+                    Menu.Agent.usingAugmentationBooth = true;
+                    Menu.Agent.statusEffects.RemoveTrait(Name);
+                    Menu.Agent.mainGUI.HideScrollingMenuPersonal();
+                    Menu.Agent.usingAugmentationBooth = false;
+                }
+                else PlaySound(VanillaAudio.CantDo);
+            }
+            else if (Menu.Type == UnlocksMenuType.AB_SwapTrait)
+            {
+                ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
+                List<Unlock> list = Unlock.isUpgrade
+                    ? gc.sessionDataBig.unlocks.FindAll(u => u.isUpgrade && Unlock.isUpgrade && !Menu.Agent.statusEffects.hasTrait(u.unlockName) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)))
+                    : CharacterCreationCost < 0
+                        ? gc.sessionDataBig.traitUnlocksCharacterCreation.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)) && u.recommendations.Count is 0)
+                        : gc.sessionDataBig.traitUnlocks.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)));
+                if (list.Count is 0)
+                {
+                    Menu.Agent.SayDialogue("CantChangeTraitRandomEquivalent");
+                    PlaySound(VanillaAudio.CantDo);
+                }
+                else if (Menu.Agent.interactionHelper.interactionObjectReal.moneySuccess(GetSwapCost()))
+                {
+                    Menu.Agent.usingAugmentationBooth = true;
+                    Unlock unlock6 = list[UnityEngine.Random.Range(0, list.Count)];
+                    Menu.Agent.statusEffects.RemoveTrait(Name);
+                    Menu.Agent.statusEffects.AddTrait(unlock6.unlockName);
+                    PlaySound(VanillaAudio.AddTrait);
+                    Menu.Agent.mainGUI.HideScrollingMenuPersonal();
+                    Menu.Agent.usingAugmentationBooth = false;
+                }
+                else PlaySound(VanillaAudio.CantDo);
+            }
+            else if (IsUnlocked)
 			{
 				if (Menu.Type == UnlocksMenuType.TraitsMenu)
 				{
@@ -155,118 +267,6 @@ namespace RogueLibsCore
 							((IUnlockInCC)du).IsAddedToCC = false;
 					UpdateButton();
 					UpdateMenu();
-				}
-				else if (Menu.Type == UnlocksMenuType.NewLevelTraits)
-				{
-					ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
-					if (menu.twitchCountdownOn) return;
-					State = UnlockButtonState.Selected;
-					UpdateMenu();
-					if (gc.twitchMode || gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchTraits)
-						gc.twitchFunctions.ShowWinner(Name, "StatusEffect", Menu.Agent.isPlayer);
-					if (Name == "EnduranceTrait")
-					{
-						Menu.Agent.SetEndurance(Menu.Agent.enduranceStatMod + 1, true);
-						if (!Menu.Agent.finishedLevel)
-							gc.spawnerMain.SpawnStatusText(Menu.Agent, "BuffSpecial", "Endurance", "BuffSpecial", "");
-					}
-					else if (Name == "SpeedTrait")
-					{
-						Menu.Agent.SetSpeed(Menu.Agent.speedStatMod + 1, true);
-						if (!Menu.Agent.finishedLevel)
-							gc.spawnerMain.SpawnStatusText(Menu.Agent, "BuffSpecial", "Speed", "BuffSpecial", "");
-					}
-					else if (Name == "StrengthTrait")
-					{
-						Menu.Agent.SetStrength(Menu.Agent.strengthStatMod + 1, true);
-						if (!Menu.Agent.finishedLevel)
-							gc.spawnerMain.SpawnStatusText(Menu.Agent, "BuffSpecial", "Strength", "BuffSpecial", "");
-					}
-					else if (Name == "AccuracyTrait")
-					{
-						Menu.Agent.SetAccuracy(Menu.Agent.accuracyStatMod + 1, true);
-						if (!Menu.Agent.finishedLevel)
-							gc.spawnerMain.SpawnStatusText(Menu.Agent, "BuffSpecial", "Accuracy", "BuffSpecial", "");
-					}
-					else
-					{
-						Menu.Agent.statusEffects.AddTrait(Name);
-					}
-					Menu.Agent.addedEndLevelTrait = true;
-					Menu.Agent.skillPoints.levelsGained--;
-					gc.sessionData.levelsGained[Menu.Agent.isPlayer]--;
-					PlaySound(VanillaAudio.AddTrait);
-					Menu.Agent.objectMult.SendChatAnnouncement("ChoseTrait", Name, "");
-					menu.canPressButtons = false;
-					if (Menu.Agent.skillPoints.levelsGained is 0)
-					{
-						if (gc.fourPlayerMode || gc.coopMode)
-						{
-							menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("PersonalMenuDelay").Invoke(menu, new object[0]));
-						}
-						else if (gc.levelFeelingsScript.DoesNextLevelHaveFeeling(false) && (gc.sessionDataBig.twitchOn || gc.twitchMode) && (gc.sessionDataBig.twitchLevelFeelings || gc.twitchMode) && (gc.sessionData.nextLevelFeeling?.Length is 0 || gc.sessionData.nextLevelFeeling is null) && !gc.challenges.Contains("NoLevelFeelings") && !gc.levelFeelingsScript.CanceledAllLevelFeelings() && gc.serverPlayer && gc.levelFeelingsScript.GetLevelFeeling() != "")
-						{
-							menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("ShowMenuDelay").Invoke(menu, new object[2] { "LevelFeelings", Menu.Agent }));
-						}
-						else
-						{
-							menu.StartCoroutine(menu.NextLevelDelay());
-						}
-					}
-					else
-					{
-						foreach (ButtonData buttonData4 in menu.buttonsData)
-							buttonData4.isActive = false;
-						menu.Invoke("OpenScrollingMenu", 0.1f);
-					}
-				}
-				else if (Menu.Type == UnlocksMenuType.AB_UpgradeTrait)
-				{
-					if (Menu.Agent.interactionHelper.interactionObjectReal.moneySuccess(GetUpgradeCost()))
-					{
-						Menu.Agent.usingAugmentationBooth = true;
-						Menu.Agent.statusEffects.AddTrait(Unlock.upgrade);
-						PlaySound(VanillaAudio.AddTrait);
-						Menu.Agent.mainGUI.HideScrollingMenuPersonal();
-						Menu.Agent.usingAugmentationBooth = false;
-					}
-					else PlaySound(VanillaAudio.CantDo);
-				}
-				else if (Menu.Type == UnlocksMenuType.AB_RemoveTrait)
-				{
-					if (Menu.Agent.interactionHelper.interactionObjectReal.moneySuccess(GetRemovalCost()))
-					{
-						Menu.Agent.usingAugmentationBooth = true;
-						Menu.Agent.statusEffects.RemoveTrait(Name);
-						Menu.Agent.mainGUI.HideScrollingMenuPersonal();
-						Menu.Agent.usingAugmentationBooth = false;
-					}
-					else PlaySound(VanillaAudio.CantDo);
-				}
-				else if (Menu.Type == UnlocksMenuType.AB_SwapTrait)
-				{
-					ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
-					List<Unlock> list = Unlock.isUpgrade
-						? gc.sessionDataBig.unlocks.FindAll(u => u.isUpgrade && Unlock.isUpgrade && !Menu.Agent.statusEffects.hasTrait(u.unlockName) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)))
-						: CharacterCreationCost < 0
-                            ? gc.sessionDataBig.traitUnlocksCharacterCreation.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)) && u.recommendations.Count is 0)
-                            : gc.sessionDataBig.traitUnlocks.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)));
-					if (list.Count is 0)
-					{
-						Menu.Agent.SayDialogue("CantChangeTraitRandomEquivalent");
-						PlaySound(VanillaAudio.CantDo);
-					}
-					else if (Menu.Agent.interactionHelper.interactionObjectReal.moneySuccess(GetSwapCost()))
-					{
-						Menu.Agent.usingAugmentationBooth = true;
-						Unlock unlock6 = list[UnityEngine.Random.Range(0, list.Count)];
-						Menu.Agent.statusEffects.RemoveTrait(Name);
-						Menu.Agent.statusEffects.AddTrait(unlock6.unlockName);
-						PlaySound(VanillaAudio.AddTrait);
-						Menu.Agent.mainGUI.HideScrollingMenuPersonal();
-						Menu.Agent.usingAugmentationBooth = false;
-					}
-					else PlaySound(VanillaAudio.CantDo);
 				}
 			}
 			else if (Unlock.nowAvailable && UnlockCost <= gc.sessionDataBig.nuggets)

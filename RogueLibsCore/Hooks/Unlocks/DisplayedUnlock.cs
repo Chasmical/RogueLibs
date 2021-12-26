@@ -143,6 +143,10 @@ namespace RogueLibsCore
 			}
 			else
 			{
+                if (!IsUnlocked && !Unlock.nowAvailable)
+                {
+                    return "???";
+                }
 				if (!IsUnlocked && Unlock.nowAvailable && UnlockCost > 0)
 				{
 					name += $" - ${UnlockCost}";
