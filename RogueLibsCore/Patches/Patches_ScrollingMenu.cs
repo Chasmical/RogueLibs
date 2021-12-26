@@ -246,7 +246,7 @@ namespace RogueLibsCore
 
             bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu.ShowLockedUnlocks;
             __instance.detailsTitle.text = show ? du.GetName() : "?????";
-			__instance.detailsText.text = show ? du.GetFancyDescription() : "?????";
+			__instance.detailsText.text = du.GetFancyDescription();
 			__instance.detailsImage.sprite = show ? du.GetImage() : null;
 			__instance.detailsImage.gameObject.SetActive(__instance.detailsImage.sprite != null);
 

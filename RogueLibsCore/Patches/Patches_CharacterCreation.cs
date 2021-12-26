@@ -137,7 +137,7 @@ namespace RogueLibsCore
 
                 bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu.ShowLockedUnlocks;
                 title.text = show ? du.GetName() : "?????";
-				text.text = show ? du.GetFancyDescription() : "?????";
+				text.text = du.GetFancyDescription();
 				image.sprite = show ? du.GetImage() : null;
 				image.gameObject.SetActive(image.sprite != null);
 			}
