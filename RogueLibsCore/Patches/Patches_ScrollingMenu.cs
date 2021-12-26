@@ -174,18 +174,19 @@ namespace RogueLibsCore
 			if (__instance.menuType == "FreeItems")
 				displayedList.RemoveAll(u => u is ItemUnlock itemUnlock && !itemUnlock.IsAvailableInItemTeleporter);
 
-			displayedList.Sort();
-			CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedList);
+            CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedList);
 			if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
 				RogueFramework.LogDebug($"Setting up \"{menu.Type}\" menu.");
+
+            foreach (DisplayedUnlock du in menu.Unlocks)
+                du.Menu = menu;
+            menu.Unlocks.ForEach(du => du.UpdateUnlock());
+            menu.Unlocks.Sort();
 
 			___listUnlocks.Clear();
 			___listUnlocks.AddRange(menu.Unlocks.Select(du => du.Unlock));
 
-			foreach (DisplayedUnlock du in menu.Unlocks)
-				du.Menu = menu;
-
-			if (menu.Type == UnlocksMenuType.Loadouts)
+            if (menu.Type == UnlocksMenuType.Loadouts)
 			{
 				reRollLoadouts.Menu = menu;
 				___listUnlocks.Insert(0, reRollLoadouts.Unlock);

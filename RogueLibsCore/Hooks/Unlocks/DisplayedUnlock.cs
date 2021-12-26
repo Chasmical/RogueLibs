@@ -253,8 +253,6 @@ namespace RogueLibsCore
 					if (unlock != null)
 					{
 						string name = unlock.IsUnlocked || unlock.Unlock.nowAvailable || unlock.ShowInPrerequisites ? unlock.GetName() : "?????";
-                        if (unlock is AgentUnlock) name = string.Format(gc.nameDB.GetName("AgentUnlock", NameTypes.Unlock), name);
-                        if (unlock is BigQuestUnlock) name = string.Format(gc.nameDB.GetName("BigQuestUnlock", NameTypes.Unlock), name);
                         if (unlock.IsUnlocked) name = $"<color=#EEEEEE55>{name}</color>";
 						return name;
 					}

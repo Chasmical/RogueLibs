@@ -37,10 +37,14 @@ namespace RogueLibsCore
 			if (unlockType == UnlockTypes.Ability || unlockType == UnlockTypes.BigQuest)
 				displayedList.RemoveAll(u => u is IUnlockInCC inCC && !inCC.IsAvailableInCC);
 
-			displayedList.Sort();
-			CustomCharacterCreation menu = new CustomCharacterCreation(__instance, displayedList);
+            CustomCharacterCreation menu = new CustomCharacterCreation(__instance, displayedList);
 			if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
 				RogueFramework.LogDebug($"Setting up \"{menu.Type}\" menu.");
+
+            foreach (DisplayedUnlock du in menu.Unlocks)
+                du.Menu = menu;
+            menu.Unlocks.ForEach(du => du.UpdateUnlock());
+            menu.Unlocks.Sort();
 
 			List<Unlock> listUnlocks = unlockType == UnlockTypes.Item ? __instance.listUnlocksItems
 				: unlockType == UnlockTypes.Trait ? __instance.listUnlocksTraits
@@ -49,10 +53,7 @@ namespace RogueLibsCore
 			listUnlocks.Clear();
 			listUnlocks.AddRange(menu.Unlocks.Select(du => du.Unlock));
 
-			foreach (DisplayedUnlock du in menu.Unlocks)
-				du.Menu = menu;
-
-			if (unlockType == UnlockTypes.Item)
+            if (unlockType == UnlockTypes.Item)
 			{
 				clearAllItems.Menu = menu;
 				listUnlocks.Insert(0, clearAllItems.Unlock);

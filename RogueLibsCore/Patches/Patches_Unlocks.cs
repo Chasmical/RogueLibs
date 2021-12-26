@@ -137,7 +137,12 @@ namespace RogueLibsCore
 					wrapper = new AbilityUnlock(unlock);
 				}
 				else if (unlock.unlockType == UnlockTypes.Floor) wrapper = new FloorUnlock(unlock);
-				else if (unlock.unlockType == UnlockTypes.BigQuest) wrapper = new BigQuestUnlock(unlock);
+				else if (unlock.unlockType == UnlockTypes.BigQuest)
+                {
+                    unlock.cost = -1;
+                    wrapper = new BigQuestUnlock(unlock);
+                    wrapper.Prerequisites.Add(((BigQuestUnlock)wrapper).AgentName);
+                }
 				else if (unlock.unlockType == UnlockTypes.Extra) wrapper = new ExtraUnlock(unlock);
 				else if (unlock.unlockType == UnlockTypes.Agent)
 				{

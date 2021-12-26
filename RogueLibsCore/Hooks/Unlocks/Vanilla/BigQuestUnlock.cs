@@ -77,14 +77,14 @@
 		///   <para>Gets the <see cref="AgentUnlock"/> associated with this Big Quest.</para>
 		/// </summary>
 		public AgentUnlock Agent { get; internal set; }
+        public string AgentName => Name.Substring(0, Name.Length - 3);
 
 		/// <summary>
 		///   <para>Sets up the Big Quest's associated <see cref="AgentUnlock"/>.</para>
 		/// </summary>
 		public override void SetupUnlock()
 		{
-			string agent = Name.Substring(0, Name.Length - 3);
-			Agent = (AgentUnlock)RogueFramework.Unlocks.Find(u => u is AgentUnlock a && a.Name == agent);
+			Agent = (AgentUnlock)RogueFramework.Unlocks.Find(u => u is AgentUnlock a && a.Name == AgentName);
 			if (Agent != null)
 			{
 				Agent.BigQuest = this;
@@ -137,6 +137,25 @@
 		}
 		/// <inheritdoc/>
 		public override string GetDescription() => gc.nameDB.GetName("D_" + Name, NameTypes.Unlock);
+
+        public override string GetFancyDescription()
+        {
+            if (IsUnlocked || Unlock.nowAvailable || Menu.ShowLockedUnlocks)
+            {
+                string text = GetDescription();
+                AddCancellationsTo(ref text);
+                AddRecommendationsTo(ref text);
+                if (!IsUnlocked || RogueFramework.IsDebugEnabled(DebugFlags.Unlocks | DebugFlags.UnlockMenus))
+                    AddPrerequisitesTo(ref text);
+                return text;
+            }
+            else
+            {
+                string text = "?????";
+                AddPrerequisitesTo(ref text);
+                return text;
+            }
+        }
 
         public override bool ShowInPrerequisites => true;
     }

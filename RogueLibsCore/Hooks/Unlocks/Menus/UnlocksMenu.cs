@@ -36,11 +36,12 @@ namespace RogueLibsCore
 		/// </summary>
 		public abstract void UpdateMenu();
 
-        public bool ShowLockedUnlocks => Type == UnlocksMenuType.Loadouts || Type == UnlocksMenuType.NewLevelTraits
-                                                                        || Type == UnlocksMenuType.AB_RemoveTrait
-                                                                        || Type == UnlocksMenuType.AB_SwapTrait
-                                                                        || Type == UnlocksMenuType.AB_UpgradeTrait
-                                                                        || Type == UnlocksMenuType.TwitchRewards
-                                                                        || Type == UnlocksMenuType.TwitchDisasters;
+        public virtual bool ShowLockedUnlocks => Type == UnlocksMenuType.Loadouts
+                                              || Type == UnlocksMenuType.NewLevelTraits
+                                              || Type == UnlocksMenuType.AB_RemoveTrait
+                                              || Type == UnlocksMenuType.AB_SwapTrait
+                                              || Type == UnlocksMenuType.AB_UpgradeTrait
+                                              || Type == UnlocksMenuType.TwitchRewards
+                                              || Type == UnlocksMenuType.TwitchDisasters;
     }
 }
