@@ -10,7 +10,7 @@ import Logo from '@site/static/img/logo.png';
 import LogoDark from '@site/static/img/logo-inverted.png';
 import LogoPokemon from '@site/static/img/logo-pokemon.png';
 import Translate from '@docusaurus/Translate';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@docusaurus/router';
 import { parse as queryParse } from 'query-string';
 
 function HomepageHeader() {
