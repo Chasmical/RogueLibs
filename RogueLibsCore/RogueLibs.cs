@@ -31,15 +31,15 @@ namespace RogueLibsCore
 		/// </summary>
 		public const string Name = "RogueLibsCore";
 
-		internal const string AssemblyVersion = "3.2.0.0";
+		internal const string AssemblyVersion = "3.3.0.0";
 		/// <summary>
 		///   <para>Version of RogueLibs that the current assembly is compiled with.</para>
 		/// </summary>
-		public const string CompiledVersion = "3.2.0";
+		public const string CompiledVersion = "3.3.0";
 		/// <summary>
 		///   <para>Semantic version of RogueLibs that the current assembly is compiled with. Don't use it in BepInPlugin.</para>
 		/// </summary>
-		public const string CompiledSemanticVersion = "3.2.0";
+		public const string CompiledSemanticVersion = "3.3.0";
 
 		/// <summary>
 		///   <para>Currently installed and running version of RogueLibs.</para>
@@ -240,5 +240,22 @@ namespace RogueLibsCore
 					}
 				}
 		}
-	}
+
+        public static VersionText CreateVersionText(string id, string text)
+        {
+            VersionText versionText = RogueLibsPlugin.versionLines.Find(v => v.Id == id);
+            if (versionText != null)
+            {
+                if (text != null) versionText.Text = text;
+                return versionText;
+            }
+            RogueLibsPlugin.versionLines.Add(versionText = new VersionText(id, text));
+            if (RogueLibsPlugin.versionLinesReady)
+            {
+                GameObject versionObj = GameObject.Find("VersionText2");
+                versionText.AssignText(RogueLibsPlugin.AttachVersionText(versionObj, id, text));
+            }
+            return versionText;
+        }
+    }
 }
