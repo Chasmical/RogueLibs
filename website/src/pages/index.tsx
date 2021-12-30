@@ -9,16 +9,17 @@ import useThemeContext from '@theme/hooks/useThemeContext';
 import Logo from '@site/static/img/logo.png';
 import LogoDark from '@site/static/img/logo-inverted.png';
 import LogoPokemon from '@site/static/img/logo-pokemon.png';
-import Translate, { translate } from '@docusaurus/Translate';
+import Translate from '@docusaurus/Translate';
+import { useParams } from 'react-router-dom';
 
 function HomepageHeader() {
   const { siteConfig } = useDocusaurusContext();
   const { isDarkTheme } = useThemeContext();
-  const params = new URLSearchParams(window.location.search);
+  const { pokemon } = useParams() as any;
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <img src={params.get('pokemon') != undefined ? LogoPokemon : isDarkTheme ? LogoDark : Logo} width='50%'/>
+        <img src={pokemon != undefined ? LogoPokemon : isDarkTheme ? LogoDark : Logo} width='50%'/>
         <p className="hero__subtitle">
           <Translate id="homepage.tagline">
             Doing the impossible.
