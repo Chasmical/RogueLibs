@@ -15,12 +15,8 @@ import { parse as queryParse } from 'query-string';
 
 function HomepageHeader() {
   const { isDarkTheme } = useThemeContext();
-  const search = useLocation().search;
-  const params = queryParse(search);
-  console.log(params);
-  console.log(params.pokemon);
-  console.log(!!params.pokemon);
-  let src = LogoPokemon//params.pokemon ? LogoPokemon : isDarkTheme ? LogoDark : Logo;
+  const params = queryParse(useLocation().search);
+  let src = params.pokemon ? LogoPokemon : isDarkTheme ? LogoDark : Logo;
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
