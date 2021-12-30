@@ -20,7 +20,7 @@ function HomepageHeader() {
   console.log(params);
   console.log(params.pokemon);
   console.log(!!params.pokemon);
-  let src = params.pokemon ? LogoPokemon : isDarkTheme ? LogoDark : Logo;
+  let src = LogoPokemon//params.pokemon ? LogoPokemon : isDarkTheme ? LogoDark : Logo;
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
