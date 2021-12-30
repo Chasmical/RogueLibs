@@ -15,7 +15,10 @@ import { parse as queryParse } from 'query-string';
 
 function HomepageHeader() {
   const { isDarkTheme } = useThemeContext();
-  const params = queryParse(useLocation().search);
+  const search = useLocation().search;
+  console.log(search);
+  const params = queryParse(search);
+  console.log(params);
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
