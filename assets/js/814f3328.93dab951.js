@@ -1,1 +1,0 @@
-(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[2535],{6353:function(e){"use strict";e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"What I hate about SoR","permalink":"/RogueLibs/blog/2021/08/31/what-i-hate-about-sor"},{"title":"RogueLibs v3.1.0 released!","permalink":"/RogueLibs/blog/2021/08/18/roguelibs-v3.1.0"}]}')}}]);
