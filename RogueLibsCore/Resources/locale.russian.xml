@@ -1,4 +1,4 @@
-<Language Id="russian" Version="4">
+<Language Id="russian" Version="5">
   <Category Id="Agent">
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актер</Entry>
@@ -325,7 +325,7 @@
     <Entry Id="Fireworks">Фейерверки</Entry>
     <Entry Id="WalkieTalkie">Рация</Entry>
     <Entry Id="MemoryEraser">Мутилятор памяти</Entry>
-    <Entry Id="GrenadeWarp">Варп-нраната</Entry>
+    <Entry Id="GrenadeWarp">Варп-граната</Entry>
     <Entry Id="BloodBag">Пакет с кровью</Entry>
     <Entry Id="RubberBulletsMod">Резиновые пули</Entry>
     <Entry Id="Antidote">Антидот</Entry>
