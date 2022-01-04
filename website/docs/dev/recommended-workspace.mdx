@@ -1,0 +1,105 @@
+# Recommended Workspace
+
+If you're planning on creating more than a single mod, then I recommend using this workspace structure:
+
+```bash
+sor-repos # where all of your repositories/solutions will be
+│
+├── .ref # references, that you will be including in the mods
+│   │
+│   ├── .static # static references, that don't change much with time
+│   │   ├── com.unity.multiplayer-hlapi.Runtime.dll
+│   │   ├── netstandard.dll
+│   │   ├── UnityEngine.CoreModule.dll
+│   │   ├── UnityEngine.dll
+│   │   ├── UnityEngine.Physics2DModule.dll
+│   │   ├── UnityEngine.UI.dll
+│   │   └── *all other modules*
+│   │
+│   │ # dynamic references, that are often updated
+│   ├── 0Harmony.dll
+│   ├── 0Harmony.xml
+│   ├── Assembly-CSharp.dll # the game's code itself
+│   ├── BepInEx.dll
+│   ├── BepInEx.xml
+│   ├── RogueLibsCore.dll
+│   └── RogueLibsCore.xml
+│
+├── .events # PluginBuildEvents, to automatize the build process
+│
+│ # your mods' repositories/solutions
+├── MyFirstMod
+│   └── ...
+├── MyAmazingMod
+│   └── ...
+├── MyIncredibleMod
+│   └── ...
+└── MyFantasticMod
+    └── ...
+```
+
+## `sor-repos` - Repositories folder
+
+Instead of storing all of the mod repositories in your *general* repositories folder, create a separate one, so that you can quickly tell where your Streets of Rogue mods are located.
+
+:::tip Pro-tip: Repositories directory
+It's better to create `sor-repos` somewhere in the root of your drive, like `D:\sor-repos`. It's way shorter, more accessible and simpler to use than the default `C:\Users\$USER\source\repos`.
+:::
+
+## `.ref` - References
+
+Instead of each folder having their own Libraries directory with dozens of .dll files, you can just create a shared directory, that all projects are going to use. `.ref/static` should contain *static* assemblies, that don't change much with time - those are the files in the `/StreetsOfRogue_Data/Managed` directory (except for `Assembly-CSharp.dll`). Other files go into `.ref`. Those are updated relatively often, like `0Harmony.dll`, `BepInEx.dll`, `RogueLibsCore.dll` and, of course, `Assembly-CSharp.dll`, that contains the game's code itself.
+
+:::note XML Documentation files
+If there's an `.xml` file next to the `.dll`, don't forget to include it as well; otherwise, your IDE (Visual Studio, Rider or whatever you're using) won't show you any documentation on any imported types or members.
+:::
+
+## `.events` - PluginBuildEvents
+
+### Copying the files
+
+Tired of copying your plugin's files over to `BepInEx/plugins`? Well, there's a solution!
+
+[Download the PluginBuildEvents](https://drive.google.com/file/d/1gbh5hTF3IK-ewKwlWA7CImrQQXvRjq2e/view?usp=sharing) and unpack the `.events` folder into your `sor-repos`. Then open your project's Properties > Build Events and specify the following **post-build** events:
+
+```bash
+"..\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"
+```
+
+Build your plugin, and it will be automatically moved into `BepInEx/plugins`!
+
+:::note
+If you haven't purchased the Steam version of the game (or if you somehow messed up the Steam's installation path in the registry), then specify the full path to the game instead of just the name:
+
+```bash
+"..\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "C:\GOG Games\Streets of Rogue"
+```
+:::
+
+### Launching the game
+
+Wanna launch the game when the build's complete? Add this to your post-build events on the next line:
+
+```bash
+"..\..\.events\PluginBuildEvents.exe" --launch 512900
+```
+
+:::note
+`512900` is Streets of Rogue's id in Steam. If you're developing plugins for another game, go to its store page in Steam - the number in the URL is the id: `https://store.steampowered.com/app/512900/Streets_of_Rogue/`.
+:::
+
+:::note
+If you haven't purchased the Steam version of the game, then just put the path to the game's executable in there:
+
+```bash
+"C:\GOG Games\Streets of Rogue\StreetsOfRogue.exe"
+```
+:::
+
+Use this only on one of the projects in your solution. Otherwise, the game's executable will be launched more than one time, and you'll get *"Another instance of the game is already running!"* warnings or something like that.
+
+## Creating new mod projects
+
+There will be a tool for creating new mod projects, that will include the necessary references and template code.
+
+Check in here tomorrow!
