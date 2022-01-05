@@ -16,11 +16,16 @@ import { parse as queryParse } from 'query-string';
 function HomepageHeader() {
   const { isDarkTheme } = useThemeContext();
   const params = queryParse(useLocation().search);
-  let src = params.pokemon ? LogoPokemon : (isDarkTheme ? LogoDark : Logo);
+  let logo = isDarkTheme ? LogoDark : Logo;
+  console.log(logo);
+  console.log(params.pokemon);
+  console.log(!!params.pokemon);
+  if (params.pokemon) logo = LogoPokemon;
+  console.log(logo);
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <img src={src} width='50%'/>
+        <img src={logo} width='50%'/>
         <p className="hero__subtitle">
           <Translate id="homepage.tagline">
             Doing the impossible.
