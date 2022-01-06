@@ -1,4 +1,4 @@
-<Language Id="english" Version="4">
+<Language Id="english" Version="5">
   <Category Id="Agent">
     <Entry Id="Playerr">Player</Entry>
     <Entry Id="Actor">Actor</Entry>
@@ -1029,7 +1029,7 @@
     <Entry Id="FeelinFull">Feelin' Full</Entry>
     <Entry Id="TranqDartsWorkFaster">Quick Tranq</Entry>
     <Entry Id="StandingStillCausesCamouflage">Cardboard Box-Like</Entry>
-    <Entry Id="ChallengeAnyoneToFight">Honorable Challengees</Entry>
+    <Entry Id="ChallengeAnyoneToFight">Honorable Challenges</Entry>
     <Entry Id="FeelingGoodPositiveEffects">Lit</Entry>
     <Entry Id="HigherWerewolfSpeed">Swift Wolf</Entry>
     <Entry Id="HigherWerewolfDamage">Rip and Tear</Entry>

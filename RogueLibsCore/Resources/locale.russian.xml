@@ -1,7 +1,7 @@
-<Language Id="russian" Version="6">
-  <Category Id="Agent">
+<Language Id="russian" Version="7">
+  <Category Id="Agent"> <!-- Not yet translated stuff is marked with "TBT" -->
     <Entry Id="Playerr">Игрок</Entry>
-    <Entry Id="Actor">Актер</Entry>
+    <Entry Id="Actor">Актёр</Entry>
     <Entry Id="Alien">Пришелец</Entry>
     <Entry Id="Artist">Художник</Entry>
     <Entry Id="Assassin">Ассассин</Entry>
@@ -45,7 +45,7 @@
     <Entry Id="Reporter">Журналист</Entry>
     <Entry Id="ResistanceLeader">Лидер Сопротивления</Entry>
     <Entry Id="Robot">Робот-убийца</Entry>
-    <Entry Id="Scientist">Ученый</Entry>
+    <Entry Id="Scientist">Учёный</Entry>
     <Entry Id="ShapeShifter">Оборотень</Entry>
     <Entry Id="Shopkeeper">Лавочник</Entry>
     <Entry Id="Slave">Раб</Entry>
@@ -117,7 +117,7 @@
     <Entry Id="PlayerChooses">- Игрок выбирает</Entry>
     <Entry Id="None">- Ничего</Entry>
     <Entry Id="WallSpawnSometimes">50% шанс появления</Entry>
-    <Entry Id="testagent"></Entry>
+    <Entry Id="testagent">xx</Entry>
   </Category>
   <Category Id="Item">
     <Entry Id="Money">Деньги</Entry>
@@ -195,7 +195,7 @@
     <Entry Id="Chainsaw">Бензопила</Entry>
     <Entry Id="Fist">Кулак</Entry>
     <Entry Id="Knife">Нож</Entry>
-    <Entry Id="KnockerMelee">(t/n Knocker Melee)</Entry>
+    <Entry Id="KnockerMelee">(TBT Knocker Melee)</Entry>
     <Entry Id="PoliceBaton">Полицейская дубинка</Entry>
     <Entry Id="Sledgehammer">Кувалда</Entry>
     <Entry Id="Sword">Меч</Entry>
@@ -203,7 +203,7 @@
     <Entry Id="DartPoison">Отравленный дротик</Entry>
     <Entry Id="Grenade">Граната</Entry>
     <Entry Id="GrenadeEMP">ЭМИ-граната</Entry>
-    <Entry Id="GrenadeKnocker">(t/n Knocker Grenade)</Entry>
+    <Entry Id="GrenadeKnocker">(TBT Knocker Grenade)</Entry>
     <Entry Id="GrenadeDizzy">Ошеломляющая граната</Entry>
     <Entry Id="LandMine">Противопехотная мина</Entry>
     <Entry Id="MolotovCocktail">Коктейль Молотова</Entry>
@@ -236,8 +236,8 @@
     <Entry Id="FourLeafClover">Четырёхлистный клевер</Entry>
     <Entry Id="FiveLeafClover">Пятилистный клевер</Entry>
     <Entry Id="SixLeafClover">Шестилистный клевер</Entry>
-    <Entry Id="Hypnotizer">Гипнотизер Тип I</Entry>
-    <Entry Id="Hypnotizer2">Гипнотизер Тип II</Entry>
+    <Entry Id="Hypnotizer">Гипнотизёр Тип I</Entry>
+    <Entry Id="Hypnotizer2">Гипнотизёр Тип II</Entry>
     <Entry Id="Haterator">Излучатель ненависти</Entry>
     <Entry Id="StealingGlove">Липкая перчатка</Entry>
     <Entry Id="FreeItemVoucher">Ваучер на бесплатный предмет</Entry>
@@ -298,10 +298,10 @@
     <Entry Id="AcidSpit">Плевок кислотой</Entry>
     <Entry Id="Nugget">Куриный наггетс</Entry>
     <Entry Id="Nuggets">Куриные наггетсы</Entry>
-    <Entry Id="StreetCred">(t/n StreetCred)</Entry>
-    <Entry Id="StreetCreds">(t/n StreetCreds)</Entry>
+    <Entry Id="StreetCred">(TBT StreetCred)</Entry>
+    <Entry Id="StreetCreds">(TBT StreetCreds)</Entry>
     <Entry Id="TopHat">Цилиндр</Entry>
-    <Entry Id="TutorialAbility">Обильные слезы</Entry>
+    <Entry Id="TutorialAbility">Обильные слёзы</Entry>
     <Entry Id="XRaySpecs">Рентгеновские очки</Entry>
     <Entry Id="ClearAllItems">Убрать всё</Entry>
     <Entry Id="BearTrapPark">Капкан</Entry>
@@ -451,7 +451,7 @@
     <Entry Id="Television">Телевизор</Entry>
     <Entry Id="Toilet">Туалет</Entry>
     <Entry Id="ToolDrawers">Ящики с инструментами</Entry>
-    <Entry Id="Transmogrifier">Трансмогрифер</Entry>
+    <Entry Id="Transmogrifier">(TBT Transmogrifier)</Entry>
     <Entry Id="TrapDoor">Люк</Entry>
     <Entry Id="TrashCan">Мусорный бак</Entry>
     <Entry Id="Tree">Дерево</Entry>
@@ -462,14 +462,14 @@
     <Entry Id="Window">Окно</Entry>
     <Entry Id="PawnShopMachine">Скупщик</Entry>
     <Entry Id="AugmentationBooth">Будка аугментации</Entry>
-    <Entry Id="ChallengeSetter">Кабинка</Entry>
+    <Entry Id="ChallengeSetter">(TBT Challenger Booth)</Entry>
     <Entry Id="WasteBasket">Мусорная корзина</Entry>
     <Entry Id="WineBarrel">Бочка с вином</Entry>
     <Entry Id="WoodBurningStove">Дровяная печь</Entry>
     <Entry Id="Workbench">Верстак</Entry>
     <Entry Id="BoulderSmall">Валун</Entry>
     <Entry Id="Generator2">Разогнанный генератор</Entry>
-    <Entry Id="FireballSpitter">Огнешаромет</Entry>
+    <Entry Id="FireballSpitter">Огнешаромёт</Entry>
     <Entry Id="SlimeBarrel">Бочка слизи</Entry>
     <Entry Id="SlimePuddle">Лужа слизи</Entry>
     <Entry Id="MineCart">Вагонетка</Entry>
@@ -619,7 +619,7 @@
     <Entry Id="CityParkFloor">Городской парк</Entry>
     <Entry Id="CleanTiles">Чистая плитка</Entry>
     <Entry Id="DirtyTiles">Грязная плитка</Entry>
-    <Entry Id="DanceFloorRaised">Танцпол возвышенный)</Entry>
+    <Entry Id="DanceFloorRaised">Танцпол (возвышенный)</Entry>
     <Entry Id="CleanTilesRaised">Чистая плитка (возвышенная)</Entry>
     <Entry Id="SmallTiles">Мелкая плитка</Entry>
     <Entry Id="ElectronicPlates">Электронные плиты</Entry>
@@ -632,8 +632,8 @@
     <Entry Id="Ice">Лёд</Entry>
     <Entry Id="ArenaFloor">Арена (чистая плитка)</Entry>
     <Entry Id="BrickIndoor">Кирпич</Entry>
-    <Entry Id="ClearFloor">Чистый</Entry>
-    <Entry Id="ClearFloor2">Чистый (собственность)</Entry>
+    <Entry Id="ClearFloor">Пусто</Entry>
+    <Entry Id="ClearFloor2">Пусто (собственность)</Entry>
     <Entry Id="ChestGood">Хорошие сундуки</Entry>
     <Entry Id="ImportantObject">Важные объекты</Entry>
     <Entry Id="ImportantObjectNoChests">Важные объекты (кроме сундуков)</Entry>
@@ -704,7 +704,7 @@
     <Entry Id="LakeLight">Озеро</Entry>
     <Entry Id="MallLight">Торговый центр</Entry>
     <Entry Id="TVStationLight">Телестанция</Entry>
-    <Entry Id="testobject"></Entry>
+    <Entry Id="testobject">xx</Entry>
   </Category>
   <Category Id="StatusEffect">
     <Entry Id="AboveTheLaw">Вне закона</Entry>
@@ -727,7 +727,7 @@
     <Entry Id="CantUseWeapons">Пацифизм</Entry>
     <Entry Id="CantUseWeapons2">Пальцы-сосиски</Entry>
     <Entry Id="DontTriggerFloorHazards">Изящество</Entry>
-    <Entry Id="Drunk">Пьянь</Entry>
+    <Entry Id="Drunk">Пьяный</Entry>
     <Entry Id="ElectroTouch">Электрическое прикосновение</Entry>
     <Entry Id="Enraged">Бешенство</Entry>
     <Entry Id="Enraged_B">Гнев</Entry>
@@ -757,7 +757,7 @@
     <Entry Id="DecreaseSpeed">Штраф к скорости</Entry>
     <Entry Id="Giant">Гигант</Entry>
     <Entry Id="HatesGorilla">Ненависть к животным</Entry>
-    <Entry Id="HatesScientist">Охотник на ученых</Entry>
+    <Entry Id="HatesScientist">Охотник на учёных</Entry>
     <Entry Id="HatesRivalGang">Патриот</Entry>
     <Entry Id="Invincible">Неуязвимость</Entry>
     <Entry Id="Invisible">Невидимость</Entry>
@@ -878,7 +878,7 @@
     <Entry Id="WerewolfEffect">Вервольф</Entry>
     <Entry Id="Bloodlust">Жажда крови</Entry>
     <Entry Id="Bloodlust2">Жажда крови +</Entry>
-    <Entry Id="IncreaseStatEvery2Levels">Шанс не проиграть</Entry>
+    <Entry Id="IncreaseStatEvery2Levels">Жизненный потенциал</Entry>
     <Entry Id="InDebt">Долг</Entry>
     <Entry Id="InDebt2">Долг</Entry>
     <Entry Id="InDebt3">Долг</Entry>
@@ -996,7 +996,7 @@
     <Entry Id="HacksBlowUpObjects">Кибербомба</Entry>
     <Entry Id="PossessShorterCooldown">Менятель тел</Entry>
     <Entry Id="NoDepossessHealthLoss">Безболезненные смерти</Entry>
-    <Entry Id="NoPossessHate">Замечальные вселения</Entry>
+    <Entry Id="NoPossessHate">Замечательные вселения</Entry>
     <Entry Id="SlavesDontMutiny">Добрый хозяин</Entry>
     <Entry Id="BiggerSlaveHelmetExplosions">Разрушительные смерти</Entry>
     <Entry Id="LegalEnslavement">Законное порабощение</Entry>
@@ -1021,7 +1021,7 @@
     <Entry Id="FightsFires">Спаситель с огоньком</Entry>
     <Entry Id="StrongerWaterCannon">Полицейский водомет</Entry>
     <Entry Id="FireExtinguishXP">Боевик из пекла</Entry>
-    <Entry Id="ResurrectionAllies">(t/n Smith)</Entry>
+    <Entry Id="ResurrectionAllies">(TBT Smith)</Entry>
     <Entry Id="WaterGivesBuff">Омолаживающая вода</Entry>
     <Entry Id="CantWearArmor">Необычное телосложение</Entry>
     <Entry Id="Glutton">Обжора</Entry>
@@ -1051,7 +1051,7 @@
     <Entry Id="Mugger">Гопник</Entry>
     <Entry Id="Mugger2">Гопник +</Entry>
     <Entry Id="MoreHealthFromPowerSap">Здоровый заряд</Entry>
-    <Entry Id="MoreDamagePowerSap">Электрический урон</Entry>
+    <Entry Id="MoreDamagePowerSap">Высокая напряжённость</Entry>
     <Entry Id="Rechargeable">На батарейке</Entry>
     <Entry Id="Rechargeable2">На батарейке +</Entry>
     <Entry Id="Electronic">Электронный</Entry>
@@ -1068,13 +1068,13 @@
     <Entry Id="AttacksOneDamage">Почти безобидный</Entry>
     <Entry Id="BigCollider">Огромный</Entry>
     <Entry Id="OilRestoresHealth">Бензинозависимость</Entry>
-    <Entry Id="CantTeleport">Нет телепортов</Entry>
+    <Entry Id="CantTeleport">Без телепортов</Entry>
     <Entry Id="MindControlled">Зомбированный</Entry>
     <Entry Id="MindControlling">Контролирование разума</Entry>
     <Entry Id="CopsDontCare">Копам всё равно</Entry>
     <Entry Id="StompLessDamage">Безопасный топот</Entry>
     <Entry Id="StompDamagesAgents">Потрясение</Entry>
-    <Entry Id="BiggerStompRadius">Сильные вибрации</Entry>
+    <Entry Id="BiggerStompRadius">Хорошие вибрации</Entry>
     <Entry Id="MusicianTakesLessHealth">Кровь из стали</Entry>
     <Entry Id="MoreMoneyFromDeliveries">Чаевые</Entry>
     <Entry Id="MoreTimeForDeliveries">Неспешная поездка</Entry>
@@ -1090,7 +1090,7 @@
     <Entry Id="MindControlledWalkThroughWalls">Безудержные ходоки</Entry>
     <Entry Id="MechHateTrait">Гроза преступности</Entry>
     <Entry Id="CopsDontCare_Chinese"></Entry>
-    <Entry Id="teststatuseffect"></Entry>
+    <Entry Id="teststatuseffect">xx</Entry>
   </Category>
   <Category Id="Description">
     <Entry Id="Money">Корень всех зол.</Entry>
@@ -1107,7 +1107,7 @@
     <Entry Id="Syringe">Кто знает, какой эффект окажет эта странная жидкость...</Entry>
     <Entry Id="BalletShoes">Скорее всего, придётся убрать их из игры!</Entry>
     <Entry Id="BraceletStrength">Наверное, этому предмету место в средневековой фэнтезийной игре... Ну и плевать. Повышает силу атак в ближнем бою.</Entry>
-    <Entry Id="BulletproofVest">Снижает урон от пуль, пока цел. А еще ты выглядишь в нем так, будто тебя окончательно расперло.</Entry>
+    <Entry Id="BulletproofVest">Снижает урон от пуль, пока цел. А ещё ты выглядишь в нём так, будто тебя окончательно распёрло.</Entry>
     <Entry Id="CodPiece">Говорят, эта штука защищает самое ценное.</Entry>
     <Entry Id="FireproofSuit">Защищает от ожогов, но не скрывает бакенбарды!</Entry>
     <Entry Id="GasMask">Защищает нос и лицо от опасных газов. Полезен в дальних поездках с дядюшкой Денни.</Entry>
@@ -1117,15 +1117,15 @@
     <Entry Id="Map"></Entry>
     <Entry Id="BananaPeel">Отправляет врагов в объятья бессердечной гравитации.</Entry>
     <Entry Id="Rag"></Entry>
-    <Entry Id="Rock">Универсальный многоцелевой камушек. Серьезно, им можно сделать тысячу вещей.</Entry>
+    <Entry Id="Rock">Универсальный многоцелевой камушек. Серьёзно, им можно сделать тысячу вещей.</Entry>
     <Entry Id="CigaretteLighter">Пламя одним движением руки. В средние века тебя бы тут же сожгли на костре.</Entry>
     <Entry Id="Crowbar">Можно использовать в качестве оружия, но можно и открывать всякие разные вещи. Имеет ограниченный запас прочности.</Entry>
-    <Entry Id="OilContainer">Лучше всего работает в связке с зажигалкой. Можно заправить в раздатчике боеприпасов. Детям до пяти лет не пить.</Entry>
+    <Entry Id="OilContainer">Лучше всего работает в связке с зажигалкой. Можно заправить в Раздатчике боеприпасов. Детям до пяти лет не пить.</Entry>
     <Entry Id="GrapplingHook"></Entry>
     <Entry Id="HackingTool">Одноразовый гаджет, который дистанционно взламывает любой компьютер.</Entry>
     <Entry Id="ItemTeleporter">Может дать тебе любую вещь, которую ты только пожелаешь.</Entry>
     <Entry Id="Jackhammer"></Entry>
-    <Entry Id="Key">Открывает одну дверь в той же локации, где ты ее находишь.</Entry>
+    <Entry Id="Key">Открывает одну дверь в той же локации, где ты её находишь.</Entry>
     <Entry Id="KeyCard"></Entry>
     <Entry Id="Laptop">Позволяет дистанционно взламывать Компьютеры. Как будто ты х4к3р. Во время взлома можно перемещаться, чтобы тебя не обнаружили. 50% шанс вызвать тревогу.</Entry>
     <Entry Id="Lockpick">Ей можно вскрыть любой замок. Только не думай, что хозяева будут смотреть на это сквозь пальцы.</Entry>
@@ -1152,8 +1152,8 @@
     <Entry Id="Flamethrower">Сладкий сон пироманьяка! Это оружие позволяет сжигать некоторые стены и предметы.</Entry>
     <Entry Id="FreezeRay">Превращает людей в прекрасные ледяные скульптуры.</Entry>
     <Entry Id="GuidedMissileLauncher"></Entry>
-    <Entry Id="LeafBlower">Вообще, эта штука повышает уровень шума выше всяких норм, так что фрилансеры в своих домах бесятся от возмущения. В этой же игре она просто создает сильный порыв ветра.</Entry>
-    <Entry Id="MachineGun">Не можешь попасть в цель в пяти метров? Не беда! Просто стреляй! Что? Случайные прохожие? Какие случайные прохожие?!</Entry>
+    <Entry Id="LeafBlower">Вообще, эта штука повышает уровень шума выше всяких норм так, что фрилансеры в своих домах бесятся от возмущения. В этой же игре она просто создает сильный порыв ветра.</Entry>
+    <Entry Id="MachineGun">Не можешь попасть в цель с пяти метров? Не беда! Просто стреляй! Что? Случайные прохожие? Какие случайные прохожие?!</Entry>
     <Entry Id="Pistol">Обычная стреляющая штука. Ты знаешь, что с ней делать.</Entry>
     <Entry Id="RocketLauncher">Может проделать дырку в чем угодно — и в тебе тоже, если не будешь соблюдать правила безопасности.</Entry>
     <Entry Id="Shotgun">Не быстро, зато чертовски мощно.</Entry>
@@ -1162,7 +1162,7 @@
     <Entry Id="Axe">Этот топор отлично подходит для опроса на тему "Не хотите ли вы умереть?".</Entry>
     <Entry Id="BaseballBat">Можно хорошенько отмутузить какого-нибудь придурка... или сыграть в самую скучную игру в мире. Решать тебе.</Entry>
     <Entry Id="Blowtorch"></Entry>
-    <Entry Id="Chainsaw">Только для деревьев. Ок? Только. Ни в коем случае не использовать для расчленения людей, ясно?</Entry>
+    <Entry Id="Chainsaw">Только для деревьев. Окей? Только. Ни в коем случае не использовать для расчленения людей, ясно?</Entry>
     <Entry Id="Fist"></Entry>
     <Entry Id="Knife">Предназначен для приготовления изумительных блюд, несущих радость и удовлетворение. Но ты вряд ли будешь заниматься чем-то подобным, да?</Entry>
     <Entry Id="KnockerMelee"></Entry>
@@ -1175,7 +1175,7 @@
     <Entry Id="GrenadeEMP">Отрубают всю электронику.</Entry>
     <Entry Id="GrenadeKnocker"></Entry>
     <Entry Id="GrenadeDizzy">Названа в честь героя популярной европейской аркады с яйцами. Как ни странно, ошеломляет.</Entry>
-    <Entry Id="LandMine">Отличная подходит для розыгрыша: просто положите ее у кого-нибудь на пути.</Entry>
+    <Entry Id="LandMine">Отличная подходит для розыгрыша: просто положите её у кого-нибудь на пути.</Entry>
     <Entry Id="StickyMine"></Entry>
     <Entry Id="TripMine"></Entry>
     <Entry Id="SlaveHelmet">Обеспечивает повиновение рабов! Если они пытаются его снять — БУМ! Ну и просто так можно взорвать, так что побег бесполезен.</Entry>
@@ -1185,7 +1185,7 @@
     <Entry Id="RagePoison">Выпив это, человек будет с яростью набрасываться на всех, кто встретится ему на пути. Очень смешная штука.</Entry>
     <Entry Id="HologramItem">Говорят, если поймать йети и разбить его, как пиньяту, внутри обнаружится настоящее сокровище!</Entry>
     <Entry Id="SkeletonKey">Открывает любую дверь. Не ломается. Нет, это не ключ от твоего сердца.</Entry>
-    <Entry Id="ResurrectionShampoo">Среди прочего, воскрешает отмершие волосяные луковицы. А еще людей. Только выпить его надо ПЕРЕД смертью.</Entry>
+    <Entry Id="ResurrectionShampoo">Среди прочего, воскрешает отмершие волосяные луковицы. А ещё людей. Только выпить его надо ПЕРЕД смертью.</Entry>
     <Entry Id="TimeBomb">Через 10 секунд после установки прогремит взрыв. Нет, ВЗРЫВ! Серьёзно. Отойди подальше. Ещё дальше.</Entry>
     <Entry Id="QuickEscapeTeleporter">Когда твоё здоровье падает ниже определённой отметки, ты телепортируешься в другое место.</Entry>
     <Entry Id="WindowCutter">Позволяет вырезать стекло почти не производя шума.</Entry>
@@ -1215,7 +1215,7 @@
     <Entry Id="FreeItemVoucher">Обменяй на любой предмет по твоему выбору. Работает в любом магазине.</Entry>
     <Entry Id="KillProfiter">Борись с перенаселением, спасай человечество! Убивай людей и получай за это деньги. Максимум —  100$.</Entry>
     <Entry Id="PowerDrill"></Entry>
-    <Entry Id="KillerThrower">Тебе когда-нибудь хотелось бросать всякие вещи в людей так сильно, чтобы их разрывало на кусочки? МЕЧТЫ СБЫВАЮТСЯ!</Entry>
+    <Entry Id="KillerThrower">Тебе когда-нибудь хотелось бросать всякие вещи в людей так сильно, чтобы их разрывало на кусочки? МЕЧТЫ СБЫВАЮТСЯ!!!</Entry>
     <Entry Id="CubeOfLampey">Разбивая лампы, можно найти что-нибудь классное.</Entry>
     <Entry Id="AmmoStealer">Телепортирует боеприпасы из оружия цели в то оружие, что у тебя в руках.</Entry>
     <Entry Id="Empty"></Entry>
@@ -1235,11 +1235,11 @@
     <Entry Id="Shrinker">Уменьшает тебя примерно до размеров Микки Руни.</Entry>
     <Entry Id="ShrinkRay">Уменьшай своих врагов и топчи их как тараканов. Или просто сметай их в сторону — это более гуманно.</Entry>
     <Entry Id="BodyVanisher">Может превратить любое бессознательное тело в тонкий воздух. Или толстый. Давайте не дискриминировать тут.</Entry>
-    <Entry Id="DoorDetonator">Помести эту штуку на запертую дверь. Потом как-нибудь ее потревожь. БА-БАХ! Большой взрыв, который может уничтожить даже стальную дверь.</Entry>
+    <Entry Id="DoorDetonator">Помести эту штуку на запертую дверь. Потом как-нибудь её потревожь. БА-БАХ! Большой взрыв, который может уничтожить даже стальную дверь.</Entry>
     <Entry Id="FriendPhone">Призови своих друзей и они телепортируются, чтобы помочь тебе в сложной ситуации. Или просто поболтать.</Entry>
     <Entry Id="BearTrap">Вероятно, это предназначалось для охоты на медведей (судя по названию), но и людей им можно покалечить или замедлить.</Entry>
-    <Entry Id="CardboardBox">Пока ты прячешься в ней, никто тебя не заметит. Пока ты не начнешь двигаться. Компьютер не настолько тупой!</Entry>
-    <Entry Id="IdentifyWand">Прежде чем вколоть шприц себе в руку, стоит выяснить, с чем он. И теперь ты можешь это сделать! Просто совмести этот предмет со шприцем.</Entry>
+    <Entry Id="CardboardBox">Пока ты прячешься в ней, никто тебя не заметит. Пока ты не начнёшь двигаться. Компьютер не настолько тупой!</Entry>
+    <Entry Id="IdentifyWand">Прежде чем вколоть шприц себе в руку, стоит выяснить, с чем он. И теперь ты можешь это сделать! Просто совмести этот предмет со шприцом.</Entry>
     <Entry Id="BigBomb">Зачем ты это читаешь? Вперёд, на поиски остальных бомб!</Entry>
     <Entry Id="Thief">Пожалуй, худший вор в истории. Одевается как типичный грабитель из анекдотов. Это просто смешно. А причина — в колоссальной неуверенности в себе. Он думал, что будет выглядеть как настоящий преступник... Не получилось. Удастся ли Вору когда-нибудь справиться с синдромом самозванца?</Entry>
     <Entry Id="Gorilla">Эту зверюгу вывели в экспериментальной лаборатории и напичкали мутагенами так, что она стала разумной. Очень разумной. Не умеет говорить по-английски, да и воняет, как туалетный ёршик дяди Денни, но чертовски быстра и невероятно сильна. Ненавидит учёных всеми фибрами души — и они отвечают ей тем же.</Entry>
@@ -4333,7 +4333,7 @@
     <Entry Id="CreditsMenu">ТИТРЫ</Entry>
     <Entry Id="SlipThroughWindow">Пробраться через разбитое стекло</Entry>
     <Entry Id="Loading">Загрузка...</Entry>
-    <Entry Id="Rogue">(t/n Rogue)</Entry>
+    <Entry Id="Rogue">(TBT Rogue)</Entry>
     <Entry Id="CannibalEat_Chinese"></Entry>
     <Entry Id="SetBasicDetails">Введи текст</Entry>
     <Entry Id="WithFireExtinguisher">Огнетушителем</Entry>
