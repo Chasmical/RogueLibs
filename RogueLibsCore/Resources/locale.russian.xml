@@ -1,4 +1,4 @@
-<Language Id="russian" Version="5">
+<Language Id="russian" Version="6">
   <Category Id="Agent">
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актер</Entry>
@@ -1385,8 +1385,8 @@
     <Entry Id="GenericAgentsAligned">Обычные жители города относятся к тебе с симпатией</Entry>
     <Entry Id="LongLunge">Ты делаешь длинные выпады оружием ближнего боя</Entry>
     <Entry Id="LongLunge2">Ты делаешь длинные выпады оружием ближнего боя</Entry>
-    <Entry Id="HardToShoot">Враги труднее прицелиться в тебя</Entry>
-    <Entry Id="HardToShoot2">Враги труднее прицелиться в тебя</Entry>
+    <Entry Id="HardToShoot">Врагам труднее прицелиться в тебя</Entry>
+    <Entry Id="HardToShoot2">Врагам труднее прицелиться в тебя</Entry>
     <Entry Id="DontHitAligned">Ты не можешь ударить союзника, и союзники не могут ударить тебя. То же самое и с лояльными, и с покорными персонажами. Касается только пуль, касаний и атак в ближнем бою. Действует и на твоих подчиненных.</Entry>
     <Entry Id="Lunge">Удерживай [Special], чтобы зарядить мощнейшую атаку</Entry>
     <Entry Id="WerewolfLunge">Нажми [Special], чтобы нанести удар Вервольфа</Entry>
