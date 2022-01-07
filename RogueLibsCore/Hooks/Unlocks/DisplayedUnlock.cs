@@ -152,8 +152,8 @@ namespace RogueLibsCore
                 InvItem invItem = new InvItem { invItemName = Name };
                 invItem.SetupDetails(false);
                 if (invItem.rewardCount != 1 && !invItem.isArmor && !invItem.isArmorHead && invItem.itemType != ItemTypes.WeaponMelee)
-                    Text += $" ({invItem.rewardCount})";
-                Text += $" - ${LoadoutCost}";
+                    name += $" ({invItem.rewardCount})";
+                name += $" - ${LoadoutCost}";
             }
 			else
             {
