@@ -112,6 +112,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>"..\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"</PostBuildEvent>
+    <PostBuildEvent>"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"</PostBuildEvent>
   </PropertyGroup>
 </Project>
