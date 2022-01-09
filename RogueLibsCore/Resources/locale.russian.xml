@@ -1,4 +1,4 @@
-<Language Id="russian" Version="7">
+<Language Id="russian" Version="8">
   <Category Id="Agent"> <!-- Not yet translated stuff is marked with "TBT" -->
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актёр</Entry>
@@ -1666,7 +1666,7 @@
     <Entry Id="HackImmediate">Мгновенный взлом</Entry>
     <Entry Id="HackingMakesNoSound">Взлом никогда не вызывает тревогу</Entry>
     <Entry Id="HacksBlowUpObjects">Большинство взламываемых объектов можно взорвать</Entry>
-    <Entry Id="PossessShorterCooldown">Камень переселения луш перезаряжается быстрее</Entry>
+    <Entry Id="PossessShorterCooldown">Камень переселения душ перезаряжается быстрее</Entry>
     <Entry Id="NoDepossessHealthLoss">При смерти носителя ты не получаешь урон</Entry>
     <Entry Id="NoPossessHate">Вселение в людей не делает их враждебными или раздражёнными</Entry>
     <Entry Id="SlavesDontMutiny">Рабы не восстают</Entry>
