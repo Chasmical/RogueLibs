@@ -63,7 +63,7 @@ Tired of copying your plugin's files over to `BepInEx/plugins`? Well, there's a 
 [Download the PluginBuildEvents](https://drive.google.com/file/d/1gbh5hTF3IK-ewKwlWA7CImrQQXvRjq2e/view?usp=sharing) and unpack the `.events` folder into your `sor-repos`. Then open your project's Properties > Build Events and specify the following **post-build** events:
 
 ```bash
-"..\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"
+"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"
 ```
 
 Build your plugin, and it will be automatically moved into `BepInEx/plugins`!
@@ -72,7 +72,7 @@ Build your plugin, and it will be automatically moved into `BepInEx/plugins`!
 If you haven't purchased the Steam version of the game (or if you somehow messed up the Steam's installation path in the registry), then specify the full path to the game instead of just the name:
 
 ```bash
-"..\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "C:\GOG Games\Streets of Rogue"
+"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "C:\GOG Games\Streets of Rogue"
 ```
 :::
 
@@ -81,7 +81,7 @@ If you haven't purchased the Steam version of the game (or if you somehow messed
 Wanna launch the game when the build's complete? Add this to your post-build events on the next line:
 
 ```bash
-"..\..\.events\PluginBuildEvents.exe" --launch 512900
+"$(SolutionDir)\..\.events\PluginBuildEvents.exe" --launch 512900
 ```
 
 :::note
