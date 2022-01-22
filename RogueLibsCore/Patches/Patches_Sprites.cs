@@ -11,8 +11,6 @@ namespace RogueLibsCore
 		public void PatchSprites()
         {
             // define non-initialized RogueSprites
-			Patcher.Postfix(typeof(GameController), "Awake");
-
             Patcher.Postfix(typeof(tk2dEditorSpriteDataUnloader), nameof(tk2dEditorSpriteDataUnloader.Register));
 
 			// set the shared material of all renderers to the one selected in the tk2dSpriteDefinition
@@ -36,11 +34,6 @@ namespace RogueLibsCore
 			// Nugget slot image
 			Patcher.Postfix(typeof(NuggetSlot), nameof(NuggetSlot.UpdateNuggetText));
 		}
-
-		public static void GameController_Awake(GameController __instance)
-		{
-
-        }
 
         public static void tk2dEditorSpriteDataUnloader_Register(tk2dEditorSpriteDataUnloader __instance, tk2dSpriteCollectionData data)
         {

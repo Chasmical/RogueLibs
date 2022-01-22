@@ -484,14 +484,14 @@ namespace RogueLibsCore
                 float maxX = def.uvs.Max(uv => uv.x) * def.material.mainTexture.width;
                 float minY = def.uvs.Min(uv => uv.y) * def.material.mainTexture.height;
                 float maxY = def.uvs.Max(uv => uv.y) * def.material.mainTexture.height;
-                Vector2 posi = new Vector2(minX, minY);
+                Vector2 pos = new Vector2(minX, minY);
                 Vector2 size = new Vector2(maxX - minX, maxY - minY);
 
                 Texture2D readable = RogueUtilities.MakeTextureReadable((Texture2D)def.material.mainTexture);
                 int width = Mathf.RoundToInt(size.x);
                 int height = Mathf.RoundToInt(size.y);
                 Color[] colors = readable.GetPixels(
-                    Mathf.RoundToInt(posi.x), Mathf.RoundToInt(posi.y),
+                    Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y),
                     width, height);
 
                 if (def.flipped != tk2dSpriteDefinition.FlipMode.None)
