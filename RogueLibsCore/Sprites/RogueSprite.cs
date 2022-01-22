@@ -161,6 +161,7 @@ namespace RogueLibsCore
             [SpriteScope.Decals] = new List<RogueSprite>(),
             [SpriteScope.WallTops] = new List<RogueSprite>(),
             [SpriteScope.Walls] = new List<RogueSprite>(),
+			[SpriteScope.Spawners] = new List<RogueSprite>(),
         };
         internal bool isPrepared;
         internal static void DefinePrepared(tk2dSpriteCollectionData collection, SpriteScope scope)

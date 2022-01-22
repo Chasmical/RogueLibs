@@ -111,6 +111,7 @@ namespace RogueLibsCore
         public static tk2dSpriteCollectionData DecalSprites { get; internal set; }
         public static tk2dSpriteCollectionData WallTopSprites { get; internal set; }
         public static tk2dSpriteCollectionData WallSprites { get; internal set; }
+        public static tk2dSpriteCollectionData SpawnerSprites { get; internal set; }
 
 
 	}

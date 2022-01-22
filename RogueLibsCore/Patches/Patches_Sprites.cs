@@ -54,6 +54,7 @@ namespace RogueLibsCore
                 case "Decals": RogueFramework.DecalSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Decals); break;
                 case "WallTops": RogueFramework.WallTopSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.WallTops); break;
                 case "WallTiles1": RogueFramework.WallSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Walls); break;
+                case "Spawners": RogueFramework.SpawnerSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Spawners); break;
 				default: RogueFramework.LogError($"Registered an unknown sprite collection '{data.name}'."); break;
             }
         }

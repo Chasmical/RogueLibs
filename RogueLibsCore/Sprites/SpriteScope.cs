@@ -53,6 +53,8 @@ namespace RogueLibsCore
 
 		Walls = 1 << 13,
 
+		Spawners = 1 << 14,
+
 
     }
 }
