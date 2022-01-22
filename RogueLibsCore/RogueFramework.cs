@@ -96,5 +96,22 @@ namespace RogueLibsCore
 		///   <para>The list of extra sprites, that will be used if a sprite is not found in the appropriate collection.</para>
 		/// </summary>
 		public static readonly Dictionary<string, Sprite> ExtraSprites = new Dictionary<string, Sprite>();
+
+		public static tk2dSpriteCollectionData ItemSprites { get; internal set; }
+		public static tk2dSpriteCollectionData ObjectSprites { get; internal set; }
+		public static tk2dSpriteCollectionData FloorSprites { get; internal set; }
+		public static tk2dSpriteCollectionData BulletSprites { get; internal set; }
+		public static tk2dSpriteCollectionData HairSprites { get; internal set; }
+        public static tk2dSpriteCollectionData FacialHairSprites { get; internal set; }
+        public static tk2dSpriteCollectionData HeadPieceSprites { get; internal set; }
+        public static tk2dSpriteCollectionData AgentSprites { get; internal set; }
+        public static tk2dSpriteCollectionData BodySprites { get; internal set; }
+        public static tk2dSpriteCollectionData WreckageSprites { get; internal set; }
+        public static tk2dSpriteCollectionData InterfaceSprites { get; internal set; }
+        public static tk2dSpriteCollectionData DecalSprites { get; internal set; }
+        public static tk2dSpriteCollectionData WallTopSprites { get; internal set; }
+        public static tk2dSpriteCollectionData WallSprites { get; internal set; }
+
+
 	}
 }

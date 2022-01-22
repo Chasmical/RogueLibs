@@ -30,5 +30,29 @@ namespace RogueLibsCore
 		///   <para>The floor sprites.</para>
 		/// </summary>
 		Floors  = 1 << 2,
-	}
+
+		Bullets = 1 << 3,
+
+		Hair = 1 << 4,
+
+		FacialHair = 1 << 5,
+
+		HeadPieces = 1 << 6,
+
+		Agents = 1 << 7,
+
+		Bodies = 1 << 8,
+
+		Wreckage = 1 << 9,
+
+		Interface = 1 << 10,
+
+		Decals = 1 << 11,
+
+		WallTops = 1 << 12,
+
+		Walls = 1 << 13,
+
+
+    }
 }

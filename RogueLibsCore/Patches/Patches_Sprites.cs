@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace RogueLibsCore
@@ -8,9 +9,11 @@ namespace RogueLibsCore
 	internal sealed partial class RogueLibsPlugin
 	{
 		public void PatchSprites()
-		{
-			// define non-initialized RogueSprites
+        {
+            // define non-initialized RogueSprites
 			Patcher.Postfix(typeof(GameController), "Awake");
+
+            Patcher.Postfix(typeof(tk2dEditorSpriteDataUnloader), nameof(tk2dEditorSpriteDataUnloader.Register));
 
 			// set the shared material of all renderers to the one selected in the tk2dSpriteDefinition
 			Patcher.Prefix(typeof(SpawnerMain), nameof(SpawnerMain.SpawnItemSprite));
@@ -36,10 +39,30 @@ namespace RogueLibsCore
 
 		public static void GameController_Awake(GameController __instance)
 		{
-			RogueSprite.DefinePrepared(__instance.spawnerMain.itemSprites, SpriteScope.Items);
-			RogueSprite.DefinePrepared(__instance.spawnerMain.objectSprites, SpriteScope.Objects);
-			RogueSprite.DefinePrepared(__instance.spawnerMain.floorSprites, SpriteScope.Floors);
-		}
+
+        }
+
+        public static void tk2dEditorSpriteDataUnloader_Register(tk2dEditorSpriteDataUnloader __instance, tk2dSpriteCollectionData data)
+        {
+            switch (data.name)
+            {
+				case "Items": RogueFramework.ItemSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Items); break;
+                case "ObjectReals": RogueFramework.ObjectSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Objects); break;
+                case "FloorTiles1": RogueFramework.FloorSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Floors); break;
+                case "Bullets": RogueFramework.BulletSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Bullets); break;
+                case "Hair": RogueFramework.HairSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Hair); break;
+                case "FacialHair": RogueFramework.FacialHairSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.FacialHair); break;
+                case "HeadPieces": RogueFramework.HeadPieceSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.HeadPieces); break;
+                case "Agents": RogueFramework.AgentSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Agents); break;
+                case "Bodies": RogueFramework.BodySprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Bodies); break;
+                case "Wreckage": RogueFramework.WreckageSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Wreckage); break;
+                case "Interface": RogueFramework.InterfaceSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Interface); break;
+                case "Decals": RogueFramework.DecalSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Decals); break;
+                case "WallTops": RogueFramework.WallTopSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.WallTops); break;
+                case "WallTiles1": RogueFramework.WallSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Walls); break;
+				default: RogueFramework.LogError($"Registered an unknown sprite collection '{data.name}'."); break;
+            }
+        }
 
 		public static bool SpawnerMain_SpawnItemSprite(SpawnerMain __instance, InvItem item, tk2dSprite itemImage, Item newItem)
 		{
