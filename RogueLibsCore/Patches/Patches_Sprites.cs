@@ -37,6 +37,7 @@ namespace RogueLibsCore
 
         public static void tk2dEditorSpriteDataUnloader_Register(tk2dEditorSpriteDataUnloader __instance, tk2dSpriteCollectionData data)
         {
+            // RogueSprite.Dump(data);
             switch (data.name)
             {
 				case "Items": RogueFramework.ItemSprites = data; RogueSprite.DefinePrepared(data, SpriteScope.Items); break;

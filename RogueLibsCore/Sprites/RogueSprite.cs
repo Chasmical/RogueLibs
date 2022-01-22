@@ -478,44 +478,81 @@ namespace RogueLibsCore
 
         public static void Dump(tk2dSpriteCollectionData collection)
         {
+            Dictionary<UnityEngine.Texture, Texture2D> cache = new Dictionary<Texture, Texture2D>();
+
+            string directoryPath = Path.Combine(Paths.GameRootPath, "tk2d_" + collection.name);
+            Directory.CreateDirectory(directoryPath);
+
             foreach (tk2dSpriteDefinition def in collection.spriteDefinitions)
             {
                 float minX = def.uvs.Min(uv => uv.x) * def.material.mainTexture.width;
                 float maxX = def.uvs.Max(uv => uv.x) * def.material.mainTexture.width;
                 float minY = def.uvs.Min(uv => uv.y) * def.material.mainTexture.height;
                 float maxY = def.uvs.Max(uv => uv.y) * def.material.mainTexture.height;
+                Texture tex = def.material.mainTexture;
                 Vector2 pos = new Vector2(minX, minY);
                 Vector2 size = new Vector2(maxX - minX, maxY - minY);
 
-                Texture2D readable = RogueUtilities.MakeTextureReadable((Texture2D)def.material.mainTexture);
-                int width = Mathf.RoundToInt(size.x);
-                int height = Mathf.RoundToInt(size.y);
-                Color[] colors = readable.GetPixels(
-                    Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y),
-                    width, height);
-
-                if (def.flipped != tk2dSpriteDefinition.FlipMode.None)
+                bool errors = false;
+                if (pos.x < 0 || pos.y < 0)
                 {
-                    RogueFramework.LogDebug($"Flipping {def.name}");
-                    Color[] temp = new Color[colors.Length];
-                    for (int i = 0; i < width; i++)
-                        for (int j = 0; j < height; j++)
-                        {
-                            int index = i * height + j;
-                            int otherIndex = j * width + i;
-                            temp[index] = colors[otherIndex];
-                        }
-                    colors = temp;
-                    size = new Vector2(size.y, size.x);
-                    width = Mathf.RoundToInt(size.x);
-                    height = Mathf.RoundToInt(size.y);
+                    if (!errors) RogueFramework.LogError($"{def.name}: Invalid ({pos.x}, {pos.y} - {size.x}, {size.y}) on {tex.width}, {tex.height}");
+                    if (pos.x < 0) pos.x = 0;
+                    if (pos.y < 0) pos.y = 0;
+                    errors = true;
                 }
+                if (pos.x + size.x > tex.width || pos.y + size.y > tex.height)
+                {
+                    if (!errors) RogueFramework.LogError($"{def.name}: Invalid ({pos.x}, {pos.y} - {size.x}, {size.y}) on {tex.width}, {tex.height}");
+                    if (pos.x + size.x > tex.width) size.x = tex.width - pos.x;
+                    if (pos.y + size.y > tex.height)  size.y = tex.height - pos.y;
+                    errors = true;
+                }
+                if (errors) RogueFramework.LogError($"{def.name}: Resolved as ({pos.x}, {pos.y} - {size.x}, {size.y}) on {tex.width}, {tex.height}");
+                try
+                {
+                    string cleanName = def.name.Replace("/", "$").Replace("\\", "$");
+                    string path = Path.Combine(directoryPath, cleanName + ".png");
+                    if (File.Exists(path)) continue;
 
-                string path = Path.Combine(Paths.GameRootPath, "tk2d_" + collection.name, def.name + ".png");
-                Texture2D tex = new Texture2D(width, height);
-                tex.SetPixels(colors);
-                byte[] encoded = tex.EncodeToPNG();
-                File.WriteAllBytes(path, encoded);
+                    if (!cache.TryGetValue(def.material.mainTexture, out Texture2D readable))
+                    {
+                        readable = RogueUtilities.MakeTextureReadable((Texture2D)def.material.mainTexture);
+                        cache.Add(def.material.mainTexture, readable);
+                    }
+                    int width = Mathf.RoundToInt(size.x);
+                    int height = Mathf.RoundToInt(size.y);
+                    Color[] colors = readable.GetPixels(
+                        Mathf.RoundToInt(pos.x), Mathf.RoundToInt(pos.y),
+                        width, height);
+
+                    if (def.flipped != tk2dSpriteDefinition.FlipMode.None)
+                    {
+                        RogueFramework.LogDebug($"Flipping {def.name}");
+                        Color[] temp = new Color[colors.Length];
+                        for (int i = 0; i < width; i++)
+                            for (int j = 0; j < height; j++)
+                            {
+                                int index = i * height + j;
+                                int otherIndex = j * width + i;
+                                temp[index] = colors[otherIndex];
+                            }
+                        colors = temp;
+                        size = new Vector2(size.y, size.x);
+                        width = Mathf.RoundToInt(size.x);
+                        height = Mathf.RoundToInt(size.y);
+                    }
+
+                    Texture2D tex2 = new Texture2D(width, height);
+                    tex2.SetPixels(colors);
+                    byte[] encoded = tex2.EncodeToPNG();
+                    File.WriteAllBytes(path, encoded);
+                }
+                catch (Exception e)
+                {
+                    RogueFramework.LogError($"{def.name} ({pos.x}, {pos.y} - {size.x}, {size.y}) on {tex.width}, {tex.height}:");
+                    RogueFramework.LogError(e.ToString());
+                }
             }
         }
     }
