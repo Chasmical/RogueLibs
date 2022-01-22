@@ -127,6 +127,7 @@ namespace RogueLibsCore
 			PatchTraitsAndStatusEffects();
 			PatchUnlocks();
 			PatchAgents();
+            PatchInteractions();
 #if DEBUG
 			Patcher.SortResults();
 			Patcher.LogResults();
