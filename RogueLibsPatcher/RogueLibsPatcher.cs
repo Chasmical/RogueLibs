@@ -24,9 +24,6 @@ namespace RogueLibsPatcher
             TypeDefinition invItem = module.GetType("InvItem");
             PatchHooks(invItem);
 
-            TypeDefinition agent = module.GetType("Agent");
-            PatchHooks(agent);
-
             TypeDefinition playfieldObject = module.GetType("PlayfieldObject");
             PatchHooks(playfieldObject);
 
