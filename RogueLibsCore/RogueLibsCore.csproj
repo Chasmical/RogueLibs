@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hooks\Items\CustomWeaponMelee.cs" />
+    <Compile Include="Interactions\RogueInteractions.cs" />
     <Compile Include="Main\AbilityBuilder.cs" />
     <Compile Include="DebugFlags.cs" />
     <Compile Include="Main\EffectBuilder.cs" />
@@ -169,6 +170,7 @@
     <Compile Include="Names\Localization\LanguageService.cs" />
     <Compile Include="Names\NameTypes.cs" />
     <Compile Include="Names\Localization\OnLanguageChangedArgs.cs" />
+    <Compile Include="Patches\Patches_Interactions.cs" />
     <Compile Include="Patches\Utilities\GiveNuggetsButton.cs" />
     <Compile Include="Patches\Utilities\UnlocksExtensions.cs" />
     <Compile Include="Patches\Utilities\LastFiredBulletHook.cs" />
