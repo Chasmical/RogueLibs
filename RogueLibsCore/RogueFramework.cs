@@ -44,8 +44,7 @@ namespace RogueLibsCore
 		internal static void LogError(string message) => Logger.LogError(message);
 		internal static void LogError(Exception e, string methodName, object hookObj, object container = null)
 		{
-			IHook hook = (IHook)hookObj;
-			object instance = hook.Instance;
+			object instance = hookObj is IHook hook ? hook.Instance : string.Empty;
 
 			string instanceName = instance is InvItem item ? item.invItemName
 				: instance is StatusEffect effect ? effect.statusEffectName
@@ -56,10 +55,10 @@ namespace RogueLibsCore
 				: instance.ToString();
 
 			string containerName = container is null ? string.Empty
-				: ", " + (
+				: (instanceName.Length > 0 ? ", " : string.Empty) + (
 					container is Item ? "on the ground"
 					: container is Agent a ? a.agentName
-					: container is ObjectReal o ? o.objectName
+					: container is PlayfieldObject o ? o.objectName
 					: container is UnlocksMenu m ? m.Type.ToString()
 					: container.ToString()
 				);
