@@ -32,7 +32,8 @@ namespace RogueLibsCore
             }
             void MakeInteractable<T>() where T : PlayfieldObject
             {
-                Patcher.Postfix(typeof(T), "Awake", nameof(MakeInteractableHook));
+                Patcher.Postfix(typeof(T), "Awake", nameof(AwakeInteractableHook));
+                Patcher.Postfix(typeof(T), nameof(PlayfieldObject.RecycleAwake), nameof(RecycleAwakeInteractableHook));
             }
 
             RogueInteractions.CreateProvider(h =>
@@ -324,7 +325,11 @@ namespace RogueLibsCore
             #endregion
             return false;
         }
-        public static void MakeInteractableHook(PlayfieldObject __instance)
+        public static void AwakeInteractableHook(PlayfieldObject __instance)
+        {
+            __instance.interactable = true;
+        }
+        public static void RecycleAwakeInteractableHook(PlayfieldObject __instance)
         {
             __instance.interactable = true;
         }
