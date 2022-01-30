@@ -119,7 +119,7 @@ namespace RogueLibsCore
         }
 
     }
-    public abstract class InteractionModel<T> : InteractionModel where T : PlayfieldObject
+    public class InteractionModel<T> : InteractionModel where T : PlayfieldObject
     {
         public new T Instance => (T)base.Instance;
         public new T Object => (T)base.Instance;

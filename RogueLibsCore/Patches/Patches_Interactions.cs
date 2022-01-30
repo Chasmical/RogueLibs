@@ -30,6 +30,10 @@ namespace RogueLibsCore
             {
                 Patcher.Prefix(typeof(T), nameof(PlayfieldObject.InteractFar), nameof(InteractFarHook));
             }
+            void MakeInteractable<T>() where T : PlayfieldObject
+            {
+                Patcher.Postfix(typeof(T), "Awake", nameof(MakeInteractableHook));
+            }
 
             RogueInteractions.CreateProvider(h =>
             {
@@ -60,6 +64,15 @@ namespace RogueLibsCore
                         }
                     });
                 }
+            });
+            RogueInteractions.CreateProvider(h =>
+            {
+                h.AddButton("InteractionsPatched", m => m.StopInteraction());
+            });
+            RogueLibs.CreateCustomName("InteractionsPatched", NameTypes.Interface, new CustomNameInfo
+            {
+                English = "I am patched!",
+				Russian = "Я пропатчен!",
             });
 
             Patch<AirConditioner>(params2);
@@ -95,8 +108,8 @@ namespace RogueLibsCore
                     {
                         h.AddButton("AllAccessAlarmButton", m =>
                         {
-                            h.Object.hacked = true;
-                            if (!h.gc.serverPlayer) h.gc.playerAgent.objectMult.ObjectAction(h.Object.objectNetID, "AllAccess");
+                            m.Object.hacked = true;
+                            if (!m.gc.serverPlayer) m.gc.playerAgent.objectMult.ObjectAction(m.Object.objectNetID, "AllAccess");
                         });
                     }
                 }
@@ -104,16 +117,17 @@ namespace RogueLibsCore
                 {
                     h.AddImplicitButton("PressAlarmButton", m =>
                     {
-                        h.Object.lastHitByAgent = h.Object.interactingAgent;
-                        if (h.Agent.upperCrusty || h.Object.hacked)
-                            h.Object.ToggleSwitch(h.Agent, null);
-                        else h.Object.Say("CantUseAlarmButton");
+                        m.Object.lastHitByAgent = m.Object.interactingAgent;
+                        if (m.Agent.upperCrusty || m.Object.hacked)
+                            m.Object.ToggleSwitch(m.Agent, null);
+                        else m.Object.Say("CantUseAlarmButton");
                     });
                 }
             });
 
             Patch<Altar>(params2);
             PatchInteract<Altar>();
+            MakeInteractable<Altar>();
             RogueInteractions.CreateProvider<Altar>(h =>
             {
                 if (h.Helper.interactingFar) return;
@@ -235,7 +249,12 @@ namespace RogueLibsCore
                 if (!interactionModelConstructors.TryGetValue(myType, out ConstructorInfo ctor))
                 {
                     Type modelType = typeof(InteractionModel<>).MakeGenericType(__instance.GetType());
-                    interactionModelConstructors.Add(myType, ctor = modelType.GetConstructor(Type.EmptyTypes));
+                    interactionModelConstructors.Add(myType, ctor = modelType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, CallingConventions.Any, Type.EmptyTypes, null));
+                }
+                if (ctor is null)
+                {
+                    RogueFramework.LogError($"Error patching {__instance.GetType()}. Constructor is null for some reason.");
+                    return;
                 }
                 __instance.AddHook((InteractionModel)ctor?.Invoke(new object[0]));
             }
@@ -304,6 +323,10 @@ namespace RogueLibsCore
             #region Re-implementing base.InteractFar(agent)
             #endregion
             return false;
+        }
+        public static void MakeInteractableHook(PlayfieldObject __instance)
+        {
+            __instance.interactable = true;
         }
 
     }
