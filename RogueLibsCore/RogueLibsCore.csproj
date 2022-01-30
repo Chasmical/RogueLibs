@@ -107,6 +107,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Hooks\Items\CustomWeaponMelee.cs" />
+    <Compile Include="Interactions\Interaction.cs" />
+    <Compile Include="Interactions\InteractionModel.cs" />
     <Compile Include="Interactions\RogueInteractions.cs" />
     <Compile Include="Main\AbilityBuilder.cs" />
     <Compile Include="DebugFlags.cs" />
