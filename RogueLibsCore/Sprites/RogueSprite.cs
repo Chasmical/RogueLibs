@@ -145,6 +145,8 @@ namespace RogueLibsCore
             return sprite;
         }
 
+        internal static readonly Dictionary<SpriteScope, tk2dSpriteCollectionData> registered
+            = new Dictionary<SpriteScope, tk2dSpriteCollectionData>();
         internal static readonly Dictionary<SpriteScope, List<RogueSprite>> prepared = new Dictionary<SpriteScope, List<RogueSprite>>
         {
             [SpriteScope.Items] = new List<RogueSprite>(),
@@ -161,11 +163,12 @@ namespace RogueLibsCore
             [SpriteScope.Decals] = new List<RogueSprite>(),
             [SpriteScope.WallTops] = new List<RogueSprite>(),
             [SpriteScope.Walls] = new List<RogueSprite>(),
-			[SpriteScope.Spawners] = new List<RogueSprite>(),
+            [SpriteScope.Spawners] = new List<RogueSprite>(),
         };
         internal bool isPrepared;
         internal static void DefinePrepared(tk2dSpriteCollectionData collection, SpriteScope scope)
         {
+            registered[scope] = collection;
             if (prepared.TryGetValue(scope, out List<RogueSprite> sprites))
             {
                 if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
@@ -192,13 +195,7 @@ namespace RogueLibsCore
         private static tk2dSpriteCollectionData GetCollection(SpriteScope scope)
         {
             GameController gc = GameController.gameController;
-            switch (scope)
-            {
-                case SpriteScope.Items: return gc?.spawnerMain?.itemSprites;
-                case SpriteScope.Objects: return gc?.spawnerMain?.objectSprites;
-                case SpriteScope.Floors: return gc?.spawnerMain?.floorSprites;
-                default: return null;
-            }
+            return registered.TryGetValue(scope, out tk2dSpriteCollectionData collection) ? collection : null;
         }
         /// <summary>
         ///   <para>Defines the current sprite and integrates it into the game.</para>
