@@ -213,7 +213,18 @@ namespace RogueLibsCore
             DefineScope(Scope & SpriteScope.Items);
             DefineScope(Scope & SpriteScope.Objects);
             DefineScope(Scope & SpriteScope.Floors);
-            DefineScope(Scope & SpriteScope.Extra);
+            DefineScope(Scope & SpriteScope.Bullets);
+            DefineScope(Scope & SpriteScope.Hair);
+            DefineScope(Scope & SpriteScope.FacialHair);
+            DefineScope(Scope & SpriteScope.HeadPieces);
+            DefineScope(Scope & SpriteScope.Agents);
+            DefineScope(Scope & SpriteScope.Bodies);
+            DefineScope(Scope & SpriteScope.Wreckage);
+            DefineScope(Scope & SpriteScope.Interface);
+            DefineScope(Scope & SpriteScope.Decals);
+            DefineScope(Scope & SpriteScope.WallTops);
+            DefineScope(Scope & SpriteScope.Walls);
+            DefineScope(Scope & SpriteScope.Spawners);
         }
         private void DefineScope(SpriteScope scope)
         {
