@@ -2,12 +2,12 @@
 module.exports = {
   title: 'RogueLibs Documentation',
   tagline: 'Doing the impossible.',
-  url: 'https://abbysssal.github.io',
+  url: 'https://sugarbarrel.github.io',
   baseUrl: '/RogueLibs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'Abbysssal',
+  organizationName: 'SugarBarrel',
   projectName: 'RogueLibs',
   i18n: {
     defaultLocale: 'en',
@@ -31,7 +31,7 @@ module.exports = {
     announcementBar: {
       id: 'star',
       content:
-        '<span style="font-size: 1rem;">⭐️ If you like RogueLibs, give it a star on <a target="_blank" href="https://github.com/Abbysssal/RogueLibs">GitHub</a>! ⭐️</span>',
+        '<span style="font-size: 1rem;">⭐️ If you like RogueLibs, give it a star on <a target="_blank" href="https://github.com/SugarBarrel/RogueLibs">GitHub</a>! ⭐️</span>',
     },
     navbar: {
       hideOnScroll: true,
@@ -67,7 +67,7 @@ module.exports = {
           position: 'right',
         },
         {
-          href: 'https://github.com/Abbysssal/RogueLibs',
+          href: 'https://github.com/SugarBarrel/RogueLibs',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
@@ -100,7 +100,7 @@ module.exports = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/Abbysssal/RogueLibs',
+              href: 'https://github.com/SugarBarrel/RogueLibs',
             },
           ],
         },
@@ -115,12 +115,12 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/Abbysssal/RogueLibs/edit/main/website/',
+            'https://github.com/SugarBarrel/RogueLibs/edit/main/website/',
         },
         blog: {
           showReadingTime: true,
           editUrl:
-            'https://github.com/Abbysssal/RogueLibs/edit/main/website/blog/',
+            'https://github.com/SugarBarrel/RogueLibs/edit/main/website/blog/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
