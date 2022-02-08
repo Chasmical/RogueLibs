@@ -2,14 +2,14 @@
 <rss version="2.0" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/">
     <channel>
         <title>RogueLibs Documentation Blog</title>
-        <link>https://abbysssal.github.io/RogueLibs/blog</link>
+        <link>https://sugarbarrel.github.io/RogueLibs/blog</link>
         <description>RogueLibs Documentation Blog</description>
         <lastBuildDate>Sun, 30 Jan 2022 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <item>
             <title><![CDATA[RogueLibs v3.5.0 enters beta]]></title>
-            <link>https://abbysssal.github.io/RogueLibs/blog/2022/01/30/roguelibs-v3.5.0-beta</link>
+            <link>https://sugarbarrel.github.io/RogueLibs/blog/2022/01/30/roguelibs-v3.5.0-beta</link>
             <guid>/2022/01/30/roguelibs-v3.5.0-beta</guid>
             <pubDate>Sun, 30 Jan 2022 00:00:00 GMT</pubDate>
             <description><![CDATA[Information about the v3.5.0-beta]]></description>
@@ -22,7 +22,7 @@ See the <a href="https://discord.gg/m3zuHSwQw2">#modding channel</a> on the <a h
         </item>
         <item>
             <title><![CDATA[What I hate about SoR]]></title>
-            <link>https://abbysssal.github.io/RogueLibs/blog/2021/08/31/what-i-hate-about-sor</link>
+            <link>https://sugarbarrel.github.io/RogueLibs/blog/2021/08/31/what-i-hate-about-sor</link>
             <guid>/2021/08/31/what-i-hate-about-sor</guid>
             <pubDate>Tue, 31 Aug 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[The code is really hard and wet.]]></description>
@@ -36,7 +36,7 @@ See the <a href="https://discord.gg/m3zuHSwQw2">#modding channel</a> on the <a h
         </item>
         <item>
             <title><![CDATA[RogueLibs v3.1.0 released!]]></title>
-            <link>https://abbysssal.github.io/RogueLibs/blog/2021/08/18/roguelibs-v3.1.0</link>
+            <link>https://sugarbarrel.github.io/RogueLibs/blog/2021/08/18/roguelibs-v3.1.0</link>
             <guid>/2021/08/18/roguelibs-v3.1.0</guid>
             <pubDate>Wed, 18 Aug 2021 00:00:00 GMT</pubDate>
             <description><![CDATA[Completely replaced the vanilla localization system.]]></description>
