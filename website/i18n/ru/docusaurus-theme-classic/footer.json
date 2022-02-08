@@ -21,7 +21,7 @@
   },
   "link.item.label.GitHub": {
     "message": "GitHub",
-    "description": "The label of footer link with label=GitHub linking to https://github.com/Abbysssal/RogueLibs"
+    "description": "The label of footer link with label=GitHub linking to https://github.com/SugarBarrel/RogueLibs"
   },
   "copyright": {
     "message": "Copyright © 2021 RogueLibs. Built with Docusaurus.",

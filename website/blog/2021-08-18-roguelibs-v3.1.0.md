@@ -2,8 +2,8 @@
 title: RogueLibs v3.1.0 released!
 author: Abbysssal
 author_title: Creator of RogueLibs
-author_url: https://github.com/Abbysssal
-author_image_url: https://avatars.githubusercontent.com/u/55982389?height=200&width=200
+author_url: https://github.com/SugarBarrel
+author_image_url: https://github.com/SugarBarrel.png
 tags: [roguelibs, release]
 description: Completely replaced the vanilla localization system.
 image: https://i.imgur.com/XaNGCx7.png
@@ -67,7 +67,7 @@ Speaking of translations... **The vanilla translations are terrible**. I'm not s
 
 And that's why RogueLibs will use community translations instead of official ones.
 
-Feel free to contribute by checking the localization files yourself and making any necessary changes. The localization files are located [in here](https://github.com/Abbysssal/RogueLibs/tree/main/RogueLibsCore/Resources). See more info on contributing to the project [here](https://github.com/Abbysssal/RogueLibs/blob/main/.github/CONTRIBUTING.md).
+Feel free to contribute by checking the localization files yourself and making any necessary changes. The localization files are located [in here](https://github.com/SugarBarrel/RogueLibs/tree/main/RogueLibsCore/Resources). See more info on contributing to the project [here](https://github.com/SugarBarrel/RogueLibs/blob/main/.github/CONTRIBUTING.md).
 
 ### Live Reloading
 
