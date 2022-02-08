@@ -44,7 +44,7 @@ namespace RogueLibsCore
 		private static LanguageVersions Versions;
 		private static bool DownloadIndex()
 		{
-			const string url = "https://raw.githubusercontent.com/Abbysssal/RogueLibs/main/RogueLibsCore/Resources/locale.index.xml";
+			const string url = "https://raw.githubusercontent.com/SugarBarrel/RogueLibs/main/RogueLibsCore/Resources/locale.index.xml";
 			string downloadPath = Path.Combine(localePath, ".vanilla.index.xml");
 			try
 			{
@@ -113,7 +113,7 @@ namespace RogueLibsCore
 		private static void UpdateLanguage(string language, string filePath, int newVersion)
 		{
 			if (RogueFramework.IsDebugEnabled(DebugFlags.Names)) RogueFramework.LogDebug($"Updating ${language} to version ${newVersion}");
-			string url = $"https://raw.githubusercontent.com/Abbysssal/RogueLibs/main/RogueLibsCore/Resources/locale.{language}.xml";
+			string url = $"https://raw.githubusercontent.com/SugarBarrel/RogueLibs/main/RogueLibsCore/Resources/locale.{language}.xml";
 			string downloadPath = filePath + ".download";
 			WebClient web = new WebClient();
 			try
