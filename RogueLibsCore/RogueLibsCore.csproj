@@ -3,6 +3,7 @@
   <PropertyGroup>
 
     <!-- Project Properties -->
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
 
     <!-- Header -->
     <AssemblyName>RogueLibsCore</AssemblyName>
@@ -22,7 +23,7 @@
   </PropertyGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command='"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"'/>
+    <Exec Command="&quot;$(SolutionDir)\..\.events\PluginBuildEvents.exe&quot; &quot;$(TargetPath)&quot; &quot;Streets of Rogue&quot;" />
   </Target>
 
   <ItemGroup>
