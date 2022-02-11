@@ -1,117 +1,52 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{99ED3605-22DC-4E91-A9F0-790209CFE9E8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RogueLibsCore.Test</RootNamespace>
+
+    <!-- Project Properties -->
+
+    <!-- Header -->
     <AssemblyName>RogueLibsCore.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Version>3.5.0-beta.2</Version>
+    <Authors>Abbysssal</Authors>
+    <Company>$(Authors)</Company>
+    <Copyright></Copyright>
+
+    <!-- Title, Description, Tags -->
+    <Title>$(AssemblyName)</Title>
+    <Description>
+
+    </Description>
+    <PackageTags></PackageTags>
+
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command='"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"'/>
+  </Target>
+
   <ItemGroup>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Tests\Abilities\Kamikaze.cs" />
-    <Compile Include="Tests\Abilities\Titan.cs" />
-    <Compile Include="Tests\Abilities\Hug.cs" />
-    <Compile Include="Tests\Effects\Adrenaline.cs" />
-    <Compile Include="Tests\Items\AdrenalineShot.cs" />
-    <Compile Include="Tests\Items\AmmoBox.cs" />
-    <Compile Include="Tests\Items\Centrifuge.cs" />
-    <Compile Include="Tests\Items\JokeBook.cs" />
-    <Compile Include="Tests\Items\QuantumFud.cs" />
-    <Compile Include="Tests\Items\SpiceRack.cs" />
-    <Compile Include="Tests\Items\SPYTRON3000.cs" />
-    <Compile Include="Tests\Items\UsableTeleporter.cs" />
-    <Compile Include="Tests\Items\WildBypasser.cs" />
-    <Compile Include="Tests\Traits\Smoker.cs" />
-    <Compile Include="TestPlugin.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tests\Traits\Stinky.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Assembly-CSharp">
       <HintPath>..\..\.ref\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="BepInEx, Version=5.4.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="BepInEx">
       <HintPath>..\..\.ref\static\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="netstandard">
       <HintPath>..\..\.ref\static\netstandard.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="RogueLibsCore">
+      <HintPath>..\..\.ref\RogueLibsCore.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
       <HintPath>..\..\.ref\static\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\.ref\static\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.Physics2DModule">
       <HintPath>..\..\.ref\static\UnityEngine.Physics2DModule.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\AdrenalineShot.bin" />
-    <None Include="Resources\AmmoBox.bin" />
-    <None Include="Resources\Hug.bin" />
-    <None Include="Resources\JokeBook.bin" />
-    <None Include="Resources\Kamikaze.bin" />
-    <None Include="Resources\QuantumFud.bin" />
-    <None Include="Resources\SpiceRack.bin" />
-    <None Include="Resources\SPYTRON3000.bin" />
-    <None Include="Resources\Titan.bin" />
-    <None Include="Resources\Toolkit.bin" />
-    <None Include="Resources\UsableTeleporter.bin" />
-    <None Include="Resources\WildBypasser.bin" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Tests\Weapons\" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\RogueLibsCore\RogueLibsCore.csproj">
-      <Project>{43a221f2-a56c-4f59-8c3c-828de75259c4}</Project>
-      <Name>RogueLibsCore</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"</PostBuildEvent>
-  </PropertyGroup>
+
 </Project>

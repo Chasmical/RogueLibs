@@ -1,245 +1,90 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{43A221F2-A56C-4F59-8C3C-828DE75259C4}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RogueLibsCore</RootNamespace>
+
+    <!-- Project Properties -->
+
+    <!-- Header -->
     <AssemblyName>RogueLibsCore</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <PackageId>$(AssemblyName)</PackageId>
+    <Version>3.5.0-beta.2</Version>
+    <Authors>Abbysssal</Authors>
+    <Company>$(Authors)</Company>
+    <Copyright></Copyright>
+
+    <!-- Title, Description, Tags -->
+    <Title>$(AssemblyName)</Title>
+    <Description>
+
+    </Description>
+    <PackageTags></PackageTags>
+
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>bin\Release\RogueLibsCore.xml</DocumentationFile>
-  </PropertyGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command='"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"'/>
+  </Target>
+
   <ItemGroup>
-    <Reference Include="0Harmony, Version=2.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <InternalsVisibleTo Include="RogueLibsCore.Test" />
+
+    <Reference Include="0Harmony">
       <HintPath>..\..\.ref\static\0Harmony.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Assembly-CSharp">
       <HintPath>..\..\.ref\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="BepInEx, Version=5.4.5.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="BepInEx">
       <HintPath>..\..\.ref\static\BepInEx.dll</HintPath>
     </Reference>
-    <Reference Include="com.unity.multiplayer-hlapi.Runtime, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="com.unity.multiplayer-hlapi.Runtime">
       <HintPath>..\..\.ref\static\com.unity.multiplayer-hlapi.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="netstandard, Version=2.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="netstandard">
       <HintPath>..\..\.ref\static\netstandard.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Xml">
-      <HintPath>..\..\.ref\static\System.Xml.dll</HintPath>
-    </Reference>
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine">
       <HintPath>..\..\.ref\static\UnityEngine.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.AudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>..\..\.ref\static\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
       <HintPath>..\..\.ref\static\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.CoreModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.CoreModule">
       <HintPath>..\..\.ref\static\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.ImageConversionModule">
       <HintPath>..\..\.ref\static\UnityEngine.ImageConversionModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.Physics2DModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>..\..\.ref\static\UnityEngine.InputLegacyModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
       <HintPath>..\..\.ref\static\UnityEngine.Physics2DModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.PhysicsModule">
       <HintPath>..\..\.ref\static\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.TextRenderingModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.TextRenderingModule">
       <HintPath>..\..\.ref\static\UnityEngine.TextRenderingModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UI, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.UI">
       <HintPath>..\..\.ref\static\UnityEngine.UI.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.UIModule">
       <HintPath>..\..\.ref\static\UnityEngine.UIModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestAudioModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
       <HintPath>..\..\.ref\static\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
       <HintPath>..\..\.ref\static\UnityEngine.UnityWebRequestModule.dll</HintPath>
     </Reference>
-    <Reference Include="UnityEngine.UnityWebRequestWWWModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
       <HintPath>..\..\.ref\static\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Hooks\Items\CustomWeaponMelee.cs" />
-    <Compile Include="Interactions\Interaction.cs" />
-    <Compile Include="Interactions\InteractionModel.cs" />
-    <Compile Include="Interactions\RogueInteractions.cs" />
-    <Compile Include="Main\AbilityBuilder.cs" />
-    <Compile Include="DebugFlags.cs" />
-    <Compile Include="Main\EffectBuilder.cs" />
-    <Compile Include="Main\ItemBuilder.cs" />
-    <Compile Include="Names\Localization\LanguageVersions.cs" />
-    <Compile Include="Names\Localization\LocaleCategory.cs" />
-    <Compile Include="Names\Localization\LocaleLanguage.cs" />
-    <Compile Include="Names\Localization\Localization.cs" />
-    <Compile Include="Names\CustomNameInfo.cs" />
-    <Compile Include="Names\Providers\CustomNameProvider.cs" />
-    <Compile Include="Names\Providers\DialogueNameProvider.cs" />
-    <Compile Include="Hooks\Effects\CustomEffectFactory.cs" />
-    <Compile Include="Hooks\Effects\EffectLimitations.cs" />
-    <Compile Include="Hooks\Effects\EffectNameAttribute.cs" />
-    <Compile Include="Hooks\Effects\EffectParametersAttribute.cs" />
-    <Compile Include="Hooks\Effects\EffectUpdatedArgs.cs" />
-    <Compile Include="Hooks\Abilities\AbilityHeldArgs.cs" />
-    <Compile Include="Hooks\Abilities\AbilityRechargingArgs.cs" />
-    <Compile Include="Hooks\Abilities\AbilityReleasedArgs.cs" />
-    <Compile Include="Hooks\HookBase.cs" />
-    <Compile Include="Hooks\HookController.cs" />
-    <Compile Include="Hooks\HookFactoryBase.cs" />
-    <Compile Include="Hooks\IDoFixedUpdate.cs" />
-    <Compile Include="Hooks\Items\CustomItemFactory.cs" />
-    <Compile Include="Hooks\Items\CustomTooltip.cs" />
-    <Compile Include="Hooks\Items\InventoryChecks\DefaultInventoryChecks.cs" />
-    <Compile Include="Hooks\Abilities\IAbilityChargeable.cs" />
-    <Compile Include="Hooks\Abilities\IAbilityRechargeable.cs" />
-    <Compile Include="Hooks\Abilities\IAbilityTargetable.cs" />
-    <Compile Include="Hooks\Items\IItemCombinable.cs" />
-    <Compile Include="Hooks\Items\IItemTargetable.cs" />
-    <Compile Include="Hooks\Items\IItemTargetableAnywhere.cs" />
-    <Compile Include="Hooks\Items\IItemUsable.cs" />
-    <Compile Include="Hooks\Items\InventoryChecks\OnItemsCombiningArgs.cs" />
-    <Compile Include="Hooks\Items\InventoryChecks\OnItemTargetingAnywhereArgs.cs" />
-    <Compile Include="Hooks\Items\InventoryChecks\OnItemTargetingArgs.cs" />
-    <Compile Include="Hooks\Items\InventoryChecks\OnItemUsingArgs.cs" />
-    <Compile Include="Hooks\Items\InventoryChecks\RogueEvent.cs" />
-    <Compile Include="Hooks\Items\InventoryChecks\RogueEventArgs.cs" />
-    <Compile Include="Hooks\Items\InventoryChecks\RogueEventSubscriber.cs" />
-    <Compile Include="Hooks\Traits\CustomTraitFactory.cs" />
-    <Compile Include="Hooks\Traits\ITraitUpdateable.cs" />
-    <Compile Include="Hooks\Traits\TraitNameAttribute.cs" />
-    <Compile Include="Hooks\Traits\TraitUpdatedArgs.cs" />
-    <Compile Include="Hooks\Unlocks\ButtonDataExtensions.cs" />
-    <Compile Include="Hooks\Unlocks\Vanilla\AgentUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Buttons\ClearAllItemsUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Buttons\ClearAllTraitsUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Menus\CustomCharacterCreation.cs" />
-    <Compile Include="Hooks\Unlocks\Menus\CustomScrollingMenu.cs" />
-    <Compile Include="Hooks\Unlocks\Vanilla\ExtraUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\IUnlockInCC.cs" />
-    <Compile Include="Hooks\Unlocks\Obsolete\LoadoutUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\UnlockButtonState.cs" />
-    <Compile Include="Hooks\Unlocks\Menus\UnlocksMenuType.cs" />
-    <Compile Include="Hooks\Unlocks\UnlockTypes.cs" />
-    <Compile Include="Names\IName.cs" />
-    <Compile Include="Names\INameProvider.cs" />
-    <Compile Include="Names\LanguageCode.cs" />
-    <Compile Include="Names\Localization\LanguageService.cs" />
-    <Compile Include="Names\NameTypes.cs" />
-    <Compile Include="Names\Localization\OnLanguageChangedArgs.cs" />
-    <Compile Include="Patches\Patches_Interactions.cs" />
-    <Compile Include="Patches\Utilities\GiveNuggetsButton.cs" />
-    <Compile Include="Patches\Utilities\UnlocksExtensions.cs" />
-    <Compile Include="Patches\Utilities\LastFiredBulletHook.cs" />
-    <Compile Include="Patches\Patches_Agents.cs" />
-    <Compile Include="Main\RLSetupAttribute.cs" />
-    <Compile Include="Main\TraitBuilder.cs" />
-    <Compile Include="Main\UnlockBuilder.cs" />
-    <Compile Include="Sprites\SpriteScope.cs" />
-    <Compile Include="Utilities\CreateEffectInfo.cs" />
-    <Compile Include="Utilities\HookExtensions.cs" />
-    <Compile Include="Hooks\Abilities\CustomAbility.cs" />
-    <Compile Include="Hooks\Effects\CustomEffect.cs" />
-    <Compile Include="Hooks\Effects\EffectInfo.cs" />
-    <Compile Include="Hooks\Traits\CustomTrait.cs" />
-    <Compile Include="Hooks\Traits\TraitInfo.cs" />
-    <Compile Include="Hooks\Unlocks\Menus\UnlocksMenu.cs" />
-    <Compile Include="Hooks\Unlocks\Obsolete\HomeBaseUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Vanilla\AbilityUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Obsolete\AchievementUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Vanilla\BigQuestUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Vanilla\FloorUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Vanilla\ItemUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Vanilla\MutatorUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Buttons\ReRollLoadoutsUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Vanilla\TraitUnlock.cs" />
-    <Compile Include="Hooks\Unlocks\Buttons\ClearAllMutatorsUnlock.cs" />
-    <Compile Include="Hooks\Items\CustomItem.cs" />
-    <Compile Include="Hooks\Items\ItemInfo.cs" />
-    <Compile Include="Hooks\Unlocks\DisplayedUnlock.cs" />
-    <Compile Include="Patches\Patches_CharacterCreation.cs" />
-    <Compile Include="Patches\Patches_Abilities.cs" />
-    <Compile Include="Patches\Patches_ScrollingMenu.cs" />
-    <Compile Include="Patches\Patches_Misc.cs" />
-    <Compile Include="Patches\Patches_Items.cs" />
-    <Compile Include="Patches\Patches_Sprites.cs" />
-    <Compile Include="Patches\Patches_TraitsStatusEffects.cs" />
-    <Compile Include="Patches\Patches_Unlocks.cs" />
-    <Compile Include="Hooks\Unlocks\UnlockWrapper.cs" />
-    <Compile Include="Names\CustomName.cs" />
-    <Compile Include="Hooks\Items\InventoryChecks\InventoryChecks.cs" />
-    <Compile Include="Hooks\IHook.cs" />
-    <Compile Include="Hooks\IHookController.cs" />
-    <Compile Include="Hooks\IHookFactory.cs" />
-    <Compile Include="Hooks\IDoUpdate.cs" />
-    <Compile Include="Hooks\Items\ItemTypes.cs" />
-    <Compile Include="Utilities\PatchRecord.cs" />
-    <Compile Include="Utilities\RogueCategories.cs" />
-    <Compile Include="Utilities\RogueExtensions.cs" />
-    <Compile Include="RogueFramework.cs" />
-    <Compile Include="RogueLibs.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RogueLibsPlugin.cs" />
-    <Compile Include="Utilities\RoguePatcher.cs" />
-    <Compile Include="Sprites\RogueSprite.cs" />
-    <Compile Include="Utilities\RogueUtilities.cs" />
-    <Compile Include="Utilities\TranspilerHelper.cs" />
-    <Compile Include="Utilities\VanillaIdentifiers\VanillaAbilities.cs" />
-    <Compile Include="Utilities\VanillaIdentifiers\VanillaAudio.cs" />
-    <Compile Include="Utilities\VanillaIdentifiers\VanillaEffects.cs" />
-    <Compile Include="Utilities\VanillaIdentifiers\VanillaAgents.cs" />
-    <Compile Include="Utilities\VanillaIdentifiers\VanillaItems.cs" />
-    <Compile Include="Utilities\VanillaIdentifiers\VanillaMutators.cs" />
-    <Compile Include="Utilities\VanillaIdentifiers\VanillaObjects.cs" />
-    <Compile Include="Utilities\VanillaIdentifiers\VanillaTraits.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "Streets of Rogue"</PostBuildEvent>
-  </PropertyGroup>
+
 </Project>
