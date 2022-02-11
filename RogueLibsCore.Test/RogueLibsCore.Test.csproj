@@ -7,7 +7,7 @@
     <!-- Header -->
     <AssemblyName>RogueLibsCore.Test</AssemblyName>
     <PackageId>$(AssemblyName)</PackageId>
-    <Version>3.5.0-beta.2</Version>
+    <Version>3.5.0-beta.3</Version>
     <Authors>Abbysssal</Authors>
     <Company>$(Authors)</Company>
     <Copyright></Copyright>
