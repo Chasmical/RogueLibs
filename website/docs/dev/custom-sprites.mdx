@@ -1,45 +1,33 @@
-# Custom Sprites
+# Custom Sprites and Resources
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-## Adding sprites as resources {#sprites-as-resources}
+## Adding binary resources {#binary-resources}
 
-First of all, get your sprites and convert them to PNG or JPEG, if they're not already PNG- or JPEG-encoded.
+First of all, encode your images in PNG or JPG format, and audioclips in MP3, OGG or WAV.
 
-Then, change the files' extensions to `.bin`. This way Visual Studio will recognize the files as binary data instead of bitmaps.
+Then go to your project's Properties and create a resource file, if it doesn't exist already.
 
-:::note
-Unfortunately, we can't import images from bitmaps, because Unity's System.Drawing.dll is just filled with stubs. So, we'll have to import images as binary data, until someone finds a better solution.
-:::
+<img src={useBaseUrl('/img/setup/resources.png')} width='600'/>
 
-:::note
-Screenshot needed (/img/custom-sprites/rename-bin.png)
-:::
+Open your project's `Resources.resx` in an **external** editor and add the following element to the end:
 
-Right-click on your project, go a-a-all the way down and click **Properties**:
+```xml
+  <!-- ... -->
+// highlight-start
+  <data name="MyAwesomeSprite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MyAwesomeSprite.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+// highlight-end
+</root>
+```
 
-<img src={useBaseUrl('/img/custom-sprites/project-properties.png')} width='300'/>
+You only need to change the `name` attribute and the first part of the `value` element for your resources. Then you should be able to reference them like this: `Properties.Resources.MyAwesomeSprite`. You can do the same thing with other types of files as well, like audioclips, fonts and models.
 
-Go to **Resources** tab and click on *that* button to create a resources file:
-
-<img src={useBaseUrl('/img/custom-sprites/create-resources.png')} width='800'/>
-
-Select **Add resource** at the top of the menu and click **Add Existing File...**:
-
-<img src={useBaseUrl('/img/custom-sprites/add-resources.png')} width='600'/>
-
-Now just find your images (with `.bin` extension) and add them as resources:
-
-:::note
-Screenshot needed (/img/custom-sprites/select-resources.png)
-:::
-
-Now you should be able to reference your sprites' data from the code like this: `Properties.Resources.<ResourceName>`.
-
-:::note
-If you get an error, then make sure that the default namespace, that is specified in project's properties in **Application** tab, is the same as the one you're using.
+:::info
+If you can't reference it right after adding it, try adding a simple string resource to the `Resources.resx` using Visual Studio's default resources editor and then deleting it, or renaming an existing resource, saving, and then renaming it back.
 :::
 
 ## `RogueSprite` {#roguesprite}
@@ -63,12 +51,12 @@ But you can create them directly too, although you'll have to specify a name and
 RogueLibs.CreateCustomSprite("name", SpriteScope.Items, Properties.Resources.ResourceName);
 ```
 
-By default, RogueLibs uses the entire file as a texture. You can specify the region of the texture to use with a `Rect` parameter:
+By default, RogueLibs uses the entire file as a texture. You can specify the region of the texture to use with a `Rect` parameter (for example, if you included a color palette used in the image by its side and don't want to include it):
 
 ```csharp
 RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceName,
                                 // highlight-next-line
-                                new Rect(32f, 32f, 64f, 64f));
+                                new Rect(0f, 0f, 64f, 64f));
 ```
 
 If you're going to use non-64x64 textures, then you need to specify the PPU (pixels-per-unit) parameter too:

@@ -8,7 +8,6 @@ module.exports = {
       ],
       'Developer\'s Guide': [
         'dev/getting-started',
-        'dev/recommended-workspace',
         {
           'Custom Items and Abilities': [
             'dev/items/create-item',

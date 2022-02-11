@@ -1,4 +1,4 @@
-# Getting Started
+# Getting Started (new!)
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
@@ -8,185 +8,69 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 First of all, you'll need to install these tools:
 
-- **[dnSpy](https://github.com/dnSpy/dnSpy/releases/latest)** - a .NET assembly editor (and a debugger, but it's way too tedious to make it work for BepInEx and plugins). You're not gonna edit assemblies, just view them to see how the game and/or other plugins works.
+- **[dnSpy](https://github.com/dnSpy/dnSpy/releases/latest)** - a .NET assembly editor (and a debugger, but it's way too tedious to make it work for BepInEx and plugins). You're not gonna edit assemblies, just view them to see how the game and/or other plugins work.
 
 - **[Visual Studio 2019 Community](https://visualstudio.microsoft.com/downloads/)** - the Integrated Development Environment (IDE for short) that you'll be working in.
 
-## Creating a project {#creating-project}
+## New Way of Modding {#new-way-of-modding}
 
-Alright, open Visual Studio and **Create a new project**:
+Instead of creating a project manually, we'll be using a **special template** with a ton of advantages!
 
-<img src={useBaseUrl('/img/setup/creating-project.png')} width='800'/>
+- The template is SDK-style, which means that:
+  - You'll be able to use most of the features of the latest C# versions!
+  - Less messing around with the settings and configurations!
+- No DLL Hell. All of the references are in a single designated folder!
+- PluginBuildEvents utility will move your mods to BepInEx/plugins automatically!
+- The template contains the base code to quickly start developing your mod!
+- Most of the stuff you could possibly need is already in the template!
 
-Find and select a template called **Class Library (.NET Framework)**, then click **Next**:
+You can just copy-paste the template, and start working on your mod in less than a minute!
 
-<img src={useBaseUrl('/img/setup/selecting-template.png')} width='800'/>
+> *Before that template was created, you had to create a project and some folders, copy-paste dlls, add references, set up some settings, write the base code, then write some of your mod's content, then realize that you forgot to add a reference, then continue working on your mod, then again, you forgot to add something really fundamental and you have to rewrite the entire thing, and then when you almost got it to a stable release, you remember "that cool feature in C# 8.0 and later", start the project from scratch to try and add that feature, fail and then cry in your bed because you really need that feature and you can't imagine modding the game without it, and also because you scratched the entire project and you don't care enough to start over...* True story.
 
-Enter your project's name, without spaces or hyphens, just letters. Select .NET Framework **version 4.5.2**, then click **Create**.
+## Workspace Structure {#workspace-structure}
 
-:::tip Pro-tip: Repositories directory
-You can create a directory for your repositories in the root of one of your drives, for example, `D:\repos`. It's way shorter, more accessible and simpler to use than the default `C:\Users\$USER\source\repos`.
+First of all, download the workspace template **here (WORK-IN-PROGRESS, I'll add the link tomorrow)** and extract the `sor-repos` folder.
+
+:::tip Pro-tip: Managing repository directories
+You should put your repositories close to the root of the drive, so that they have much shorter and more manageable paths, like `D:\sor-repos`, `F:\rim-repos` (for Rimworld mods), `E:\uni-repos` (for university stuff) and etc. This way you'll always know the exact path to your projects, and all errors and warnings regarding the files will be much shorter and will contain less unnecessary information.
 :::
 
-<img src={useBaseUrl('/img/setup/configuring-project.png')} width='800'/>
+Now let's see what this workspace has to offer!
 
-## Referencing RogueLibs and game's assembly {#references}
+### `.ref` - References {#references}
 
-Create a folder called **`Libraries`** in your solution's directory. We'll put all referenced `.dll`s in there.
+`.ref` directory will contain all of the references for your mods. There are two kinds of them:
 
-<img src={useBaseUrl('/img/setup/libraries-folder.png')} width='800'/>
+***Static references*** (that is, the ones that aren't updated frequently and mostly remain the same) are stored in the `static` subdirectory. Most of the stuff that you can find in the `/StreetsOfRogue_Data/Managed` directory goes here.
 
-Go to `<GameName>_Data/Managed` in the game's root, grab the following files and put them in `Libraries`:
+<img src={useBaseUrl('/img/setup/ref-static.png')} width='600'/>
 
-- **`Assembly-CSharp.dll`** - assembly with all of the game's code.
-- **`netstandard.dll`** - Idk, for some reason, it's required sometimes.
-- **`UnityEngine.dll`** and **`UnityEngine.CoreModule.dll`** - Unity assemblies.
+***Dynamic references*** (the ones that change often) are `Assembly-CSharp.dll` (that contains the game code) and `RogueLibsCore.dll` (RogueLibs library). They are stored in the `.ref` directory itself, so you can update them more easily.
 
-:::info
-If you don't have a required assembly referenced, you'll see an error in Visual Studio's **Error List**.<br/>In that case, go to `<GameName>_Data/Managed` again and grab the missing assembly.
+<img src={useBaseUrl('/img/setup/ref.png')} width='600'/>
+
+:::tip Pro-tip: Documentation files
+Some references have documentation as a separate file, like `RogueLibsCore.xml`. Make sure that you place it next to the .dll in the same folder. If you do, you'll be able to look up documentation on types and members right in Visual Studio!
 :::
 
-Then go to `BepInEx/core` in the game's root and grab these too:
+### `.events` - PluginBuildEvents {#pluginbuildevents}
 
-- **`BepInEx.dll`** and **`BepInEx.xml`**.
-- *`0Harmony.dll` and `0Harmony.xml` - in case you want to transpile-patch or do the patching yourself.*
+PluginBuildEvents is a simple utility for copying your mods over to the BepInEx/plugins directory. The default project template includes it as a post-build event, so you just need to build your mod, and its file will be automatically moved!
 
-**[Download the latest RogueLibs version](https://github.com/SugarBarrel/RogueLibs/releases/latest).**
-
-You'll need only two files: **`RogueLibsCore.dll` and `RogueLibsCore.xml`**. Put them in `Libraries` too:
-
-<img src={useBaseUrl('/img/setup/libraries-folder-2.png')} width='800'/>
-
-Now open Visual Studio, find your project in **Solution Explorer**, right-click on **References** and click **Add Reference...**:
-
-:::note
-Btw, you can remove all of the default references.
+:::note Non-Steam versions of the game
+If you haven't purchased the Steam version of the game (or if you somehow messed up the Steam's installation path in the registry), then specify the full path to the game's root directory in the `Directory.Build.props` file of your project:
+```xml
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="&quot;$(SolutionDir)\..\.events\PluginBuildEvents.exe&quot; &quot;$(TargetPath)&quot; &quot;C:\GOG Games\Streets of Rogue&quot;" />
+  </Target>
+```
 :::
 
-<img src={useBaseUrl('/img/setup/references.png')} width='400'/>
+### Solution Folders {#solution-folders}
 
-In the **Reference Manager** click **Browse...**, select all `.dll`s in your `Libraries` folder and click **Add**.
+All other folders should contain solutions with your projects:
 
-<img src={useBaseUrl('/img/setup/references-2.png')} width='800'/>
+<img src={useBaseUrl('/img/setup/solutions.png')} width='600'/>
 
-## Writing a basic plugin {#basic-plugin}
-
-Add all necessary `using`s:
-
-```csharp title="Class1.cs"
-// highlight-start
-using System;
-using System.IO;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using BepInEx;
-using UnityEngine;
-using RogueLibsCore;
-// highlight-end
-
-namespace MyCoolMod
-{
-    public class Class1
-    {
-        
-    }
-}
-```
-
-Add a class deriving from `BaseUnityPlugin`.
-
-```csharp title="MyCoolPlugin.cs"
-namespace MyCoolMod
-{
-    // highlight-next-line
-    public class MyCoolPlugin : BaseUnityPlugin
-    {
-    }
-}
-```
-
-Add a `BepInPlugin` attribute to it with your plugin's <abbr title="Globally Unique Identifier">GUID</abbr>, name and version.  
-You can also put `string`s right into the attribute, without using `const`s, if you want.
-
-```csharp title="MyCoolPlugin.cs"
-// highlight-next-line
-[BepInPlugin(pluginGUID, pluginName, pluginVersion)]
-public class MyCoolPlugin : BaseUnityPlugin
-{
-    // highlight-start
-    public const string pluginGUID = "myusername.streetsofrogue.mycoolmod";
-    public const string pluginName = "My Cool Mod";
-    public const string pluginVersion = "0.1.0";
-    // highlight-end
-}
-```
-
-:::caution
-Once you've published your mod, **do not change its GUID!** If you do, all dependency trees related to your mod will break. Even if no one uses your mod as a framework, some developers might have added `BepInIncompatibility` with your mod's GUID. If you want to change the GUID, then create a new mod, replacing the old one.
-:::
-
-:::tip Pro-tip: Semantic versioning
-I recommend using [semantic versioning](https://semver.org) in your mods.
-:::
-
-Add a `BepInDependency` attribute with RogueLibs and add Unity's `Awake()` method:
-
-```csharp title="MyCoolPlugin.cs"
-[BepInPlugin(pluginGUID, pluginName, pluginVersion)]
-// highlight-next-line
-[BepInDependency(RogueLibs.GUID, RogueLibs.CompiledVersion)]
-public class MyCoolPlugin : BaseUnityPlugin
-{
-    public const string pluginGUID = "myusername.streetsofrogue.mycoolmod";
-    public const string pluginName = "My Cool Mod";
-    public const string pluginVersion = "0.1.0";
-
-    // highlight-start
-    public void Awake()
-    {
-        // your code goes here
-    }
-    // highlight-end
-}
-```
-
-**Now just explore the docs and make stuff!**
-
-## "Hello World!" plugin example {#hello-world}
-
-```csharp title="MyCoolPlugin.cs"
-using System;
-using System.IO;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Text;
-using BepInEx;
-using UnityEngine;
-using RogueLibsCore;
-
-namespace MyCoolMod
-{
-    [BepInPlugin(pluginGUID, pluginName, pluginVersion)]
-    [BepInDependency(RogueLibs.GUID, RogueLibs.CompiledVersion)]
-    public class MyCoolPlugin : BaseUnityPlugin
-    {
-        public const string pluginGUID = "myusername.streetsofrogue.mycoolmod";
-        public const string pluginName = "My Cool Mod";
-        public const string pluginVersion = "0.1.0";
-
-        public static ManualLogSource MyLogger;
-        // so you can reference it in patches
-
-        public void Awake()
-        {
-            MyLogger = Logger;
-            Logger.LogMessage("Hello World!");
-        }
-    }
-}
-```
+To create a new one, just copy-paste the template one. You can also modify the template to fit your specific needs.
