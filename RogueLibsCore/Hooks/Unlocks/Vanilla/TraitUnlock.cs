@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -13,21 +14,21 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="TraitUnlock"/> class without a name.</para>
         /// </summary>
-        public TraitUnlock() : this(null, false) { }
+        public TraitUnlock() : this(null!, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="TraitUnlock"/> class without a name.</para>
         /// </summary>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public TraitUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+        public TraitUnlock(bool unlockedFromStart) : this(null!, unlockedFromStart) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="TraitUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and trait's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         public TraitUnlock(string name) : this(name, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="TraitUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and trait's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
         public TraitUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Trait, unlockedFromStart) => IsAvailableInCC = true;
         internal TraitUnlock(Unlock unlock) : base(unlock) { }
@@ -41,10 +42,17 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public bool IsAddedToCC
         {
-            get => ((CustomCharacterCreation)Menu).CC.traitsChosen.Contains(Unlock);
+            get
+            {
+                if (Menu is not CustomCharacterCreation cc)
+                    throw new InvalidOperationException("The unlock is not in the character creation menu.");
+                return cc.CC.traitsChosen.Contains(Unlock);
+            }
             set
             {
-                List<Unlock> list = ((CustomCharacterCreation)Menu).CC.traitsChosen;
+                if (Menu is not CustomCharacterCreation cc)
+                    throw new InvalidOperationException("The unlock is not in the character creation menu.");
+                List<Unlock> list = cc.CC.traitsChosen;
                 bool cur = list.Contains(Unlock);
                 if (cur && !value) list.Remove(Unlock);
                 else if (!cur && value) list.Add(Unlock);
@@ -75,9 +83,10 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.traitUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.traitUnlocks.Remove(Unlock); Unlock.traitCount--; }
-                else if (cur == false && value) { gc.sessionDataBig.traitUnlocks.Add(Unlock); Unlock.traitCount++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.traitUnlocks!.Remove(Unlock); Unlock.traitCount--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.traitUnlocks!.Add(Unlock); Unlock.traitCount++; }
             }
         }
         /// <inheritdoc/>
@@ -87,9 +96,10 @@ namespace RogueLibsCore
             set
             {
                 Unlock.onlyInCharacterCreation = value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.traitUnlocksCharacterCreation?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.traitUnlocksCharacterCreation.Remove(Unlock); Unlock.traitCountCharacterCreation--; }
-                else if (cur == false && value) { gc.sessionDataBig.traitUnlocksCharacterCreation.Add(Unlock); Unlock.traitCountCharacterCreation++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.traitUnlocksCharacterCreation!.Remove(Unlock); Unlock.traitCountCharacterCreation--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.traitUnlocksCharacterCreation!.Add(Unlock); Unlock.traitCountCharacterCreation++; }
             }
         }
 
@@ -97,22 +107,39 @@ namespace RogueLibsCore
         ///   <para>Gets the trait's upgrade cost, in money.</para>
         /// </summary>
         /// <returns>The trait's upgrade cost, in money.</returns>
-        public virtual int GetUpgradeCost() => Mathf.Abs((gc.unlocks.GetUnlock(Unlock.upgrade, "Trait")?.cost3 ?? CharacterCreationCost) * ((CustomScrollingMenu)Menu).Menu.upgradeTraitAdjust);
+        public virtual int GetUpgradeCost()
+        {
+            if (Menu is not CustomScrollingMenu menu)
+                throw new InvalidOperationException("The unlock is not in the character creation menu.");
+            return Mathf.Abs((gc.unlocks.GetUnlock(Unlock.upgrade, "Trait")?.cost3 ?? CharacterCreationCost) * menu.Menu.upgradeTraitAdjust);
+        }
         /// <summary>
         ///   <para>Gets the trait's removal cost, in money.</para>
         /// </summary>
         /// <returns>The trait's removal cost, in money.</returns>
-        public virtual int GetRemovalCost() => Mathf.Abs(CharacterCreationCost * ((CustomScrollingMenu)Menu).Menu.removeTraitAdjust);
+        public virtual int GetRemovalCost()
+        {
+            if (Menu is not CustomScrollingMenu menu)
+                throw new InvalidOperationException("The unlock is not in the character creation menu.");
+            return Mathf.Abs(CharacterCreationCost * menu.Menu.removeTraitAdjust);
+        }
         /// <summary>
         ///   <para>Gets the trait's swap cost, in money.</para>
         /// </summary>
         /// <returns>The trait's swap cost, in money.</returns>
-        public virtual int GetSwapCost() => Mathf.Abs(CharacterCreationCost * (CharacterCreationCost < 0 ? ((CustomScrollingMenu)Menu).Menu.changeTraitRandomAdjustNegativeTrait : ((CustomScrollingMenu)Menu).Menu.changeTraitRandomAdjustPositiveTrait));
+        public virtual int GetSwapCost()
+        {
+            if (Menu is not CustomScrollingMenu menu)
+                throw new InvalidOperationException("The unlock is not in the character creation menu.");
+            return Mathf.Abs(CharacterCreationCost * (CharacterCreationCost < 0
+                                 ? menu.Menu.changeTraitRandomAdjustNegativeTrait
+                                 : menu.Menu.changeTraitRandomAdjustPositiveTrait));
+        }
 
         /// <inheritdoc/>
         public override void UpdateButton()
         {
-            if (Menu.Type == UnlocksMenuType.TraitsMenu)
+            if (Menu!.Type == UnlocksMenuType.TraitsMenu)
                 UpdateButton(IsEnabled, UnlockButtonState.Normal, UnlockButtonState.Disabled);
             else if (Menu.Type == UnlocksMenuType.CharacterCreation)
                 UpdateButton(IsAddedToCC);
@@ -126,7 +153,7 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public override void OnPushedButton()
         {
-            if (Menu.Type == UnlocksMenuType.NewLevelTraits)
+            if (Menu!.Type == UnlocksMenuType.NewLevelTraits)
             {
                 ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
                 if (menu.twitchCountdownOn) return;
@@ -172,11 +199,11 @@ namespace RogueLibsCore
                 {
                     if (gc.fourPlayerMode || gc.coopMode)
                     {
-                        menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("PersonalMenuDelay").Invoke(menu, new object[0]));
+                        menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("PersonalMenuDelay")!.Invoke(menu, new object[0]));
                     }
                     else if (gc.levelFeelingsScript.DoesNextLevelHaveFeeling(false) && (gc.sessionDataBig.twitchOn || gc.twitchMode) && (gc.sessionDataBig.twitchLevelFeelings || gc.twitchMode) && (gc.sessionData.nextLevelFeeling?.Length is 0 || gc.sessionData.nextLevelFeeling is null) && !gc.challenges.Contains("NoLevelFeelings") && !gc.levelFeelingsScript.CanceledAllLevelFeelings() && gc.serverPlayer && gc.levelFeelingsScript.GetLevelFeeling() != "")
                     {
-                        menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("ShowMenuDelay").Invoke(menu, new object[2] { "LevelFeelings", Menu.Agent }));
+                        menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("ShowMenuDelay")!.Invoke(menu, new object[2] { "LevelFeelings", Menu.Agent }));
                     }
                     else
                     {
@@ -260,7 +287,8 @@ namespace RogueLibsCore
                 else if (Menu.Type == UnlocksMenuType.CharacterCreation)
                 {
                     PlaySound(VanillaAudio.ClickButton);
-                    if (IsAddedToCC = !IsAddedToCC)
+                    IsAddedToCC = !IsAddedToCC;
+                    if (IsAddedToCC)
                         foreach (DisplayedUnlock du in EnumerateCancellations())
                             ((IUnlockInCC)du).IsAddedToCC = false;
                     UpdateButton();

@@ -1,4 +1,6 @@
-﻿namespace RogueLibsCore
+﻿using System;
+
+namespace RogueLibsCore
 {
     /// <summary>
     ///   <para>Represents a Big Quest unlock.</para>
@@ -8,21 +10,21 @@
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="BigQuestUnlock"/> class without a name.</para>
         /// </summary>
-        public BigQuestUnlock() : this(null, false) { }
+        public BigQuestUnlock() : this(null!, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="BigQuestUnlock"/> class without a name.</para>
         /// </summary>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public BigQuestUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+        public BigQuestUnlock(bool unlockedFromStart) : this(null!, unlockedFromStart) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="BigQuestUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and Big Quest's name. Must be of format: "&lt;AgentUnlock&gt;_BQ".</param>
+        /// <param name="name">The name of the unlock. Must be of format: "&lt;AgentUnlock&gt;_BQ".</param>
         public BigQuestUnlock(string name) : this(name, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="BigQuestUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and Big Quest's name. Must be of format: "&lt;AgentUnlock&gt;_BQ".</param>
+        /// <param name="name">The name of the unlock. Must be of format: "&lt;AgentUnlock&gt;_BQ".</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
         public BigQuestUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.BigQuest, unlockedFromStart) => IsAvailableInCC = true;
         internal BigQuestUnlock(Unlock unlock) : base(unlock) { }
@@ -36,12 +38,19 @@
         /// <inheritdoc/>
         public bool IsAddedToCC
         {
-            get => ((CustomCharacterCreation)Menu).CC.bigQuestChosen == Agent.Name;
+            get
+            {
+                if (Menu is not CustomCharacterCreation cc)
+                    throw new InvalidOperationException("The unlock is not in the character creation menu.");
+                return cc.CC.bigQuestChosen == Agent?.Name;
+            }
             set
             {
+                if (Menu is not CustomCharacterCreation cc)
+                    throw new InvalidOperationException("The unlock is not in the character creation menu.");
                 bool cur = IsAddedToCC;
-                if (cur && !value) ((CustomCharacterCreation)Menu).CC.bigQuestChosen = "";
-                else if (!cur && value) ((CustomCharacterCreation)Menu).CC.bigQuestChosen = Agent.Name;
+                if (cur && !value) cc.CC.bigQuestChosen = "";
+                else if (!cur && value) cc.CC.bigQuestChosen = Agent?.Name ?? string.Empty;
             }
         }
 
@@ -52,9 +61,10 @@
             set
             {
                 Unlock.unavailable = !value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.bigQuestUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.bigQuestUnlocks.Remove(Unlock); Unlock.bigQuestCount--; }
-                else if (cur == false && value) { gc.sessionDataBig.bigQuestUnlocks.Add(Unlock); Unlock.bigQuestCount++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.bigQuestUnlocks!.Remove(Unlock); Unlock.bigQuestCount--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.bigQuestUnlocks!.Add(Unlock); Unlock.bigQuestCount++; }
             }
         }
         /// <inheritdoc/>
@@ -67,7 +77,15 @@
         /// <summary>
         ///   <para>Gets or sets whether the Big Quest is unlocked. This is synchronized with its <see cref="AgentUnlock"/>.</para>
         /// </summary>
-        public override bool IsUnlocked { get => Agent.IsUnlocked; set => Agent.IsUnlocked = value; }
+        public override bool IsUnlocked
+        {
+            get => Agent?.IsUnlocked ?? Unlock.unlocked;
+            set
+            {
+                if (Agent is not null) Agent.IsUnlocked = value;
+                else Unlock.unlocked = value;
+            }
+        }
         /// <summary>
         ///   <para>Gets or sets whether the Big Quest is complete.</para>
         /// </summary>
@@ -76,7 +94,7 @@
         /// <summary>
         ///   <para>Gets the <see cref="AgentUnlock"/> associated with this Big Quest.</para>
         /// </summary>
-        public AgentUnlock Agent { get; internal set; }
+        public AgentUnlock? Agent { get; internal set; }
         public string AgentName => Name.Substring(0, Name.Length - 3);
 
         /// <summary>
@@ -95,7 +113,7 @@
         /// <inheritdoc/>
         public override void UpdateButton()
         {
-            if (Menu.Type == UnlocksMenuType.CharacterCreation)
+            if (Menu!.Type == UnlocksMenuType.CharacterCreation)
             {
                 UpdateButton(IsAddedToCC);
             }
@@ -105,10 +123,10 @@
         {
             if (IsUnlocked)
             {
-                if (Menu.Type == UnlocksMenuType.CharacterCreation)
+                if (Menu!.Type == UnlocksMenuType.CharacterCreation)
                 {
                     PlaySound(VanillaAudio.ClickButton);
-                    BigQuestUnlock previous = (BigQuestUnlock)Menu.Unlocks.Find(u => u is BigQuestUnlock bigQuest && bigQuest.IsAddedToCC);
+                    BigQuestUnlock? previous = (BigQuestUnlock?)Menu.Unlocks.Find(static u => u is BigQuestUnlock { IsAddedToCC: true });
                     IsAddedToCC = !IsAddedToCC;
                     UpdateButton();
                     previous?.UpdateButton();
@@ -130,8 +148,9 @@
         public override string GetName()
         {
             string name = gc.nameDB.GetName(Name, NameTypes.Unlock);
+            if (Agent is null) return name;
             string agentName = Agent.GetName();
-            if (Agent.Name == VanillaAgents.GangsterCrepe || Agent.Name == VanillaAgents.GangsterBlahd)
+            if (Agent.Name is VanillaAgents.GangsterCrepe or VanillaAgents.GangsterBlahd)
                 agentName += $", {gc.nameDB.GetName(Agent.Name + "_N", NameTypes.Agent)}";
             return $"{name} ({agentName})";
         }
@@ -140,20 +159,21 @@
 
         public override string GetFancyDescription()
         {
+            if (Menu is null) throw new InvalidOperationException("The fancy description of the unlock cannot be accessed outside of the menu.");
             if (IsUnlocked || Unlock.nowAvailable || Menu.ShowLockedUnlocks)
             {
-                string text = GetDescription();
+                string? text = GetDescription();
                 AddCancellationsTo(ref text);
                 AddRecommendationsTo(ref text);
                 if (!IsUnlocked || RogueFramework.IsDebugEnabled(DebugFlags.Unlocks | DebugFlags.UnlockMenus))
                     AddPrerequisitesTo(ref text);
-                return text;
+                return text ?? string.Empty;
             }
             else
             {
-                string text = "?????";
+                string? text = "?????";
                 AddPrerequisitesTo(ref text);
-                return text;
+                return text ?? string.Empty;
             }
         }
 

@@ -43,24 +43,25 @@ namespace RogueLibsCore
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
             bool debug2 = RogueFramework.IsDebugEnabled(DebugFlags.Abilities);
             foreach (IHookFactory<InvItem> factory in RogueFramework.ItemFactories)
-                if (factory.TryCreate(__instance, out IHook<InvItem> hook))
+                if (factory.TryCreate(__instance, out IHook<InvItem>? hook))
                 {
                     if (debug2 && hook is CustomAbility)
                         RogueFramework.LogDebug($"Initializing custom ability {hook} ({__instance.invItemName}).");
                     else if (debug)
                     {
-                        if (hook is CustomItem) RogueFramework.LogDebug($"Initializing custom item {hook} ({__instance.invItemName}).");
-                        else RogueFramework.LogDebug($"Initializing item hook {hook} for \"{__instance.invItemName}\".");
+                        RogueFramework.LogDebug(hook is CustomItem
+                                                    ? $"Initializing custom item {hook} ({__instance.invItemName})."
+                                                    : $"Initializing item hook {hook} for \"{__instance.invItemName}\".");
                     }
-                    __instance.AddHook(hook);
+                    __instance.AddHook(hook!);
                 }
         }
 
         public static bool ItemFunctions_UseItem(InvItem item, Agent agent)
         {
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
-            CustomItem custom = item.GetHook<CustomItem>();
-            if (custom is IItemTargetable || custom is IItemTargetableAnywhere)
+            CustomItem? custom = item.GetHook<CustomItem>();
+            if (custom is IItemTargetable or IItemTargetableAnywhere)
             {
                 if (debug) RogueFramework.LogDebug($"Showing target for {custom} ({item.invItemName}).");
                 item.invInterface.ShowOrHideTarget(item);
@@ -75,21 +76,21 @@ namespace RogueLibsCore
             {
                 agent = args.User;
                 // in case an inventory check redirected the use of an item on someone else
-                using (AgentSwapper swapper = new AgentSwapper(item, agent))
+                using (new AgentSwapper(item, agent))
                 {
                     if (agent.localPlayer)
                     {
                         if (!originalAgent.inventory.HasItem(item.invItemName)
                             && originalAgent.inventory.equippedSpecialAbility?.invItemName != item.invItemName)
                             return false;
-                        else if (!item.used && (item.Categories.Contains(RogueCategories.Usable) || item.itemType == ItemTypes.Consumable))
+                        if (!item.used && (item.Categories.Contains(RogueCategories.Usable) || item.itemType == ItemTypes.Consumable))
                         {
                             item.used = true;
                             if (agent.isPlayer > 0) agent.gc.sessionData.endStats[agent.isPlayer].itemsUsed++;
                         }
                     }
                     // if it's not a custom item, run the original method
-                    if (!(custom is IItemUsable usable))
+                    if (custom is not IItemUsable usable)
                     {
                         if (debug) RogueFramework.LogDebug("---- Running the original method.");
                         return true;
@@ -107,11 +108,11 @@ namespace RogueLibsCore
             return false;
         }
 
-        public static bool InvItem_CombineItems(InvItem __instance, InvItem otherItem, int slotNum, Agent myAgent, string combineType, ref bool __result)
+        public static bool InvItem_CombineItems(InvItem __instance, InvItem otherItem, int slotNum, Agent myAgent, string combineType, out bool __result)
         {
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
             bool actualCombining = combineType == "Combine";
-            CustomItem custom = __instance.GetHook<CustomItem>();
+            CustomItem? custom = __instance.GetHook<CustomItem>();
 
             if (debug && actualCombining) RogueFramework.LogDebug($"Combining {custom} ({__instance.invItemName}) with {otherItem.invItemName}:");
 
@@ -140,7 +141,7 @@ namespace RogueLibsCore
 
             if (custom is IItemCombinable combinable)
             {
-                using (AgentSwapper swapper = new AgentSwapper(__instance, myAgent))
+                using (new AgentSwapper(__instance, myAgent))
                     __result = combinable.CombineFilter(otherItem);
             }
             else __result = new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, string.Empty);
@@ -154,7 +155,7 @@ namespace RogueLibsCore
                     otherItem = args.OtherItem;
                     if (custom is IItemCombinable combinable2)
                     {
-                        using (AgentSwapper swapper = new AgentSwapper(__instance, myAgent))
+                        using (new AgentSwapper(__instance, myAgent))
                         {
                             bool success = combinable2.CombineItems(otherItem);
                             if (debug) RogueFramework.LogDebug($"---- Combining {(success ? "was successful" : "failed")}.");
@@ -182,11 +183,11 @@ namespace RogueLibsCore
             }
             return false;
         }
-        public static bool InvItem_TargetObject(InvItem __instance, PlayfieldObject otherObject, string combineType, ref bool __result)
+        public static bool InvItem_TargetObject(InvItem __instance, PlayfieldObject otherObject, string combineType, out bool __result)
         {
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
             bool actualCombining = combineType == "Combine";
-            CustomItem custom = __instance.GetHook<CustomItem>();
+            CustomItem? custom = __instance.GetHook<CustomItem>();
 
             if (debug && actualCombining) RogueFramework.LogDebug($"Targeting {custom} ({__instance.invItemName}) on {otherObject.objectName}:");
 
@@ -232,7 +233,7 @@ namespace RogueLibsCore
                 if (InventoryChecks.onItemTargeting.Raise(args, custom?.ItemInfo.IgnoredChecks))
                 {
                     otherObject = args.Target;
-                    using (AgentSwapper swapper = new AgentSwapper(__instance, args.User))
+                    using (new AgentSwapper(__instance, args.User))
                     {
                         if (custom is IItemTargetable targetable2)
                         {
@@ -269,7 +270,7 @@ namespace RogueLibsCore
 
             if (item.itemType != ItemTypes.Combine)
             {
-                CustomItem custom = item.GetHook<CustomItem>();
+                CustomItem? custom = item.GetHook<CustomItem>();
                 if (custom is IItemTargetable targetable)
                 {
                     CustomTooltip tooltip = targetable.TargetCursorText(item.agent.target.playfieldObject);
@@ -283,7 +284,7 @@ namespace RogueLibsCore
         {
             __instance.cursorTextString3.color = Color.white;
 
-            CustomItem custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
+            CustomItem? custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
             if (custom is IItemTargetable targetable)
             {
                 CustomTooltip tooltip = targetable.TargetCursorText(myPlayfieldObject);
@@ -294,7 +295,7 @@ namespace RogueLibsCore
         }
         public static void InvInterface_HideCursorText(InvInterface __instance)
         {
-            CustomItem custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
+            CustomItem? custom = __instance.mainGUI.targetItem?.GetHook<CustomItem>();
             if (custom is IItemTargetable targetable)
             {
                 CustomTooltip tooltip = targetable.TargetCursorText(null);
@@ -313,10 +314,10 @@ namespace RogueLibsCore
             if (combiner is null) return;
             InvItem combinee = __instance.curItemList[__instance.slotNumber];
 
-            CustomItem custom = combiner.GetHook<CustomItem>();
-            if (!(custom is IItemCombinable combinable)) return;
+            CustomItem? custom = combiner.GetHook<CustomItem>();
+            if (custom is not IItemCombinable combinable) return;
 
-            if (__instance.slotType == "Player" || __instance.slotType == "Toolbar" || __instance.slotType == "Chest" || __instance.slotType == "NPCChest")
+            if (__instance.slotType is "Player" or "Toolbar" or "Chest" or "NPCChest")
             {
                 if (combinee.invItemName != null && combiner.itemType == ItemTypes.Combine)
                 {
@@ -334,7 +335,7 @@ namespace RogueLibsCore
                         __instance.toolbarNumTextGo.SetActive(false);
                     }
 
-                    if (__instance.slotType != "NPCChest" && __instance.slotType != "Chest")
+                    if (__instance.slotType is not "NPCChest" and not "Chest")
                     {
                         CustomTooltip tooltip = combinable.CombineTooltip(combinee);
                         __instance.toolbarNumTextGo.SetActive(true);
@@ -345,7 +346,7 @@ namespace RogueLibsCore
                 else if (__instance.slotType != "NPCChest" && (combinee.invItemName != null || combiner.itemType != ItemTypes.Combine))
                 {
                     __instance.myImage.color = __instance.overSlot
-                        ? (Color)new Color32(0, __instance.br, __instance.br, __instance.standardAlpha)
+                        ? new Color32(0, __instance.br, __instance.br, __instance.standardAlpha)
                         : (Color)new Color32(__instance.br, __instance.br, __instance.br, __instance.standardAlpha);
 
                     __instance.itemImage.color = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
@@ -360,7 +361,7 @@ namespace RogueLibsCore
 
         public static void InvSlot_LateUpdate(InvSlot __instance, Text ___itemText)
         {
-            CustomItem custom = __instance.item?.GetHook<CustomItem>();
+            CustomItem? custom = __instance.item?.GetHook<CustomItem>();
             if (custom != null)
             {
                 ___itemText.enabled = true;
@@ -371,7 +372,7 @@ namespace RogueLibsCore
         }
         public static void EquippedItemSlot_LateUpdateEquippedItemSlot(EquippedItemSlot __instance)
         {
-            CustomItem custom = __instance.item?.GetHook<CustomItem>();
+            CustomItem? custom = __instance.item?.GetHook<CustomItem>();
             if (custom != null)
             {
                 __instance.countText.enabled = true;
@@ -390,7 +391,7 @@ namespace RogueLibsCore
             InvItem invItem = __instance.mainGUI.targetItem;
             if (invItem != null)
             {
-                CustomItem custom = invItem.GetHook<CustomItem>();
+                CustomItem? custom = invItem.GetHook<CustomItem>();
                 __instance.cursorHighlightTargetObjects = custom is IItemTargetable;
                 if (custom is IItemTargetableAnywhere targetable)
                 {
@@ -410,16 +411,16 @@ namespace RogueLibsCore
                     if (pressedButton)
                     {
                         OnItemTargetingAnywhereArgs args = new OnItemTargetingAnywhereArgs(invItem, myPos, invItem.agent);
-                        if (InventoryChecks.onItemTargetingAnywhere.Raise(args, custom?.ItemInfo.IgnoredChecks))
+                        if (InventoryChecks.onItemTargetingAnywhere.Raise(args, custom.ItemInfo.IgnoredChecks))
                         {
                             myPos = args.Target;
-                            using (AgentSwapper swapper = new AgentSwapper(invItem, args.User))
+                            using (new AgentSwapper(invItem, args.User))
                             {
                                 bool success = targetable.TargetPosition(myPos);
                                 if (debug) RogueFramework.LogDebug($"---- Targeting {(success ? "was successful" : "failed")}.");
                                 if (success) new ItemFunctions().UseItemAnim(invItem, invItem.agent);
 
-                                if (custom.Count < 1 || !custom.Inventory.InvItemList.Contains(custom.Item)
+                                if (custom.Count < 1 || !custom.Inventory!.InvItemList.Contains(custom.Item)
                                     && InventoryChecks.IsCheckAllowed(custom, "StopOnZero"))
                                 {
                                     if (debug) RogueFramework.LogDebug("---- Triggered \"StopOnZero\" inventory check.");
@@ -445,8 +446,8 @@ namespace RogueLibsCore
                 OriginalAgent = item.agent;
                 item.agent = targetAgent;
             }
-            public InvItem Item;
-            public Agent OriginalAgent;
+            public readonly InvItem Item;
+            public readonly Agent OriginalAgent;
             public void Dispose() => Item.agent = OriginalAgent;
         }
     }

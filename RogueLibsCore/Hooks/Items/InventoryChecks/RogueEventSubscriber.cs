@@ -14,16 +14,15 @@ namespace RogueLibsCore
         /// <param name="name">The name of the subscriber.</param>
         /// <param name="handler">The handler of the subscriber.</param>
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
-        public RogueEventSubscriber(string name, RogueEventHandler<TArgs> handler)
+        public RogueEventSubscriber(string? name, RogueEventHandler<TArgs> handler)
         {
-            if (handler is null) throw new ArgumentNullException(nameof(handler));
             Name = name;
-            Handler = handler;
+            Handler = handler ?? throw new ArgumentNullException(nameof(handler));
         }
         /// <summary>
         ///   <para>Gets the subscriber's name.</para>
         /// </summary>
-        public string Name { get; }
+        public string? Name { get; }
         /// <summary>
         ///   <para>Gets the subscriber's handler.</para>
         /// </summary>
@@ -34,5 +33,5 @@ namespace RogueLibsCore
     /// </summary>
     /// <typeparam name="TArgs">The <see cref="RogueEventArgs"/> used by the event.</typeparam>
     /// <param name="e">The event args.</param>
-    public delegate void RogueEventHandler<TArgs>(TArgs e) where TArgs : RogueEventArgs;
+    public delegate void RogueEventHandler<in TArgs>(TArgs e) where TArgs : RogueEventArgs;
 }

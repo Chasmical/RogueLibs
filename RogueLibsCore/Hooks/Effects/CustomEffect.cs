@@ -31,15 +31,16 @@
         ///   <para>Gets the currently used instance of <see cref="GameController"/>.</para>
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]
+        // ReSharper disable once InconsistentNaming
         public static GameController gc => GameController.gameController;
 
         /// <summary>
         ///   <para>Gets the custom effect's metadata.</para>
         /// </summary>
-        public EffectInfo EffectInfo { get; internal set; }
+        public EffectInfo EffectInfo { get; internal set; } = null!; // initialized immediately in CustomEffectFactory
 
         /// <inheritdoc/>
-        protected override sealed void Initialize()
+        protected sealed override void Initialize()
         {
             Effect.dontRemoveOnDeath = !EffectInfo.RemoveOnDeath;
             Effect.removeOnKnockout = EffectInfo.RemoveOnKnockOut;

@@ -21,19 +21,19 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Gets the trait's localizable name.</para>
         /// </summary>
-        public CustomName Name { get; private set; }
+        public CustomName? Name { get; private set; }
         /// <summary>
         ///   <para>Gets the trait's localizable description.</para>
         /// </summary>
-        public CustomName Description { get; private set; }
+        public CustomName? Description { get; private set; }
         /// <summary>
         ///   <para>Gets the trait's sprite.</para>
         /// </summary>
-        public RogueSprite Sprite { get; private set; }
+        public RogueSprite? Sprite { get; private set; }
         /// <summary>
         ///   <para>Gets the trait's unlock.</para>
         /// </summary>
-        public TraitUnlock Unlock { get; private set; }
+        public TraitUnlock? Unlock { get; private set; }
 
         /// <summary>
         ///   <para>Creates a localizable string with the specified localization <paramref name="info"/> to act as the trait's name.</para>

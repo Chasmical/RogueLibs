@@ -76,14 +76,17 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>The Upgrade Trait Menu in the Augmentation Booth.</para>
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         AB_UpgradeTrait,
         /// <summary>
         ///   <para>The Remove Trait Menu in the Augmentation Booth.</para>
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         AB_RemoveTrait,
         /// <summary>
         ///   <para>The Swap Trait Menu in the Augmentation Booth.</para>
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         AB_SwapTrait,
 
         /// <summary>

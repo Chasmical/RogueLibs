@@ -23,7 +23,7 @@ namespace RogueLibsCore
         /// <param name="name">The name of the subscriber.</param>
         /// <param name="handler">The handler of the subscriber.</param>
         /// <exception cref="ArgumentNullException"><paramref name="handler"/> is <see langword="null"/>.</exception>
-        public void Subscribe(string name, RogueEventHandler<TArgs> handler)
+        public void Subscribe(string? name, RogueEventHandler<TArgs> handler)
         {
             if (handler is null) throw new ArgumentNullException(nameof(handler));
             list.Capacity++;
@@ -36,7 +36,6 @@ namespace RogueLibsCore
         /// <returns><see langword="true"/>, if at least one subscriber was successfully unsubscribed; otherwise, <see langword="false"/>.</returns>
         public bool Unsubscribe(RogueEventHandler<TArgs> handler)
         {
-            if (handler is null) return false;
             int removed = list.RemoveAll(h => h.Handler == handler);
             if (removed > 0)
             {
@@ -61,7 +60,7 @@ namespace RogueLibsCore
         /// <param name="args">The event args to raise an event with.</param>
         /// <param name="ignoreList">The names of the subscribers to ignore.</param>
         /// <returns><see langword="true"/>, if the action was not cancelled by any of the subscribers; otherwise, <see langword="false"/>.</returns>
-        public bool Raise(TArgs args, ICollection<string> ignoreList)
+        public bool Raise(TArgs args, ICollection<string>? ignoreList)
         {
             for (int i = 0; i < list.Count && !args.Handled; i++)
             {

@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Mono.Cecil;
 
 namespace RogueLibsPatcher
 {
     public static class RogueLibsPatcher
     {
+        // ReSharper disable once InconsistentNaming
         public static IEnumerable<string> TargetDLLs { get; } = new string[1] { "Assembly-CSharp.dll" };
 
-        public static ModuleDefinition module;
-        public static TypeReference objRef;
+        private static ModuleDefinition? module;
+        private static TypeReference? objRef;
 
         public static void Patch(AssemblyDefinition assembly)
         {
@@ -41,8 +39,8 @@ namespace RogueLibsPatcher
             TypeDefinition unlock = module.GetType("Unlock");
             PatchCustom(unlock);
 
-            TypeDefinition tk2ddef = module.GetType("tk2dSpriteDefinition");
-            PatchCustom(tk2ddef);
+            TypeDefinition tk2dDef = module.GetType("tk2dSpriteDefinition");
+            PatchCustom(tk2dDef);
         }
 
         public static void PatchHooks(TypeDefinition type) => Patch(type, "__RogueLibsHooks");

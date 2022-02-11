@@ -8,21 +8,21 @@
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AgentUnlock"/> class without a name.</para>
         /// </summary>
-        public AgentUnlock() : this(null, false) { }
+        public AgentUnlock() : this(null!, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AgentUnlock"/> class without a name.</para>
         /// </summary>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public AgentUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+        public AgentUnlock(bool unlockedFromStart) : this(null!, unlockedFromStart) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AgentUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and agent's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         public AgentUnlock(string name) : this(name, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AgentUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and agent's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
         public AgentUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Agent, unlockedFromStart) { }
         internal AgentUnlock(Unlock unlock) : base(unlock) { }
@@ -30,7 +30,7 @@
         /// <summary>
         ///   <para>Gets the <see cref="BigQuestUnlock"/> associated with this agent.</para>
         /// </summary>
-        public BigQuestUnlock BigQuest { get; internal set; }
+        public BigQuestUnlock? BigQuest { get; internal set; }
 
         /// <inheritdoc/>
         public override bool IsEnabled
@@ -45,14 +45,15 @@
             set
             {
                 Unlock.unavailable = !value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.agentUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.agentUnlocks.Remove(Unlock); Unlock.agentCount--; }
-                else if (cur == false && value) { gc.sessionDataBig.agentUnlocks.Add(Unlock); Unlock.agentCount++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.agentUnlocks!.Remove(Unlock); Unlock.agentCount--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.agentUnlocks!.Add(Unlock); Unlock.agentCount++; }
             }
         }
 
         /// <summary>
-        ///   <para>Gets or sets whether this unlock's agent is a Super Special Abilities variant of another agent.</para>
+        ///   <para>Gets or sets whether the agent of this unlock is a Super Special Abilities variant of another agent.</para>
         /// </summary>
         public bool IsSSA
         {

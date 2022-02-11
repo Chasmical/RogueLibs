@@ -8,21 +8,21 @@
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="MutatorUnlock"/> class without a name.</para>
         /// </summary>
-        public MutatorUnlock() : this(null, false) { }
+        public MutatorUnlock() : this(null!, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="MutatorUnlock"/> class without a name.</para>
         /// </summary>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public MutatorUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+        public MutatorUnlock(bool unlockedFromStart) : this(null!, unlockedFromStart) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="MutatorUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and mutator's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         public MutatorUnlock(string name) : this(name, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="MutatorUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and mutator's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
         public MutatorUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Mutator, unlockedFromStart) { }
         internal MutatorUnlock(Unlock unlock) : base(unlock) { }
@@ -38,14 +38,14 @@
                     if (!value)
                     {
                         gc.challenges.Remove(Name);
-                        if (Menu.Type == UnlocksMenuType.MutatorMenu)
+                        if (Menu is not null && Menu.Type == UnlocksMenuType.MutatorMenu)
                             gc.originalChallenges.Remove(Name);
                     }
                 }
                 else if (value)
                 {
                     gc.challenges.Add(Name);
-                    if (Menu.Type == UnlocksMenuType.MutatorMenu)
+                    if (Menu is not null && Menu.Type == UnlocksMenuType.MutatorMenu)
                         gc.originalChallenges.Add(Name);
                 }
             }
@@ -57,9 +57,10 @@
             set
             {
                 Unlock.unavailable = !value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.challengeUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.challengeUnlocks.Remove(Unlock); Unlock.challengeCount--; }
-                else if (cur == false && value) { gc.sessionDataBig.challengeUnlocks.Add(Unlock); Unlock.challengeCount++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.challengeUnlocks!.Remove(Unlock); Unlock.challengeCount--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.challengeUnlocks!.Add(Unlock); Unlock.challengeCount++; }
             }
         }
 
@@ -71,7 +72,8 @@
                 if (gc.serverPlayer)
                 {
                     PlaySound(VanillaAudio.ClickButton);
-                    if (IsEnabled = !IsEnabled)
+                    IsEnabled = !IsEnabled;
+                    if (IsEnabled)
                         foreach (DisplayedUnlock du in EnumerateCancellations())
                             du.IsEnabled = false;
                     SendAnnouncementInChat(IsEnabled ? "AddedChallenge" : "RemovedChallenge", Name);

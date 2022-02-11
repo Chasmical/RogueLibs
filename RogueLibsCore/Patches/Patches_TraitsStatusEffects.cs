@@ -45,48 +45,48 @@ namespace RogueLibsCore
             => codeEnumerable.ReplaceRegion(
                 new Func<CodeInstruction, bool>[]
                 {
-                    i => i.opcode == OpCodes.Ldc_I4_1,
-                    i => i.IsStloc(),
-                    i => i.IsLdloc(),
-                    i => i.IsLdloc(),
-                    i => i.StoresField(StatusEffect_curTime)
+                    static i => i.opcode == OpCodes.Ldc_I4_1,
+                    static i => i.IsStloc(),
+                    static i => i.IsLdloc(),
+                    static i => i.IsLdloc(),
+                    static i => i.StoresField(statusEffectCurTime),
                 },
                 new Func<CodeInstruction[], CodeInstruction>[]
                 {
-                    a => a[0],
-                    a => a[1],
-                    a => a[2],
-                    a => a[3],
-                    _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(RefreshEffect)))
+                    static a => a[0],
+                    static a => a[1],
+                    static a => a[2],
+                    static a => a[3],
+                    static _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(RefreshEffect))),
                 }).AddRegionAfter(
                 new Func<CodeInstruction, bool>[]
                 {
-                    i => i.IsLdloc(),
-                    i => i.opcode == OpCodes.Ldarg_3,
-                    i => i.opcode == OpCodes.Stfld && i.StoresField(StatusEffect_causingAgent)
+                    static i => i.IsLdloc(),
+                    static i => i.opcode == OpCodes.Ldarg_3,
+                    static i => i.opcode == OpCodes.Stfld && i.StoresField(statusEffectCausingAgent),
                 },
                 new Func<CodeInstruction[], CodeInstruction>[]
                 {
-                    a => a[0],
-                    _ => new CodeInstruction(OpCodes.Ldarg_0),
-                    _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook)))
+                    static a => a[0],
+                    static _ => new CodeInstruction(OpCodes.Ldarg_0),
+                    static _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupEffectHook))),
                 });
-        private static readonly FieldInfo StatusEffect_curTime = typeof(StatusEffect).GetField(nameof(StatusEffect.curTime));
-        private static readonly FieldInfo StatusEffect_causingAgent = typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent));
+        private static readonly FieldInfo statusEffectCurTime = typeof(StatusEffect).GetField(nameof(StatusEffect.curTime));
+        private static readonly FieldInfo statusEffectCausingAgent = typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent));
         public static void SetupEffectHook(StatusEffect effect, StatusEffects parent)
         {
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Effects);
             effect.__RogueLibsContainer = parent;
             foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
-                if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
+                if (factory.TryCreate(effect, out IHook<StatusEffect>? hook))
                 {
                     if (debug)
                     {
-                        if (hook is CustomEffect)
-                            RogueFramework.LogDebug($"Initializing custom effect {hook} ({effect.statusEffectName}, {parent.agent.agentName}).");
-                        else RogueFramework.LogDebug($"Initializing effect hook {hook} ({effect.statusEffectName}, {parent.agent.agentName}).");
+                        RogueFramework.LogDebug(hook is CustomEffect
+                                                    ? $"Initializing custom effect {hook} ({effect.statusEffectName}, {parent.agent.agentName})."
+                                                    : $"Initializing effect hook {hook} ({effect.statusEffectName}, {parent.agent.agentName}).");
                     }
-                    effect.AddHook(hook);
+                    effect.AddHook(hook!);
                     // CustomEffect does not call OnAdded when initialized,
                     // because of the GetStatusEffectTime/Hate patches
                     if (hook is CustomEffect custom) custom.OnAdded();
@@ -94,7 +94,7 @@ namespace RogueLibsCore
         }
         public static void RefreshEffect(StatusEffect effect, int newTime)
         {
-            CustomEffect custom = effect.GetHook<CustomEffect>();
+            CustomEffect? custom = effect.GetHook<CustomEffect>();
             float oldTime = effect.curTime;
             if (custom is null) effect.curTime = newTime;
             else custom.OnRefreshed();
@@ -106,33 +106,33 @@ namespace RogueLibsCore
             => codeEnumerable.AddRegionAfter(
                 new Func<CodeInstruction, bool>[]
                 {
-                    i => i.IsLdloc(),
-                    i => i.opcode == OpCodes.Ldarg_1,
-                    i => i.opcode == OpCodes.Stfld && i.StoresField(Trait_traitName)
+                    static i => i.IsLdloc(),
+                    static i => i.opcode == OpCodes.Ldarg_1,
+                    static i => i.opcode == OpCodes.Stfld && i.StoresField(traitTraitName),
                 },
                 new Func<CodeInstruction[], CodeInstruction>[]
                 {
-                    a => a[0],
-                    _ => new CodeInstruction(OpCodes.Ldarg_0),
-                    _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupTraitHook)))
+                    static a => a[0],
+                    static _ => new CodeInstruction(OpCodes.Ldarg_0),
+                    static _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(SetupTraitHook))),
                 });
-        private static readonly FieldInfo Trait_traitName = typeof(Trait).GetField(nameof(Trait.traitName));
+        private static readonly FieldInfo traitTraitName = typeof(Trait).GetField(nameof(Trait.traitName));
         public static void SetupTraitHook(Trait trait, StatusEffects parent)
         {
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Traits);
             bool updateable = false;
             trait.__RogueLibsContainer = parent;
             foreach (IHookFactory<Trait> factory in RogueFramework.TraitFactories)
-                if (factory.TryCreate(trait, out IHook<Trait> hook))
+                if (factory.TryCreate(trait, out IHook<Trait>? hook))
                 {
                     if (debug)
                     {
-                        if (hook is CustomTrait)
-                            RogueFramework.LogDebug($"Initializing custom trait {hook} ({trait.traitName}, {parent.agent.agentName}).");
-                        else RogueFramework.LogDebug($"Initializing trait hook {hook} ({trait.traitName}, {parent.agent.agentName}).");
+                        RogueFramework.LogDebug(hook is CustomTrait
+                                                    ? $"Initializing custom trait {hook} ({trait.traitName}, {parent.agent.agentName})."
+                                                    : $"Initializing trait hook {hook} ({trait.traitName}, {parent.agent.agentName}).");
                     }
-                    trait.AddHook(hook);
-                    if (hook is CustomTrait && hook is ITraitUpdateable)
+                    trait.AddHook(hook!);
+                    if (hook is CustomTrait and ITraitUpdateable)
                         updateable = true;
                 }
 
@@ -143,21 +143,21 @@ namespace RogueLibsCore
             }
         }
 
-        public static void StatusEffects_RemoveTrait_Prefix(StatusEffects __instance, string traitName, ref Trait __state)
+        public static void StatusEffects_RemoveTrait_Prefix(StatusEffects __instance, string traitName, out Trait? __state)
             => __state = __instance.TraitList?.Find(t => t.traitName == traitName);
-        public static void StatusEffects_RemoveTrait(Trait __state)
+        public static void StatusEffects_RemoveTrait(Trait? __state)
         {
-            CustomTrait trait = __state?.GetHook<CustomTrait>();
+            CustomTrait? trait = __state?.GetHook<CustomTrait>();
             if (__state != null && RogueFramework.IsDebugEnabled(DebugFlags.Traits))
                 RogueFramework.LogDebug($"Removing trait {trait} ({__state.traitName}, {__state.GetStatusEffects().agent.agentName}).");
             trait?.OnRemoved();
         }
 
-        public static void StatusEffects_RemoveStatusEffect_Prefix(StatusEffects __instance, string statusEffectName, ref StatusEffect __state)
+        public static void StatusEffects_RemoveStatusEffect_Prefix(StatusEffects __instance, string statusEffectName, out StatusEffect? __state)
             => __state = __instance.StatusEffectList?.Find(t => t.statusEffectName == statusEffectName);
-        public static void StatusEffects_RemoveStatusEffect(StatusEffect __state)
+        public static void StatusEffects_RemoveStatusEffect(StatusEffect? __state)
         {
-            CustomEffect effect = __state?.GetHook<CustomEffect>();
+            CustomEffect? effect = __state?.GetHook<CustomEffect>();
             if (__state != null && RogueFramework.IsDebugEnabled(DebugFlags.Effects))
                 RogueFramework.LogDebug($"Removing effect {effect} ({__state.statusEffectName}, {__state.GetStatusEffects().agent.agentName}).");
             effect?.OnRemoved();
@@ -167,28 +167,27 @@ namespace RogueLibsCore
             => codeEnumerable.ReplaceRegion(
                 new Func<CodeInstruction, bool>[]
                 {
-                    i => i.opcode == OpCodes.Ldc_I4 && (int)i.operand is 9999,
-                    i => i.IsStloc(),
-                    i => i.opcode == OpCodes.Ldarg_0
+                    static i => i.opcode == OpCodes.Ldc_I4 && (int)i.operand is 9999,
+                    static i => i.IsStloc(),
+                    static i => i.opcode == OpCodes.Ldarg_0,
                 },
                 new Func<CodeInstruction[], CodeInstruction>[]
                 {
-                    a => new CodeInstruction(OpCodes.Ldarg_0).WithLabels(a[0]),
-                    _ => new CodeInstruction(OpCodes.Ldarg_1),
-                    _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(GetStatusEffectTime))),
-                    a => a[1],
-                    a => a[2]
+                    static a => new CodeInstruction(OpCodes.Ldarg_0).WithLabels(a[0]),
+                    static _ => new CodeInstruction(OpCodes.Ldarg_1),
+                    static _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(GetStatusEffectTime))),
+                    static a => a[1],
+                    static a => a[2],
                 });
         public static int GetStatusEffectTime(StatusEffects instance, string name)
         {
             StatusEffect effect = new StatusEffect { statusEffectName = name, __RogueLibsContainer = instance };
 
-            CustomEffect custom = null;
+            CustomEffect? custom = null;
             foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
-                if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
+                if (factory.TryCreate(effect, out IHook<StatusEffect>? hook) && hook is CustomEffect custom2)
                 {
-                    if (hook is CustomEffect custom2)
-                        custom = custom2;
+                    custom = custom2;
                     effect.AddHook(custom);
                 }
             return custom?.GetEffectTime() ?? 9999;
@@ -197,12 +196,11 @@ namespace RogueLibsCore
         {
             StatusEffect effect = new StatusEffect { statusEffectName = statusEffectName, __RogueLibsContainer = __instance };
 
-            CustomEffect custom = null;
+            CustomEffect? custom = null;
             foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
-                if (factory.TryCreate(effect, out IHook<StatusEffect> hook))
+                if (factory.TryCreate(effect, out IHook<StatusEffect>? hook) && hook is CustomEffect custom2)
                 {
-                    if (hook is CustomEffect custom2)
-                        custom = custom2;
+                    custom = custom2;
                     effect.AddHook(custom);
                 }
             if (custom != null)
@@ -214,7 +212,7 @@ namespace RogueLibsCore
 
         public static bool StatusEffects_UpdateStatusEffect(StatusEffects __instance, StatusEffect myStatusEffect, bool showTextOnRemoval, ref IEnumerator __result)
         {
-            CustomEffect custom = myStatusEffect.GetHook<CustomEffect>();
+            CustomEffect? custom = myStatusEffect.GetHook<CustomEffect>();
             if (custom is null) return true;
             if (RogueFramework.IsDebugEnabled(DebugFlags.Effects))
                 RogueFramework.LogDebug($"Starting {custom} update coroutine ({myStatusEffect.statusEffectName}, {myStatusEffect.GetStatusEffects().agent.agentName}).");
@@ -241,7 +239,7 @@ namespace RogueLibsCore
                             {
                                 IsFirstTick = firstTick,
                                 UpdateDelay = countSpeed,
-                                ShowTextOnRemoval = showTextOnRemoval
+                                ShowTextOnRemoval = showTextOnRemoval,
                             };
                             try { customEffect.OnUpdated(args); }
                             catch (Exception e) { RogueFramework.LogError(e, nameof(CustomEffect.OnUpdated), customEffect, __instance.agent); }
@@ -267,8 +265,8 @@ namespace RogueLibsCore
 
         public static bool StatusEffects_UpdateTrait(StatusEffects __instance, Trait myTrait, ref IEnumerator __result)
         {
-            CustomTrait custom = myTrait.GetHook<CustomTrait>();
-            if (!(custom is ITraitUpdateable)) return true;
+            CustomTrait? custom = myTrait.GetHook<CustomTrait>();
+            if (custom is not ITraitUpdateable) return true;
             if (RogueFramework.IsDebugEnabled(DebugFlags.Effects))
                 RogueFramework.LogDebug($"Starting {custom} update coroutine ({myTrait.traitName}, {myTrait.GetStatusEffects().agent.agentName}).");
             __result = TraitUpdateEnumerator(__instance, custom);

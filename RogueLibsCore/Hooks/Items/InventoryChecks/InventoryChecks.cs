@@ -71,14 +71,14 @@ namespace RogueLibsCore
         /// <param name="item">The item to check whether the inventory check is allowed for.</param>
         /// <param name="checkName">The name of the inventory check.</param>
         /// <returns><see langword="true"/>, if the inventory check is allowed; otherwise, <see langword="false"/>.</returns>
-        public static bool IsCheckAllowed(InvItem item, string checkName) => IsCheckAllowed(item?.GetHook<CustomItem>(), checkName);
+        public static bool IsCheckAllowed(InvItem? item, string checkName) => IsCheckAllowed(item?.GetHook<CustomItem>(), checkName);
         /// <summary>
         ///   <para>Determines whether the specified <paramref name="checkName"/> is allowed on the specified <paramref name="customItem"/>.</para>
         /// </summary>
         /// <param name="customItem">The custom item to check whether the inventory check is allowed for.</param>
         /// <param name="checkName">The name of the inventory check.</param>
         /// <returns><see langword="true"/>, if the inventory check is allowed; otherwise, <see langword="false"/>.</returns>
-        public static bool IsCheckAllowed(CustomItem customItem, string checkName)
+        public static bool IsCheckAllowed(CustomItem? customItem, string checkName)
             => customItem?.ItemInfo.IgnoredChecks.Contains(checkName) != true;
     }
 }

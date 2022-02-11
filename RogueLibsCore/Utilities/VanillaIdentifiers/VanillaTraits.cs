@@ -1,5 +1,7 @@
-﻿namespace RogueLibsCore
+﻿// ReSharper disable IdentifierTypo InconsistentNaming
+namespace RogueLibsCore
 {
+#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
     public static class VanillaTraits
     {
@@ -212,4 +214,5 @@
             Zombiism = "Zombify";
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 }

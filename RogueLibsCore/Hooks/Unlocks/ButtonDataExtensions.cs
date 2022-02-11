@@ -20,7 +20,7 @@ namespace RogueLibsCore
             if (buttonData.scrollingHighlighted2) return UnlockButtonState.Purchasable;
             if (buttonData.scrollingHighlighted3) return UnlockButtonState.Locked;
             if (buttonData.scrollingHighlighted4) return UnlockButtonState.Disabled;
-            else return UnlockButtonState.Normal;
+            return UnlockButtonState.Normal;
         }
         /// <summary>
         ///   <para>Sets the current <paramref name="buttonData"/>'s state represented by the specified <see cref="UnlockButtonState"/> <paramref name="value"/>.</para>
@@ -42,8 +42,6 @@ namespace RogueLibsCore
                     ? buttonData.scrollingMenu?.solidObjectButtonLocked ?? buttonData.characterCreation.solidObjectButtonLocked
                 : value == UnlockButtonState.Locked
                     ? buttonData.scrollingMenu?.solidObjectButtonRed ?? buttonData.characterCreation.solidObjectButtonRed
-                : value == UnlockButtonState.Disabled
-                    ? buttonData.scrollingMenu?.solidObjectButton ?? buttonData.characterCreation.solidObjectButton
                 : buttonData.scrollingMenu?.solidObjectButton ?? buttonData.characterCreation.solidObjectButton;
         }
     }

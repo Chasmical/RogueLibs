@@ -14,8 +14,8 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>The RogueLibs' plugin instance.</para>
         /// </summary>
-        public static BaseUnityPlugin Plugin { get; internal set; }
-        internal static ManualLogSource Logger { get; set; }
+        public static BaseUnityPlugin Plugin { get; internal set; } = null!; // set in RogueLibsPlugin.Awake()
+        internal static ManualLogSource Logger { get; set; } = null!; // set in RogueLibsPlugin.Awake()
 
         /// <summary>
         ///   <para>Determines whether the RogueLibs is in Debug mode.</para>
@@ -42,9 +42,9 @@ namespace RogueLibsCore
         internal static void LogDebug(string message) => Logger.LogDebug(message);
         internal static void LogWarning(string message) => Logger.LogWarning(message);
         internal static void LogError(string message) => Logger.LogError(message);
-        internal static void LogError(Exception e, string methodName, object hookObj, object container = null)
+        internal static void LogError(Exception e, string methodName, object hookObj, object? container = null)
         {
-            object instance = hookObj is IHook hook ? hook.Instance : string.Empty;
+            object? instance = hookObj is IHook hook ? hook.Instance : string.Empty;
 
             string instanceName = instance is InvItem item ? item.invItemName
                 : instance is StatusEffect effect ? effect.statusEffectName
@@ -52,7 +52,7 @@ namespace RogueLibsCore
                 : instance is Agent agent ? agent.agentName
                 : instance is ObjectReal objectReal ? objectReal.objectName
                 : instance is UnlockWrapper wrapper ? $"{wrapper.Name} ({wrapper.Type})"
-                : instance.ToString();
+                : instance?.ToString() ?? string.Empty;
 
             string containerName = container is null ? string.Empty
                 : (instanceName.Length > 0 ? ", " : string.Empty) + (
@@ -96,21 +96,21 @@ namespace RogueLibsCore
         /// </summary>
         public static readonly Dictionary<string, Sprite> ExtraSprites = new Dictionary<string, Sprite>();
 
-        public static tk2dSpriteCollectionData ItemSprites { get; internal set; }
-        public static tk2dSpriteCollectionData ObjectSprites { get; internal set; }
-        public static tk2dSpriteCollectionData FloorSprites { get; internal set; }
-        public static tk2dSpriteCollectionData BulletSprites { get; internal set; }
-        public static tk2dSpriteCollectionData HairSprites { get; internal set; }
-        public static tk2dSpriteCollectionData FacialHairSprites { get; internal set; }
-        public static tk2dSpriteCollectionData HeadPieceSprites { get; internal set; }
-        public static tk2dSpriteCollectionData AgentSprites { get; internal set; }
-        public static tk2dSpriteCollectionData BodySprites { get; internal set; }
-        public static tk2dSpriteCollectionData WreckageSprites { get; internal set; }
-        public static tk2dSpriteCollectionData InterfaceSprites { get; internal set; }
-        public static tk2dSpriteCollectionData DecalSprites { get; internal set; }
-        public static tk2dSpriteCollectionData WallTopSprites { get; internal set; }
-        public static tk2dSpriteCollectionData WallSprites { get; internal set; }
-        public static tk2dSpriteCollectionData SpawnerSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? ItemSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? ObjectSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? FloorSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? BulletSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? HairSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? FacialHairSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? HeadPieceSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? AgentSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? BodySprites { get; internal set; }
+        public static tk2dSpriteCollectionData? WreckageSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? InterfaceSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? DecalSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? WallTopSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? WallSprites { get; internal set; }
+        public static tk2dSpriteCollectionData? SpawnerSprites { get; internal set; }
 
 
     }

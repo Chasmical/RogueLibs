@@ -80,6 +80,7 @@
                 e.Cancel = e.Handled = true;
             }
         }
+        // ReSharper disable once CommentTypo
         /// <summary>
         ///   <para>Prevents "Jugularious" agents from consuming food.</para>
         /// </summary>
@@ -96,6 +97,7 @@
                 e.Cancel = e.Handled = true;
             }
         }
+        // ReSharper disable once CommentTypo
         /// <summary>
         ///   <para>Prevents "Jugularious" agents from using medicine.</para>
         /// </summary>
@@ -164,6 +166,7 @@
         /// <param name="e">The item usage event args.</param>
         public static void FullHealthCheck(OnItemUsingArgs e)
         {
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (e.Item.healthChange > 0 && e.User.health == e.User.healthMax)
             {
                 if (RogueFramework.IsDebugEnabled(DebugFlags.Items))

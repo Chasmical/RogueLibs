@@ -13,11 +13,11 @@ namespace RogueLibsCore
         /// </summary>
         public readonly Dictionary<string, Dictionary<string, CustomName>> CustomNames = new Dictionary<string, Dictionary<string, CustomName>>();
 
-        public CustomName FindEntry(string name, string type)
+        public CustomName? FindEntry(string name, string type)
             => CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category)
                && category.TryGetValue(name, out CustomName customName) ? customName : null;
         /// <inheritdoc/>
-        public void GetName(string name, string type, ref string result)
+        public void GetName(string? name, string? type, ref string? result)
         {
             if (name != null && type != null
                 && CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category)

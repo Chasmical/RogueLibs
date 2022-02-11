@@ -9,24 +9,25 @@ namespace RogueLibsCore
     public sealed class LocaleCategory : IXmlSerializable
     {
         internal LocaleCategory() { }
-        public string Id { get; private set; }
-        private Dictionary<string, string> entries;
-        public ReadOnlyDictionary<string, string> Entries { get; private set; }
+        public string Id { get; private set; } = null!; // initialized on deserialization
+        private Dictionary<string, string>? entries;
+        public ReadOnlyDictionary<string, string> Entries { get; private set; } = null!; // initialized on deserialization
 
         public void WriteXml(XmlWriter xml)
         {
             xml.WriteAttributeString("Id", Id);
-            foreach (KeyValuePair<string, string> entry in entries)
-            {
-                xml.WriteStartElement("Entry");
-                xml.WriteAttributeString("Id", entry.Key);
-                xml.WriteString(entry.Value);
-                xml.WriteEndElement();
-            }
+            if (entries is not null)
+                foreach (KeyValuePair<string, string> entry in entries)
+                {
+                    xml.WriteStartElement("Entry");
+                    xml.WriteAttributeString("Id", entry.Key);
+                    xml.WriteString(entry.Value);
+                    xml.WriteEndElement();
+                }
         }
         public void ReadXml(XmlReader xml)
         {
-            Id = xml.GetAttribute("Id");
+            Id = xml.GetAttribute("Id")!;
             bool nonEmpty = !xml.IsEmptyElement;
             xml.ReadStartElement();
             entries = new Dictionary<string, string>();
@@ -38,7 +39,7 @@ namespace RogueLibsCore
                 {
                     if (xml.NodeType == XmlNodeType.Element)
                     {
-                        string id = xml.GetAttribute("Id");
+                        string id = xml.GetAttribute("Id")!;
                         string content = xml.ReadElementContentAsString();
                         entries.Add(id, content);
                     }
@@ -48,8 +49,8 @@ namespace RogueLibsCore
                 xml.ReadEndElement();
             }
         }
-        public System.Xml.Schema.XmlSchema GetSchema() => null;
+        public System.Xml.Schema.XmlSchema? GetSchema() => null;
 
-        public string this[string name] => name != null && entries.TryGetValue(name, out string text) ? text : null;
+        public string? this[string name] => entries is not null && entries.TryGetValue(name, out string? text) ? text : null;
     }
 }

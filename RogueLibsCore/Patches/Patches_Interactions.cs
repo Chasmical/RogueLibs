@@ -33,7 +33,7 @@ namespace RogueLibsCore
                 Patcher.Postfix(typeof(T), nameof(PlayfieldObject.RecycleAwake), nameof(RecycleAwakeInteractableHook));
             }
 
-            RogueInteractions.CreateProvider(h =>
+            RogueInteractions.CreateProvider(static h =>
             {
                 if (!h.Helper.interactingFar) return;
                 PlayfieldObject obj = h.Object;
@@ -42,18 +42,18 @@ namespace RogueLibsCore
                     if (h.Agent.oma.superSpecialAbility && h.Agent.agentName == "Hacker"
                         || h.Agent.statusEffects.hasTrait("HacksBlowUpObjects"))
                     {
-                        h.AddButton("HackExplode", m => (m.Object as ObjectReal)?.HackExplode(m.Agent));
+                        h.AddButton("HackExplode", static m => (m.Object as ObjectReal)?.HackExplode(m.Agent));
                     }
                 }
             });
-            RogueInteractions.CreateProvider(h =>
+            RogueInteractions.CreateProvider(static h =>
             {
                 if (h.Object is ObjectReal objReal && objReal.CanCollectAlienPart())
                 {
-                    if (objReal is AmmoDispenser || objReal is ATMMachine || objReal is AugmentationBooth || objReal is CapsuleMachine
-                        || objReal is CloneMachine || objReal is LoadoutMachine || objReal is PawnShopMachine)
+                    if (objReal is AmmoDispenser or ATMMachine or AugmentationBooth
+                        or CapsuleMachine or CloneMachine or LoadoutMachine or PawnShopMachine)
                     {
-                        h.AddButton("CollectPart", m =>
+                        h.AddButton("CollectPart", static m =>
                         {
                             m.Object.StartCoroutine(m.Object.Operating(m.Agent, null, 5f, true, "Collecting"));
                             if (!m.Agent.statusEffects.hasTrait("OperateSecretly") && m.Object.functional)
@@ -68,31 +68,31 @@ namespace RogueLibsCore
                     }
                 }
             });
-            RogueInteractions.CreateProvider(h =>
+            RogueInteractions.CreateProvider(static h =>
             {
-                h.AddButton("InteractionsPatched", m => m.StopInteraction());
+                h.AddButton("InteractionsPatched", static m => m.StopInteraction());
             });
             RogueLibs.CreateCustomName("InteractionsPatched", NameTypes.Interface, new CustomNameInfo
             {
                 English = "I am patched!",
-                Russian = "Я пропатчен!",
+                Russian = @"Я пропатчен!",
             });
 
             Patch<AirConditioner>(params2);
             PatchInteract<AirConditioner>();
-            RogueInteractions.CreateProvider<AirConditioner>(h =>
+            RogueInteractions.CreateProvider<AirConditioner>(static h =>
             {
                 if (h.Helper.interactingFar) return;
                 if (h.gc.gasesList.Exists(g => g.startingChunk == h.Object.startingChunk))
                 {
-                    h.SetStopCallback(m => m.Agent.SayDialogue("AlreadyGassing"));
+                    h.SetStopCallback(static m => m.Agent.SayDialogue("AlreadyGassing"));
                     return;
                 }
                 if (!h.Object.isBroken())
                 {
                     if (h.Agent.inventory.InvItemList.Exists(item => h.Object.playerHasUsableItem(item)))
-                        h.AddButton("InsertItem", m => m.Object.ShowUseOn("InsertItem"));
-                    else h.SetStopCallback(m => m.Agent.SayDialogue("CantUseAirConditioner"));
+                        h.AddButton("InsertItem", static m => m.Object.ShowUseOn("InsertItem"));
+                    else h.SetStopCallback(static m => m.Agent.SayDialogue("CantUseAirConditioner"));
                 }
             });
 
@@ -101,15 +101,15 @@ namespace RogueLibsCore
             RogueLibs.CreateCustomName("PressAlarmButton", NameTypes.Interface, new CustomNameInfo
             {
                 English = "Press",
-                Russian = "Нажать",
+                Russian = @"Нажать",
             });
-            RogueInteractions.CreateProvider<AlarmButton>(h =>
+            RogueInteractions.CreateProvider<AlarmButton>(static h =>
             {
                 if (h.Helper.interactingFar)
                 {
                     if (!h.Object.hacked)
                     {
-                        h.AddButton("AllAccessAlarmButton", m =>
+                        h.AddButton("AllAccessAlarmButton", static m =>
                         {
                             m.Object.hacked = true;
                             if (!m.gc.serverPlayer) m.gc.playerAgent.objectMult.ObjectAction(m.Object.objectNetID, "AllAccess");
@@ -118,7 +118,7 @@ namespace RogueLibsCore
                 }
                 else if (!h.Object.isBroken())
                 {
-                    h.AddImplicitButton("PressAlarmButton", m =>
+                    h.AddImplicitButton("PressAlarmButton", static m =>
                     {
                         m.Object.lastHitByAgent = m.Object.interactingAgent;
                         if (m.Agent.upperCrusty || m.Object.hacked)
@@ -131,10 +131,10 @@ namespace RogueLibsCore
             Patch<Altar>(params2);
             PatchInteract<Altar>();
             MakeInteractable<Altar>();
-            RogueInteractions.CreateProvider<Altar>(h =>
+            RogueInteractions.CreateProvider<Altar>(static h =>
             {
                 if (h.Helper.interactingFar) return;
-                h.AddButton("MakeOffering", m =>
+                h.AddButton("MakeOffering", static m =>
                 {
                     if (m.Object.offeringsMade >= m.Object.offeringLimit)
                     {
@@ -151,13 +151,13 @@ namespace RogueLibsCore
 
             Patch<AmmoDispenser>(params2);
             PatchInteract<AmmoDispenser>();
-            RogueInteractions.CreateProvider<AmmoDispenser>(h =>
+            RogueInteractions.CreateProvider<AmmoDispenser>(static h =>
             {
                 if (h.Helper.interactingFar)
                 {
                     if (h.Object.hacked == 0)
                     {
-                        h.AddButton("ReduceAmmoPrices", m =>
+                        h.AddButton("ReduceAmmoPrices", static m =>
                         {
                             m.gc.audioHandler.Play(m.Agent, "Success");
                             m.Object.ReduceAmmoPrices(m.Agent);
@@ -167,13 +167,13 @@ namespace RogueLibsCore
                 }
                 else if (!h.Object.isBrokenShowButtons())
                 {
-                    h.SetStopCallback(m => m.Agent.SayDialogue("CantUseAmmoDispenser"));
+                    h.SetStopCallback(static m => m.Agent.SayDialogue("CantUseAmmoDispenser"));
 
-                    if (h.Agent.inventory.InvItemList.Exists(i => i.itemType == ItemTypes.WeaponProjectile) || h.Agent.mechFilled
+                    if (h.Agent.inventory.InvItemList.Exists(static i => i.itemType == ItemTypes.WeaponProjectile) || h.Agent.mechFilled
                         || h.Agent.bigQuest == "Alien" && h.Agent.oma.bigQuestObjectCount < 3 && !h.Agent.interactionHelper.interactingFar
                         && !h.gc.loadLevel.LevelContainsMayor())
                     {
-                        h.AddButton("RefillGun", m => m.Object.ShowUseOn("RefillGun"));
+                        h.AddButton("RefillGun", static m => m.Object.ShowUseOn("RefillGun"));
                     }
                     if (h.Agent.statusEffects.hasTrait("OilRestoresHealth"))
                     {
@@ -187,7 +187,7 @@ namespace RogueLibsCore
                         int healCost = Mathf.Clamp(h.Object.determineMoneyCost((int)(h.Agent.healthMax / invItem.initCount * invItem.itemValue - currentHealthCost), "AmmoDispenser"), 0, 9999);
                         if (healCost > 0)
                         {
-                            h.AddButton("GiveMechOil", healCost, m =>
+                            h.AddButton("GiveMechOil", healCost, static m =>
                             {
                                 m.Object.GiveMechOil();
                                 m.StopInteraction();
@@ -202,33 +202,31 @@ namespace RogueLibsCore
 
 
 
-
-
             Patch<Barbecue>(params2);
-            RogueInteractions.CreateProvider<Barbecue>(h =>
+            RogueInteractions.CreateProvider<Barbecue>(static h =>
             {
                 if (h.Helper.interactingFar) return;
                 if (h.Object.burntOut)
                 {
-                    h.SetStopCallback(m => m.Agent.SayDialogue("BarbecueBurntOut"));
+                    h.SetStopCallback(static m => m.Agent.SayDialogue("BarbecueBurntOut"));
                 }
                 else if (h.Object.ora.hasParticleEffect)
                 {
                     if (h.Agent.inventory.HasItem(VanillaItems.Fud))
-                        h.AddButton("GrillFud", m => m.Object.StartCoroutine(m.Object.Operating(m.Agent, null, 2f, true, "Grilling")));
-                    else h.SetStopCallback(m => m.Agent.SayDialogue("CantGrillFud"));
+                        h.AddButton("GrillFud", static m => m.Object.StartCoroutine(m.Object.Operating(m.Agent, null, 2f, true, "Grilling")));
+                    else h.SetStopCallback(static m => m.Agent.SayDialogue("CantGrillFud"));
                 }
                 else
                 {
                     if (h.Agent.inventory.HasItem(VanillaItems.CigaretteLighter))
                     {
-                        h.AddButton("LightBarbecue", m =>
+                        h.AddButton("LightBarbecue", static m =>
                         {
                             m.Object.StartFireInObject();
                             m.StopInteraction();
                         });
                     }
-                    else h.SetStopCallback(m => m.Agent.SayDialogue("CantOperateBarbecue"));
+                    else h.SetStopCallback(static m => m.Agent.SayDialogue("CantOperateBarbecue"));
                 }
             });
 
@@ -239,8 +237,7 @@ namespace RogueLibsCore
 
 
 
-
-
+            Patcher.AnyErrors();
         }
 
         private static readonly Dictionary<Type, ConstructorInfo> interactionModelConstructors = new Dictionary<Type, ConstructorInfo>();
@@ -249,7 +246,7 @@ namespace RogueLibsCore
             if (__instance.GetHook<InteractionModel>() is null)
             {
                 Type myType = __instance.GetType();
-                if (!interactionModelConstructors.TryGetValue(myType, out ConstructorInfo ctor))
+                if (!interactionModelConstructors.TryGetValue(myType, out ConstructorInfo? ctor))
                 {
                     Type modelType = typeof(InteractionModel<>).MakeGenericType(__instance.GetType());
                     interactionModelConstructors.Add(myType, ctor = modelType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, CallingConventions.Any, Type.EmptyTypes, null));
@@ -259,7 +256,7 @@ namespace RogueLibsCore
                     RogueFramework.LogError($"Error patching {__instance.GetType()}. Constructor is null for some reason.");
                     return;
                 }
-                __instance.AddHook((InteractionModel)ctor?.Invoke(new object[0]));
+                __instance.AddHook((InteractionModel)ctor.Invoke(new object[0]));
             }
         }
         public static bool DetermineButtonsHook(PlayfieldObject __instance)
@@ -276,7 +273,7 @@ namespace RogueLibsCore
         public static bool PressedButtonHook(PlayfieldObject __instance, string buttonText)
         {
             #region Re-implementing base.PressedButton()
-            if (__instance.interactingAgent != null && (__instance.interactingAgent.controllerType != "Keyboard" || (__instance.interactingAgent.controllerType == "Keyboard" && __instance.gc.playerControl.keyCheck(buttonType.Interact, __instance.interactingAgent))) && __instance.interactingAgent.localPlayer)
+            if (__instance.interactingAgent != null && (__instance.interactingAgent.controllerType != "Keyboard" || __instance.interactingAgent.controllerType == "Keyboard" && __instance.gc.playerControl.keyCheck(buttonType.Interact, __instance.interactingAgent)) && __instance.interactingAgent.localPlayer)
             {
                 __instance.interactingAgent.mainGUI.invInterface.justPressedInteract = true;
             }

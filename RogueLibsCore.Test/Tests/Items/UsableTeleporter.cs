@@ -22,7 +22,7 @@ namespace RogueLibsCore.Test
 
             TeleportCursorText = RogueLibs.CreateCustomName("TeleportHere", NameTypes.Interface, new CustomNameInfo("Teleport here"));
         }
-        private static CustomName TeleportCursorText;
+        private static CustomName TeleportCursorText = null!;
 
         public override void SetupDetails()
         {

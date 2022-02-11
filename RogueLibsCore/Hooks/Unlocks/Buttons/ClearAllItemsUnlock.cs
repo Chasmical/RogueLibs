@@ -25,7 +25,7 @@
             if (IsUnlocked && gc.serverPlayer)
             {
                 PlaySound(VanillaAudio.ClickButton);
-                if (Menu.Type == UnlocksMenuType.RewardsMenu)
+                if (Menu!.Type == UnlocksMenuType.RewardsMenu)
                 {
                     foreach (DisplayedUnlock du in Menu.Unlocks)
                         if (du.IsEnabled != (du.IsEnabled = false)) du.UpdateButton();
@@ -34,7 +34,7 @@
                 {
                     foreach (DisplayedUnlock du in Menu.Unlocks)
                     {
-                        if (!(du is IUnlockInCC inCC)) continue;
+                        if (du is not IUnlockInCC inCC) continue;
                         if (inCC.IsAddedToCC != (inCC.IsAddedToCC = false)) du.UpdateButton();
                     }
                 }

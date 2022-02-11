@@ -139,11 +139,11 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Creates a custom <see cref="AudioClip"/> from <paramref name="rawData"/> using the specified audio <paramref name="format"/> and adds it to the game under the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The custom audioclip's name.</param>
+        /// <param name="name">The name of the clip.</param>
         /// <param name="rawData">The byte array containing a raw audio file.</param>
         /// <param name="format">The audio file's format.</param>
         /// <returns>The created <see cref="AudioClip"/>.</returns>
-        /// <exception cref="IOException">An I/O error occured while opening the file.</exception>
+        /// <exception cref="IOException">An I/O error occurred while opening the file.</exception>
         /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission.</exception>
         /// <exception cref="NotSupportedException">The specified <paramref name="format"/> is not supported.</exception>
         /// <exception cref="System.Security.SecurityException">The caller does not have the required permission.</exception>
@@ -194,7 +194,7 @@ namespace RogueLibsCore
         /// <param name="name">The name of the unlock to search for.</param>
         /// <param name="type">The type of the unlock to search for.</param>
         /// <returns>The unlock with the specified <paramref name="name"/> and <paramref name="type"/>, if found; otherwise, <see langword="null"/>.</returns>
-        public static UnlockWrapper GetUnlock(string name, string type)
+        public static UnlockWrapper? GetUnlock(string name, string type)
             => RogueFramework.Unlocks.Find(u => u.Name == name && u.Type == type);
         /// <summary>
         ///   <para>Gets an unlock of the specified <typeparamref name="TUnlock"/> type and with the specified <paramref name="name"/>.</para>
@@ -202,8 +202,8 @@ namespace RogueLibsCore
         /// <typeparam name="TUnlock">The type of the unlock to search for.</typeparam>
         /// <param name="name">The name of the unlock to search for.</param>
         /// <returns>The unlock of the specified <typeparamref name="TUnlock"/> type and with the specified <paramref name="name"/>, if found; otherwise, <see langword="null"/>.</returns>
-        public static TUnlock GetUnlock<TUnlock>(string name) where TUnlock : UnlockWrapper
-            => (TUnlock)RogueFramework.Unlocks.Find(u => u is TUnlock && u.Name == name);
+        public static TUnlock? GetUnlock<TUnlock>(string name) where TUnlock : UnlockWrapper
+            => (TUnlock?)RogueFramework.Unlocks.Find(u => u is TUnlock && u.Name == name);
 
         /// <summary>
         ///   <para>Invokes all static methods marked with a <see cref="RLSetupAttribute"/> in the current assembly.</para>
@@ -211,7 +211,7 @@ namespace RogueLibsCore
         public static void LoadFromAssembly()
         {
             MethodBase caller = new StackTrace().GetFrame(1).GetMethod();
-            Assembly assembly = caller.ReflectedType.Assembly;
+            Assembly assembly = caller.ReflectedType!.Assembly;
             foreach (Type type in assembly.GetTypes())
                 foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
                 {
@@ -225,7 +225,7 @@ namespace RogueLibsCore
                         if (!method.IsStatic)
                         {
                             RogueFramework.LogError($"{assembly.FullName}: Methods marked with [RLSetup] must be static!");
-                            ConstructorInfo ctor = method.DeclaringType.GetConstructor(new Type[0]);
+                            ConstructorInfo? ctor = method.DeclaringType!.GetConstructor(Type.EmptyTypes);
                             if (ctor != null)
                             {
                                 object instance = ctor.Invoke(null);
@@ -241,7 +241,7 @@ namespace RogueLibsCore
                 }
         }
 
-        public static VersionText CreateVersionText(string id, string text)
+        public static VersionText CreateVersionText(string id, string? text)
         {
             VersionText versionText = RogueLibsPlugin.versionLines.Find(v => v.Id == id);
             if (versionText != null)

@@ -11,6 +11,6 @@
         /// <param name="name">The name of the entry.</param>
         /// <param name="type">The type of the entry.</param>
         /// <param name="result">The localization text, or <see langword="null"/>, if a valid localization text could not be found.</param>
-        void GetName(string name, string type, ref string result);
+        void GetName(string? name, string? type, ref string? result);
     }
 }

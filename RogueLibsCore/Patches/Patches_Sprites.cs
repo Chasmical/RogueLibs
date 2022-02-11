@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 namespace RogueLibsCore
@@ -35,7 +34,9 @@ namespace RogueLibsCore
             Patcher.Postfix(typeof(NuggetSlot), nameof(NuggetSlot.UpdateNuggetText));
         }
 
-        public static void tk2dEditorSpriteDataUnloader_Register(tk2dEditorSpriteDataUnloader __instance, tk2dSpriteCollectionData data)
+        // ReSharper disable once IdentifierTypo
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        public static void tk2dEditorSpriteDataUnloader_Register(tk2dSpriteCollectionData data)
         {
             // RogueSprite.Dump(data);
             switch (data.name)
@@ -61,7 +62,7 @@ namespace RogueLibsCore
 
         public static bool SpawnerMain_SpawnItemSprite(SpawnerMain __instance, InvItem item, tk2dSprite itemImage, Item newItem)
         {
-            try { itemImage.SetSprite(__instance.gc.spawnerMain.itemSprites, item.spriteName); } catch { }
+            try { itemImage.SetSprite(__instance.gc.spawnerMain.itemSprites, item.spriteName); } catch { /* ??? */ }
             Material mat = itemImage.CurrentSprite.material;
             itemImage.GetComponent<Renderer>().sharedMaterial = mat;
             try
@@ -85,7 +86,7 @@ namespace RogueLibsCore
                     try { newItem.objectSprite.sprH.GetComponent<Renderer>().sharedMaterial = mat; }
                     catch { Debug.LogError("Couldn't set highlight for item 3: " + newItem); }
                     newItem.objectSprite.transform.Find("Highlight").GetComponent<tk2dSprite>().SetSprite(itemImage.spriteId);
-                    Debug.LogError("SPAWNN");
+                    Debug.LogError(@"SPAWNN");
                 }
                 catch
                 {
@@ -99,12 +100,12 @@ namespace RogueLibsCore
                     itemImage.SetSprite(itemImage.GetSpriteIdByName("MoneyA"));
                     item.shadowOffset = 6;
                 }
-                else if (item.invItemCount > 1 && item.invItemCount <= 5)
+                else if (item.invItemCount is > 1 and <= 5)
                 {
                     itemImage.SetSprite(itemImage.GetSpriteIdByName("MoneyB"));
                     item.shadowOffset = 4;
                 }
-                else if (item.invItemCount > 5 && item.invItemCount < 10)
+                else if (item.invItemCount is > 5 and < 10)
                 {
                     itemImage.SetSprite(itemImage.GetSpriteIdByName("MoneyC"));
                     item.shadowOffset = 4;
@@ -121,7 +122,7 @@ namespace RogueLibsCore
                 tk2dSprite itemImage = __result.tr.GetChild(0).transform.GetChild(0).GetComponent<tk2dSprite>();
                 itemImage.GetComponent<Renderer>().sharedMaterial = itemImage.CurrentSprite.material;
             }
-            catch { }
+            catch { /* ??? */ }
         }
         public static void SpawnerMain_SetLighting2(PlayfieldObject myObject)
         {
@@ -129,21 +130,22 @@ namespace RogueLibsCore
             {
                 ObjectReal objectReal = (ObjectReal)myObject;
                 try { objectReal.spr.GetComponent<Renderer>().sharedMaterial = objectReal.spr.CurrentSprite.material; }
-                catch { }
+                catch { /* ??? */ }
             }
             if (myObject.CompareTag("Item") || myObject.CompareTag("Wreckage"))
             {
                 Item item = (Item)myObject;
                 try { item.spriteTr.GetComponent<Renderer>().sharedMaterial = item.spr.CurrentSprite.material; }
-                catch { }
+                catch { /* ??? */ }
             }
         }
 
         public static void ObjectReal_RefreshShader(ObjectReal __instance)
         {
-            Material mat = __instance.spr?.CurrentSprite.material;
+            Material? mat = __instance.spr?.CurrentSprite.material;
+            if (mat is null) return;
 
-            Shader shader = GameController.gameController.lightingType == "Full" || GameController.gameController.lightingType == "Med"
+            Shader shader = GameController.gameController.lightingType is "Full" or "Med"
                 ? GameController.gameController.litShader : GameController.gameController.normalShader;
             __instance.objectSprite.meshRenderer.material = mat;
             __instance.objectSprite.meshRenderer.material.shader = shader;
@@ -252,7 +254,7 @@ namespace RogueLibsCore
                 __instance.RefreshShader();
                 __instance.StartCoroutine(__instance.SpawnShadow());
             }
-            catch { }
+            catch { /* ??? */ }
         }
         public static void ObjectReal_SpawnShadow(ObjectReal __instance, ref IEnumerator __result)
             => __result = SpawnShadowHelper(__instance, __result);

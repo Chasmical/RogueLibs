@@ -26,8 +26,9 @@ namespace RogueLibsCore
         public CustomNameInfo(IEnumerable<KeyValuePair<LanguageCode, string>> dictionary)
         {
             if (dictionary is null) throw new ArgumentNullException(nameof(dictionary));
-            _texts = new Dictionary<LanguageCode, string>(dictionary.Count());
-            foreach (KeyValuePair<LanguageCode, string> pair in dictionary)
+            IEnumerable<KeyValuePair<LanguageCode, string>> pairs = dictionary.ToArray();
+            _texts = new Dictionary<LanguageCode, string>(pairs.Count());
+            foreach (KeyValuePair<LanguageCode, string> pair in pairs)
                 if (pair.Value != null)
                     _texts[pair.Key] = pair.Value;
         }
@@ -35,42 +36,42 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Gets or sets the English localization text.</para>
         /// </summary>
-        public string English { get => this[LanguageCode.English]; set => this[LanguageCode.English] = value; }
+        public string? English { readonly get => this[LanguageCode.English]; set => this[LanguageCode.English] = value; }
         /// <summary>
         ///   <para>Gets or sets the Spanish localization text.</para>
         /// </summary>
-        public string Spanish { get => this[LanguageCode.Spanish]; set => this[LanguageCode.Spanish] = value; }
+        public string? Spanish { readonly get => this[LanguageCode.Spanish]; set => this[LanguageCode.Spanish] = value; }
         /// <summary>
         ///   <para>Gets or sets the Chinese localization text.</para>
         /// </summary>
-        public string Chinese { get => this[LanguageCode.Chinese]; set => this[LanguageCode.Chinese] = value; }
+        public string? Chinese { readonly get => this[LanguageCode.Chinese]; set => this[LanguageCode.Chinese] = value; }
         /// <summary>
         ///   <para>Gets or sets the German localization text.</para>
         /// </summary>
-        public string German { get => this[LanguageCode.German]; set => this[LanguageCode.German] = value; }
+        public string? German { readonly get => this[LanguageCode.German]; set => this[LanguageCode.German] = value; }
         /// <summary>
         ///   <para>Gets or sets the Brazilian localization text.</para>
         /// </summary>
-        public string Brazilian { get => this[LanguageCode.Brazilian]; set => this[LanguageCode.Brazilian] = value; }
+        public string? Brazilian { readonly get => this[LanguageCode.Brazilian]; set => this[LanguageCode.Brazilian] = value; }
         /// <summary>
         ///   <para>Gets or sets the French localization text.</para>
         /// </summary>
-        public string French { get => this[LanguageCode.French]; set => this[LanguageCode.French] = value; }
+        public string? French { readonly get => this[LanguageCode.French]; set => this[LanguageCode.French] = value; }
         /// <summary>
         ///   <para>Gets or sets the Russian localization text.</para>
         /// </summary>
-        public string Russian { get => this[LanguageCode.Russian]; set => this[LanguageCode.Russian] = value; }
+        public string? Russian { readonly get => this[LanguageCode.Russian]; set => this[LanguageCode.Russian] = value; }
         /// <summary>
         ///   <para>Gets or sets the Korean localization text.</para>
         /// </summary>
-        public string Korean { get => this[LanguageCode.Korean]; set => this[LanguageCode.Korean] = value; }
+        public string? Korean { readonly get => this[LanguageCode.Korean]; set => this[LanguageCode.Korean] = value; }
 
         private Dictionary<LanguageCode, string> _texts;
-        private Dictionary<LanguageCode, string> Texts => _texts ?? (_texts = new Dictionary<LanguageCode, string>(1));
+        private Dictionary<LanguageCode, string> Texts => _texts ??= new Dictionary<LanguageCode, string>(1);
         /// <inheritdoc/>
-        public string this[LanguageCode language]
+        public string? this[LanguageCode language]
         {
-            get => _texts != null && _texts.TryGetValue(language, out string str) ? str : null;
+            readonly get => _texts != null && _texts.TryGetValue(language, out string str) ? str : null;
             set
             {
                 if (value != null) Texts[language] = value;

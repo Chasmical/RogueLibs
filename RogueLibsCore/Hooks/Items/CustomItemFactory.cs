@@ -10,7 +10,7 @@ namespace RogueLibsCore
     {
         private readonly Dictionary<string, ItemEntry> itemsDict = new Dictionary<string, ItemEntry>();
         /// <inheritdoc/>
-        public override bool TryCreate(InvItem instance, out IHook<InvItem> hook)
+        public override bool TryCreate(InvItem? instance, out IHook<InvItem>? hook)
         {
             if (instance != null && itemsDict.TryGetValue(instance.invItemName, out ItemEntry entry))
             {
@@ -32,7 +32,7 @@ namespace RogueLibsCore
             ItemInfo info = ItemInfo.Get<TItem>();
             if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
                 RogueFramework.LogDebug($"Created custom item {typeof(TItem)} ({info.Name}).");
-            itemsDict.Add(info.Name, new ItemEntry { Initializer = () => new TItem(), ItemInfo = info });
+            itemsDict.Add(info.Name, new ItemEntry { Initializer = static () => new TItem(), ItemInfo = info });
             return info;
         }
 

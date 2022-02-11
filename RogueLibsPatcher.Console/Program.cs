@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using Mono.Cecil;
 
 namespace RogueLibsPatcher.Console
@@ -8,7 +7,7 @@ namespace RogueLibsPatcher.Console
     {
         public static void Main()
         {
-            string path = System.Console.ReadLine();
+            string path = System.Console.ReadLine()!;
             path = path.Trim('"');
             string newPath = path + "2";
             AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters()
@@ -37,7 +36,7 @@ namespace RogueLibsPatcher.Console
                 {
                     assembly = _defaultResolver.Resolve(name);
                 }
-                catch (AssemblyResolutionException ex)
+                catch (AssemblyResolutionException)
                 {
                     assembly = AssemblyDefinition.ReadAssembly(@"D:\Steam\steamapps\common\Streets of Rogue\StreetsOfRogue_Data\Managed\XGamingRuntime.dll");
                 }

@@ -21,7 +21,7 @@
 
             DisguiseCursorText = RogueLibs.CreateCustomName("Disguise", NameTypes.Interface, new CustomNameInfo("Disguise as"));
         }
-        private static CustomName DisguiseCursorText;
+        private static CustomName DisguiseCursorText = null!;
 
         public override void SetupDetails()
         {

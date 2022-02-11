@@ -10,7 +10,7 @@ namespace RogueLibsCore.Test
             RogueLibs.CreateCustomTrait<Smoker>()
                 .WithName(new CustomNameInfo("Smoker"))
                 .WithDescription(new CustomNameInfo("Randomly cough, alerting enemies"))
-                .WithUnlock(new TraitUnlock { CharacterCreationCost = -4, });
+                .WithUnlock(new TraitUnlock { CharacterCreationCost = -4 });
 
             RogueLibs.CreateCustomName("Smoker_Cough1", NameTypes.Dialogue, new CustomNameInfo("*Cough*"));
             RogueLibs.CreateCustomName("Smoker_Cough2", NameTypes.Dialogue, new CustomNameInfo("*Cough* *CouGH*"));

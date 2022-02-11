@@ -22,15 +22,16 @@
         ///   <para>Gets the currently used instance of <see cref="GameController"/>.</para>
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]
+        // ReSharper disable once InconsistentNaming
         public static GameController gc => GameController.gameController;
 
         /// <summary>
         ///   <para>Gets the custom trait's metadata.</para>
         /// </summary>
-        public TraitInfo TraitInfo { get; internal set; }
+        public TraitInfo TraitInfo { get; internal set; } = null!; // initialized immediately in CustomTraitFactory
 
         /// <inheritdoc/>
-        protected override sealed void Initialize() => OnAdded();
+        protected sealed override void Initialize() => OnAdded();
 
         /// <summary>
         ///   <para>The method that is called when the trait is added.</para>

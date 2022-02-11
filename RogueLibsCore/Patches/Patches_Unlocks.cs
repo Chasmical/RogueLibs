@@ -40,21 +40,21 @@ namespace RogueLibsCore
             RogueLibs.CreateCustomName("UnlockFor", NameTypes.Unlock, new CustomNameInfo
             {
                 English = "Unlock for",
-                Russian = "Разблокировать за",
+                Russian = @"Разблокировать за",
             });
             RogueLibs.CreateCustomName("AgentUnlock", NameTypes.Unlock, new CustomNameInfo
             {
                 English = "{0} Character",
-                Russian = "Персонаж {0}",
+                Russian = @"Персонаж {0}",
             });
             RogueLibs.CreateCustomName("BigQuestUnlock", NameTypes.Unlock, new CustomNameInfo
             {
                 English = "\"{0}\" Big Quest",
-                Russian = "Большой Квест \"{0}\"",
+                Russian = @"Большой Квест ""{0}""",
             });
         }
 
-        public static void Unlocks_AddUnlock(Unlock createdUnlock, Unlock __result)
+        public static void Unlocks_AddUnlock(Unlock? createdUnlock, Unlock __result)
         {
             if (createdUnlock != null)
             {
@@ -64,9 +64,9 @@ namespace RogueLibsCore
             }
         }
 
-        public static void Unlocks_LoadInitialUnlocks_Helper(bool dontClear)
+        public static void Unlocks_LoadInitialUnlocks_Helper(bool cancel)
         {
-            if (dontClear) return;
+            if (cancel) return;
             if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
                 RogueFramework.LogDebug("Reloading unlocks.");
             RogueFramework.Unlocks.Clear();
@@ -81,18 +81,18 @@ namespace RogueLibsCore
             .Concat(codeEnumerable.ReplaceRegion(
                 new Func<CodeInstruction, bool>[]
                 {
-                    i => i.opcode == OpCodes.Callvirt && i.Calls(List_Unlock_GetEnumerator)
+                    static i => i.opcode == OpCodes.Callvirt && i.Calls(listUnlockGetEnumerator),
                 },
                 new Func<CodeInstruction, bool>[]
                 {
-                    i => i.opcode == OpCodes.Endfinally
+                    static i => i.opcode == OpCodes.Endfinally,
                 },
                 new CodeInstruction[]
                 {
                     new CodeInstruction(OpCodes.Pop),
-                    new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(InitializeUnlockWrappers)))
+                    new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(InitializeUnlockWrappers))),
                 }));
-        private static readonly MethodInfo List_Unlock_GetEnumerator = typeof(List<Unlock>).GetMethod("GetEnumerator");
+        private static readonly MethodInfo listUnlockGetEnumerator = typeof(List<Unlock>).GetMethod("GetEnumerator")!;
 #pragma warning disable CS0618 // Type or member is obsolete
         public static void InitializeUnlockWrappers()
         {
@@ -148,8 +148,7 @@ namespace RogueLibsCore
                 {
                     wrapper = new AgentUnlock(unlock)
                     {
-                        IsSSA = unlock.unlockName == VanillaAgents.SuperCop || unlock.unlockName == VanillaAgents.UpperCruster
-                            || unlock.unlockName == VanillaAgents.Supergoon
+                        IsSSA = unlock.unlockName is VanillaAgents.SuperCop or VanillaAgents.UpperCruster or VanillaAgents.Supergoon,
                     };
                 }
                 else if (unlock.unlockType == "Achievement") wrapper = new AchievementUnlock(unlock);
@@ -161,7 +160,7 @@ namespace RogueLibsCore
                     sdb.unlocks.Remove(unlock);
                     continue;
                 }
-                if (wrapper is IUnlockInCC inCC && !inCC.IsAvailableInCC) inCC.IsAvailableInCC = wrapper.IsAvailable;
+                if (wrapper is IUnlockInCC { IsAvailableInCC: false } inCC) inCC.IsAvailableInCC = wrapper.IsAvailable;
                 RogueFramework.Unlocks.Add(wrapper);
                 AddUnlockFull(wrapper, true);
             }
@@ -210,7 +209,7 @@ namespace RogueLibsCore
                     list.Add(wrapper.Unlock);
 
                     wrapper.IsUnlocked = result.unlocked;
-                    if (!(wrapper is MutatorUnlock))
+                    if (wrapper is not MutatorUnlock)
                         wrapper.IsEnabled = !result.notActive;
                 }
                 wrapper.IsAvailable = wrapper.IsAvailable;
@@ -221,6 +220,7 @@ namespace RogueLibsCore
             }
             catch (Exception e)
             {
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 RogueFramework.Logger.LogError($"Error setting up {wrapper.Unlock?.unlockName} ({wrapper.Unlock?.unlockType}) unlock.");
                 RogueFramework.Logger.LogError(e);
             }
@@ -268,15 +268,15 @@ namespace RogueLibsCore
         }
         public static bool Unlocks_isBigQuestCompleted(string agentName, ref bool __result)
         {
-            UnlockWrapper unlock = RogueLibs.GetUnlock(agentName + "_BQ", "BigQuest");
-            if (!(unlock is BigQuestUnlock bq)) return true;
+            UnlockWrapper? unlock = RogueLibs.GetUnlock(agentName + "_BQ", "BigQuest");
+            if (unlock is not BigQuestUnlock bq) return true;
             __result = bq.IsCompleted;
             return false;
         }
 
         private static bool curSaving;
         private static bool saveOnNext;
-        public static bool Unlocks_SaveUnlockData2(Unlocks __instance, ref IEnumerator __result)
+        public static bool Unlocks_SaveUnlockData2(Unlocks __instance, out IEnumerator __result)
         {
             __result = SaveEnumerator(__instance);
             return false;
@@ -442,7 +442,7 @@ namespace RogueLibsCore
         }
         private static readonly MethodInfo unlocksBackupMethod = AccessTools.Method(typeof(Unlocks), "BackupGameUnlocks");
 
-        public static bool Unlocks_LoadUnlockData2(Unlocks __instance, bool secondTry, bool foundFile, object mySaveObject)
+        public static bool Unlocks_LoadUnlockData2(Unlocks __instance, bool secondTry, bool foundFile, object? mySaveObject)
         {
             string saveSlotText = GameController.gameController.sessionDataBig.GetSaveSlotText();
             string text = "/CloudData/" + saveSlotText + "GameUnlocks.dat";
@@ -455,10 +455,10 @@ namespace RogueLibsCore
             {
                 try
                 {
-                    UnlockSaveData unlockSaveData = null;
+                    UnlockSaveData? unlockSaveData;
                     if ((GameController.gameController.consoleVersion || GameController.gameController.usingUWP || mySaveObject != null) && !GameController.gameController.fakeConsole)
                     {
-                        unlockSaveData = (UnlockSaveData)mySaveObject;
+                        unlockSaveData = (UnlockSaveData)mySaveObject!;
                     }
                     else
                     {

@@ -14,7 +14,7 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Gets the item's inventory.</para>
         /// </summary>
-        public InvDatabase Inventory => Item.database;
+        public InvDatabase? Inventory => Item.database;
         /// <summary>
         ///   <para>Gets the item's owner.</para>
         /// </summary>
@@ -38,15 +38,16 @@ namespace RogueLibsCore
         ///   <para>Gets the currently used instance of <see cref="GameController"/>.</para>
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]
+        // ReSharper disable once InconsistentNaming
         public static GameController gc => GameController.gameController;
 
         /// <summary>
         ///   <para>Gets the custom item's metadata.</para>
         /// </summary>
-        public ItemInfo ItemInfo { get; internal set; }
+        public ItemInfo ItemInfo { get; internal set; } = null!; // initialized immediately in CustomItemFactory
 
         /// <inheritdoc/>
-        protected override sealed void Initialize()
+        protected sealed override void Initialize()
         {
             Item.Categories.AddRange(ItemInfo.Categories);
             SetupDetails();
@@ -68,13 +69,13 @@ namespace RogueLibsCore
             {
                 if (Count == Item.rechargeAmount)
                     return new CustomTooltip(Item.rechargeAmount - 1, Color.red);
-                else if (Item.invItemCount != 1)
+                if (Item.invItemCount != 1)
                     return new CustomTooltip(Count - 1, Color.red);
-                else return default;
+                return default;
             }
 
             if (Item.stackable || Item.stackableContents || Item.isArmor || Item.isArmorHead
-                || Item.itemType == ItemTypes.WeaponProjectile || Item.itemType == ItemTypes.WeaponMelee)
+                || Item.itemType is ItemTypes.WeaponProjectile or ItemTypes.WeaponMelee)
                 return new CustomTooltip(Count, Color.white);
 
             return default;

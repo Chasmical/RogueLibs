@@ -22,7 +22,7 @@ namespace RogueLibsCore.Test
 
             SeasonCursorText = RogueLibs.CreateCustomName("SeasonItem", NameTypes.Interface, new CustomNameInfo("Season"));
         }
-        private static CustomName SeasonCursorText;
+        private static CustomName SeasonCursorText = null!;
 
         public override void SetupDetails()
         {

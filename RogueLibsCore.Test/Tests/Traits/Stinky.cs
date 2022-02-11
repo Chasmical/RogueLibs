@@ -15,7 +15,7 @@ namespace RogueLibsCore.Test
 
             RogueLibs.CreateCustomName("StinkReaction1", NameTypes.Dialogue, new CustomNameInfo("Ew!"));
             RogueLibs.CreateCustomName("StinkReaction2", NameTypes.Dialogue, new CustomNameInfo("Ew! You stink!"));
-            RogueLibs.CreateCustomName("StinkReaction3", NameTypes.Dialogue, new CustomNameInfo("ARGHH! Get away from me!"));
+            RogueLibs.CreateCustomName("StinkReaction3", NameTypes.Dialogue, new CustomNameInfo(@"ARGHH! Get away from me!"));
         }
 
         public override void OnAdded() { }
@@ -30,8 +30,7 @@ namespace RogueLibsCore.Test
                 if (agent == Owner) continue;
                 agent.relationships.AddStrikes(Owner, 1);
                 agent.SayDialogue($"StinkReaction{new System.Random().Next(3) + 1}");
-                try { gc.spawnerMain.SpawnDanger(Owner, "Targeted", "AnnoyedAgent", agent); }
-                catch { }
+                gc.spawnerMain.SpawnDanger(Owner, "Targeted", "AnnoyedAgent", agent);
             }
         }
     }

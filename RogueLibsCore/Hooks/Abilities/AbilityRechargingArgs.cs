@@ -8,7 +8,7 @@ namespace RogueLibsCore
     public class AbilityRechargingArgs : EventArgs
     {
         /// <summary>
-        ///   <para>Gets or sets the recharging coroutine's update delay, in seconds.</para>
+        ///   <para>Gets or sets the update delay of the recharging coroutine, in seconds.</para>
         /// </summary>
         public float UpdateDelay { get; set; }
         /// <summary>

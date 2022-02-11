@@ -47,6 +47,7 @@
         /// <summary>
         ///   <para>Gets or sets whether a buff text shouldn't be displayed.</para>
         /// </summary>
+        // ReSharper disable once IdentifierTypo : What's done is done
         public bool DontShowText { get; set; }
         /// <summary>
         ///   <para>Gets or sets whether the effect ignores the "Electronic" trait.</para>
@@ -55,6 +56,6 @@
         /// <summary>
         ///   <para>Gets or sets the agent that caused this effect.</para>
         /// </summary>
-        public Agent CauserAgent { get; set; }
+        public Agent? CauserAgent { get; set; }
     }
 }

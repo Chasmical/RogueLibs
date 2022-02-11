@@ -27,7 +27,7 @@ namespace RogueLibsCore
         {
             if (GameController.gameController.levelType == "HomeBase"
                 && !__instance.agent.isDummy && __instance.agent.agentName != VanillaAgents.MechEmpty) return;
-            CustomAbility custom = __instance.agent.GetAbility();
+            CustomAbility? custom = __instance.agent.GetAbility();
             if (custom is null) return;
 
             if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
@@ -44,7 +44,7 @@ namespace RogueLibsCore
 
         public static void StatusEffects_PressedSpecialAbility(StatusEffects __instance)
         {
-            CustomAbility custom = __instance.agent.GetAbility();
+            CustomAbility? custom = __instance.agent.GetAbility();
             if (custom is null) return;
             if (custom.Item.invItemName != __instance.agent.specialAbility) return;
 
@@ -58,8 +58,8 @@ namespace RogueLibsCore
         }
         public static void StatusEffects_HeldSpecialAbility(StatusEffects __instance)
         {
-            CustomAbility custom = __instance.agent.GetAbility();
-            if (!(custom is IAbilityChargeable chargeable)) return;
+            CustomAbility? custom = __instance.agent.GetAbility();
+            if (custom is not IAbilityChargeable chargeable) return;
             if (custom.Item.invItemName != __instance.agent.specialAbility) return;
 
             ref float held = ref GameController.gameController.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1];
@@ -79,8 +79,8 @@ namespace RogueLibsCore
         }
         public static void StatusEffects_ReleasedSpecialAbility(StatusEffects __instance)
         {
-            CustomAbility custom = __instance.agent.GetAbility();
-            if (!(custom is IAbilityChargeable chargeable)) return;
+            CustomAbility? custom = __instance.agent.GetAbility();
+            if (custom is not IAbilityChargeable chargeable) return;
             if (custom.Item.invItemName != __instance.agent.specialAbility) return;
 
             float prevHeld = custom.lastHeld;
@@ -96,8 +96,8 @@ namespace RogueLibsCore
 
         public static bool StatusEffects_RechargeSpecialAbility2(StatusEffects __instance, ref IEnumerator __result)
         {
-            CustomAbility custom = __instance.agent.inventory.equippedSpecialAbility.GetHook<CustomAbility>();
-            if (!(custom is IAbilityRechargeable)) return true;
+            CustomAbility? custom = __instance.agent.inventory.equippedSpecialAbility.GetHook<CustomAbility>();
+            if (custom is not IAbilityRechargeable) return true;
             if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
                 RogueFramework.LogDebug($"Starting {custom} recharge coroutine ({custom.Item.invItemName}, {__instance.agent.agentName}).");
             __result = AbilityRechargeEnumerator(__instance, custom);
@@ -130,7 +130,7 @@ namespace RogueLibsCore
                             GameController.gameController.audioHandler.Play(__instance.agent, VanillaAudio.Recharge);
                         }
 
-                        if (!(ability is IAbilityTargetable))
+                        if (ability is not IAbilityTargetable)
                             __instance.agent.inventory.buffDisplay?.specialAbilitySlot.MakeUsable();
                     }
                 }
@@ -142,8 +142,8 @@ namespace RogueLibsCore
 
         public static bool StatusEffects_SpecialAbilityInterfaceCheck2(StatusEffects __instance, ref IEnumerator __result)
         {
-            CustomAbility custom = __instance.agent.inventory.equippedSpecialAbility.GetHook<CustomAbility>();
-            if (!(custom is IAbilityTargetable)) return true;
+            CustomAbility? custom = __instance.agent.inventory.equippedSpecialAbility.GetHook<CustomAbility>();
+            if (custom is not IAbilityTargetable) return true;
             if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
                 RogueFramework.LogDebug($"Starting {custom} indicator coroutine ({custom.Item.invItemName}, {__instance.agent.agentName}).");
             __result = AbilityIndicatorEnumerator(__instance, custom);
@@ -160,8 +160,8 @@ namespace RogueLibsCore
 
                 if (GameController.gameController.loadComplete && __instance.agent.specialAbilityIndicator != null && !__instance.agent.disappearedArcade && __instance.agent.inventory.buffDisplay.specialAbilitySlot != null && !__instance.agent.ghost)
                 {
-                    if ((item.invItemCount == 0 || !(ability is IAbilityRechargeable)) && __instance.CanShowSpecialAbilityIndicator()
-                        && ability.CurrentTarget != null)
+                    if ((item.invItemCount == 0 || ability is not IAbilityRechargeable) && __instance.CanShowSpecialAbilityIndicator()
+                                                                                        && ability.CurrentTarget != null)
                     {
                         abilitySlot = __instance.agent.inventory.buffDisplay.specialAbilitySlot;
                         __instance.agent.specialAbilityIndicator.ShowIndicator(ability.CurrentTarget, ability.Item.invItemName);
@@ -177,14 +177,14 @@ namespace RogueLibsCore
             }
             __instance.startedSpecialAbilityInterfaceCheck = false;
         }
-        private static EquippedItemSlot abilitySlot;
+        private static EquippedItemSlot? abilitySlot;
 
-        public static void SpecialAbilityIndicator_ShowIndicator(SpecialAbilityIndicator __instance, string specialAbilityType)
+        public static void SpecialAbilityIndicator_ShowIndicator(SpecialAbilityIndicator __instance)
         {
-            CustomAbility ability = abilitySlot.item.GetHook<CustomAbility>();
+            CustomAbility? ability = abilitySlot?.item.GetHook<CustomAbility>();
             if (ability != null)
             {
-                Sprite spr = ability.GetIndicator();
+                Sprite? spr = ability.GetIndicator();
                 __instance.image.sprite = spr;
                 __instance.image.enabled = spr != null;
             }

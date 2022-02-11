@@ -1,4 +1,5 @@
-﻿namespace RogueLibsCore
+﻿// ReSharper disable CommentTypo
+namespace RogueLibsCore
 {
     /// <summary>
     ///   <para>The collection of item and trait categories used in the game. Use it to avoid typos.</para>
@@ -106,6 +107,7 @@
         ///   <para>The category for items, that NPCs shouldn't be able to pick up and use against the player.
         ///   <br/>Examples: Freeze Ray, Laser Gun, Leaf Blower, Water Pistol, Tranquilizer Gun.</para>
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         public const string NPCsCantPickUp = "NPCsCantPickUp";
         /// <summary>
         ///   <para>The category for different types of nuggets.

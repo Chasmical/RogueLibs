@@ -18,34 +18,34 @@ namespace RogueLibsCore
         public UnlockWrapper Unlock { get; }
 
         /// <summary>
-        ///   <para>Gets the unlock's localizable name.</para>
+        ///   <para>Gets the localizable name of the unlock.</para>
         /// </summary>
-        public CustomName Name { get; private set; }
+        public CustomName? Name { get; private set; }
         /// <summary>
-        ///   <para>Gets the unlock's localizable description.</para>
+        ///   <para>Gets the localizable description of the unlock.</para>
         /// </summary>
-        public CustomName Description { get; private set; }
+        public CustomName? Description { get; private set; }
 
         /// <summary>
-        ///   <para>Creates a localizable string with the specified localization <paramref name="info"/> to act as the unlock's name.</para>
+        ///   <para>Creates a localizable string with the specified localization <paramref name="info"/> to act as the name of the unlock.</para>
         /// </summary>
         /// <param name="info">The localization data to initialize the localizable string with.</param>
         /// <returns>The current instance of <see cref="UnlockBuilder"/>, for chaining purposes.</returns>
-        /// <exception cref="ArgumentException">A localizable string that acts as the unlock's name already exists.</exception>
+        /// <exception cref="ArgumentException">A localizable string that acts as the name of the unlock already exists.</exception>
         public UnlockBuilder WithName(CustomNameInfo info)
         {
             Name = RogueLibs.CreateCustomName(Unlock.Name, Unlock.Unlock.unlockNameType, info);
             return this;
         }
         /// <summary>
-        ///   <para>Creates a localizable string with the specified localization <paramref name="info"/> to act as the unlock's description.</para>
+        ///   <para>Creates a localizable string with the specified localization <paramref name="info"/> to act as the description of the unlock.</para>
         /// </summary>
         /// <param name="info">The localization data to initialize the localizable string with.</param>
         /// <returns>The current instance of <see cref="UnlockBuilder"/>, for chaining purposes.</returns>
-        /// <exception cref="ArgumentException">A localizable string that acts as the unlock's description already exists.</exception>
+        /// <exception cref="ArgumentException">A localizable string that acts as the description of the unlock already exists.</exception>
         public UnlockBuilder WithDescription(CustomNameInfo info)
         {
-            Description = RogueLibs.CreateCustomName(Unlock is MutatorUnlock || Unlock is BigQuestUnlock ? "D_" + Unlock.Name : Unlock.Name,
+            Description = RogueLibs.CreateCustomName(Unlock is MutatorUnlock or BigQuestUnlock ? "D_" + Unlock.Name : Unlock.Name,
                 Unlock is BigQuestUnlock ? NameTypes.Unlock : Unlock.Unlock.unlockDescriptionType, info);
             return this;
         }

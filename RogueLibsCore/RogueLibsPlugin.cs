@@ -1,22 +1,19 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
 using BepInEx;
 using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.Diagnostics;
 
 namespace RogueLibsCore
 {
     [BepInPlugin(RogueLibs.GUID, RogueLibs.Name, RogueLibs.CompiledVersion)]
-    [BepInIncompatibility("abbysssal.streetsofrogue.ectd")]
-    [BepInIncompatibility("abbysssal.streetsofrogue.roguelibs")]
+    [BepInIncompatibility(@"abbysssal.streetsofrogue.ectd")]
+    [BepInIncompatibility(@"abbysssal.streetsofrogue.roguelibs")]
     internal sealed partial class RogueLibsPlugin : BaseUnityPlugin
     {
-        public RoguePatcher Patcher;
+        public RoguePatcher Patcher = null!; // initialized in Awake()
 
         private static int awoken;
         public void Awake()
@@ -34,7 +31,7 @@ namespace RogueLibsCore
                 File.Move(invalidPatcherPath, Path.Combine(Paths.PatcherPluginPath, "RogueLibsPatcher.dll"));
 
                 string[] cmdArgs = Environment.GetCommandLineArgs();
-                string fileName = cmdArgs[0];
+                // string fileName = cmdArgs[0];
                 StringBuilder args = new StringBuilder();
                 for (int i = 1; i < cmdArgs.Length; i++)
                     args.Append(' ').Append('\"').Append(cmdArgs[i].Replace("\"", "\\\"")).Append('\"');

@@ -14,12 +14,12 @@ namespace RogueLibsCore
     /// </summary>
     public sealed class RogueSprite
     {
-        private Texture2D texture;
+        private Texture2D? texture;
         /// <summary>
         ///   <para>Gets or sets the sprite's texture.</para>
         /// </summary>
         /// <exception cref="ArgumentNullException">The sprite is defined and <see langword="value"/> is <see langword="null"/>. Only thrown when setting the property value.</exception>
-        public Texture2D Texture
+        public Texture2D? Texture
         {
             get => texture;
             set
@@ -113,11 +113,11 @@ namespace RogueLibsCore
             }
         }
 
-        private List<CustomTk2dDefinition> definitions;
+        private List<CustomTk2dDefinition>? definitions;
         /// <summary>
         ///   <para>Gets the collection of integrated <see cref="CustomTk2dDefinition"/>s, or <see langword="null"/> if the sprite is not defined.</para>
         /// </summary>
-        public ReadOnlyCollection<CustomTk2dDefinition> Definitions { get; private set; }
+        public ReadOnlyCollection<CustomTk2dDefinition>? Definitions { get; private set; }
         /// <summary>
         ///   <para>Gets or sets whether the sprite is defined and integrated into the game.</para>
         /// </summary>
@@ -135,10 +135,10 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Gets the created sprite, or <see langword="null"/> if invalid data was provided.</para>
         /// </summary>
-        public Sprite Sprite { get; private set; }
-        private Sprite CreateSprite()
+        public Sprite? Sprite { get; private set; }
+        private Sprite? CreateSprite()
         {
-            if (Name is null || Texture is null || PixelsPerUnit <= 0f) return null;
+            if (Texture is null || PixelsPerUnit <= 0f) return null;
             Rect reg = Region ?? new Rect(0, 0, Texture.width, Texture.height);
             Sprite sprite = Sprite.Create(Texture, reg, reg.size / 2f, PixelsPerUnit);
             sprite.name = Name;
@@ -192,11 +192,8 @@ namespace RogueLibsCore
             Sprite = CreateSprite();
         }
 
-        private static tk2dSpriteCollectionData GetCollection(SpriteScope scope)
-        {
-            GameController gc = GameController.gameController;
-            return registered.TryGetValue(scope, out tk2dSpriteCollectionData collection) ? collection : null;
-        }
+        private static tk2dSpriteCollectionData? GetCollection(SpriteScope scope)
+            => registered.TryGetValue(scope, out tk2dSpriteCollectionData collection) ? collection : null;
         /// <summary>
         ///   <para>Defines the current sprite and integrates it into the game.</para>
         /// </summary>
@@ -226,14 +223,14 @@ namespace RogueLibsCore
             DefineScope(Scope & SpriteScope.Walls);
             DefineScope(Scope & SpriteScope.Spawners);
         }
-        private void DefineScope(SpriteScope scope)
+        private void DefineScope(SpriteScope targetScope)
         {
-            if (scope == SpriteScope.None) return;
-            tk2dSpriteCollectionData coll = GetCollection(scope);
-            if (coll is null && scope != SpriteScope.Extra)
+            if (targetScope == SpriteScope.None) return;
+            tk2dSpriteCollectionData? coll = GetCollection(targetScope);
+            if (coll is null && targetScope != SpriteScope.Extra)
             {
                 isPrepared = true;
-                if (prepared.TryGetValue(scope, out List<RogueSprite> sprites))
+                if (prepared.TryGetValue(targetScope, out List<RogueSprite> sprites))
                 {
                     if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
                         RogueFramework.LogDebug($"Prepared sprite \"{Name}\" for initialization.");
@@ -241,29 +238,30 @@ namespace RogueLibsCore
                 }
                 else RogueFramework.LogError($"Pseudo-prepared sprite \"{Name}\" for initialization.");
             }
-            else DefineInternal(coll, scope);
+            else DefineInternal(coll, targetScope);
         }
 
-        internal Material Material { get; private set; }
-        internal Material LightUpMaterial { get; private set; }
-        internal void DefineInternal(tk2dSpriteCollectionData coll, SpriteScope scope)
+        internal Material? Material { get; private set; }
+        internal Material? LightUpMaterial { get; private set; }
+        internal void DefineInternal(tk2dSpriteCollectionData? coll, SpriteScope targetScope)
         {
             if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
-                RogueFramework.LogDebug($"Defining \"{Name}\" sprite in scope {scope}.");
+                RogueFramework.LogDebug($"Defining \"{Name}\" sprite in scope {targetScope}.");
 
             if (coll != null)
             {
-                tk2dSpriteDefinition def = CreateDefinition(texture, region, 1f / coll.invOrthoSize / coll.halfTargetHeight);
+                tk2dSpriteDefinition def = CreateDefinition(texture!, region, 1f / coll.invOrthoSize / coll.halfTargetHeight);
                 AddDefinition(coll, def);
                 def.__RogueLibsCustom = this;
-                definitions.Add(new CustomTk2dDefinition(coll, def, scope));
+                definitions!.Add(new CustomTk2dDefinition(coll, def, targetScope));
 
-                if (Material is null) Material = def.material;
+                Material ??= def.material;
                 if (Material is null) RogueFramework.LogWarning($"Material is null! ({coll.name})");
-                if (LightUpMaterial is null) LightUpMaterial = Object.Instantiate(Material);
-                LightUpMaterial.shader = Shader.Find("tk2d/BlendAdditiveVertexColor");
+                LightUpMaterial ??= Object.Instantiate(Material);
+                if (LightUpMaterial is not null)
+                    LightUpMaterial.shader = Shader.Find("tk2d/BlendAdditiveVertexColor");
             }
-            else definitions.Add(new CustomTk2dDefinition(null, null, scope));
+            else definitions!.Add(new CustomTk2dDefinition(null, null, targetScope));
 
             GameResources gr = GameResources.gameResources;
             if (gr is null)
@@ -287,10 +285,10 @@ namespace RogueLibsCore
                 gr = gc.gameResources;
             }
 
-            if (scope == SpriteScope.Items) { gr.itemDic[Name] = Sprite; gr.itemList.Add(Sprite); }
-            else if (scope == SpriteScope.Objects) { gr.objectDic[Name] = Sprite; gr.objectList.Add(Sprite); }
-            else if (scope == SpriteScope.Floors) { gr.floorDic[Name] = Sprite; gr.floorList.Add(Sprite); }
-            else if (scope == SpriteScope.Extra) RogueFramework.ExtraSprites[Name] = Sprite;
+            if (targetScope == SpriteScope.Items) { gr.itemDic[Name] = Sprite; gr.itemList.Add(Sprite); }
+            else if (targetScope == SpriteScope.Objects) { gr.objectDic[Name] = Sprite; gr.objectList.Add(Sprite); }
+            else if (targetScope == SpriteScope.Floors) { gr.floorDic[Name] = Sprite; gr.floorList.Add(Sprite); }
+            else if (targetScope == SpriteScope.Extra) RogueFramework.ExtraSprites[Name] = Sprite!;
         }
         /// <summary>
         ///   <para>Undefines the current sprite and disintegrates it from the game.</para>
@@ -307,7 +305,7 @@ namespace RogueLibsCore
             }
             if (!IsDefined) return;
 
-            foreach (CustomTk2dDefinition def in definitions)
+            foreach (CustomTk2dDefinition def in definitions!)
                 UndefineInternal(def);
             definitions = null;
             Definitions = null;
@@ -318,7 +316,7 @@ namespace RogueLibsCore
                 RogueFramework.LogDebug($"Undefining sprite \"{Name}\" from scope {def.Scope}.");
 
             if (def.Collection != null)
-                RemoveDefinition(def.Collection, def.Definition);
+                RemoveDefinition(def.Collection, def.Definition!);
 
             GameResources gr = GameResources.gameResources;
             if (Scope == SpriteScope.Items) { gr.itemDic.Remove(Name); gr.itemList.Remove(Sprite); }
@@ -373,18 +371,18 @@ namespace RogueLibsCore
                     new Vector3(vector7.x + vector4.x, vector7.y + vector4.y, 0f),
                     new Vector3(vector8.x + vector4.x, vector7.y + vector4.y, 0f),
                     new Vector3(vector7.x + vector4.x, vector8.y + vector4.y, 0f),
-                    new Vector3(vector8.x + vector4.x, vector8.y + vector4.y, 0f)
+                    new Vector3(vector8.x + vector4.x, vector8.y + vector4.y, 0f),
                 },
                 uvs = new Vector2[]
                 {
                     new Vector2(vector2.x, vector2.y),
                     new Vector2(vector3.x, vector2.y),
                     new Vector2(vector2.x, vector3.y),
-                    new Vector2(vector3.x, vector3.y)
+                    new Vector2(vector3.x, vector3.y),
                 },
                 boundsData = new Vector3[] { (a + b) / 2f, a - b },
                 untrimmedBoundsData = new Vector3[] { (a + b) / 2f, a - b },
-                texelSize = new Vector2(scale, scale)
+                texelSize = new Vector2(scale, scale),
             };
         }
         /// <summary>
@@ -398,23 +396,23 @@ namespace RogueLibsCore
             if (collection is null || definition is null)
                 throw new ArgumentNullException(collection is null ? nameof(collection) : nameof(definition));
 
-            tk2dSpriteDefinition[] newDefs = new tk2dSpriteDefinition[collection.spriteDefinitions.Length + 1];
-            Array.Copy(collection.spriteDefinitions, 0, newDefs, 0, collection.spriteDefinitions.Length);
-            newDefs[newDefs.Length - 1] = definition;
-            collection.spriteDefinitions = newDefs;
+            tk2dSpriteDefinition[] newDefinitions = new tk2dSpriteDefinition[collection.spriteDefinitions.Length + 1];
+            Array.Copy(collection.spriteDefinitions, 0, newDefinitions, 0, collection.spriteDefinitions.Length);
+            newDefinitions[newDefinitions.Length - 1] = definition;
+            collection.spriteDefinitions = newDefinitions;
 
             Material[] newMats = new Material[collection.materials.Length + 1];
             Array.Copy(collection.materials, 0, newMats, 0, collection.materials.Length);
             newMats[newMats.Length - 1] = definition.material;
             if (Array.IndexOf(newMats, null) != -1)
-                newMats = Array.FindAll(newMats, m => m != null);
+                newMats = Array.FindAll(newMats, static m => m != null);
             collection.materials = newMats;
 
             Texture[] newTextures = new Texture[collection.textures.Length + 1];
             Array.Copy(collection.textures, 0, newTextures, 0, collection.textures.Length);
             newTextures[newTextures.Length - 1] = definition.material.mainTexture;
             if (Array.IndexOf(newTextures, null) != -1)
-                newTextures = Array.FindAll(newTextures, m => m != null);
+                newTextures = Array.FindAll(newTextures, static m => m != null);
             collection.textures = newTextures;
 
             collection.inst.materialIdsValid = false;
@@ -437,10 +435,10 @@ namespace RogueLibsCore
             int index = Array.IndexOf(collection.spriteDefinitions, definition);
             if (index is -1) return false;
 
-            tk2dSpriteDefinition[] newDefs = new tk2dSpriteDefinition[collection.spriteDefinitions.Length - 1];
-            Array.Copy(collection.spriteDefinitions, 0, newDefs, 0, index);
-            Array.Copy(collection.spriteDefinitions, index + 1, newDefs, index, collection.spriteDefinitions.Length - index - 1);
-            collection.spriteDefinitions = newDefs;
+            tk2dSpriteDefinition[] newDefinitions = new tk2dSpriteDefinition[collection.spriteDefinitions.Length - 1];
+            Array.Copy(collection.spriteDefinitions, 0, newDefinitions, 0, index);
+            Array.Copy(collection.spriteDefinitions, index + 1, newDefinitions, index, collection.spriteDefinitions.Length - index - 1);
+            collection.spriteDefinitions = newDefinitions;
 
             Material[] newMats = new Material[collection.materials.Length - 1];
             Array.Copy(collection.materials, 0, newMats, 0, index);
@@ -465,7 +463,7 @@ namespace RogueLibsCore
         /// </summary>
         public class CustomTk2dDefinition
         {
-            internal CustomTk2dDefinition(tk2dSpriteCollectionData collection, tk2dSpriteDefinition definition, SpriteScope scope)
+            internal CustomTk2dDefinition(tk2dSpriteCollectionData? collection, tk2dSpriteDefinition? definition, SpriteScope scope)
             {
                 Collection = collection;
                 Definition = definition;
@@ -474,11 +472,11 @@ namespace RogueLibsCore
             /// <summary>
             ///   <para>Gets the collection that the sprite is defined in.</para>
             /// </summary>
-            public tk2dSpriteCollectionData Collection { get; }
+            public tk2dSpriteCollectionData? Collection { get; }
             /// <summary>
             ///   <para>Gets the created definition.</para>
             /// </summary>
-            public tk2dSpriteDefinition Definition { get; }
+            public tk2dSpriteDefinition? Definition { get; }
             /// <summary>
             ///   <para>Gets the scope of the sprite's definition.</para>
             /// </summary>
@@ -487,17 +485,17 @@ namespace RogueLibsCore
 
         public static void Dump(tk2dSpriteCollectionData collection)
         {
-            Dictionary<UnityEngine.Texture, Texture2D> cache = new Dictionary<Texture, Texture2D>();
+            Dictionary<Texture, Texture2D> cache = new Dictionary<Texture, Texture2D>();
 
             string directoryPath = Path.Combine(Paths.GameRootPath, "tk2d_" + collection.name);
             Directory.CreateDirectory(directoryPath);
 
             foreach (tk2dSpriteDefinition def in collection.spriteDefinitions)
             {
-                float minX = def.uvs.Min(uv => uv.x) * def.material.mainTexture.width;
-                float maxX = def.uvs.Max(uv => uv.x) * def.material.mainTexture.width;
-                float minY = def.uvs.Min(uv => uv.y) * def.material.mainTexture.height;
-                float maxY = def.uvs.Max(uv => uv.y) * def.material.mainTexture.height;
+                float minX = def.uvs.Min(static uv => uv.x) * def.material.mainTexture.width;
+                float maxX = def.uvs.Max(static uv => uv.x) * def.material.mainTexture.width;
+                float minY = def.uvs.Min(static uv => uv.y) * def.material.mainTexture.height;
+                float maxY = def.uvs.Max(static uv => uv.y) * def.material.mainTexture.height;
                 Texture tex = def.material.mainTexture;
                 Vector2 pos = new Vector2(minX, minY);
                 Vector2 size = new Vector2(maxX - minX, maxY - minY);

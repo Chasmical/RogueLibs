@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RogueLibsCore
@@ -11,21 +12,21 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="ItemUnlock"/> class without a name.</para>
         /// </summary>
-        public ItemUnlock() : this(null, false) { }
+        public ItemUnlock() : this(null!, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="ItemUnlock"/> class without a name.</para>
         /// </summary>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public ItemUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+        public ItemUnlock(bool unlockedFromStart) : this(null!, unlockedFromStart) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="ItemUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and item's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         public ItemUnlock(string name) : this(name, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="ItemUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and item's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
         public ItemUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Item, unlockedFromStart)
         {
@@ -45,10 +46,17 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public bool IsAddedToCC
         {
-            get => ((CustomCharacterCreation)Menu).CC.itemsChosen.Contains(Unlock);
+            get
+            {
+                if (Menu is not CustomCharacterCreation cc)
+                    throw new InvalidOperationException("The unlock is not in the character creation menu.");
+                return cc.CC.itemsChosen.Contains(Unlock);
+            }
             set
             {
-                List<Unlock> list = ((CustomCharacterCreation)Menu).CC.itemsChosen;
+                if (Menu is not CustomCharacterCreation cc)
+                    throw new InvalidOperationException("The unlock is not in the character creation menu.");
+                List<Unlock> list = cc.CC.itemsChosen;
                 bool cur = list.Contains(Unlock);
                 if (cur && !value) list.Remove(Unlock);
                 else if (!cur && value) list.Add(Unlock);
@@ -59,9 +67,14 @@ namespace RogueLibsCore
         /// </summary>
         public bool IsSelectedLoadout
         {
-            get => GetMyLoadouts().Contains(Name);
+            get
+            {
+                if (Menu is null) throw new InvalidOperationException("The unlock is not in the menu.");
+                return GetMyLoadouts().Contains(Name);
+            }
             set
             {
+                if (Menu is null) throw new InvalidOperationException("The unlock is not in the menu.");
                 List<string> myLoadouts = GetMyLoadouts();
                 bool cur = myLoadouts.Contains(Name);
                 if (cur && !value) myLoadouts.Remove(Name);
@@ -70,7 +83,7 @@ namespace RogueLibsCore
         }
 
         private List<string> GetMyLoadouts()
-            => Menu.Agent.isPlayer is 1 ? gc.sessionDataBig.loadouts1
+            => Menu!.Agent.isPlayer is 1 ? gc.sessionDataBig.loadouts1
             : Menu.Agent.isPlayer is 2 ? gc.sessionDataBig.loadouts2
             : Menu.Agent.isPlayer is 3 ? gc.sessionDataBig.loadouts3
             : gc.sessionDataBig.loadouts4;
@@ -82,9 +95,10 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.itemUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.itemUnlocks.Remove(Unlock); Unlock.itemCount--; }
-                else if (cur == false && value) { gc.sessionDataBig.itemUnlocks.Add(Unlock); Unlock.itemCount++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.itemUnlocks!.Remove(Unlock); Unlock.itemCount--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.itemUnlocks!.Add(Unlock); Unlock.itemCount++; }
             }
         }
         /// <inheritdoc/>
@@ -94,13 +108,14 @@ namespace RogueLibsCore
             set
             {
                 Unlock.onlyInCharacterCreation = value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.itemUnlocksCharacterCreation?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.itemUnlocksCharacterCreation.Remove(Unlock); Unlock.itemCountCharacterCreation--; }
-                else if (cur == false && value) { gc.sessionDataBig.itemUnlocksCharacterCreation.Add(Unlock); Unlock.itemCountCharacterCreation++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.itemUnlocksCharacterCreation!.Remove(Unlock); Unlock.itemCountCharacterCreation--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.itemUnlocksCharacterCreation!.Add(Unlock); Unlock.itemCountCharacterCreation++; }
             }
         }
         /// <summary>
-        ///   <para>Gets or sets whether the item is available in the Item Teleporter's menu.</para>
+        ///   <para>Gets or sets whether the item is available in the Item Teleporter menu.</para>
         /// </summary>
         public bool IsAvailableInItemTeleporter
         {
@@ -108,9 +123,10 @@ namespace RogueLibsCore
             set
             {
                 Unlock.freeItem = value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.freeItemUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.freeItemUnlocks.Remove(Unlock); Unlock.itemCountFree--; }
-                else if (cur == false && value) { gc.sessionDataBig.freeItemUnlocks.Add(Unlock); Unlock.itemCountFree++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.freeItemUnlocks!.Remove(Unlock); Unlock.itemCountFree--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.freeItemUnlocks!.Add(Unlock); Unlock.itemCountFree++; }
             }
         }
 
@@ -118,7 +134,7 @@ namespace RogueLibsCore
         public override void UpdateButton()
         {
             Text = GetFancyName();
-            if (Menu.Type == UnlocksMenuType.RewardsMenu)
+            if (Menu!.Type == UnlocksMenuType.RewardsMenu)
                 UpdateButton(IsEnabled, UnlockButtonState.Normal, UnlockButtonState.Disabled);
             else if (Menu.Type == UnlocksMenuType.ItemTeleporter)
                 UpdateButton(false);
@@ -130,7 +146,7 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public override void OnPushedButton()
         {
-            if (Menu.Type == UnlocksMenuType.Loadouts)
+            if (Menu!.Type == UnlocksMenuType.Loadouts)
             {
                 if (IsSelectedLoadout)
                 {
@@ -143,9 +159,9 @@ namespace RogueLibsCore
                 }
                 else
                 {
-                    ItemUnlock selected = (ItemUnlock)Menu.Unlocks.Find(u => u is ItemUnlock item && item.IsSelectedLoadout);
+                    ItemUnlock? selected = (ItemUnlock?)Menu.Unlocks.Find(static u => u is ItemUnlock { IsSelectedLoadout: true });
                     int availableNuggets = gc.sessionDataBig.nuggets;
-                    if (selected != null) availableNuggets += selected.LoadoutCost;
+                    if (selected is not null) availableNuggets += selected.LoadoutCost;
                     if (LoadoutCost <= availableNuggets)
                     {
                         if (selected != null)
@@ -205,7 +221,8 @@ namespace RogueLibsCore
                 else if (Menu.Type == UnlocksMenuType.CharacterCreation)
                 {
                     PlaySound(VanillaAudio.ClickButton);
-                    if (IsAddedToCC = !IsAddedToCC)
+                    IsAddedToCC = !IsAddedToCC;
+                    if (IsAddedToCC)
                         foreach (DisplayedUnlock du in EnumerateCancellations())
                             ((IUnlockInCC)du).IsAddedToCC = false;
                     UpdateButton();
@@ -224,6 +241,6 @@ namespace RogueLibsCore
         }
 
         /// <inheritdoc/>
-        public override Sprite GetImage() => GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
+        public override Sprite? GetImage() => GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
     }
 }

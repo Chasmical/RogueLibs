@@ -58,11 +58,12 @@ namespace RogueLibsCore
                 gc.sessionDataBig.originalChallenges = gc.originalChallenges;
                 gc.SetDailyRunText();
             }
-            if (Type == UnlocksMenuType.RewardsMenu || Type == UnlocksMenuType.TraitsMenu)
+            if (Type is UnlocksMenuType.RewardsMenu or UnlocksMenuType.TraitsMenu)
                 Menu.UpdateActiveCount();
-            if (Type == UnlocksMenuType.MutatorMenu || Type == UnlocksMenuType.RewardsMenu || Type == UnlocksMenuType.TraitsMenu)
+            if (Type is UnlocksMenuType.MutatorMenu or UnlocksMenuType.RewardsMenu or UnlocksMenuType.TraitsMenu)
                 Menu.UpdateOtherVisibleMenus(Menu.menuType);
-            try { Menu.scrollerController.myScroller.RefreshActiveCellViews(); } catch { }
+            try { Menu.scrollerController.myScroller.RefreshActiveCellViews(); }
+            catch { /* I have no idea why it's suppressed */ }
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace RogueLibsCore
@@ -18,7 +17,7 @@ namespace RogueLibsCore
         public HookController(T instance) => Instance = instance;
         /// <inheritdoc/>
         public T Instance { get; }
-        object IHookController.Instance => Instance;
+        object IHookController.Instance => Instance!;
 
         private readonly List<IHook<T>> hooks = new List<IHook<T>>();
 
@@ -46,7 +45,7 @@ namespace RogueLibsCore
         void IHookController.AddHook(IHook hook)
         {
             if (hook is null) throw new ArgumentNullException(nameof(hook));
-            if (hook is IHook<T> ihook) AddHook(ihook);
+            if (hook is IHook<T> iHook) AddHook(iHook);
             else throw new ArgumentException("Invalid type!", nameof(hook));
         }
 
@@ -59,7 +58,7 @@ namespace RogueLibsCore
         /// <returns><see langword="true"/>, if a hook of the specified <typeparamref name="THook"/> type was successfully detached; otherwise, <see langword="false"/>.</returns>
         public bool RemoveHook<THook>()
         {
-            int index = hooks.FindIndex(h => h is THook);
+            int index = hooks.FindIndex(static h => h is THook);
             if (index is -1) return false;
             hooks.RemoveAt(index);
             return true;
@@ -73,7 +72,7 @@ namespace RogueLibsCore
         }
 
         /// <inheritdoc/>
-        public THook GetHook<THook>() => (THook)hooks.Find(h => h is THook);
+        public THook? GetHook<THook>() => (THook?)hooks.Find(static h => h is THook);
         /// <inheritdoc/>
         public IEnumerable<THook> GetHooks<THook>() => hooks.OfType<THook>();
         /// <summary>
@@ -82,9 +81,5 @@ namespace RogueLibsCore
         /// <returns>A collection of hooks attached to the current instance.</returns>
         public IEnumerable<IHook<T>> GetHooks() => hooks.ToArray();
 
-        /// <inheritdoc/>
-        public IEnumerator<IHook<T>> GetEnumerator() => hooks.GetEnumerator();
-        IEnumerator<IHook> IEnumerable<IHook>.GetEnumerator() => GetEnumerator();
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

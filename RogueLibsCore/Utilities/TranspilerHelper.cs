@@ -5,9 +5,10 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
+#pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-    public static class TranspilerHelper
-    {
+	public static class TranspilerHelper
+	{
         public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> begin,
             Func<CodeInstruction, bool> end)
             => RemoveRegion(code, new Func<CodeInstruction, bool>[] { begin }, new Func<CodeInstruction, bool>[] { end });
@@ -21,8 +22,8 @@ namespace RogueLibsCore
             if (begin is null) throw new ArgumentNullException(nameof(begin));
             if (end is null) throw new ArgumentNullException(nameof(end));
             if (begin.Length is 0) throw new ArgumentException($"{nameof(begin)} cannot be empty.", nameof(begin));
-            if (Array.Exists(begin, b => b is null)) throw new ArgumentException($"Delegates in {nameof(begin)} cannot be null.", nameof(begin));
-            if (Array.Exists(end, b => b is null)) throw new ArgumentException($"Delegates in {nameof(end)} cannot be null.", nameof(end));
+            if (Array.Exists(begin, static b => b is null)) throw new ArgumentException($"Delegates in {nameof(begin)} cannot be null.", nameof(begin));
+            if (Array.Exists(end, static b => b is null)) throw new ArgumentException($"Delegates in {nameof(end)} cannot be null.", nameof(end));
 
             return RemoveRegion2();
             IEnumerable<CodeInstruction> RemoveRegion2()
@@ -90,7 +91,7 @@ namespace RogueLibsCore
             if (after is null) throw new ArgumentNullException(nameof(after));
             if (region is null) throw new ArgumentNullException(nameof(region));
             if (after.Length is 0) throw new ArgumentException($"{nameof(after)} cannot be empty.", nameof(after));
-            if (Array.Exists(after, a => a is null)) throw new ArgumentException($"Delegates in {nameof(after)} cannot be null.", nameof(after));
+            if (Array.Exists(after, static a => a is null)) throw new ArgumentException($"Delegates in {nameof(after)} cannot be null.", nameof(after));
 
             return AddRegionAfter2();
             IEnumerable<CodeInstruction> AddRegionAfter2()
@@ -102,7 +103,7 @@ namespace RogueLibsCore
                 {
                     if (state == SearchState.Passed)
                         yield return instr;
-                    else if (state == SearchState.Searching)
+                    else
                     {
                         yield return instr;
                         if (after[current](instr))
@@ -148,7 +149,7 @@ namespace RogueLibsCore
             if (before is null) throw new ArgumentNullException(nameof(before));
             if (region is null) throw new ArgumentNullException(nameof(region));
             if (before.Length is 0) throw new ArgumentException($"{nameof(before)} cannot be empty.", nameof(before));
-            if (Array.Exists(before, b => b is null)) throw new ArgumentException($"Delegates in {nameof(before)} cannot be null.", nameof(before));
+            if (Array.Exists(before, static b => b is null)) throw new ArgumentException($"Delegates in {nameof(before)} cannot be null.", nameof(before));
 
             return AddRegionBefore2();
             IEnumerable<CodeInstruction> AddRegionBefore2()
@@ -160,7 +161,7 @@ namespace RogueLibsCore
                 {
                     if (state == SearchState.Passed)
                         yield return instr;
-                    else if (state == SearchState.Searching)
+                    else
                     {
                         if (before[current](instr))
                         {
@@ -200,13 +201,13 @@ namespace RogueLibsCore
 
         public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] begin,
             Func<CodeInstruction, bool>[] end, IEnumerable<CodeInstruction> replacer)
-            => ReplaceRegion(code, begin, end, (_, __) => replacer);
+            => ReplaceRegion(code, begin, end, (_, _) => replacer);
         public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] begin,
             Func<CodeInstruction, bool>[] end, IEnumerable<Func<CodeInstruction[], CodeInstruction[], CodeInstruction>> replacer)
             => ReplaceRegion(code, begin, end, (a, b) => replacer.Select(r => r(a, b)));
 
         public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] region, IEnumerable<CodeInstruction> replacer)
-            => ReplaceRegion(code, region, new Func<CodeInstruction, bool>[0], (_, __) => replacer);
+            => ReplaceRegion(code, region, new Func<CodeInstruction, bool>[0], (_, _) => replacer);
         public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] region, IEnumerable<Func<CodeInstruction[], CodeInstruction>> replacer)
             => ReplaceRegion(code, region, new Func<CodeInstruction, bool>[0], (replaced, _) => replacer.Select(r => r(replaced)));
 
@@ -217,8 +218,8 @@ namespace RogueLibsCore
             if (end is null) throw new ArgumentNullException(nameof(end));
             if (replacer is null) throw new ArgumentNullException(nameof(replacer));
             if (begin.Length is 0) throw new ArgumentException($"{nameof(begin)} cannot be empty.", nameof(begin));
-            if (Array.Exists(begin, b => b is null)) throw new ArgumentException($"Delegates in {nameof(begin)} cannot be null.", nameof(begin));
-            if (Array.Exists(end, e => e is null)) throw new ArgumentException($"Delegates in {nameof(end)} cannot be null.", nameof(end));
+            if (Array.Exists(begin, static b => b is null)) throw new ArgumentException($"Delegates in {nameof(begin)} cannot be null.", nameof(begin));
+            if (Array.Exists(end, static e => e is null)) throw new ArgumentException($"Delegates in {nameof(end)} cannot be null.", nameof(end));
 
             return ReplaceRegion2();
             IEnumerable<CodeInstruction> ReplaceRegion2()
@@ -292,7 +293,7 @@ namespace RogueLibsCore
         {
             Searching = 0,
             Found     = 1,
-            Passed    = 2
+            Passed    = 2,
         }
 
         public static CodeInstruction WithLabels(this CodeInstruction instruction, CodeInstruction otherInstruction)
@@ -303,4 +304,5 @@ namespace RogueLibsCore
         }
     }
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
+#pragma warning restore IDE0079 // Remove unnecessary suppression
 }

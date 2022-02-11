@@ -25,11 +25,11 @@ namespace RogueLibsCore
         /// </summary>
         public ReadOnlyCollection<string> IgnoredChecks { get; } = RogueUtilities.Empty;
 
-        public CustomName GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Item);
-        public CustomName GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
-        public ItemUnlock GetUnlock() => RogueLibs.GetUnlock<ItemUnlock>(Name);
-        internal RogueSprite sprite;
-        public RogueSprite GetSprite() => sprite;
+        public CustomName? GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Item);
+        public CustomName? GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
+        public ItemUnlock? GetUnlock() => RogueLibs.GetUnlock<ItemUnlock>(Name);
+        internal RogueSprite? sprite;
+        public RogueSprite? GetSprite() => sprite;
 
         private static readonly Dictionary<Type, ItemInfo> infos = new Dictionary<Type, ItemInfo>();
         /// <summary>
@@ -38,12 +38,7 @@ namespace RogueLibsCore
         /// <param name="type">The <see cref="CustomItem"/> type to get the metadata for.</param>
         /// <returns>The specified <paramref name="type"/>'s metadata.</returns>
         /// <exception cref="ArgumentException"><paramref name="type"/> is not a <see cref="CustomItem"/>.</exception>
-        public static ItemInfo Get(Type type)
-        {
-            if (!infos.TryGetValue(type, out ItemInfo info))
-                infos.Add(type, info = new ItemInfo(type));
-            return info;
-        }
+        public static ItemInfo Get(Type type) => infos.TryGetValue(type, out ItemInfo info) ? info : infos[type] = new ItemInfo(type);
         /// <summary>
         ///   <para>Gets the specified <typeparamref name="TItem"/>'s metadata.</para>
         /// </summary>
@@ -56,19 +51,22 @@ namespace RogueLibsCore
             if (!typeof(CustomItem).IsAssignableFrom(type))
                 throw new ArgumentException($"{nameof(type)} does not inherit from {nameof(CustomItem)}!", nameof(type));
 
-            ItemNameAttribute nameAttr = type.GetCustomAttributes<ItemNameAttribute>().FirstOrDefault();
+            ItemNameAttribute? nameAttr = type.GetCustomAttributes<ItemNameAttribute>().FirstOrDefault();
             Name = nameAttr?.Name ?? type.Name;
 
-            string[] categories = type.GetCustomAttributes<ItemCategoriesAttribute>().SelectMany(c => c.Categories).Distinct().ToArray();
+            string[] categories = type.GetCustomAttributes<ItemCategoriesAttribute>()
+                                      .SelectMany(static c => c.Categories).Distinct().ToArray();
+            if (categories.Length is 0)
+                RogueFramework.LogWarning($"Type {type} does not have any {nameof(ItemCategoriesAttribute)}!");
             Categories = new ReadOnlyCollection<string>(categories);
 
-            IEnumerable<string> typeIgnores = type.GetCustomAttributes<IgnoreChecksAttribute>().SelectMany(a => a.IgnoredChecks);
+            IEnumerable<string> typeIgnores = type.GetCustomAttributes<IgnoreChecksAttribute>().SelectMany(static a => a.IgnoredChecks);
 
             List<MethodInfo> methods = new List<MethodInfo>();
             if (typeof(IItemUsable).IsAssignableFrom(type))
             {
                 methods.Add(type.GetInterfaceMethod(typeof(IItemUsable),
-                    nameof(IItemUsable.UseItem)));
+                    nameof(IItemUsable.UseItem))!);
             }
             if (typeof(IItemCombinable).IsAssignableFrom(type))
             {
@@ -76,24 +74,25 @@ namespace RogueLibsCore
                     nameof(IItemCombinable.CombineFilter),
                     nameof(IItemCombinable.CombineItems),
                     nameof(IItemCombinable.CombineTooltip),
-                    nameof(IItemCombinable.CombineCursorText)));
+                    nameof(IItemCombinable.CombineCursorText))!);
             }
             if (typeof(IItemTargetable).IsAssignableFrom(type))
             {
                 methods.AddRange(type.GetInterfaceMethods(typeof(IItemTargetable),
                     nameof(IItemTargetable.TargetFilter),
                     nameof(IItemTargetable.TargetObject),
-                    nameof(IItemTargetable.TargetCursorText)));
+                    nameof(IItemTargetable.TargetCursorText))!);
             }
             if (typeof(IItemTargetableAnywhere).IsAssignableFrom(type))
             {
                 methods.AddRange(type.GetInterfaceMethods(typeof(IItemTargetableAnywhere),
                     nameof(IItemTargetableAnywhere.TargetFilter),
                     nameof(IItemTargetableAnywhere.TargetPosition),
-                    nameof(IItemTargetableAnywhere.TargetCursorText)));
+                    nameof(IItemTargetableAnywhere.TargetCursorText))!);
             }
-            IEnumerable<string> methodIgnores = methods.SelectMany(m => m.GetCustomAttributes<IgnoreChecksAttribute>()
-                .SelectMany(a => a.IgnoredChecks));
+            IEnumerable<string> methodIgnores = methods
+                .SelectMany(static m => m.GetCustomAttributes<IgnoreChecksAttribute>()
+                .SelectMany(static a => a.IgnoredChecks));
 
             string[] ignoredChecks = typeIgnores.Concat(methodIgnores).Distinct().ToArray();
             if (ignoredChecks.Length > 0)
@@ -134,7 +133,7 @@ namespace RogueLibsCore
         public ItemCategoriesAttribute(params string[] categories)
         {
             if (categories is null) throw new ArgumentNullException(nameof(categories));
-            Categories = new ReadOnlyCollection<string>(Array.FindAll(categories, c => c != null));
+            Categories = new ReadOnlyCollection<string>(Array.FindAll(categories, static c => c != null));
         }
     }
     /// <summary>
@@ -154,7 +153,7 @@ namespace RogueLibsCore
         public IgnoreChecksAttribute(params string[] ignoreChecks)
         {
             if (ignoreChecks is null) throw new ArgumentNullException(nameof(ignoreChecks));
-            IgnoredChecks = new ReadOnlyCollection<string>(Array.FindAll(ignoreChecks, c => c != null));
+            IgnoredChecks = new ReadOnlyCollection<string>(Array.FindAll(ignoreChecks, static c => c != null));
         }
     }
 }

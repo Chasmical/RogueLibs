@@ -10,9 +10,9 @@ namespace RogueLibsCore
     {
         private readonly Dictionary<string, EffectEntry> effectsDict = new Dictionary<string, EffectEntry>();
         /// <inheritdoc/>
-        public override bool TryCreate(StatusEffect instance, out IHook<StatusEffect> hook)
+        public override bool TryCreate(StatusEffect? instance, out IHook<StatusEffect>? hook)
         {
-            if (instance != null && effectsDict.TryGetValue(instance.statusEffectName, out EffectEntry entry))
+            if (instance is not null && effectsDict.TryGetValue(instance.statusEffectName, out EffectEntry entry))
             {
                 hook = entry.Initializer();
                 if (hook is CustomEffect custom)
@@ -32,7 +32,7 @@ namespace RogueLibsCore
             EffectInfo info = EffectInfo.Get<TEffect>();
             if (RogueFramework.IsDebugEnabled(DebugFlags.Effects))
                 RogueFramework.LogDebug($"Created custom effect {typeof(TEffect)} ({info.Name}).");
-            effectsDict.Add(info.Name, new EffectEntry { Initializer = () => new TEffect(), EffectInfo = info });
+            effectsDict.Add(info.Name, new EffectEntry { Initializer = static () => new TEffect(), EffectInfo = info });
             return info;
         }
 

@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace RogueLibsCore
@@ -30,15 +30,15 @@ namespace RogueLibsCore
         }
 
         /// <summary>
-        ///   <para>Gets the unlock's name.</para>
+        ///   <para>Gets the name of the unlock.</para>
         /// </summary>
         public string Name
         {
-            get => Unlock.unlockName;
+            get => Unlock.unlockName ?? throw new InvalidOperationException("The unlock was not fully set up - its name is set to null.");
             internal set => Unlock.unlockName = value;
         }
         /// <summary>
-        ///   <para>Gets the unlock's type.</para>
+        ///   <para>Gets the type of the unlock.</para>
         /// </summary>
         public string Type { get; }
 
@@ -52,15 +52,15 @@ namespace RogueLibsCore
         /// </summary>
         public virtual bool IsUnlocked { get => Unlock.unlocked; set => Unlock.unlocked = value; }
         /// <summary>
-        ///   <para>Gets or sets the unlock's unlock cost, in nuggets.</para>
+        ///   <para>Gets or sets the unlock cost of the unlock, in nuggets.</para>
         /// </summary>
         public int UnlockCost { get => Unlock.cost; set => Unlock.cost = value; }
         /// <summary>
-        ///   <para>Gets or sets the unlock's loadout cost, in nuggets.</para>
+        ///   <para>Gets or sets the loadout cost of the unlock, in nuggets.</para>
         /// </summary>
         public int LoadoutCost { get => Unlock.cost2; set => Unlock.cost2 = value; }
         /// <summary>
-        ///   <para>Gets or sets the unlock's character creation cost, in points.</para>
+        ///   <para>Gets or sets the character creation cost of the unlock, in points.</para>
         /// </summary>
         public int CharacterCreationCost { get => Unlock.cost3; set => Unlock.cost3 = value; }
 
@@ -74,15 +74,15 @@ namespace RogueLibsCore
         public abstract bool IsAvailable { get; set; }
 
         /// <summary>
-        ///   <para>Gets or sets the list containing the unlock's cancellations - conflicting unlocks.</para>
+        ///   <para>Gets or sets the list containing the cancellations of the unlock - conflicting unlocks.</para>
         /// </summary>
         public List<string> Cancellations { get => Unlock.cancellations; set => Unlock.cancellations = value; }
         /// <summary>
-        ///   <para>Gets or sets the list containing the unlock's recommendations - purely aesthetic.</para>
+        ///   <para>Gets or sets the list containing the recommendations of the unlock - purely aesthetic.</para>
         /// </summary>
         public List<string> Recommendations { get => Unlock.recommendations; set => Unlock.recommendations = value; }
         /// <summary>
-        ///   <para>Gets or sets the list containing the unlock's prerequisites - unlocks that must be unlocked in order to unlock this one.</para>
+        ///   <para>Gets or sets the list containing the prerequisites of the unlock - unlocks that must be unlocked in order to unlock this one.</para>
         /// </summary>
         public List<string> Prerequisites { get => Unlock.prerequisites; set => Unlock.prerequisites = value; }
 
@@ -97,36 +97,37 @@ namespace RogueLibsCore
         /// </summary>
         /// <returns><see langword="true"/>, if the unlock can be unlocked right now; otherwise, <see langword="false"/>.</returns>
         public virtual bool CanBeUnlocked() => UnlockCost > -1
-            && Unlock.prerequisites.All(c => gc.sessionDataBig.unlocks.Exists(u => u.unlockName == c && u.unlocked));
-        /// <summary>
-        ///   <para>Updates the unlock's unlock information. When overriden, you must set the <see cref="Unlock.nowAvailable"/> field.</para>
-        /// </summary>
-        public virtual void UpdateUnlock()
+            && Unlock.prerequisites.TrueForAll(static c => gc.sessionDataBig.unlocks.Exists(u => u.unlockName == c && u.unlocked));
+		/// <summary>
+		///   <para>Updates the unlock information of the unlock. When overriden, you must set the <see cref="Unlock.nowAvailable"/> field.</para>
+		/// </summary>
+		public virtual void UpdateUnlock()
         {
             if ((Unlock.nowAvailable = !Unlock.unlocked && CanBeUnlocked()) && UnlockCost is 0)
                 gc.unlocks.DoUnlockForced(Name, Type);
         }
 
         /// <summary>
-        ///   <para>Gets the unlock's displayed name.</para>
+        ///   <para>Gets the displayed name of the unlock.</para>
         /// </summary>
-        /// <returns>The unlock's localized name.</returns>
+        /// <returns>The localized name of the unlock.</returns>
         public virtual string GetName() => gc.nameDB.GetName(Name, Unlock.unlockNameType);
         /// <summary>
-        ///   <para>Gets the unlock's displayed description.</para>
+        ///   <para>Gets the displayed description of the unlock.</para>
         /// </summary>
-        /// <returns>The unlock's localized description.</returns>
+        /// <returns>The localized description of the unlock.</returns>
         public virtual string GetDescription() => gc.nameDB.GetName(Name, Unlock.unlockDescriptionType);
         /// <summary>
-        ///   <para>Gets the unlock's displayed image.</para>
+        ///   <para>Gets the displayed image of the unlock.</para>
         /// </summary>
-        /// <returns>The unlock's image, if it's unlocked or can be unlocked; otherwise, <see langword="null"/>.</returns>
-        public virtual Sprite GetImage() => RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
+        /// <returns>The image of the unlock, if it exists; otherwise, <see langword="null"/>.</returns>
+        public virtual Sprite? GetImage() => RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
 
         /// <summary>
         ///   <para>Gets the currently used instance of <see cref="GameController"/>.</para>
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]
+        // ReSharper disable once InconsistentNaming
         public static GameController gc => GameController.gameController;
 
         public virtual bool ShowInPrerequisites => false;

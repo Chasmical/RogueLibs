@@ -20,7 +20,7 @@
             if (IsUnlocked && gc.serverPlayer)
             {
                 PlaySound(VanillaAudio.ClickButton);
-                foreach (DisplayedUnlock du in Menu.Unlocks)
+                foreach (DisplayedUnlock du in Menu!.Unlocks)
                     if (du.IsEnabled != (du.IsEnabled = false)) du.UpdateButton();
                 UpdateMenu();
             }

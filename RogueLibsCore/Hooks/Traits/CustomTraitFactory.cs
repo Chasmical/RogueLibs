@@ -10,7 +10,7 @@ namespace RogueLibsCore
     {
         private readonly Dictionary<string, TraitEntry> traitsDict = new Dictionary<string, TraitEntry>();
         /// <inheritdoc/>
-        public override bool TryCreate(Trait instance, out IHook<Trait> hook)
+        public override bool TryCreate(Trait? instance, out IHook<Trait>? hook)
         {
             if (instance != null && traitsDict.TryGetValue(instance.traitName, out TraitEntry entry))
             {
@@ -32,7 +32,7 @@ namespace RogueLibsCore
             TraitInfo info = TraitInfo.Get<TTrait>();
             if (RogueFramework.IsDebugEnabled(DebugFlags.Traits))
                 RogueFramework.LogDebug($"Created custom trait {typeof(TTrait)} ({info.Name}).");
-            traitsDict.Add(info.Name, new TraitEntry { Initializer = () => new TTrait(), TraitInfo = info });
+            traitsDict.Add(info.Name, new TraitEntry { Initializer = static () => new TTrait(), TraitInfo = info });
             return info;
         }
 

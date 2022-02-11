@@ -11,21 +11,21 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="HomeBaseUnlock"/> class without a name.</para>
         /// </summary>
-        public HomeBaseUnlock() : this(null, false) { }
+        public HomeBaseUnlock() : this(null!, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="HomeBaseUnlock"/> class without a name.</para>
         /// </summary>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public HomeBaseUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+        public HomeBaseUnlock(bool unlockedFromStart) : this(null!, unlockedFromStart) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="HomeBaseUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         public HomeBaseUnlock(string name) : this(name, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="HomeBaseUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
         public HomeBaseUnlock(string name, bool unlockedFromStart) : base(name, "HomeBase", unlockedFromStart) { }
         internal HomeBaseUnlock(Unlock unlock) : base(unlock) { }
@@ -43,9 +43,10 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.homeBaseUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.homeBaseUnlocks.Remove(Unlock); Unlock.homeBaseCount--; }
-                else if (cur == false && value) { gc.sessionDataBig.homeBaseUnlocks.Add(Unlock); Unlock.homeBaseCount++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.homeBaseUnlocks!.Remove(Unlock); Unlock.homeBaseCount--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.homeBaseUnlocks!.Add(Unlock); Unlock.homeBaseCount++; }
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿namespace RogueLibsCore
 {
     /// <summary>
-    ///   <para>Represents the unlock's button state.</para>
+    ///   <para>Represents the button state of the unlock.</para>
     /// </summary>
     public enum UnlockButtonState
     {

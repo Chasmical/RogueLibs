@@ -19,7 +19,8 @@ namespace RogueLibsCore
         ///   <para>Initializes a new instance of the <see cref="RoguePatcher"/> class with the specified <paramref name="callerPlugin"/>.</para>
         /// </summary>
         /// <param name="callerPlugin">The instance of <see cref="BaseUnityPlugin"/> responsible for the patches.</param>
-        public RoguePatcher(BaseUnityPlugin callerPlugin) : this(callerPlugin, callerPlugin?.GetType()) { }
+        // ReSharper disable once ConstantConditionalAccessQualifier
+        public RoguePatcher(BaseUnityPlugin callerPlugin) : this(callerPlugin, callerPlugin?.GetType()!) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="RoguePatcher"/> class with the specified <paramref name="callerPlugin"/>.</para>
         /// </summary>
@@ -28,24 +29,23 @@ namespace RogueLibsCore
         public RoguePatcher(BaseUnityPlugin callerPlugin, Type typeWithPatches)
         {
             if (callerPlugin is null) throw new ArgumentNullException(nameof(callerPlugin));
-            if (typeWithPatches is null) throw new ArgumentNullException(nameof(typeWithPatches));
             log = (ManualLogSource)loggerProperty.GetValue(callerPlugin);
             harmony = new Harmony(callerPlugin.Info.Metadata.GUID);
-            TypeWithPatches = typeWithPatches;
+            _typeWithPatches = typeWithPatches ?? throw new ArgumentNullException(nameof(typeWithPatches));
             Results = new ReadOnlyCollection<PatchRecord>(results);
         }
 
         private static readonly PropertyInfo loggerProperty = AccessTools.Property(typeof(BaseUnityPlugin), "Logger");
         private readonly Harmony harmony;
         private readonly ManualLogSource log;
-        private Type typeWithPatches;
+        private Type _typeWithPatches;
         /// <summary>
         ///   <para>Gets or sets the type containing the patch methods.</para>
         /// </summary>
         public Type TypeWithPatches
         {
-            get => typeWithPatches;
-            set => typeWithPatches = value ?? throw new ArgumentNullException(nameof(value));
+            get => _typeWithPatches;
+            set => _typeWithPatches = value ?? throw new ArgumentNullException(nameof(value));
         }
 
         /// <summary>
@@ -66,7 +66,7 @@ namespace RogueLibsCore
         /// </summary>
         public void LogResults()
         {
-            int failed = results.Count(r => !r.Success);
+            int failed = results.Count(static r => !r.Success);
             log.LogDebug($"Measured {results.Count} patches{(failed > 0 ? $" ({failed} failed)" : string.Empty)}:");
             TimeSpan total = TimeSpan.Zero;
             foreach (PatchRecord time in results)
@@ -89,7 +89,7 @@ namespace RogueLibsCore
         /// <param name="threshold">The threshold, in milliseconds.</param>
         public void LogResults(int threshold)
         {
-            int failed = results.Count(r => !r.Success);
+            int failed = results.Count(static r => !r.Success);
             int count = results.Count(r => r.Elapsed.TotalMilliseconds > threshold);
             log.LogDebug($"Measured {count} patches above {threshold}ms (from total {results.Count}){(failed > 0 ? $" ({failed} failed)" : string.Empty)}:");
             TimeSpan total = TimeSpan.Zero;
@@ -115,23 +115,23 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Sorts the recorded patches by their time in descending order.</para>
         /// </summary>
-        public void SortResults() => results.Sort((a, b) => -a.Elapsed.CompareTo(b.Elapsed));
+        public void SortResults() => results.Sort(static (a, b) => -a.Elapsed.CompareTo(b.Elapsed));
 
-        private bool errored;
+        private bool hasErrors;
         /// <summary>
         ///   <para>Determines whether any of the previous patches failed and resets the value.</para>
         /// </summary>
         /// <returns><see langword="true"/>, if any of the previous patches failed; otherwise, <see langword="false"/>.</returns>
         public bool AnyErrors()
         {
-            bool any = errored;
-            errored = false;
+            bool any = hasErrors;
+            hasErrors = false;
             return any;
         }
 
         private const BindingFlags All = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-        private static MethodInfo GetMethod(Type type, string methodName, Type[] parameterTypes)
-            => parameterTypes is null ? type.GetMethod(methodName, All) : type.GetMethod(methodName, All, null, parameterTypes, null);
+        private static MethodInfo GetMethod(Type type, string methodName, Type[]? parameterTypes)
+            => parameterTypes is null ? type.GetMethod(methodName, All)! : type.GetMethod(methodName, All, null, parameterTypes, null)!;
 
         /// <summary>
         ///   <para>Prefix-patches the specified <paramref name="targetType"/>'s <paramref name="targetMethod"/>, optionally with the specified <paramref name="targetParameterTypes"/>, with a patch method called "&lt;<paramref name="targetType"/>&gt;_&lt;<paramref name="targetMethod"/>&gt;".</para>
@@ -140,7 +140,7 @@ namespace RogueLibsCore
         /// <param name="targetMethod">The target method's name.</param>
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
-        public bool Prefix(Type targetType, string targetMethod, Type[] targetParameterTypes = null)
+        public bool Prefix(Type targetType, string targetMethod, Type[]? targetParameterTypes = null)
         {
             if (targetType is null) throw new ArgumentNullException(nameof(targetType));
             if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
@@ -154,14 +154,14 @@ namespace RogueLibsCore
         /// <param name="patchMethod">The patch method's name.</param>
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
-        public bool Prefix(Type targetType, string targetMethod, string patchMethod, Type[] targetParameterTypes = null)
+        public bool Prefix(Type targetType, string targetMethod, string patchMethod, Type[]? targetParameterTypes = null)
         {
             if (targetType is null) throw new ArgumentNullException(nameof(targetType));
             if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
             if (patchMethod is null) throw new ArgumentNullException(nameof(patchMethod));
-            Stopwatch sw = null;
-            MethodInfo target = null;
-            MethodInfo patch = null;
+            Stopwatch? sw = null;
+            MethodInfo? target = null;
+            MethodInfo? patch = null;
             try
             {
                 if (EnableStopwatch)
@@ -196,7 +196,7 @@ namespace RogueLibsCore
                     sw.Reset();
                 }
                 log.LogError(e);
-                errored = true;
+                hasErrors = true;
                 return false;
             }
         }
@@ -208,7 +208,7 @@ namespace RogueLibsCore
         /// <param name="targetMethod">The target method's name.</param>
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
-        public bool Postfix(Type targetType, string targetMethod, Type[] targetParameterTypes = null)
+        public bool Postfix(Type targetType, string targetMethod, Type[]? targetParameterTypes = null)
         {
             if (targetType is null) throw new ArgumentNullException(nameof(targetType));
             if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
@@ -222,14 +222,14 @@ namespace RogueLibsCore
         /// <param name="patchMethod">The patch method's name.</param>
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
-        public bool Postfix(Type targetType, string targetMethod, string patchMethod, Type[] targetParameterTypes = null)
+        public bool Postfix(Type targetType, string targetMethod, string patchMethod, Type[]? targetParameterTypes = null)
         {
             if (targetType is null) throw new ArgumentNullException(nameof(targetType));
             if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
             if (patchMethod is null) throw new ArgumentNullException(nameof(patchMethod));
-            Stopwatch sw = null;
-            MethodInfo target = null;
-            MethodInfo patch = null;
+            Stopwatch? sw = null;
+            MethodInfo? target = null;
+            MethodInfo? patch = null;
             try
             {
                 if (EnableStopwatch)
@@ -264,7 +264,7 @@ namespace RogueLibsCore
                     sw.Reset();
                 }
                 log.LogError(e);
-                errored = true;
+                hasErrors = true;
                 return false;
             }
         }
@@ -276,7 +276,7 @@ namespace RogueLibsCore
         /// <param name="targetMethod">The target method's name.</param>
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
-        public bool Transpiler(Type targetType, string targetMethod, Type[] targetParameterTypes = null)
+        public bool Transpiler(Type targetType, string targetMethod, Type[]? targetParameterTypes = null)
         {
             if (targetType is null) throw new ArgumentNullException(nameof(targetType));
             if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
@@ -290,14 +290,14 @@ namespace RogueLibsCore
         /// <param name="patchMethod">The patch method's name.</param>
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
-        public bool Transpiler(Type targetType, string targetMethod, string patchMethod, Type[] targetParameterTypes = null)
+        public bool Transpiler(Type targetType, string targetMethod, string patchMethod, Type[]? targetParameterTypes = null)
         {
             if (targetType is null) throw new ArgumentNullException(nameof(targetType));
             if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
             if (patchMethod is null) throw new ArgumentNullException(nameof(patchMethod));
-            Stopwatch sw = null;
-            MethodInfo target = null;
-            MethodInfo patch = null;
+            Stopwatch? sw = null;
+            MethodInfo? target = null;
+            MethodInfo? patch = null;
             try
             {
                 if (EnableStopwatch)
@@ -332,7 +332,7 @@ namespace RogueLibsCore
                     sw.Reset();
                 }
                 log.LogError(e);
-                errored = true;
+                hasErrors = true;
                 return false;
             }
         }
@@ -344,7 +344,7 @@ namespace RogueLibsCore
         /// <param name="targetMethod">The target method's name.</param>
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
-        public bool Finalizer(Type targetType, string targetMethod, Type[] targetParameterTypes = null)
+        public bool Finalizer(Type targetType, string targetMethod, Type[]? targetParameterTypes = null)
         {
             if (targetType is null) throw new ArgumentNullException(nameof(targetType));
             if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
@@ -358,14 +358,14 @@ namespace RogueLibsCore
         /// <param name="patchMethod">The patch method's name.</param>
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
-        public bool Finalizer(Type targetType, string targetMethod, string patchMethod, Type[] targetParameterTypes = null)
+        public bool Finalizer(Type targetType, string targetMethod, string patchMethod, Type[]? targetParameterTypes = null)
         {
             if (targetType is null) throw new ArgumentNullException(nameof(targetType));
             if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
             if (patchMethod is null) throw new ArgumentNullException(nameof(patchMethod));
-            Stopwatch sw = null;
-            MethodInfo target = null;
-            MethodInfo patch = null;
+            Stopwatch? sw = null;
+            MethodInfo? target = null;
+            MethodInfo? patch = null;
             try
             {
                 if (EnableStopwatch)
@@ -400,7 +400,7 @@ namespace RogueLibsCore
                     sw.Reset();
                 }
                 log.LogError(e);
-                errored = true;
+                hasErrors = true;
                 return false;
             }
         }

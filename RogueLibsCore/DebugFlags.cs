@@ -54,6 +54,6 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Specifies all debug flags. Expect a giant wall of constantly flowing text.</para>
         /// </summary>
-        All = Names | Unlocks | UnlockMenus | Sprites | Items | Traits | Effects | Abilities | EnableTools
+        All = Names | Unlocks | UnlockMenus | Sprites | Items | Traits | Effects | Abilities | EnableTools,
     }
 }

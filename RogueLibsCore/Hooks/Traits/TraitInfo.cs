@@ -15,11 +15,11 @@ namespace RogueLibsCore
         /// </summary>
         public string Name { get; }
 
-        public CustomName GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.StatusEffect);
-        public CustomName GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
-        public TraitUnlock GetUnlock() => RogueLibs.GetUnlock<TraitUnlock>(Name);
-        internal RogueSprite sprite;
-        public RogueSprite GetSprite() => sprite;
+        public CustomName? GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.StatusEffect);
+        public CustomName? GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
+        public TraitUnlock? GetUnlock() => RogueLibs.GetUnlock<TraitUnlock>(Name);
+        internal RogueSprite? sprite;
+        public RogueSprite? GetSprite() => sprite;
 
         private static readonly Dictionary<Type, TraitInfo> infos = new Dictionary<Type, TraitInfo>();
         /// <summary>
@@ -28,7 +28,7 @@ namespace RogueLibsCore
         /// <param name="type">The <see cref="CustomTrait"/> type to get the metadata for.</param>
         /// <returns>The specified <paramref name="type"/>'s metadata.</returns>
         /// <exception cref="ArgumentException"><paramref name="type"/> is not a <see cref="CustomTrait"/>.</exception>
-        public static TraitInfo Get(Type type) => infos.TryGetValue(type, out TraitInfo info) ? info : (infos[type] = new TraitInfo(type));
+        public static TraitInfo Get(Type type) => infos.TryGetValue(type, out TraitInfo info) ? info : infos[type] = new TraitInfo(type);
         /// <summary>
         ///   <para>Gets the specified <typeparamref name="TTrait"/>'s metadata.</para>
         /// </summary>
@@ -41,7 +41,7 @@ namespace RogueLibsCore
             if (!typeof(CustomTrait).IsAssignableFrom(type))
                 throw new ArgumentException($"The specified type is not a {nameof(CustomTrait)}!", nameof(type));
 
-            TraitNameAttribute nameAttr = type.GetCustomAttributes<TraitNameAttribute>().FirstOrDefault();
+            TraitNameAttribute? nameAttr = type.GetCustomAttributes<TraitNameAttribute>().FirstOrDefault();
             Name = nameAttr?.Name ?? type.Name;
         }
     }

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -10,21 +11,21 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AbilityUnlock"/> class without a name.</para>
         /// </summary>
-        public AbilityUnlock() : this(null, false) { }
+        public AbilityUnlock() : this(null!, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AbilityUnlock"/> class without a name.</para>
         /// </summary>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public AbilityUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+        public AbilityUnlock(bool unlockedFromStart) : this(null!, unlockedFromStart) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AbilityUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and special ability's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         public AbilityUnlock(string name) : this(name, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AbilityUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and special ability's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
         public AbilityUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Ability, unlockedFromStart) => IsAvailableInCC = true;
         internal AbilityUnlock(Unlock unlock) : base(unlock) { }
@@ -38,12 +39,19 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public bool IsAddedToCC
         {
-            get => ((CustomCharacterCreation)Menu).CC.abilityChosen == Name;
+            get
+            {
+                if (Menu is not CustomCharacterCreation cc)
+                    throw new InvalidOperationException("The unlock is not in the character creation menu.");
+                return cc.CC.abilityChosen == Name;
+            }
             set
             {
+                if (Menu is not CustomCharacterCreation cc)
+                    throw new InvalidOperationException("The unlock is not in the character creation menu.");
                 bool cur = IsAddedToCC;
-                if (cur && !value) ((CustomCharacterCreation)Menu).CC.abilityChosen = "";
-                else if (!cur && value) ((CustomCharacterCreation)Menu).CC.abilityChosen = Name;
+                if (cur && !value) cc.CC.abilityChosen = "";
+                else if (!cur && value) cc.CC.abilityChosen = Name;
             }
         }
 
@@ -54,9 +62,10 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.abilityUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.abilityUnlocks.Remove(Unlock); Unlock.abilityCount--; }
-                else if (cur == false && value) { gc.sessionDataBig.abilityUnlocks.Add(Unlock); Unlock.abilityCount++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.abilityUnlocks!.Remove(Unlock); Unlock.abilityCount--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.abilityUnlocks!.Add(Unlock); Unlock.abilityCount++; }
             }
         }
         /// <inheritdoc/>
@@ -69,7 +78,7 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public override void UpdateButton()
         {
-            if (Menu.Type == UnlocksMenuType.CharacterCreation)
+            if (Menu!.Type == UnlocksMenuType.CharacterCreation)
                 UpdateButton(IsAddedToCC);
         }
         /// <inheritdoc/>
@@ -77,10 +86,10 @@ namespace RogueLibsCore
         {
             if (IsUnlocked)
             {
-                if (Menu.Type == UnlocksMenuType.CharacterCreation)
+                if (Menu!.Type == UnlocksMenuType.CharacterCreation)
                 {
                     PlaySound(VanillaAudio.ClickButton);
-                    AbilityUnlock previous = (AbilityUnlock)Menu.Unlocks.Find(u => u is AbilityUnlock ability && ability.IsAddedToCC);
+                    AbilityUnlock? previous = (AbilityUnlock?)Menu.Unlocks.Find(static u => u is AbilityUnlock { IsAddedToCC: true });
                     IsAddedToCC = !IsAddedToCC;
                     UpdateButton();
                     previous?.UpdateButton();
@@ -99,6 +108,6 @@ namespace RogueLibsCore
         }
 
         /// <inheritdoc/>
-        public override Sprite GetImage() => GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
+        public override Sprite? GetImage() => GameResources.gameResources.itemDic.TryGetValue(Name, out Sprite image) ? image : base.GetImage();
     }
 }

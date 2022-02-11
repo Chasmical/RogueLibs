@@ -13,7 +13,7 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Gets the currently used instance of <see cref="global::NameDB"/>.</para>
         /// </summary>
-        public static NameDB NameDB { get; internal set; }
+        public static NameDB NameDB { get; internal set; } = null!; // set when NameDB awakens
         internal static LanguageCode current;
         /// <summary>
         ///   <para>Gets the currently selected language.</para>
@@ -44,8 +44,8 @@ namespace RogueLibsCore
                 OnFallBackChanged?.Invoke(new OnLanguageChangedArgs(prev, value));
             }
         }
-        public static event Action<OnLanguageChangedArgs> OnCurrentChanged;
-        public static event Action<OnLanguageChangedArgs> OnFallBackChanged;
+        public static event Action<OnLanguageChangedArgs>? OnCurrentChanged;
+        public static event Action<OnLanguageChangedArgs>? OnFallBackChanged;
 
         private static readonly Dictionary<string, LanguageCode> languages = new Dictionary<string, LanguageCode>
         {
@@ -58,7 +58,7 @@ namespace RogueLibsCore
             ["russian"]   = LanguageCode.Russian,
             ["koreana"]   = LanguageCode.Korean,
         };
-        private static readonly Dictionary<LanguageCode, string> languageNames = languages.ToDictionary(p => p.Value, p => p.Key);
+        private static readonly Dictionary<LanguageCode, string> languageNames = languages.ToDictionary(static p => p.Value, static p => p.Key);
         /// <summary>
         ///   <para>Returns a read-only dictionary of languages currently existing in the game.</para>
         /// </summary>
@@ -69,8 +69,8 @@ namespace RogueLibsCore
         /// </summary>
         /// <param name="code">The language code to get a name for.</param>
         /// <returns>The specified language <paramref name="code"/>'s name, if found; otherwise, <see langword="null"/>.</returns>
-        public static string GetLanguageName(LanguageCode code)
-            => languageNames.TryGetValue(code, out string name) ? name : null;
+        public static string? GetLanguageName(LanguageCode code)
+            => languageNames.TryGetValue(code, out string? name) ? name : null;
         /// <summary>
         ///   <para>Adds the specified <paramref name="languageName"/> to the game, and sets its language <paramref name="code"/>.</para>
         /// </summary>
@@ -94,12 +94,12 @@ namespace RogueLibsCore
         /// </summary>
         /// <param name="name">The current localizable string instance.</param>
         /// <returns>The current language's localization string, if found; otherwise, <see langword="null"/>.</returns>
-        public static string GetCurrent(this IName name) => name[Current];
+        public static string? GetCurrent(this IName name) => name[Current];
         /// <summary>
         ///   <para>Gets the localization text for the current language, or the fall-back language, if the current language's localization text is not found.</para>
         /// </summary>
         /// <param name="name">The current localizable string instance.</param>
         /// <returns>The current language's localization string, if found; otherwise, the fall-back language's localization string, if found; otherwise, <see langword="null"/>.</returns>
-        public static string GetCurrentOrDefault(this IName name) => name[Current] ?? name[FallBack];
+        public static string? GetCurrentOrDefault(this IName name) => name[Current] ?? name[FallBack];
     }
 }

@@ -25,13 +25,13 @@ namespace RogueLibsCore
         public override void UpdateButton()
         {
             UpdateButton(false);
-            ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
+            ScrollingMenu menu = ((CustomScrollingMenu)Menu!).Menu;
             Text += $" - ${menu.reRollCost}";
         }
         /// <inheritdoc/>
         public override void OnPushedButton()
         {
-            ScrollingMenu menu = ((CustomScrollingMenu)Menu).Menu;
+            ScrollingMenu menu = ((CustomScrollingMenu)Menu!).Menu;
             if (gc.sessionDataBig.nuggets + gc.sessionDataBig.loadoutNuggetsSpent >= menu.reRollCost)
             {
                 menu.RefreshLoadouts(true);

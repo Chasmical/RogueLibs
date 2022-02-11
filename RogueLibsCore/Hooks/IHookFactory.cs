@@ -11,7 +11,7 @@
         /// <param name="instance">The object to create a hook for.</param>
         /// <param name="hook">A hook created for the specified <paramref name="instance"/>.</param>
         /// <returns><see langword="true"/>, if a hook was successfully created; otherwise, <see langword="false"/>.</returns>
-        bool TryCreate(object instance, out IHook hook);
+        bool TryCreate(object instance, out IHook? hook);
     }
     /// <summary>
     ///   <para>Represents a hook factory, that creates hooks attachable to instances of type <typeparamref name="T"/>.</para>
@@ -25,6 +25,6 @@
         /// <param name="instance">The instance of type <typeparamref name="T"/> to create a hook for.</param>
         /// <param name="hook">A hook created for the specified <paramref name="instance"/> of type <typeparamref name="T"/>.</param>
         /// <returns><see langword="true"/>, if a hook was successfully created; otherwise, <see langword="false"/>.</returns>
-        bool TryCreate(T instance, out IHook<T> hook);
+        bool TryCreate(T instance, out IHook<T>? hook);
     }
 }

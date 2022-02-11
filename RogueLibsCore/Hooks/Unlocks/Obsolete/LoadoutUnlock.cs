@@ -11,20 +11,20 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="LoadoutUnlock"/> class without a name.</para>
         /// </summary>
-        public LoadoutUnlock() : this(null, false) { }
+        public LoadoutUnlock() : this(null!, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="LoadoutUnlock"/> class without a name.</para>
         /// </summary>
-        public LoadoutUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+        public LoadoutUnlock(bool unlockedFromStart) : this(null!, unlockedFromStart) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="LoadoutUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         public LoadoutUnlock(string name) : this(name, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="LoadoutUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
         public LoadoutUnlock(string name, bool unlockedFromStart) : base(name, "Loadout", unlockedFromStart) { }
         internal LoadoutUnlock(Unlock unlock) : base(unlock) { }
@@ -42,9 +42,10 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.loadoutUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.loadoutUnlocks.Remove(Unlock); Unlock.loadoutCount--; }
-                else if (cur == false && value) { gc.sessionDataBig.loadoutUnlocks.Add(Unlock); Unlock.loadoutCount++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.loadoutUnlocks!.Remove(Unlock); Unlock.loadoutCount--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.loadoutUnlocks!.Add(Unlock); Unlock.loadoutCount++; }
             }
         }
     }

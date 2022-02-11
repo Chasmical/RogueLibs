@@ -38,7 +38,7 @@ namespace RogueLibsCore
         /// <param name="type">The <see cref="CustomEffect"/> type to get the metadata for.</param>
         /// <returns>The specified <paramref name="type"/>'s metadata.</returns>
         /// <exception cref="ArgumentException"><paramref name="type"/> is not a <see cref="CustomEffect"/>.</exception>
-        public static EffectInfo Get(Type type) => infos.TryGetValue(type, out EffectInfo info) ? info : (infos[type] = new EffectInfo(type));
+        public static EffectInfo Get(Type type) => infos.TryGetValue(type, out EffectInfo info) ? info : infos[type] = new EffectInfo(type);
         /// <summary>
         ///   <para>Gets the specified <typeparamref name="TEffect"/>'s metadata.</para>
         /// </summary>
@@ -51,10 +51,10 @@ namespace RogueLibsCore
             if (!typeof(CustomEffect).IsAssignableFrom(type))
                 throw new ArgumentException($"The specified {nameof(type)} is not a {nameof(CustomEffect)}.", nameof(type));
 
-            EffectNameAttribute attr = type.GetCustomAttributes<EffectNameAttribute>().FirstOrDefault();
+            EffectNameAttribute? attr = type.GetCustomAttributes<EffectNameAttribute>().FirstOrDefault();
             Name = attr?.Name ?? type.Name;
 
-            EffectParametersAttribute parsAttr = type.GetCustomAttributes<EffectParametersAttribute>().FirstOrDefault();
+            EffectParametersAttribute? parsAttr = type.GetCustomAttributes<EffectParametersAttribute>().FirstOrDefault();
             if (parsAttr is null)
                 RogueFramework.LogWarning($"Type {type} does not have a {nameof(EffectParametersAttribute)}!");
 

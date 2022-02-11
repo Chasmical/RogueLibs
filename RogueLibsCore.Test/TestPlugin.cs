@@ -1,23 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Logging;
 
 namespace RogueLibsCore.Test
 {
-    [BepInPlugin(pluginGUID, pluginName, pluginVesion)]
+    [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
     [BepInDependency(RogueLibs.GUID, RogueLibs.CompiledVersion)]
     public class TestPlugin : BaseUnityPlugin
     {
-        public const string pluginGUID = "abbysssal.streetsofrogue.roguelibscore.test";
-        public const string pluginName = "RogueLibsCore Test";
-        public const string pluginVesion = RogueLibs.CompiledVersion;
+        public const string PluginGUID = "abbysssal.streetsofrogue.roguelibscore.test";
+        public const string PluginName = "RogueLibsCore Test";
+        public const string PluginVersion = RogueLibs.CompiledVersion;
 
-        public static ManualLogSource Log { get; private set; }
-        public static TestPlugin Instance { get; private set; }
+        public static ManualLogSource Log { get; private set; } = null!;
+        public static TestPlugin Instance { get; private set; } = null!;
 
         public void Awake()
         {

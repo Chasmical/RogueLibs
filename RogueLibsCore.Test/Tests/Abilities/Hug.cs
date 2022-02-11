@@ -13,7 +13,7 @@ namespace RogueLibsCore.Test
                 .WithName(new CustomNameInfo("Hug"))
                 .WithDescription(new CustomNameInfo("Sneak up behind people. And HUG THEM!!"))
                 .WithSprite(Properties.Resources.Hug)
-                .WithUnlock(new AbilityUnlock { UnlockCost = 5, CharacterCreationCost = 5, });
+                .WithUnlock(new AbilityUnlock { UnlockCost = 5, CharacterCreationCost = 5 });
 
             RogueLibs.CreateCustomName("HugNegative1", NameTypes.Dialogue, new CustomNameInfo("Huh? What are you doing?"));
             RogueLibs.CreateCustomName("HugNegative2", NameTypes.Dialogue, new CustomNameInfo("Excuse me?!"));
@@ -27,14 +27,16 @@ namespace RogueLibsCore.Test
         }
 
         public override void OnAdded() { }
-        public PlayfieldObject FindTarget()
+        public PlayfieldObject? FindTarget()
         {
-            Agent closest = null;
+            Agent? closest = null;
             float distance = float.MaxValue;
             foreach (Agent agent in Owner.interactionHelper.TriggerList
-                .Where(go => go.CompareTag("AgentSprite")).Select(go => go.GetComponent<ObjectSprite>().agent))
+                .Where(static go => go.CompareTag("AgentSprite"))
+                .Select(static go => go.GetComponent<ObjectSprite>().agent))
             {
-                if (!huggedList.Contains(agent) && !agent.dead && !agent.ghost && !Owner.ghost && !agent.hologram && agent.go.activeSelf && !agent.mechFilled && !agent.mechEmpty)
+                if (!huggedList.Contains(agent) && !agent.dead && !agent.ghost && !Owner.ghost && !agent.hologram
+                    && agent.go.activeSelf && !agent.mechFilled && !agent.mechEmpty)
                 {
                     float dist = Vector2.Distance(Owner.curPosition, agent.curPosition);
                     if (dist < distance)
@@ -52,14 +54,14 @@ namespace RogueLibsCore.Test
             if (CurrentTarget is null)
             {
                 gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
-}
+            }
             else
             {
                 Agent target = (Agent)CurrentTarget;
                 int rnd = new System.Random().Next(3) + 1;
 
                 relStatus code = target.relationships.GetRelCode(Owner);
-                if (code == relStatus.Friendly || code == relStatus.Submissive)
+                if (code is relStatus.Friendly or relStatus.Submissive)
                 {
                     target.SayDialogue("HugPositive" + rnd);
                     target.relationships.SetRel(Owner, "Loyal");

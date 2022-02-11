@@ -10,10 +10,10 @@ namespace RogueLibsCore
     {
         public void PatchScrollingMenu()
         {
-            clearAllMutators = new ClearAllMutatorsUnlock();
-            clearAllItems = new ClearAllItemsUnlock();
-            clearAllTraits = new ClearAllTraitsUnlock();
-            reRollLoadouts = new ReRollLoadoutsUnlock();
+            ClearAllMutators = new ClearAllMutatorsUnlock();
+            ClearAllItems = new ClearAllItemsUnlock();
+            ClearAllTraits = new ClearAllTraitsUnlock();
+            ReRollLoadouts = new ReRollLoadoutsUnlock();
             giveNuggets = new GiveNuggetsButton();
 
             Patcher.Prefix(typeof(ScrollingMenu), nameof(ScrollingMenu.OpenScrollingMenu), nameof(ScrollingMenu_OpenScrollingMenu_Prefix));
@@ -60,14 +60,16 @@ namespace RogueLibsCore
             if (debug) RogueFramework.LogDebug($"Restoring menu's scrolling value of {__state} units.");
             __instance.StartCoroutine(EnsureScrollbarValue(__instance, Mathf.Clamp01(1f - x)));
 
-            if (__instance.menuType == "Challenges" || __instance.menuType == "FreeItems")
+            if (__instance.menuType is "Challenges" or "FreeItems")
             {
                 __instance.nuggetSlot.gameObject.SetActive(true);
             }
             else if (__instance.menuType == "Floors")
             {
                 if (debug) RogueFramework.LogDebug("Setting up \"Floors\" menu.");
-                List<DisplayedUnlock> displayedUnlocks = GameController.gameController.sessionDataBig.floorUnlocks.Select(u => (DisplayedUnlock)u.__RogueLibsCustom).OrderBy(d => d).ToList();
+                List<DisplayedUnlock> displayedUnlocks = GameController.gameController.sessionDataBig.floorUnlocks
+                                                                       .Select(static u => (DisplayedUnlock)u.__RogueLibsCustom)
+                                                                       .OrderBy(static d => d).ToList();
                 CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedUnlocks);
 
                 foreach (DisplayedUnlock du in displayedUnlocks.ToList())
@@ -86,7 +88,9 @@ namespace RogueLibsCore
             {
                 if (debug) RogueFramework.LogDebug("Setting up \"Traits\" menu.");
                 __instance.numButtons = __instance.smallTraitList.Count;
-                List<DisplayedUnlock> displayedUnlocks = __instance.smallTraitList.Select(u => (DisplayedUnlock)u.__RogueLibsCustom).OrderBy(d => d).ToList();
+                List<DisplayedUnlock> displayedUnlocks = __instance.smallTraitList
+                                                                   .Select(static u => (DisplayedUnlock)u.__RogueLibsCustom)
+                                                                   .OrderBy(static d => d).ToList();
                 CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedUnlocks);
 
                 foreach (DisplayedUnlock du in displayedUnlocks)
@@ -95,11 +99,13 @@ namespace RogueLibsCore
                 foreach (ButtonData buttonData in __instance.buttonsData)
                     SetupUnlocks(buttonData, buttonData.scrollingButtonUnlock);
             }
-            else if (__instance.menuType == "RemoveTrait" || __instance.menuType == "ChangeTraitRandom" || __instance.menuType == "UpgradeTrait")
+            else if (__instance.menuType is "RemoveTrait" or "ChangeTraitRandom" or "UpgradeTrait")
             {
                 if (debug) RogueFramework.LogDebug($"Setting up \"{__instance.menuType}\" menu.");
                 __instance.numButtons = __instance.customTraitList.Count;
-                List<DisplayedUnlock> displayedUnlocks = __instance.customTraitList.Select(u => (DisplayedUnlock)u.__RogueLibsCustom).OrderBy(d => d).ToList();
+                List<DisplayedUnlock> displayedUnlocks = __instance.customTraitList
+                                                                   .Select(static u => (DisplayedUnlock)u.__RogueLibsCustom)
+                                                                   .OrderBy(static d => d).ToList();
                 CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedUnlocks);
 
                 foreach (DisplayedUnlock du in displayedUnlocks)
@@ -162,17 +168,17 @@ namespace RogueLibsCore
             return false;
         }
 
-        public static ClearAllMutatorsUnlock clearAllMutators;
-        public static ClearAllItemsUnlock clearAllItems;
-        public static ClearAllTraitsUnlock clearAllTraits;
-        public static ReRollLoadoutsUnlock reRollLoadouts;
-        private static GiveNuggetsButton giveNuggets;
+        public static ClearAllMutatorsUnlock ClearAllMutators = null!; // initialized in PatchScrollingMenu()
+        public static ClearAllItemsUnlock ClearAllItems = null!;
+        public static ClearAllTraitsUnlock ClearAllTraits = null!;
+        public static ReRollLoadoutsUnlock ReRollLoadouts = null!;
+        private static GiveNuggetsButton giveNuggets = null!;
 
         public static bool ScrollingMenu_SortUnlocks(ScrollingMenu __instance, List<Unlock> myUnlockList, List<Unlock> ___listUnlocks)
         {
-            List<DisplayedUnlock> displayedList = myUnlockList.ConvertAll(u => (DisplayedUnlock)u.__RogueLibsCustom);
+            List<DisplayedUnlock> displayedList = myUnlockList.ConvertAll(static u => (DisplayedUnlock)u.__RogueLibsCustom);
             if (__instance.menuType == "FreeItems")
-                displayedList.RemoveAll(u => u is ItemUnlock itemUnlock && !itemUnlock.IsAvailableInItemTeleporter);
+                displayedList.RemoveAll(static u => u is ItemUnlock { IsAvailableInItemTeleporter: false });
 
             CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedList);
             if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
@@ -180,16 +186,16 @@ namespace RogueLibsCore
 
             foreach (DisplayedUnlock du in menu.Unlocks)
                 du.Menu = menu;
-            menu.Unlocks.ForEach(du => du.UpdateUnlock());
+            menu.Unlocks.ForEach(static du => du.UpdateUnlock());
             menu.Unlocks.Sort();
 
             ___listUnlocks.Clear();
-            ___listUnlocks.AddRange(menu.Unlocks.Select(du => du.Unlock));
+            ___listUnlocks.AddRange(menu.Unlocks.Select(static du => du.Unlock));
 
             if (menu.Type == UnlocksMenuType.Loadouts)
             {
-                reRollLoadouts.Menu = menu;
-                ___listUnlocks.Insert(0, reRollLoadouts.Unlock);
+                ReRollLoadouts.Menu = menu;
+                ___listUnlocks.Insert(0, ReRollLoadouts.Unlock);
                 if (RogueFramework.IsDebugEnabled(DebugFlags.EnableTools))
                 {
                     RogueFramework.LogDebug("Adding \"GiveNuggets\" debug tool to the menu.");
@@ -200,8 +206,8 @@ namespace RogueLibsCore
             if (menu.Type == UnlocksMenuType.MutatorMenu)
             {
                 __instance.nuggetSlot.gameObject.SetActive(true);
-                clearAllMutators.Menu = menu;
-                ___listUnlocks.Insert(0, clearAllMutators.Unlock);
+                ClearAllMutators.Menu = menu;
+                ___listUnlocks.Insert(0, ClearAllMutators.Unlock);
             }
             else if (menu.Type == UnlocksMenuType.RewardsMenu)
             {
@@ -223,7 +229,7 @@ namespace RogueLibsCore
         public static bool ScrollingMenu_PushedButton(ScrollingMenu __instance, ButtonHelper myButton)
         {
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus);
-            if (__instance.menuType.EndsWith("Configs"))
+            if (__instance.menuType.EndsWith("Configs", StringComparison.Ordinal))
             {
                 if (debug) RogueFramework.LogDebug("Redirecting the button push to the original method.");
                 return true;
@@ -243,9 +249,9 @@ namespace RogueLibsCore
         {
             if (__instance.agent != null && myButton.scrollingButtonUnlock?.unlockType == "Trait" && __instance.agent.addedEndLevelTrait || !string.IsNullOrEmpty(myButton.scrollingButtonLevelFeeling) || !string.IsNullOrEmpty(myButton.scrollingButtonConfigName) || !string.IsNullOrEmpty(myButton.scrollingButtonAgentName))
                 return true;
-            DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock.__RogueLibsCustom;
+            DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock!.__RogueLibsCustom;
 
-            bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu.ShowLockedUnlocks;
+            bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu!.ShowLockedUnlocks;
             __instance.detailsTitle.text = show ? du.GetName() : "?????";
             __instance.detailsText.text = du.GetFancyDescription();
             __instance.detailsImage.sprite = show ? du.GetImage() : null;
@@ -256,13 +262,13 @@ namespace RogueLibsCore
             if (__instance.menuType == "FreeItems" && __instance.setInitialSelectedChildFreeItems)
                 __instance.curSelectedChildFreeItems = myButton.scrollingButtonNum;
             __instance.curSelectedButton = myButton;
-            if (__instance.agent.controllerType == "Gamepad")
+            if (__instance.agent!.controllerType == "Gamepad")
             {
                 if (!__instance.refreshing)
                 {
-                    __instance.scrollBar.value = Mathf.Clamp01(1f - __instance.yOffset / ((__instance.numButtons - __instance.numButtonsOnScreen + 1f) * __instance.yOffset) * ((float)myButton.scrollingButtonNum - (__instance.numButtonsOnScreen / 2f - 1f)));
+                    __instance.scrollBar.value = Mathf.Clamp01(1f - __instance.yOffset / ((__instance.numButtons - __instance.numButtonsOnScreen + 1f) * __instance.yOffset) * (myButton.scrollingButtonNum - (__instance.numButtonsOnScreen / 2f - 1f)));
                 }
-                if ((__instance.menuType == "TraitUnlocks" || __instance.menuType == "Items") && !__instance.isPersonal)
+                if (__instance.menuType is "TraitUnlocks" or "Items" && !__instance.isPersonal)
                 {
                     __instance.instructionText2.text
                         = myButton.scrollingButtonUnlock.unlocked
@@ -280,14 +286,14 @@ namespace RogueLibsCore
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus);
             if (debug) RogueFramework.LogDebug("Refreshing the loadouts.");
             ___loadoutList.RemoveAt(0);
-            for (int i = 0; i < ___loadoutList.Count; i++)
+            foreach (Unlock unlock in ___loadoutList)
             {
-                Unlock unlock = ___loadoutList[i];
                 if (unlock.__RogueLibsCustom is null)
                 {
                     if (debug) RogueFramework.LogDebug("Hooking up an unhooked unlock.");
+                    Unlock unlock1 = unlock;
                     Unlock normalized = GameController.gameController.sessionDataBig.unlocks
-                        .Find(u => u.unlockName == unlock.unlockName && u.unlockType == unlock.unlockType);
+                                                      .Find(u => u.unlockName == unlock1.unlockName && u.unlockType == unlock1.unlockType);
                     unlock.__RogueLibsCustom = normalized.__RogueLibsCustom;
                 }
             }
@@ -304,7 +310,7 @@ namespace RogueLibsCore
                         __result = false;
                         return;
                     }
-                    Unlock traitUnlock = RogueLibs.GetUnlock(trait.traitName, UnlockTypes.Trait)?.Unlock;
+                    Unlock? traitUnlock = RogueLibs.GetUnlock(trait.traitName, UnlockTypes.Trait)?.Unlock;
                     if (traitUnlock?.cancellations.Contains(myUnlock.unlockName) == true)
                     {
                         __result = false;

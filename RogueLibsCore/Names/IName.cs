@@ -12,6 +12,6 @@ namespace RogueLibsCore
         /// </summary>
         /// <param name="language">The language to get or set the localization text for.</param>
         /// <returns>The specified <paramref name="language"/>'s localization text, if found; otherwise, <see langword="null"/>.</returns>
-        string this[LanguageCode language] { get; set; }
+        string? this[LanguageCode language] { get; set; }
     }
 }

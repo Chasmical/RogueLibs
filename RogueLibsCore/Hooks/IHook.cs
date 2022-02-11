@@ -12,7 +12,7 @@
         /// <summary>
         ///   <para>Gets or sets the instance that the hook is attached to.</para>
         /// </summary>
-        object Instance { get; set; }
+        object? Instance { get; set; }
     }
     /// <summary>
     ///   <para>Represents a hook, attachable to instances of type <typeparamref name="T"/>.</para>
@@ -23,6 +23,6 @@
         /// <summary>
         ///   <para>Gets or sets the instance that the hook is attached to.</para>
         /// </summary>
-        new T Instance { get; set; }
+        new T? Instance { get; set; }
     }
 }

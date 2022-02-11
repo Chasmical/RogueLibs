@@ -7,24 +7,24 @@ namespace RogueLibsCore
 {
     public abstract class Interaction
     {
-        public InteractionModel Model { get; internal set; }
+        public InteractionModel Model { get; internal set; } = null!; // initialized immediately in InteractionModel
         public PlayfieldObject Object => Model.Object;
         public Agent Agent => Model.Agent;
         public InteractionHelper Helper => Model.Helper;
 
         public virtual bool ImplicitAction => false;
 
-        public string ButtonName { get; private set; }
+        public string? ButtonName { get; private set; }
         public int? ButtonPrice { get; private set; }
-        public string ButtonExtra { get; private set; }
+        public string? ButtonExtra { get; private set; }
 
         protected bool SetButton(string buttonName)
             => SetButton(buttonName, null, null);
-        protected bool SetButton(string buttonName, string buttonExtra)
+        protected bool SetButton(string buttonName, string? buttonExtra)
             => SetButton(buttonName, null, buttonExtra);
         protected bool SetButton(string buttonName, int? buttonPrice)
             => SetButton(buttonName, buttonPrice, null);
-        protected bool SetButton(string buttonName, int? buttonPrice, string buttonExtra)
+        protected bool SetButton(string buttonName, int? buttonPrice, string? buttonExtra)
         {
             ButtonName = buttonName;
             ButtonPrice = buttonPrice;
@@ -35,8 +35,7 @@ namespace RogueLibsCore
         protected void StopInteraction() => Model.StopInteraction();
         protected bool SetCallback(Action callback)
         {
-            if (Model.CancelCallback is null)
-                Model.CancelCallback = callback;
+            Model.CancelCallback ??= callback;
             return false;
         }
 
@@ -64,12 +63,13 @@ namespace RogueLibsCore
 
         public sealed override bool MatchObject(InteractionModel model)
             => model is InteractionModel<T> tModel && MatchObject(tModel);
-        public virtual bool MatchObject(InteractionModel<T> model) => true;
+        // ReSharper disable once UnusedParameter.Global
+        public virtual bool MatchObject(InteractionModel<T> _) => true;
 
     }
     public sealed class SimpleInteraction : CustomInteraction
     {
-        public SimpleInteraction(string name, int? price, string extra, bool implicitAction, Action<InteractionModel> action)
+        public SimpleInteraction(string name, int? price, string? extra, bool implicitAction, Action<InteractionModel> action)
         {
             _name = name;
             _price = price;
@@ -80,7 +80,7 @@ namespace RogueLibsCore
 
         private readonly string _name;
         private readonly int? _price;
-        private readonly string _extra;
+        private readonly string? _extra;
         public override bool ImplicitAction { get; }
         private readonly Action<InteractionModel> _action;
 
@@ -91,7 +91,7 @@ namespace RogueLibsCore
     }
     public sealed class SimpleInteraction<T> : CustomInteraction<T> where T : PlayfieldObject
     {
-        public SimpleInteraction(string name, int? price, string extra, bool implicitAction, Action<InteractionModel<T>> action)
+        public SimpleInteraction(string name, int? price, string? extra, bool implicitAction, Action<InteractionModel<T>> action)
         {
             _name = name;
             _price = price;
@@ -102,7 +102,7 @@ namespace RogueLibsCore
 
         private readonly string _name;
         private readonly int? _price;
-        private readonly string _extra;
+        private readonly string? _extra;
         public override bool ImplicitAction { get; }
         private readonly Action<InteractionModel<T>> _action;
 
@@ -130,11 +130,11 @@ namespace RogueLibsCore
 
         public SimpleInteraction AddButton(string buttonName, Action<InteractionModel> action)
             => AddButton(buttonName, null, null, action);
-        public SimpleInteraction AddButton(string buttonName, string buttonExtra, Action<InteractionModel> action)
+        public SimpleInteraction AddButton(string buttonName, string? buttonExtra, Action<InteractionModel> action)
             => AddButton(buttonName, null, buttonExtra, action);
         public SimpleInteraction AddButton(string buttonName, int? buttonPrice, Action<InteractionModel> action)
             => AddButton(buttonName, buttonPrice, null, action);
-        public SimpleInteraction AddButton(string buttonName, int? buttonPrice, string buttonExtra, Action<InteractionModel> action)
+        public SimpleInteraction AddButton(string buttonName, int? buttonPrice, string? buttonExtra, Action<InteractionModel> action)
         {
             EnsureModel();
             SimpleInteraction interaction = new SimpleInteraction(buttonName, buttonPrice, buttonExtra, false, action);
@@ -144,11 +144,11 @@ namespace RogueLibsCore
 
         public SimpleInteraction AddImplicitButton(string buttonName, Action<InteractionModel> action)
             => AddImplicitButton(buttonName, null, null, action);
-        public SimpleInteraction AddImplicitButton(string buttonName, string buttonExtra, Action<InteractionModel> action)
+        public SimpleInteraction AddImplicitButton(string buttonName, string? buttonExtra, Action<InteractionModel> action)
             => AddImplicitButton(buttonName, null, buttonExtra, action);
         public SimpleInteraction AddImplicitButton(string buttonName, int? buttonPrice, Action<InteractionModel> action)
             => AddImplicitButton(buttonName, buttonPrice, null, action);
-        public SimpleInteraction AddImplicitButton(string buttonName, int? buttonPrice, string buttonExtra, Action<InteractionModel> action)
+        public SimpleInteraction AddImplicitButton(string buttonName, int? buttonPrice, string? buttonExtra, Action<InteractionModel> action)
         {
             EnsureModel();
             SimpleInteraction interaction = new SimpleInteraction(buttonName, buttonPrice, buttonExtra, true, action);
@@ -161,18 +161,17 @@ namespace RogueLibsCore
             EnsureModel();
             InteractionModel model = Model;
             void Callback() => stopCallback(model);
-            if (model.CancelCallback is null)
-                model.CancelCallback = Callback;
+            model.CancelCallback ??= Callback;
             return Callback;
         }
 
-        private InteractionModel _model;
+        private InteractionModel? _model;
         public InteractionModel Model
         {
             get
             {
                 EnsureModel();
-                return _model;
+                return _model!;
             }
         }
         public PlayfieldObject Object => Model.Object;
@@ -219,11 +218,11 @@ namespace RogueLibsCore
 
         public SimpleInteraction<T> AddButton(string buttonName, Action<InteractionModel<T>> action)
             => AddButton(buttonName, null, null, action);
-        public SimpleInteraction<T> AddButton(string buttonName, string buttonExtra, Action<InteractionModel<T>> action)
+        public SimpleInteraction<T> AddButton(string buttonName, string? buttonExtra, Action<InteractionModel<T>> action)
             => AddButton(buttonName, null, buttonExtra, action);
         public SimpleInteraction<T> AddButton(string buttonName, int? buttonPrice, Action<InteractionModel<T>> action)
             => AddButton(buttonName, buttonPrice, null, action);
-        public SimpleInteraction<T> AddButton(string buttonName, int? buttonPrice, string buttonExtra, Action<InteractionModel<T>> action)
+        public SimpleInteraction<T> AddButton(string buttonName, int? buttonPrice, string? buttonExtra, Action<InteractionModel<T>> action)
         {
             EnsureModel();
             SimpleInteraction<T> interaction = new SimpleInteraction<T>(buttonName, buttonPrice, buttonExtra, false, action);
@@ -233,11 +232,11 @@ namespace RogueLibsCore
 
         public SimpleInteraction<T> AddImplicitButton(string buttonName, Action<InteractionModel<T>> action)
             => AddImplicitButton(buttonName, null, null, action);
-        public SimpleInteraction<T> AddImplicitButton(string buttonName, string buttonExtra, Action<InteractionModel<T>> action)
+        public SimpleInteraction<T> AddImplicitButton(string buttonName, string? buttonExtra, Action<InteractionModel<T>> action)
             => AddImplicitButton(buttonName, null, buttonExtra, action);
         public SimpleInteraction<T> AddImplicitButton(string buttonName, int? buttonPrice, Action<InteractionModel<T>> action)
             => AddImplicitButton(buttonName, buttonPrice, null, action);
-        public SimpleInteraction<T> AddImplicitButton(string buttonName, int? buttonPrice, string buttonExtra, Action<InteractionModel<T>> action)
+        public SimpleInteraction<T> AddImplicitButton(string buttonName, int? buttonPrice, string? buttonExtra, Action<InteractionModel<T>> action)
         {
             EnsureModel();
             SimpleInteraction<T> interaction = new SimpleInteraction<T>(buttonName, buttonPrice, buttonExtra, true, action);
@@ -250,18 +249,17 @@ namespace RogueLibsCore
             EnsureModel();
             InteractionModel<T> model = Model;
             void Callback() => stopCallback(model);
-            if (model.CancelCallback is null)
-                model.CancelCallback = Callback;
+            model.CancelCallback ??= Callback;
             return Callback;
         }
 
-        private InteractionModel<T> _model;
+        private InteractionModel<T>? _model;
         public InteractionModel<T> Model
         {
             get
             {
                 EnsureModel();
-                return _model;
+                return _model!;
             }
         }
         public T Object => Model.Object;

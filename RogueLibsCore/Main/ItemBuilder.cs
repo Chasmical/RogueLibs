@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RogueLibsCore
 {
     /// <summary>
-    ///   <para>Repesents a <see cref="CustomItem"/> builder, that attaches additional information to the item.</para>
+    ///   <para>Represents a <see cref="CustomItem"/> builder, that attaches additional information to the item.</para>
     /// </summary>
     public class ItemBuilder
     {
@@ -21,19 +21,19 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Gets the item's localizable name.</para>
         /// </summary>
-        public CustomName Name { get; private set; }
+        public CustomName? Name { get; private set; }
         /// <summary>
         ///   <para>Gets the item's localizable description.</para>
         /// </summary>
-        public CustomName Description { get; private set; }
+        public CustomName? Description { get; private set; }
         /// <summary>
         ///   <para>Gets the item's sprite.</para>
         /// </summary>
-        public RogueSprite Sprite { get; private set; }
+        public RogueSprite? Sprite { get; private set; }
         /// <summary>
         ///   <para>Gets the item's unlock.</para>
         /// </summary>
-        public ItemUnlock Unlock { get; private set; }
+        public ItemUnlock? Unlock { get; private set; }
 
         /// <summary>
         ///   <para>Creates a localizable string with the specified localization <paramref name="info"/> to act as the item's name.</para>

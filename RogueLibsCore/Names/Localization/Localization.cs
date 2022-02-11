@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Linq;
 using System.Xml;
@@ -41,7 +42,7 @@ namespace RogueLibsCore
                 return true;
             }
         }
-        private static LanguageVersions Versions;
+        private static LanguageVersions? Versions;
         private static bool DownloadIndex()
         {
             const string url = "https://raw.githubusercontent.com/SugarBarrel/RogueLibs/main/RogueLibsCore/Resources/locale.index.xml";
@@ -57,7 +58,7 @@ namespace RogueLibsCore
                     Versions = (LanguageVersions)ser.Deserialize(reader);
 
                 string lastAccessFile = Path.Combine(localePath, ".lastaccess");
-                File.WriteAllText(lastAccessFile, DateTime.Now.ToString());
+                File.WriteAllText(lastAccessFile, DateTime.Now.ToString(CultureInfo.InvariantCulture));
 
                 return true;
             }
@@ -78,6 +79,7 @@ namespace RogueLibsCore
             string vanillaLanguagesPath = Path.Combine(localePath, "vanilla");
             Directory.CreateDirectory(vanillaLanguagesPath);
 
+            if (Versions is null) return;
             foreach (KeyValuePair<string, int> entry in Versions.Entries.ToList())
             {
                 string id = entry.Key;
@@ -107,7 +109,7 @@ namespace RogueLibsCore
         private static int ReadPrefix(XmlReader reader)
         {
             reader.MoveToContent();
-            string versionAttr = reader.GetAttribute("Version");
+            string? versionAttr = reader.GetAttribute("Version");
             return versionAttr != null && int.TryParse(versionAttr, out int version) ? version : -1;
         }
         private static void UpdateLanguage(string language, string filePath, int newVersion)
@@ -122,7 +124,7 @@ namespace RogueLibsCore
                 File.Delete(filePath);
                 File.Move(downloadPath, filePath);
 
-                Versions.Entries[language] = newVersion;
+                Versions!.Entries[language] = newVersion;
             }
             finally
             {
@@ -131,13 +133,13 @@ namespace RogueLibsCore
         }
 
         private static readonly XmlSerializer languageSer = new XmlSerializer(typeof(LocaleLanguage));
-        private static string localePath;
+        private static string localePath = null!; // initialized in Init()
 
         private static void InitializeLanguages()
         {
             ReInitializeLanguages();
-            LanguageService.OnCurrentChanged += e => Current = ReloadLanguage(CurrentWatcher = SetupWatcher(e.Value));
-            LanguageService.OnFallBackChanged += e => FallBack = ReloadLanguage(FallBackWatcher = SetupWatcher(e.Value));
+            LanguageService.OnCurrentChanged += static e => Current = ReloadLanguage(CurrentWatcher = SetupWatcher(e.Value));
+            LanguageService.OnFallBackChanged += static e => FallBack = ReloadLanguage(FallBackWatcher = SetupWatcher(e.Value));
         }
         public static void ReInitializeLanguages()
         {
@@ -147,19 +149,18 @@ namespace RogueLibsCore
             ReloadCurrent(null, null);
             ReloadFallBack(null, null);
         }
-        private static FileSystemWatcher SetupWatcher(LanguageCode code)
+        private static FileSystemWatcher? SetupWatcher(LanguageCode code)
         {
-            string name = LanguageService.GetLanguageName(code);
+            string? name = LanguageService.GetLanguageName(code);
             string path = localePath;
 
             if (!File.Exists(Path.Combine(path, name + ".xml"))
-                && LanguageService.Current >= LanguageCode.English
-                && LanguageService.Current <= LanguageCode.Korean)
+                && LanguageService.Current is >= LanguageCode.English and <= LanguageCode.Korean)
             {
                 path = Path.Combine(localePath, "vanilla");
                 if (!File.Exists(Path.Combine(path, name + ".xml")))
                 {
-                    RogueFramework.LogError("Could not find the current language file.");
+                    RogueFramework.LogError("Could not find the vanilla language file.");
                     return null;
                 }
             }
@@ -170,12 +171,12 @@ namespace RogueLibsCore
             };
         }
 
-        private static LocaleLanguage ReloadLanguage(FileSystemWatcher watcher)
+        private static LocaleLanguage? ReloadLanguage(FileSystemWatcher? watcher)
         {
             if (watcher is null) return null;
             return ReloadLanguage(watcher.Path, watcher.Filter);
         }
-        private static LocaleLanguage ReloadLanguage(string directory, string name)
+        private static LocaleLanguage? ReloadLanguage(string directory, string name)
         {
             if (RogueFramework.IsDebugEnabled(DebugFlags.Names)) RogueFramework.LogDebug($"Live-reloading {name}");
             string path = Path.Combine(directory, name);
@@ -193,8 +194,8 @@ namespace RogueLibsCore
             }
         }
 
-        private static FileSystemWatcher currentWatcher;
-        public static FileSystemWatcher CurrentWatcher
+        private static FileSystemWatcher? currentWatcher;
+        public static FileSystemWatcher? CurrentWatcher
         {
             get => currentWatcher;
             set
@@ -217,10 +218,10 @@ namespace RogueLibsCore
                 }
             }
         }
-        private static void ReloadCurrent(object _, object __) => Current = ReloadLanguage(CurrentWatcher);
+        private static void ReloadCurrent(object? _, object? __) => Current = ReloadLanguage(CurrentWatcher);
 
-        private static FileSystemWatcher fallBackWatcher;
-        public static FileSystemWatcher FallBackWatcher
+        private static FileSystemWatcher? fallBackWatcher;
+        public static FileSystemWatcher? FallBackWatcher
         {
             get => fallBackWatcher;
             set
@@ -243,12 +244,12 @@ namespace RogueLibsCore
                 }
             }
         }
-        private static void ReloadFallBack(object _, object __) => FallBack = ReloadLanguage(FallBackWatcher);
+        private static void ReloadFallBack(object? _, object? __) => FallBack = ReloadLanguage(FallBackWatcher);
 
-        public static LocaleLanguage Current { get; private set; }
-        public static LocaleLanguage FallBack { get; private set; }
+        public static LocaleLanguage? Current { get; private set; }
+        public static LocaleLanguage? FallBack { get; private set; }
 
-        public static string GetName(string name, string type)
+        public static string? GetName(string name, string type)
         {
             return Current?[type, name] ?? FallBack?[type, name];
         }

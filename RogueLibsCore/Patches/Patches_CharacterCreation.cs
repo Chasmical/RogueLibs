@@ -33,9 +33,9 @@ namespace RogueLibsCore
         {
             if (unlockType == UnlockTypes.BigQuest) myUnlockList = __instance.gc.sessionDataBig.bigQuestUnlocks;
 
-            List<DisplayedUnlock> displayedList = myUnlockList.Select(u => u.__RogueLibsCustom).OfType<DisplayedUnlock>().ToList();
-            if (unlockType == UnlockTypes.Ability || unlockType == UnlockTypes.BigQuest)
-                displayedList.RemoveAll(u => u is IUnlockInCC inCC && !inCC.IsAvailableInCC);
+            List<DisplayedUnlock> displayedList = myUnlockList.Select(static u => u.__RogueLibsCustom).OfType<DisplayedUnlock>().ToList();
+            if (unlockType is UnlockTypes.Ability or UnlockTypes.BigQuest)
+                displayedList.RemoveAll(static u => u is IUnlockInCC { IsAvailableInCC: false });
 
             CustomCharacterCreation menu = new CustomCharacterCreation(__instance, displayedList);
             if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
@@ -43,25 +43,26 @@ namespace RogueLibsCore
 
             foreach (DisplayedUnlock du in menu.Unlocks)
                 du.Menu = menu;
-            menu.Unlocks.ForEach(du => du.UpdateUnlock());
+            menu.Unlocks.ForEach(static du => du.UpdateUnlock());
             menu.Unlocks.Sort();
 
             List<Unlock> listUnlocks = unlockType == UnlockTypes.Item ? __instance.listUnlocksItems
                 : unlockType == UnlockTypes.Trait ? __instance.listUnlocksTraits
                 : unlockType == UnlockTypes.Ability ? __instance.listUnlocksAbilities
-                : unlockType == UnlockTypes.BigQuest ? __instance.listUnlocksBigQuests : null;
+                : unlockType == UnlockTypes.BigQuest ? __instance.listUnlocksBigQuests
+                : throw new InvalidOperationException("Unknown character creation menu type.");
             listUnlocks.Clear();
-            listUnlocks.AddRange(menu.Unlocks.Select(du => du.Unlock));
+            listUnlocks.AddRange(menu.Unlocks.Select(static du => du.Unlock));
 
             if (unlockType == UnlockTypes.Item)
             {
-                clearAllItems.Menu = menu;
-                listUnlocks.Insert(0, clearAllItems.Unlock);
+                ClearAllItems.Menu = menu;
+                listUnlocks.Insert(0, ClearAllItems.Unlock);
             }
             else if (unlockType == UnlockTypes.Trait)
             {
-                clearAllTraits.Menu = menu;
-                listUnlocks.Insert(0, clearAllTraits.Unlock);
+                ClearAllTraits.Menu = menu;
+                listUnlocks.Insert(0, ClearAllTraits.Unlock);
             }
 
             if (unlockType == UnlockTypes.Item) __instance.numButtonsItems = listUnlocks.Count - 1;
@@ -86,7 +87,8 @@ namespace RogueLibsCore
             List<ButtonData> buttonsData = type == UnlockTypes.Item ? __instance.buttonsDataItems
                 : type == UnlockTypes.Trait ? __instance.buttonsDataTraits
                 : type == UnlockTypes.Ability ? __instance.buttonsDataAbilities
-                : type == UnlockTypes.BigQuest ? __instance.buttonsDataBigQuests : null;
+                : type == UnlockTypes.BigQuest ? __instance.buttonsDataBigQuests
+                : throw new InvalidOperationException("Unknown character creation menu type.");
 
             ButtonData buttonData = buttonsData[myButton.scrollingButtonNum];
             DisplayedUnlock du = (DisplayedUnlock)buttonData.__RogueLibsCustom;
@@ -105,7 +107,7 @@ namespace RogueLibsCore
             {
                 __instance.scrollBarLoad.value = Mathf.Clamp01(1f - __instance.yOffset / ((__instance.numButtonsLoad - __instance.numButtonsOnScreen + 1f) * __instance.yOffset) * (myButton.scrollingButtonNum - (__instance.numButtonsOnScreen / 2f - 1f)));
 
-                Scrollbar bar;
+                Scrollbar? bar;
                 float numButtons;
                 if (myButton.scrollingButtonUnlock.unlockType == UnlockTypes.Item)
                 { bar = __instance.scrollBarItems; numButtons = __instance.numButtonsItems; }
@@ -122,7 +124,7 @@ namespace RogueLibsCore
                     bar.value = Mathf.Clamp01(1f - __instance.yOffset / ((numButtons - __instance.numButtonsOnScreen + 2f) * __instance.yOffset) * (myButton.scrollingButtonNum - (__instance.numButtonsOnScreen / 2f - 1f)));
             }
 
-            Image image = null; Text title = null; Text text = null;
+            Image? image = null; Text? title = null; Text? text = null;
             if (myButton.scrollingButtonUnlock.unlockType == UnlockTypes.Item)
             { image = __instance.detailsImageItems; title = __instance.detailsTitleItems; text = __instance.detailsTextItems; }
             else if (myButton.scrollingButtonUnlock.unlockType == UnlockTypes.Trait)
@@ -136,9 +138,9 @@ namespace RogueLibsCore
             {
                 DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock.__RogueLibsCustom;
 
-                bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu.ShowLockedUnlocks;
-                title.text = show ? du.GetName() : "?????";
-                text.text = du.GetFancyDescription();
+                bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu!.ShowLockedUnlocks;
+                title!.text = show ? du.GetName() : "?????";
+                text!.text = du.GetFancyDescription();
                 image.sprite = show ? du.GetImage() : null;
                 image.gameObject.SetActive(image.sprite != null);
             }

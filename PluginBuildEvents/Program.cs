@@ -7,11 +7,11 @@ namespace PluginBuildEvents
 {
     public static class Program
     {
-        private static string GetSteamPath()
+        private static string? GetSteamPath()
         {
             string myAppData = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "AbbLab");
             string steamPathFile = Path.Combine(myAppData, "SteamPath");
-            string steamPath;
+            string? steamPath;
             if (File.Exists(steamPathFile))
             {
                 steamPath = File.ReadAllText(steamPathFile);
@@ -25,25 +25,23 @@ namespace PluginBuildEvents
             }
             return steamPath;
         }
-        private static string FindSteam()
+        private static string? FindSteam()
         {
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
-                RegistryKey steam = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Valve\Steam");
-                if (steam != null) return (string)steam.GetValue("SteamPath");
+                RegistryKey? steam = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Valve\Steam");
+                return (string?)steam?.GetValue("SteamPath");
             }
-            else
-            {
-                // ~/.local/share/Steam
-                string path1 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Steam");
-                if (Directory.Exists(path1)) return path1;
-                // ~/.steam
-                string path2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".steam");
-                if (Directory.Exists(path2)) return path2;
-                // ~/Steam
-                string path3 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Steam");
-                if (Directory.Exists(path3)) return path3;
-            }
+
+            // ~/.local/share/Steam
+            string path1 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Steam");
+            if (Directory.Exists(path1)) return path1;
+            // ~/.steam
+            string path2 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".steam");
+            if (Directory.Exists(path2)) return path2;
+            // ~/Steam
+            string path3 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Steam");
+            if (Directory.Exists(path3)) return path3;
             return null;
         }
         public static void Main(string[] args)
@@ -55,9 +53,7 @@ namespace PluginBuildEvents
                 "\nThe program also copies the .pdb and .dll.mdb files associated with your plugin." +
                 "\nYou can specify the name of the game's directory in Steam instead of a full path. In that case, Steam's path will be detected automatically.");
 
-            string arg0upper = args[0].ToUpperInvariant();
-            bool launch = arg0upper == "-L" || arg0upper == "--LAUNCH";
-            if (launch)
+            if (args[0].ToUpperInvariant() is "-L" or "--LAUNCH")
             {
                 if (!long.TryParse(args[1], out long id))
                     throw new ArgumentException("The game id is in invalid format!");
@@ -68,7 +64,7 @@ namespace PluginBuildEvents
                     WindowStyle = ProcessWindowStyle.Hidden,
                     UseShellExecute = false,
                     CreateNoWindow = true,
-                    Arguments = $"/c start steam://rungameid/{id}"
+                    Arguments = $"/c start steam://rungameid/{id}",
                 });
                 return;
             }
@@ -81,7 +77,7 @@ namespace PluginBuildEvents
                 plugins = Path.Combine(args[1], "BepInEx", "plugins");
             else if (!args[1].Contains('\\'))
             {
-                string steam = GetSteamPath();
+                string? steam = GetSteamPath();
                 if (steam is null) throw new InvalidOperationException("Steam was not found on the computer! You'll have to specify the game's directory manually!");
                 plugins = Path.GetFullPath(Path.Combine(steam, "SteamApps", "common", args[1], "BepInEx", "plugins"));
             }
@@ -92,7 +88,8 @@ namespace PluginBuildEvents
             string newDll = Path.Combine(plugins, Path.GetFileName(origDll));
             string newPdb = Path.Combine(plugins, Path.GetFileName(origPdb));
 
-            string pdb2mdb = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "pdb2mdb.exe");
+            // ReSharper disable once InconsistentNaming
+            string pdb2mdb = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "pdb2mdb.exe");
 
             File.Copy(origDll, newDll, true);
             if (File.Exists(origPdb)) File.Copy(origPdb, newPdb, true);
@@ -103,8 +100,8 @@ namespace PluginBuildEvents
                 {
                     FileName = pdb2mdb,
                     Arguments = $"\"{origDll}\"",
-                    UseShellExecute = false
-                });
+                    UseShellExecute = false,
+                })!;
                 process.WaitForExit();
 
                 string origMdb = origDll + ".mdb";

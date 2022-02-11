@@ -5,7 +5,7 @@ namespace RogueLibsCore
     /// <summary>
     ///   <para>Represents a collection of hooks, attached to a single object.</para>
     /// </summary>
-    public interface IHookController : IEnumerable<IHook>
+    public interface IHookController
     {
         /// <summary>
         ///   <para>Gets the object that the hooks are attached to.</para>
@@ -29,7 +29,7 @@ namespace RogueLibsCore
         /// </summary>
         /// <typeparam name="THook">The type of the hook to search for.</typeparam>
         /// <returns>A hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="null"/>.</returns>
-        THook GetHook<THook>();
+        THook? GetHook<THook>();
         /// <summary>
         ///   <para>Returns an enumerable collection of all hooks in the collection that are assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -41,7 +41,7 @@ namespace RogueLibsCore
     ///   <para>Represents a collection of hooks, attached to a single instance of type <typeparamref name="T"/>.</para>
     /// </summary>
     /// <typeparam name="T">The type of objects, that the hooks can be attached to.</typeparam>
-    public interface IHookController<T> : IHookController, IEnumerable<IHook<T>>
+    public interface IHookController<T> : IHookController
     {
         /// <summary>
         ///   <para>Gets the instance of type <typeparamref name="T"/> that the hooks are attached to.</para>

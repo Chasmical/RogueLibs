@@ -119,7 +119,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="filePath"/> is <see langword="null"/>.</exception>
         /// <exception cref="PathTooLongException"><paramref name="filePath"/> exceeds the system-defined maximum length.</exception>
         /// <exception cref="DirectoryNotFoundException"><paramref name="filePath"/> is invalid.</exception>
-        /// <exception cref="IOException">An I/O error occured while opening the file.</exception>
+        /// <exception cref="IOException">An I/O error occurred while opening the file.</exception>
         /// <exception cref="UnauthorizedAccessException"><paramref name="filePath"/> specifies a directory or the caller does not have the required permission.</exception>
         /// <exception cref="FileNotFoundException">File specified in <paramref name="filePath"/> was not found.</exception>
         /// <exception cref="NotSupportedException"><paramref name="filePath"/> is in invalid format or the extension's format is not supported.</exception>
@@ -128,9 +128,8 @@ namespace RogueLibsCore
         {
             string extLow = Path.GetExtension(filePath);
             AudioType type = extLow == ".mp3" ? AudioType.MPEG
-                : extLow == ".wav" || extLow == ".wave" ? AudioType.WAV
-                : extLow == ".ogg" || extLow == ".ogv" || extLow == ".oga" || extLow == ".ogx"
-                    || extLow == ".ogm" || extLow == ".spx" || extLow == ".opus" ? AudioType.OGGVORBIS
+                : extLow is ".wav" or ".wave" ? AudioType.WAV
+                : extLow is ".ogg" or ".ogv" or ".oga" or ".ogx" or ".ogm" or ".spx" or ".opus" ? AudioType.OGGVORBIS
                 : throw new NotSupportedException($"File is in unknown format {extLow}.");
 
             return ConvertToAudioClip(filePath, type);
@@ -142,13 +141,13 @@ namespace RogueLibsCore
         /// <param name="rawData">MP3-, WAV- or Ogg-encoded audio data.</param>
         /// <param name="format">Format of the audio file.</param>
         /// <returns>Created <see cref="AudioClip"/>.</returns>
-        /// <exception cref="IOException">An I/O error occured while opening the file.</exception>
+        /// <exception cref="IOException">An I/O error occurred while opening the file.</exception>
         /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission.</exception>
         /// <exception cref="NotSupportedException">The specified <paramref name="format"/> is not supported.</exception>
         /// <exception cref="System.Security.SecurityException">The caller does not have the required permission.</exception>
         public static AudioClip ConvertToAudioClip(byte[] rawData, AudioType format)
         {
-            if (format != AudioType.MPEG && format != AudioType.WAV && format != AudioType.OGGVORBIS)
+            if (format is not AudioType.MPEG and not AudioType.WAV and not AudioType.OGGVORBIS)
                 throw new NotSupportedException($"{format} is not supported. Supported audio formats: {AudioType.MPEG}, {AudioType.WAV} and {AudioType.OGGVORBIS}.");
             string name = ".audio-request." + Convert.ToString(new System.Random().Next(), 16).ToLowerInvariant();
             string filePath = Path.Combine(Paths.CachePath, name);
@@ -174,14 +173,14 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="filePath"/> is <see langword="null"/>.</exception>
         /// <exception cref="PathTooLongException"><paramref name="filePath"/> exceeds the system-defined maximum length.</exception>
         /// <exception cref="DirectoryNotFoundException"><paramref name="filePath"/> is invalid.</exception>
-        /// <exception cref="IOException">An I/O error occured while opening the file.</exception>
+        /// <exception cref="IOException">An I/O error occurred while opening the file.</exception>
         /// <exception cref="UnauthorizedAccessException"><paramref name="filePath"/> specifies a directory or the caller does not have the required permission.</exception>
         /// <exception cref="FileNotFoundException">File specified in <paramref name="filePath"/> was not found.</exception>
         /// <exception cref="NotSupportedException"><paramref name="filePath"/> is in invalid format or the specified <paramref name="format"/> is not supported.</exception>
         /// <exception cref="System.Security.SecurityException">The caller does not have the required permission.</exception>
         public static AudioClip ConvertToAudioClip(string filePath, AudioType format)
         {
-            if (format != AudioType.MPEG && format != AudioType.WAV && format != AudioType.OGGVORBIS)
+            if (format is not AudioType.MPEG and not AudioType.WAV and not AudioType.OGGVORBIS)
                 throw new NotSupportedException($"{format} is not supported. Supported audio formats: {AudioType.MPEG}, {AudioType.WAV} and {AudioType.OGGVORBIS}.");
             UnityWebRequest request = UnityWebRequestMultimedia.GetAudioClip("file:///" + filePath, format);
             request.SendWebRequest();
@@ -196,7 +195,7 @@ namespace RogueLibsCore
         /// <param name="interfaceType">The type of the interface with the method.</param>
         /// <param name="methodName">The name of the interface's method.</param>
         /// <returns>The <see cref="MethodInfo"/> of the implemented method, if found; otherwise, <see langword="null"/>.</returns>
-        public static MethodInfo GetInterfaceMethod(this Type type, Type interfaceType, string methodName)
+        public static MethodInfo? GetInterfaceMethod(this Type type, Type interfaceType, string methodName)
         {
             Type implementedInterface;
             if (interfaceType.IsGenericTypeDefinition)
@@ -222,7 +221,7 @@ namespace RogueLibsCore
         /// <param name="interfaceType">The type of the interface with the methods.</param>
         /// <param name="methodNames">The names of the interface's method.</param>
         /// <returns>An array of <see cref="MethodInfo"/>s of the implemented methods, if found; otherwise, <see langword="null"/>.</returns>
-        public static MethodInfo[] GetInterfaceMethods(this Type type, Type interfaceType, params string[] methodNames)
+        public static MethodInfo[]? GetInterfaceMethods(this Type type, Type interfaceType, params string[] methodNames)
         {
             Type implementedInterface;
             if (interfaceType.IsGenericTypeDefinition)

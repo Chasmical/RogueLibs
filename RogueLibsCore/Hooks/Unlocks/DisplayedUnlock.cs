@@ -20,30 +20,38 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Gets the unlocks menu that the unlock was last associated with.</para>
         /// </summary>
-        public UnlocksMenu Menu { get; internal set; }
+        public UnlocksMenu? Menu { get; internal set; }
         /// <summary>
         ///   <para>Gets the button data that the unlock was last associated with.</para>
         /// </summary>
-        public ButtonData ButtonData { get; internal set; }
+        public ButtonData? ButtonData { get; internal set; }
         /// <summary>
         ///   <para>Gets or sets the menu button's state.</para>
         /// </summary>
-        public UnlockButtonState State { get => ButtonData.GetState(); set => ButtonData.SetState(value); }
+        public UnlockButtonState State
+        {
+            get => (ButtonData ?? throw new InvalidOperationException("The unlock is not in the menu.")).GetState();
+            set => (ButtonData ?? throw new InvalidOperationException("The unlock is not in the menu.")).SetState(value);
+        }
         /// <summary>
         ///   <para>Gets or sets the menu button's text. Supports rich text.</para>
         /// </summary>
-        public string Text { get => ButtonData.buttonText; set => ButtonData.buttonText = value; }
+        public string Text
+        {
+            get => (ButtonData ?? throw new InvalidOperationException("The unlock is not in the menu.")).buttonText;
+            set => (ButtonData ?? throw new InvalidOperationException("The unlock is not in the menu.")).buttonText = value;
+        }
 
         /// <summary>
-        ///   <para>Gets or sets the unlock's sorting order.</para>
+        ///   <para>Gets or sets the sorting order of the unlock.</para>
         /// </summary>
         public int SortingOrder { get; set; }
         /// <summary>
-        ///   <para>Gets or sets the unlock's sorting index.</para>
+        ///   <para>Gets or sets the sorting index of the unlock.</para>
         /// </summary>
         public int SortingIndex { get; set; }
         /// <summary>
-        ///   <para>Gets or sets whether the unlock's state (unlocked, purchasable, available or locked) should be ignored during sorting. Default: <see langword="false"/>.</para>
+        ///   <para>Gets or sets whether the state of the unlock (unlocked, purchasable, available or locked) should be ignored during sorting. Default: <see langword="false"/>.</para>
         /// </summary>
         public bool IgnoreStateSorting { get; set; }
         /// <summary>
@@ -51,7 +59,7 @@ namespace RogueLibsCore
         /// </summary>
         /// <param name="other">The unlock to compare with.</param>
         /// <returns>A value indicating the compared unlocks' relative order.</returns>
-        public virtual int CompareTo(DisplayedUnlock other)
+        public virtual int CompareTo(DisplayedUnlock? other)
         {
             if (other is null) return 1;
             int res = SortingOrder.CompareTo(other.SortingOrder);
@@ -67,28 +75,29 @@ namespace RogueLibsCore
         private int GetStateNum()
         {
             if (IsUnlocked) return 0;
-            else if (Unlock.nowAvailable && UnlockCost != 0) return 1;
-            else if (Unlock.nowAvailable) return 2;
-            else return 3;
+            if (Unlock.nowAvailable && UnlockCost != 0) return 1;
+            if (Unlock.nowAvailable) return 2;
+            return 3;
         }
 
         /// <summary>
-        ///   <para>Updates the unlock's menu button, using the <see cref="UnlockWrapper.IsEnabled"/> property to determine whether the button is selected.</para>
+        ///   <para>Updates the menu button of the unlock, using the <see cref="UnlockWrapper.IsEnabled"/> property to determine whether the button is selected.</para>
         /// </summary>
         public virtual void UpdateButton() => UpdateButton(IsEnabled, UnlockButtonState.Selected, UnlockButtonState.Normal);
         /// <summary>
-        ///   <para>Updates the unlock's menu button, using the specified <paramref name="isEnabledOrSelected"/> parameter to determine whether the button is selected.</para>
+        ///   <para>Updates the menu button of the unlock, using the specified <paramref name="isEnabledOrSelected"/> parameter to determine whether the button is selected.</para>
         /// </summary>
         /// <param name="isEnabledOrSelected">Determines whether the button is selected.</param>
         protected void UpdateButton(bool isEnabledOrSelected) => UpdateButton(isEnabledOrSelected, UnlockButtonState.Selected, UnlockButtonState.Normal);
         /// <summary>
-        ///   <para>Updates the unlock's menu button, using the specified <paramref name="isEnabledOrSelected"/> parameter to determine the button state between <paramref name="selected"/> and <paramref name="normal"/>.</para>
+        ///   <para>Updates the menu button of the unlock, using the specified <paramref name="isEnabledOrSelected"/> parameter to determine the button state between <paramref name="selected"/> and <paramref name="normal"/>.</para>
         /// </summary>
         /// <param name="isEnabledOrSelected">Determines whether <paramref name="selected"/> or <paramref name="normal"/> button state should used.</param>
         /// <param name="selected">Selected button state that is used if <paramref name="isEnabledOrSelected"/> is <see langword="true"/>.</param>
         /// <param name="normal">Normal button state that is used if <paramref name="isEnabledOrSelected"/> is <see langword="false"/>.</param>
         protected void UpdateButton(bool isEnabledOrSelected, UnlockButtonState selected, UnlockButtonState normal)
         {
+            if (Menu is null) throw new InvalidOperationException("The menu button of the unlock cannot be updated outside of the menu.");
             Text = GetFancyName();
             if (Menu.ShowLockedUnlocks)
             {
@@ -107,21 +116,22 @@ namespace RogueLibsCore
         public abstract void OnPushedButton();
 
         /// <summary>
-        ///   <para>Returns the <i>fancy</i> representation of the unlock's name.</para>
+        ///   <para>Returns the <i>fancy</i> representation of the name of the unlock.</para>
         /// </summary>
-        /// <returns>The unlock's localized name, with costs, if it's unlocked or can be unlocked; otherwise, "?????", with costs.</returns>
+        /// <returns>The localized name of the unlock, with costs, or "?????".</returns>
         public virtual string GetFancyName()
         {
             string name = GetName();
+            if (Menu is null) throw new InvalidOperationException("The fancy name of the unlock cannot be accessed outside of the menu.");
             if (Menu.Type == UnlocksMenuType.NewLevelTraits)
             {
                 if (Unlock.specialAbilities.Count > 0 || Unlock.leadingTraits.Count > 0)
                     name = $"<color=yellow>{name}</color>";
                 if (Unlock.isUpgrade)
                     name = $"<color=lime>{name}</color>";
-                if (Name == "EnduranceTrait" || Name == "StrengthTrait" || Name == "AccuracyTrait" || Name == "SpeedTrait")
+                if (Name is "EnduranceTrait" or "StrengthTrait" or "AccuracyTrait" or "SpeedTrait")
                     name = $"<color=cyan>{name}</color>";
-                if ((gc.twitchMode || gc.sessionDataBig.twitchOn) && (gc.sessionDataBig.twitchTraits || gc.twitchMode))
+                if (gc.twitchMode || gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchTraits)
                 {
                     int num = Menu.Unlocks.IndexOf(this);
                     int votes = Menu.Agent.isPlayer is 2 ? gc.twitchFunctions.voteCount[num + 5]
@@ -147,7 +157,7 @@ namespace RogueLibsCore
                     name = $"{name} <color=yellow>#{num + 1}</color> <color=cyan>({gc.twitchFunctions.voteCount[num]})</color>";
                 }
             }
-            else if (Menu.Type == UnlocksMenuType.Loadouts && this is ItemUnlock itemUnlock)
+            else if (Menu.Type == UnlocksMenuType.Loadouts && this is ItemUnlock)
             {
                 InvItem invItem = new InvItem { invItemName = Name };
                 invItem.SetupDetails(false);
@@ -174,25 +184,26 @@ namespace RogueLibsCore
             return name;
         }
         /// <summary>
-        ///   <para>Returns the <i>fancy</i> representation of the unlock's description.</para>
+        ///   <para>Returns the <i>fancy</i> representation of the description of the unlock.</para>
         /// </summary>
-        /// <returns>The unlock's localized description, with cancellations and recommendations, if it's unlocked; otherwise, the unlock's localized description, with cancellations, recommendations and prerequisites, if it can be unlocked; otherwise, "?????", with prerequisites.</returns>
+        /// <returns>The localized description of the unlock, with cancellations, recommendations and etc., or "?????".</returns>
         public virtual string GetFancyDescription()
         {
+            if (Menu is null) throw new InvalidOperationException("The fancy description of the unlock cannot be accessed outside of the menu.");
             if (IsUnlocked || Unlock.nowAvailable || Menu.ShowLockedUnlocks)
             {
-                string text = GetDescription();
+                string? text = GetDescription();
                 AddCancellationsTo(ref text);
                 AddRecommendationsTo(ref text);
                 if (!IsUnlocked || RogueFramework.IsDebugEnabled(DebugFlags.Unlocks | DebugFlags.UnlockMenus))
                     AddPrerequisitesTo(ref text);
-                return text;
+                return text ?? string.Empty;
             }
             else
             {
-                string text = "?????";
+                string? text = "?????";
                 AddPrerequisitesTo(ref text);
-                return text;
+                return text ?? string.Empty;
             }
         }
 
@@ -200,7 +211,7 @@ namespace RogueLibsCore
         ///   <para>Adds cancellations to the end of the specified <paramref name="description"/>.</para>
         /// </summary>
         /// <param name="description">The description to append to.</param>
-        protected void AddCancellationsTo(ref string description)
+        protected void AddCancellationsTo(ref string? description)
         {
             if (Unlock.cancellations.Count > 0)
             {
@@ -208,9 +219,9 @@ namespace RogueLibsCore
                 else description += "\n\n";
 
                 description += $"<color=orange>{gc.nameDB.GetName("Cancels", NameTypes.Interface)}:</color>\n" +
-                    string.Join(", ", Unlock.cancellations.ConvertAll(unlockName =>
+                    string.Join(", ", Unlock.cancellations.ConvertAll(static unlockName =>
                     {
-                        UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+                        UnlockWrapper? unlock = (UnlockWrapper?)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
                         if (unlock != null)
                             return unlock.IsUnlocked || unlock.Unlock.nowAvailable ? unlock.GetName() : "?????";
                         return unlockName;
@@ -221,7 +232,7 @@ namespace RogueLibsCore
         ///   <para>Adds recommendations to the end of the specified <paramref name="description"/>.</para>
         /// </summary>
         /// <param name="description">The description to append to.</param>
-        protected void AddRecommendationsTo(ref string description)
+        protected void AddRecommendationsTo(ref string? description)
         {
             if (Unlock.recommendations.Count > 0)
             {
@@ -229,9 +240,9 @@ namespace RogueLibsCore
                 else description += "\n\n";
 
                 description += $"<color=cyan>{gc.nameDB.GetName("Recommends", NameTypes.Interface)}:</color>\n" +
-                    string.Join(", ", Unlock.recommendations.ConvertAll(unlockName =>
+                    string.Join(", ", Unlock.recommendations.ConvertAll(static unlockName =>
                     {
-                        UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+                        UnlockWrapper? unlock = (UnlockWrapper?)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
                         if (unlock != null)
                             return unlock.IsUnlocked || unlock.Unlock.nowAvailable ? unlock.GetName() : "?????";
                         return unlockName;
@@ -242,18 +253,18 @@ namespace RogueLibsCore
         ///   <para>Adds prerequisites to the end of the specified <paramref name="description"/>.</para>
         /// </summary>
         /// <param name="description">The description to append to.</param>
-        protected void AddPrerequisitesTo(ref string description)
+        protected void AddPrerequisitesTo(ref string? description)
         {
-            List<string> prereqs = new List<string>();
+            List<string> prerequisites = new List<string>();
             if (Unlock.prerequisites.Count > 0)
             {
-                prereqs.Add(string.Join(", ", Unlock.prerequisites.ConvertAll(unlockName =>
+                prerequisites.Add(string.Join(", ", Unlock.prerequisites.ConvertAll(static unlockName =>
                 {
-                    UnlockWrapper unlock = (UnlockWrapper)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+                    UnlockWrapper? unlock = (UnlockWrapper?)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
                     if (unlock != null)
                     {
                         string name = unlock.IsUnlocked || unlock.Unlock.nowAvailable || unlock.ShowInPrerequisites ? unlock.GetName() : "?????";
-                        if (unlock.IsUnlocked) name = $"<color=#EEEEEE55>{name}</color>";
+                        if (unlock.IsUnlocked) name = @$"<color=#EEEEEE55>{name}</color>";
                         return name;
                     }
                     return unlockName;
@@ -261,19 +272,19 @@ namespace RogueLibsCore
             }
             if (Unlock.cost is -2)
             {
-                prereqs.Add(gc.unlocks.GetSpecialUnlockInfo(Name, Unlock));
+                prerequisites.Add(gc.unlocks.GetSpecialUnlockInfo(Name, Unlock));
             }
             if (Unlock.cost > 0)
             {
                 string costColor = gc.sessionDataBig.nuggets >= Unlock.cost ? "cyan" : "red";
-                prereqs.Add($"{gc.nameDB.GetName("UnlockFor", NameTypes.Unlock)} <color={costColor}>${Unlock.cost}</color>");
+                prerequisites.Add($"{gc.nameDB.GetName("UnlockFor", NameTypes.Unlock)} <color={costColor}>${Unlock.cost}</color>");
             }
-            if (prereqs.Count > 0)
+            if (prerequisites.Count > 0)
             {
                 if (description is null) description = string.Empty;
                 else description += "\n\n";
 
-                description += $"<color=cyan>{gc.nameDB.GetName("Prerequisites", NameTypes.Unlock)}:</color>\n" + string.Join("\n", prereqs);
+                description += $"<color=cyan>{gc.nameDB.GetName("Prerequisites", NameTypes.Unlock)}:</color>\n" + string.Join("\n", prerequisites);
             }
         }
 
@@ -281,15 +292,20 @@ namespace RogueLibsCore
         ///   <para>Plays an audio clip with the specified <paramref name="clipName"/> in the menu.</para>
         /// </summary>
         /// <param name="clipName">The name of the audio clip to play.</param>
-        protected void PlaySound(string clipName) => Menu.PlaySound(clipName);
+        protected void PlaySound(string clipName)
+        {
+            if (Menu is null) throw new InvalidOperationException("The unlock cannot play sounds outside of the menu.");
+            Menu.PlaySound(clipName);
+        }
         /// <summary>
         ///   <para>Sends the specified <paramref name="msg1"/> in the chat as an announcement, with <paramref name="msg2"/> and <paramref name="msg3"/> specifying additional information.</para>
         /// </summary>
         /// <param name="msg1">The announcement message identifier.</param>
         /// <param name="msg2">The first of the additional identifiers.</param>
         /// <param name="msg3">The second of the additional identifiers.</param>
-        protected void SendAnnouncementInChat(string msg1, string msg2 = null, string msg3 = null)
+        protected void SendAnnouncementInChat(string msg1, string? msg2 = null, string? msg3 = null)
         {
+            if (Menu is null) throw new InvalidOperationException("The unlock cannot send announcements in chat outside of the menu.");
             if (gc.serverPlayer && gc.multiplayerMode)
                 Menu.Agent.objectMult.SendChatAnnouncement(msg1, msg2 ?? string.Empty, msg3 ?? string.Empty);
         }
@@ -297,12 +313,17 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Updates the current menu.</para>
         /// </summary>
-        public void UpdateMenu() => Menu.UpdateMenu();
+        public void UpdateMenu()
+        {
+            if (Menu is null) throw new InvalidOperationException("The unlock is not in the menu.");
+            Menu.UpdateMenu();
+        }
         /// <summary>
         ///   <para>Updates all unlocks in the current menu.</para>
         /// </summary>
         public void UpdateAllUnlocks()
         {
+            if (Menu is null) throw new InvalidOperationException("The unlock is not in the menu.");
             foreach (DisplayedUnlock unlock in Menu.Unlocks)
             {
                 unlock.UpdateUnlock();
@@ -315,6 +336,7 @@ namespace RogueLibsCore
         /// <returns>An enumerable collection of <see cref="DisplayedUnlock"/>s representing conflicting unlocks.</returns>
         public IEnumerable<DisplayedUnlock> EnumerateCancellations()
         {
+            if (Menu is null) throw new InvalidOperationException("The unlock is not in the menu.");
             foreach (DisplayedUnlock unlock in Menu.Unlocks)
                 if (unlock.Unlock.cancellations.Contains(Name) || Unlock.cancellations.Contains(unlock.Name))
                     yield return unlock;

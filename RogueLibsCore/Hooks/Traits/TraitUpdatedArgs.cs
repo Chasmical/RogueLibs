@@ -8,7 +8,7 @@ namespace RogueLibsCore
     public class TraitUpdatedArgs : EventArgs
     {
         /// <summary>
-        ///   <para>Gets or sets the coroutine's update delay, in seconds.</para>
+        ///   <para>Gets or sets the update delay of the coroutine, in seconds.</para>
         /// </summary>
         public float UpdateDelay { get; set; }
     }

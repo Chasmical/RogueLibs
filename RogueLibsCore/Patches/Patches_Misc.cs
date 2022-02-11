@@ -55,16 +55,15 @@ namespace RogueLibsCore
                 LanguageService.Current = code;
             }
         }
-        public static bool NameDB_GetName(string myName, string type, ref string __result)
+        public static bool NameDB_GetName(string myName, string type, out string? __result)
         {
-            string orig = Localization.GetName(myName, type);
-            __result = orig;
-            if (__result?.StartsWith("E_") == true) __result = null;
+            string? res = Localization.GetName(myName, type);
+            if (res?.StartsWith("E_") == true) res = null;
 
             foreach (INameProvider provider in RogueFramework.NameProviders)
-                provider.GetName(myName, type, ref __result);
+                provider.GetName(myName, type, ref res);
 
-            if (__result is null) __result = orig;
+            __result = res;
             return __result is null;
         }
 
@@ -83,7 +82,7 @@ namespace RogueLibsCore
                         catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
 
                 foreach (InvItem item in agent.inventory.InvItemList.ToList())
-                        if (item != specialAbility)
+                    if (item != specialAbility)
                         foreach (IDoUpdate obj in item.GetHooks<IDoUpdate>())
                             try { obj.Update(); }
                             catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
@@ -167,9 +166,11 @@ namespace RogueLibsCore
                     catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, item); }
         }
 
-        public static void AudioHandler_SetupDics_Prefix(AudioHandler __instance, ref bool __state)
+        // ReSharper disable once IdentifierTypo
+        public static void AudioHandler_SetupDics_Prefix(AudioHandler __instance, out bool __state)
             => __state = __instance.loadedDics;
         internal static List<AudioClip> preparedClips = new List<AudioClip>();
+        // ReSharper disable once IdentifierTypo
         public static void AudioHandler_SetupDics(AudioHandler __instance, ref bool __state)
         {
             if (__state) return;
@@ -179,7 +180,6 @@ namespace RogueLibsCore
                 __instance.audioClipList.Add(clip.name);
                 __instance.audioClipDic.Add(clip.name, clip);
             }
-            preparedClips = null;
         }
 
         public static bool Unlocks_AddNuggets(int numNuggets)
@@ -192,9 +192,9 @@ namespace RogueLibsCore
         internal static bool versionLinesReady;
         internal static readonly List<VersionText> versionLines = new List<VersionText>();
         private static Vector3 versionTextOffset = new Vector3(5f, -10f, 0f);
-        internal static Text AttachVersionText(GameObject versionObj, string id, string text)
+        internal static Text AttachVersionText(GameObject versionObj, string id, string? text)
         {
-            GameObject myObject = versionObj.transform.Find(id)?.gameObject;
+            GameObject? myObject = versionObj.transform.Find(id)?.gameObject;
             if (myObject != null) return myObject.GetComponent<Text>();
 
             myObject = new GameObject(id);
@@ -215,13 +215,13 @@ namespace RogueLibsCore
 
             return txt;
         }
-        public static void MainGUI_Awake(MainGUI __instance)
+        public static void MainGUI_Awake()
         {
             versionLinesReady = true;
             GameObject versionObj = GameObject.Find("VersionText2");
             foreach (VersionText versionText in versionLines)
             {
-                GameObject alreadyAttached = versionObj.transform.Find(versionText.Id)?.gameObject;
+                GameObject? alreadyAttached = versionObj.transform.Find(versionText.Id)?.gameObject;
                 if (alreadyAttached != null) return;
                 versionText.AssignText(AttachVersionText(versionObj, versionText.Id, versionText.Text));
             }
@@ -236,17 +236,17 @@ namespace RogueLibsCore
     public class VersionText
     {
         internal VersionText(string id) => Id = id;
-        internal VersionText(string id, string text) : this(id) => preparedText = text;
+        internal VersionText(string id, string? text) : this(id) => preparedText = text;
         public string Id { get; }
-        private Text textComponent;
-        private string preparedText;
+        private Text? textComponent;
+        private string? preparedText;
         public string Text
         {
             get => textComponent != null ? textComponent.text : preparedText ?? string.Empty;
             set
             {
-                if (textComponent != null) textComponent.text = value ?? string.Empty;
-                else preparedText = value ?? string.Empty;
+                if (textComponent != null) textComponent.text = value;
+                else preparedText = value;
             }
         }
         internal void AssignText(Text text)

@@ -15,8 +15,8 @@
         /// <summary>
         ///   <para>Gets or sets the instance that the hook is attached to.</para>
         /// </summary>
-        protected T Instance { get; set; }
-        T IHook<T>.Instance { get => Instance; set => Instance = (T)value; }
-        object IHook.Instance { get => Instance; set => Instance = (T)value; }
+        protected T Instance { get; set; } = default!; // in most cases factories take care of that
+        T? IHook<T>.Instance { get => Instance; set => Instance = value!; }
+        object? IHook.Instance { get => Instance; set => Instance = (T?)value!; }
     }
 }

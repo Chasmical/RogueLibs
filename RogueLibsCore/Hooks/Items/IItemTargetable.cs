@@ -22,6 +22,6 @@
         /// </summary>
         /// <param name="target">The target object.</param>
         /// <returns>The cursor text to display, or <see langword="null"/> to display the default cursor text.</returns>
-        CustomTooltip TargetCursorText(PlayfieldObject target);
+        CustomTooltip TargetCursorText(PlayfieldObject? target);
     }
 }

@@ -13,14 +13,14 @@ namespace RogueLibsCore
         public new PlayfieldObject Instance => base.Instance;
         public PlayfieldObject Object => base.Instance;
         public Agent Agent => base.Instance.interactingAgent;
-        public InteractionHelper Helper => base.Instance.interactingAgent?.interactionHelper;
+        public InteractionHelper Helper => base.Instance.interactingAgent.interactionHelper;
         // ReSharper disable once InconsistentNaming
         [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "That's how it's called in the original code")]
         public GameController gc => GameController.gameController;
 
         internal bool shouldStop;
         public void StopInteraction() => shouldStop = true;
-        public Action CancelCallback { get; set; }
+        public Action? CancelCallback { get; set; }
 
         protected override void Initialize() { }
 
@@ -51,7 +51,7 @@ namespace RogueLibsCore
             interactions.ForEach(i => i.Model = this);
 
             // remove those that couldn't set up // TODO: try-catch
-            interactions.RemoveAll(i => !i.SetupButton() || i.ButtonName is null);
+            interactions.RemoveAll(static i => !i.SetupButton() || i.ButtonName is null);
 
             // if there are no buttons, or one of them cancelled the entire interaction
             if (interactions.Count is 0 || shouldStop)
@@ -78,7 +78,7 @@ namespace RogueLibsCore
 
             // invoke OnOpen method, because right after this, a menu will show up.
             // TODO: maybe we should rely on ShowObjectButtons() explicitly instead of this assumption
-            interactions.ForEach(i => i.OnOpen()); // TODO: try-catch
+            interactions.ForEach(static i => i.OnOpen()); // TODO: try-catch
 
         }
         public void OnPressedButton(string buttonName)
@@ -98,7 +98,7 @@ namespace RogueLibsCore
             if (pressed is null)
             {
                 RogueFramework.LogError($"Couldn't find '{buttonName}' button on {Object}.");
-                RogueFramework.LogDebug($"Available: {string.Join(",", interactions.Select(i => i.ButtonName))}.");
+                RogueFramework.LogDebug($"Available: {string.Join(",", interactions.ConvertAll(static i => i.ButtonName))}.");
                 return;
             }
             // press the button

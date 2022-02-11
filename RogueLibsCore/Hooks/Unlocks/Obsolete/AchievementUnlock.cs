@@ -11,21 +11,21 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AchievementUnlock"/> class without a name.</para>
         /// </summary>
-        public AchievementUnlock() : this(null, false) { }
+        public AchievementUnlock() : this(null!, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AchievementUnlock"/> class without a name.</para>
         /// </summary>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public AchievementUnlock(bool unlockedFromStart) : this(null, unlockedFromStart) { }
+        public AchievementUnlock(bool unlockedFromStart) : this(null!, unlockedFromStart) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AchievementUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and achievement's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         public AchievementUnlock(string name) : this(name, false) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="AchievementUnlock"/> class with the specified <paramref name="name"/>.</para>
         /// </summary>
-        /// <param name="name">The unlock's and achievement's name.</param>
+        /// <param name="name">The name of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
         public AchievementUnlock(string name, bool unlockedFromStart) : base(name, "Achievement", unlockedFromStart) { }
         internal AchievementUnlock(Unlock unlock) : base(unlock) { }
@@ -43,9 +43,10 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
+                // ReSharper disable once ConstantConditionalAccessQualifier
                 bool? cur = gc?.sessionDataBig?.achievementUnlocks?.Contains(Unlock);
-                if (cur == true && !value) { gc.sessionDataBig.achievementUnlocks.Remove(Unlock); Unlock.achievementCount--; }
-                else if (cur == false && value) { gc.sessionDataBig.achievementUnlocks.Add(Unlock); Unlock.achievementCount++; }
+                if (cur == true && !value) { gc!.sessionDataBig!.achievementUnlocks!.Remove(Unlock); Unlock.achievementCount--; }
+                else if (cur == false && value) { gc!.sessionDataBig!.achievementUnlocks!.Add(Unlock); Unlock.achievementCount++; }
             }
         }
 
