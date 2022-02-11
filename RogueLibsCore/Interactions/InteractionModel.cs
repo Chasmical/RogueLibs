@@ -8,10 +8,7 @@ namespace RogueLibsCore
 {
     public abstract class InteractionModel : HookBase<PlayfieldObject>
     {
-        protected InteractionModel()
-        {
-            Interactions = new ReadOnlyCollection<Interaction>(interactions);
-        }
+        protected InteractionModel() => Interactions = new ReadOnlyCollection<Interaction>(interactions);
 
         public new PlayfieldObject Instance => base.Instance;
         public PlayfieldObject Object => base.Instance;

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace RogueLibsCore
@@ -39,7 +36,8 @@ namespace RogueLibsCore
             RogueInteractions.CreateProvider(h =>
             {
                 if (!h.Helper.interactingFar) return;
-                if (h.Object is AlarmButton)
+                PlayfieldObject obj = h.Object;
+                if (obj is AlarmButton or AmmoDispenser)
                 {
                     if (h.Agent.oma.superSpecialAbility && h.Agent.agentName == "Hacker"
                         || h.Agent.statusEffects.hasTrait("HacksBlowUpObjects"))
@@ -52,18 +50,22 @@ namespace RogueLibsCore
             {
                 if (h.Object is ObjectReal objReal && objReal.CanCollectAlienPart())
                 {
-                    h.AddButton("CollectPart", m =>
+                    if (objReal is AmmoDispenser || objReal is ATMMachine || objReal is AugmentationBooth || objReal is CapsuleMachine
+                        || objReal is CloneMachine || objReal is LoadoutMachine || objReal is PawnShopMachine)
                     {
-                        m.Object.StartCoroutine(m.Object.Operating(m.Agent, null, 5f, true, "Collecting"));
-                        if (!m.Agent.statusEffects.hasTrait("OperateSecretly") && m.Object.functional)
+                        h.AddButton("CollectPart", m =>
                         {
-                            m.gc.spawnerMain.SpawnNoise(m.Object.tr.position, 1f, m.Agent, "Normal", m.Agent);
-                            m.gc.audioHandler.Play(m.Object, "Hack");
-                            (m.Object as ObjectReal)?.SpawnParticleEffect("Hack", m.Object.tr.position);
-                            m.gc.spawnerMain.SpawnStateIndicator(m.Object, "HighVolume");
-                            m.gc.OwnCheck(m.Agent, m.Object.go, "Normal", 0);
-                        }
-                    });
+                            m.Object.StartCoroutine(m.Object.Operating(m.Agent, null, 5f, true, "Collecting"));
+                            if (!m.Agent.statusEffects.hasTrait("OperateSecretly") && m.Object.functional)
+                            {
+                                m.gc.spawnerMain.SpawnNoise(m.Object.tr.position, 1f, m.Agent, "Normal", m.Agent);
+                                m.gc.audioHandler.Play(m.Object, "Hack");
+                                (m.Object as ObjectReal)?.SpawnParticleEffect("Hack", m.Object.tr.position);
+                                m.gc.spawnerMain.SpawnStateIndicator(m.Object, "HighVolume");
+                                m.gc.OwnCheck(m.Agent, m.Object.go, "Normal", 0);
+                            }
+                        });
+                    }
                 }
             });
             RogueInteractions.CreateProvider(h =>
@@ -73,7 +75,7 @@ namespace RogueLibsCore
             RogueLibs.CreateCustomName("InteractionsPatched", NameTypes.Interface, new CustomNameInfo
             {
                 English = "I am patched!",
-				Russian = "Я пропатчен!",
+                Russian = "Я пропатчен!",
             });
 
             Patch<AirConditioner>(params2);
@@ -173,7 +175,7 @@ namespace RogueLibsCore
                     {
                         h.AddButton("RefillGun", m => m.Object.ShowUseOn("RefillGun"));
                     }
-					if (h.Agent.statusEffects.hasTrait("OilRestoresHealth"))
+                    if (h.Agent.statusEffects.hasTrait("OilRestoresHealth"))
                     {
                         InvItem invItem = new InvItem { invItemName = "OilContainer", invItemCount = 1 };
                         invItem.ItemSetup(false);
@@ -262,11 +264,11 @@ namespace RogueLibsCore
         }
         public static bool DetermineButtonsHook(PlayfieldObject __instance)
         {
-			#region Re-implementing base.DetermineButtons()
+            #region Re-implementing base.DetermineButtons()
             __instance.buttons.Clear();
             __instance.buttonPrices.Clear();
             __instance.buttonsExtra.Clear();
-			#endregion
+            #endregion
 
             __instance.GetHook<InteractionModel>()?.OnDetermineButtons();
             return false;
@@ -286,8 +288,8 @@ namespace RogueLibsCore
 
         public static bool InteractHook(PlayfieldObject __instance, Agent agent)
         {
-			#region Re-implementing base.Interact(agent)
-			// PlayfieldObject.Interact
+            #region Re-implementing base.Interact(agent)
+            // PlayfieldObject.Interact
             __instance.interactingAgent = agent;
             __instance.hasInteracted = true;
             __instance.someoneInteracting = true;
@@ -312,12 +314,12 @@ namespace RogueLibsCore
             }
             // ObjectReal.Interact
             __instance.playerInvDatabase = agent.GetComponent<InvDatabase>();
-			#endregion
+            #endregion
 
             __instance.ShowObjectButtons();
             return false;
         }
-		// unnecessary?
+        // unnecessary?
         public static bool InteractFarHook(PlayfieldObject __instance, Agent agent)
         {
             // TODO
