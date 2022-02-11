@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace RogueLibsCore
 {
-	public abstract class CustomWeaponMelee : CustomItem
-	{
+    public abstract class CustomWeaponMelee : CustomItem
+    {
 
-	}
+    }
 }

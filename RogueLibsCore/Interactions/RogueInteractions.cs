@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace RogueLibsCore
 {
-	public static class RogueInteractions
+    public static class RogueInteractions
     {
         public static readonly List<IInteractionProvider> Providers = new List<IInteractionProvider>();
 
         public static SimpleInteractionProvider<T> CreateProvider<T>(Action<SimpleInteractionProvider<T>> handler) where T : PlayfieldObject
         {
-			SimpleInteractionProvider<T> provider = new SimpleInteractionProvider<T>(handler);
+            SimpleInteractionProvider<T> provider = new SimpleInteractionProvider<T>(handler);
             Providers.Add(provider);
             return provider;
         }

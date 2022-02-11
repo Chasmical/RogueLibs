@@ -11,74 +11,74 @@ using UnityEngine.Diagnostics;
 
 namespace RogueLibsCore
 {
-	[BepInPlugin(RogueLibs.GUID, RogueLibs.Name, RogueLibs.CompiledVersion)]
-	[BepInIncompatibility("abbysssal.streetsofrogue.ectd")]
-	[BepInIncompatibility("abbysssal.streetsofrogue.roguelibs")]
-	internal sealed partial class RogueLibsPlugin : BaseUnityPlugin
-	{
-		public RoguePatcher Patcher;
+    [BepInPlugin(RogueLibs.GUID, RogueLibs.Name, RogueLibs.CompiledVersion)]
+    [BepInIncompatibility("abbysssal.streetsofrogue.ectd")]
+    [BepInIncompatibility("abbysssal.streetsofrogue.roguelibs")]
+    internal sealed partial class RogueLibsPlugin : BaseUnityPlugin
+    {
+        public RoguePatcher Patcher;
 
         private static int awoken;
-		public void Awake()
-		{
-			if (Interlocked.Exchange(ref awoken, 1) == 1)
-			{
-				Logger.LogError("A second instance of RogueLibs was awakened, so it was terminated immediately.");
-				return;
-			}
+        public void Awake()
+        {
+            if (Interlocked.Exchange(ref awoken, 1) == 1)
+            {
+                Logger.LogError("A second instance of RogueLibs was awakened, so it was terminated immediately.");
+                return;
+            }
 
-			string invalidPatcherPath = Path.Combine(Paths.PluginPath, "RogueLibsPatcher.dll");
-			if (File.Exists(invalidPatcherPath))
-			{
-				Logger.LogWarning("Moved RogueLibsPatcher.dll from \\BepInEx\\plugins to \\BepInEx\\patchers.");
-				File.Move(invalidPatcherPath, Path.Combine(Paths.PatcherPluginPath, "RogueLibsPatcher.dll"));
+            string invalidPatcherPath = Path.Combine(Paths.PluginPath, "RogueLibsPatcher.dll");
+            if (File.Exists(invalidPatcherPath))
+            {
+                Logger.LogWarning("Moved RogueLibsPatcher.dll from \\BepInEx\\plugins to \\BepInEx\\patchers.");
+                File.Move(invalidPatcherPath, Path.Combine(Paths.PatcherPluginPath, "RogueLibsPatcher.dll"));
 
-				string[] cmdArgs = Environment.GetCommandLineArgs();
-				string fileName = cmdArgs[0];
-				StringBuilder args = new StringBuilder();
-				for (int i = 1; i < cmdArgs.Length; i++)
-					args.Append(' ').Append('\"').Append(cmdArgs[i].Replace("\"", "\\\"")).Append('\"');
+                string[] cmdArgs = Environment.GetCommandLineArgs();
+                string fileName = cmdArgs[0];
+                StringBuilder args = new StringBuilder();
+                for (int i = 1; i < cmdArgs.Length; i++)
+                    args.Append(' ').Append('\"').Append(cmdArgs[i].Replace("\"", "\\\"")).Append('\"');
 
-				Directory.Delete(Application.temporaryCachePath, true);
+                Directory.Delete(Application.temporaryCachePath, true);
 
-				// Process.Start(fileName, args.ToString());
+                // Process.Start(fileName, args.ToString());
 
-				Application.Quit(0);
-				Logger.LogError("\n==================================" +
-				                "\n‖‖‖ Restart the game manually! ‖‖‖" +
-				                "\n==================================");
-				Thread.Sleep(3000);
-				Process.GetCurrentProcess().Kill();
-				return;
-			}
+                Application.Quit(0);
+                Logger.LogError("\n==================================" +
+                                "\n‖‖‖ Restart the game manually! ‖‖‖" +
+                                "\n==================================");
+                Thread.Sleep(3000);
+                Process.GetCurrentProcess().Kill();
+                return;
+            }
 
-			Logger.LogInfo($"Running RogueLibs v{RogueLibs.CompiledSemanticVersion}.");
-			Stopwatch sw = new Stopwatch();
-			sw.Start();
+            Logger.LogInfo($"Running RogueLibs v{RogueLibs.CompiledSemanticVersion}.");
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
 
-			RogueFramework.Plugin = this;
-			RogueFramework.Logger = Logger;
+            RogueFramework.Plugin = this;
+            RogueFramework.Logger = Logger;
 
-			Patcher = new RoguePatcher(this);
+            Patcher = new RoguePatcher(this);
 #if DEBUG
-			Patcher.EnableStopwatch = true;
+            Patcher.EnableStopwatch = true;
 #endif
-			PatchAbilities();
-			PatchCharacterCreation();
-			PatchItems();
-			PatchMisc();
-			PatchScrollingMenu();
-			PatchSprites();
-			PatchTraitsAndStatusEffects();
-			PatchUnlocks();
-			PatchAgents();
+            PatchAbilities();
+            PatchCharacterCreation();
+            PatchItems();
+            PatchMisc();
+            PatchScrollingMenu();
+            PatchSprites();
+            PatchTraitsAndStatusEffects();
+            PatchUnlocks();
+            PatchAgents();
             PatchInteractions();
 #if DEBUG
-			Patcher.SortResults();
-			Patcher.LogResults();
+            Patcher.SortResults();
+            Patcher.LogResults();
 #endif
-			sw.Stop();
-			Logger.LogDebug($"RogueLibs took {sw.ElapsedMilliseconds,5:#####} ms to load.");
-		}
+            sw.Stop();
+            Logger.LogDebug($"RogueLibs took {sw.ElapsedMilliseconds,5:#####} ms to load.");
+        }
     }
 }

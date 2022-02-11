@@ -4,23 +4,23 @@ using Mono.Cecil;
 
 namespace RogueLibsPatcher.Console
 {
-	public static class Program
-	{
-		public static void Main()
-		{
-			string path = System.Console.ReadLine();
-			path = path.Trim('"');
-			string newPath = path + "2";
-			AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters()
+    public static class Program
+    {
+        public static void Main()
+        {
+            string path = System.Console.ReadLine();
+            path = path.Trim('"');
+            string newPath = path + "2";
+            AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters()
             {
-				AssemblyResolver = new CustomResolver(),
+                AssemblyResolver = new CustomResolver(),
             });
-			RogueLibsPatcher.Patch(assembly);
+            RogueLibsPatcher.Patch(assembly);
             assembly.Write(newPath);
-			assembly.Dispose();
-			File.Copy(newPath, path, true);
-			File.Delete(newPath);
-		}
+            assembly.Dispose();
+            File.Copy(newPath, path, true);
+            File.Delete(newPath);
+        }
         private class CustomResolver : BaseAssemblyResolver
         {
             private readonly DefaultAssemblyResolver _defaultResolver;
@@ -44,5 +44,5 @@ namespace RogueLibsPatcher.Console
                 return assembly;
             }
         }
-	}
+    }
 }

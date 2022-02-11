@@ -5,18 +5,18 @@ using System.Linq;
 
 namespace RogueLibsCore
 {
-	public abstract class Interaction
-	{
-		public InteractionModel Model { get; internal set; }
+    public abstract class Interaction
+    {
+        public InteractionModel Model { get; internal set; }
         public PlayfieldObject Object => Model.Object;
         public Agent Agent => Model.Agent;
         public InteractionHelper Helper => Model.Helper;
 
         public virtual bool ImplicitAction => false;
 
-		public string ButtonName { get; private set; }
-		public int? ButtonPrice { get; private set; }
-		public string ButtonExtra { get; private set; }
+        public string ButtonName { get; private set; }
+        public int? ButtonPrice { get; private set; }
+        public string ButtonExtra { get; private set; }
 
         protected bool SetButton(string buttonName)
             => SetButton(buttonName, null, null);
@@ -45,12 +45,12 @@ namespace RogueLibsCore
         public virtual void OnPressedImplicitly() => OnPressed();
 
         public virtual void OnOpen() { }    // TODO
-		public virtual void WhileOpen() { } // TODO
-		public virtual void OnClose() { }   // TODO
+        public virtual void WhileOpen() { } // TODO
+        public virtual void OnClose() { }   // TODO
 
         public virtual void OnMouseEnter() { } // TODO
-		public virtual void OnMouseOver() { }  // TODO
-		public virtual void OnMouseExit() { }  // TODO
+        public virtual void OnMouseOver() { }  // TODO
+        public virtual void OnMouseExit() { }  // TODO
 
     }
     public abstract class CustomInteraction : Interaction
@@ -123,7 +123,7 @@ namespace RogueLibsCore
 
         private void EnsureModel()
         {
-			if (_model is null) throw new InvalidOperationException(
+            if (_model is null) throw new InvalidOperationException(
                 "SimpleInteractionProvider<T> instance must only be accessed in the handler delegate."
                 + " In button callbacks use the passed parameter to access associated properties.");
         }
@@ -179,7 +179,7 @@ namespace RogueLibsCore
         public Agent Agent => Model.Agent;
         public InteractionHelper Helper => Model.Helper;
         // ReSharper disable once InconsistentNaming
-		[SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "That's how it's called in the original code")]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "That's how it's called in the original code")]
         public GameController gc => GameController.gameController;
 
         IEnumerable<Interaction> IInteractionProvider.GetInteractions(InteractionModel model)
@@ -212,7 +212,7 @@ namespace RogueLibsCore
 
         private void EnsureModel()
         {
-			if (_model is null) throw new InvalidOperationException(
+            if (_model is null) throw new InvalidOperationException(
                 "SimpleInteractionProvider<T> instance must only be accessed in the handler delegate."
                 + " In button callbacks use the passed parameter to access associated properties.");
         }
@@ -268,7 +268,7 @@ namespace RogueLibsCore
         public Agent Agent => Model.Agent;
         public InteractionHelper Helper => Model.Helper;
         // ReSharper disable once InconsistentNaming
-		[SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "That's how it's called in the original code")]
+        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "That's how it's called in the original code")]
         public GameController gc => GameController.gameController;
 
         IEnumerable<Interaction> IInteractionProvider.GetInteractions(InteractionModel model)

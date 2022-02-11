@@ -29,12 +29,12 @@ namespace RogueLibsCore
 
         public void OnDetermineButtons()
         {
-			// reset state
+            // reset state
             interactions.Clear();
             shouldStop = false;
             CancelCallback = null;
 
-			// repopulate the interactions
+            // repopulate the interactions
             foreach (IInteractionProvider provider in RogueInteractions.Providers)
             {
                 try
@@ -47,20 +47,20 @@ namespace RogueLibsCore
                     RogueFramework.LogError(e.ToString());
                 }
             }
-			// set interactions' Model property
+            // set interactions' Model property
             interactions.ForEach(i => i.Model = this);
 
-			// remove those that couldn't set up // TODO: try-catch
+            // remove those that couldn't set up // TODO: try-catch
             interactions.RemoveAll(i => !i.SetupButton() || i.ButtonName is null);
 
-			// if there are no buttons, or one of them cancelled the entire interaction
+            // if there are no buttons, or one of them cancelled the entire interaction
             if (interactions.Count is 0 || shouldStop)
             {
                 CancelCallback?.Invoke(); // TODO: try-catch
                 Instance.StopInteraction();
                 return;
             }
-			// if there's only one button and its action is implicit
+            // if there's only one button and its action is implicit
             if (interactions.Count is 1 && interactions[0].ImplicitAction) // TODO: try-catch
             {
                 interactions[0].OnPressedImplicitly(); // TODO: try-catch
@@ -76,14 +76,14 @@ namespace RogueLibsCore
                 Instance.buttonsExtra.Add(interaction.ButtonExtra ?? string.Empty);
             }
 
-			// invoke OnOpen method, because right after this, a menu will show up.
-			// TODO: maybe we should rely on ShowObjectButtons() explicitly instead of this assumption
+            // invoke OnOpen method, because right after this, a menu will show up.
+            // TODO: maybe we should rely on ShowObjectButtons() explicitly instead of this assumption
             interactions.ForEach(i => i.OnOpen()); // TODO: try-catch
 
         }
         public void OnPressedButton(string buttonName)
         {
-			// reset state
+            // reset state
             shouldStop = false;
             CancelCallback = null;
 
@@ -93,7 +93,7 @@ namespace RogueLibsCore
                 Instance.StopInteraction();
                 return;
             }
-			// find the button that was pressed
+            // find the button that was pressed
             Interaction pressed = interactions.Find(i => i.ButtonName == buttonName);
             if (pressed is null)
             {
@@ -101,9 +101,9 @@ namespace RogueLibsCore
                 RogueFramework.LogDebug($"Available: {string.Join(",", interactions.Select(i => i.ButtonName))}.");
                 return;
             }
-			// press the button
+            // press the button
             pressed.OnPressed(); // TODO: try-catch
-			// if the button's action is 'final' or was unsuccessful
+            // if the button's action is 'final' or was unsuccessful
             if (shouldStop)
             {
                 CancelCallback?.Invoke(); // TODO: try-catch
@@ -111,7 +111,7 @@ namespace RogueLibsCore
                 return;
             }
 
-			// TODO: re-render the menu; this might be really complicated
+            // TODO: re-render the menu; this might be really complicated
 
         }
 
