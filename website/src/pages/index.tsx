@@ -5,7 +5,7 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import styles from './index.module.css';
 import HomepageFeatures from '../components/HomepageFeatures';
-import useThemeContext from '@theme-original/hooks/useThemeContext';
+import { useColorMode } from '@docusaurus/theme-common';
 import Logo from '@site/static/img/logo.png';
 import LogoDark from '@site/static/img/logo-inverted.png';
 import LogoPokemon from '@site/static/img/logo-pokemon.png';
@@ -14,7 +14,7 @@ import { useLocation } from '@docusaurus/router';
 import { parse as queryParse } from 'query-string';
 
 function HomepageHeader() {
-  const { isDarkTheme } = useThemeContext();
+  const { isDarkTheme } = useColorMode();
   const params = queryParse(useLocation().search);
   let logo = isDarkTheme ? LogoDark : Logo;
   console.log(logo);

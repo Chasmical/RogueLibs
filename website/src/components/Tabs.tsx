@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import useUserPreferencesContext from '@theme/hooks/useUserPreferencesContext';
+import { useTabGroupChoice } from '@docusaurus/theme-common';
 import clsx from 'clsx';
 import styles from './Tabs.module.css';
 
@@ -24,7 +24,7 @@ export type Props = {
 
 export default function(props: Props) {
   const { lazy, defaultValue, values, groupId } = props;
-  const {tabGroupChoices, setTabGroupChoices} = useUserPreferencesContext();
+  const {tabGroupChoices, setTabGroupChoices} = useTabGroupChoice();
   const [selectedValue, setSelectedValue] = useState(defaultValue);
   const children = React.Children.toArray(props.children);
   const tabRefs: (EventTarget | HTMLLIElement)[] = [];

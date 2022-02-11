@@ -5,21 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-.anchor {
-  display: block;
-  position: relative;
-  top: -0.5rem;
-}
-
 .hash-link {
-  position: absolute;
-  left: -0.75em;
   opacity: 0;
-  padding-right: 0.5rem;
+  padding-left: 0.5rem;
   transition: opacity var(--ifm-transition-fast);
+  user-select: none;
 }
 
-.hash-link:focus,
-*:hover > .hash-link {
+.hash-link::before {
+  content: '#';
+}
+
+.hash-link:focus, *:hover > .hash-link {
   opacity: 1;
 }
