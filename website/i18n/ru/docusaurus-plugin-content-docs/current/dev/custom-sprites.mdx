@@ -6,36 +6,28 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## Добавляем спрайты как ресурсы {#sprites-as-resources}
 
-Во-первых, возьмите свои спрайты и конвертируйте их в PNG или JPEG, если они уже не в PNG или JPEG формате.
+Во-первых, кодируйте ваши изображения в PNG или JPG формате, а аудиоклипы в MP3, OGG или WAV.
 
-Потом, измените расширения файлов на `.bin`. Таким образом Visual Studio определит файлы как двоичные данные вместо растровых изображений.
+Потом перейдите в Свойства вашего проекта и создайте файл ресурсов, если его там нету.
 
-:::note
-К сожалению, мы не можем импортировать изображения из растровых изображений, так как System.Drawing.dll Unity просто заполнен обрубками. И поэтому, нам придётся импортировать изображения как двоичные данные, пока кто-нибудь не найдёт решение получше.
-:::
+<img src={useBaseUrl('/img/setup/resources.png')} width='600'/>
 
-<img src={useBaseUrl('/img/i18n/ru/custom-sprites/rename-bin.png')} width='500'/>
+Откройте `Resources.resx` в вашем проекте в стороннем редакторе и добавьте следующий элемент в конец:
 
-Нажмите правой кнопкой по своему проекту, перейдите в са-а-амый низ и выберите **Свойства**:
+```xml
+  <!-- ... -->
+// highlight-start
+  <data name="MyAwesomeSprite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MyAwesomeSprite.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+// highlight-end
+</root>
+```
 
-<img src={useBaseUrl('/img/i18n/ru/custom-sprites/project-properties.png')} width='300'/>
+Вам надо только изменить атрибут `name` и первую часть элемента `value` для ваших ресурсов. После этого вы сможете обращаться к ним так: `Properties.Resources.MyAwesomeSprite`. Вы можете делать то же самое и с другими типами файлов, например аудиоклипами, шрифтами и моделями.
 
-Перейдите во вкладку **Ресурсы** и нажмите на *ту* кнопку, чтобы создать файл с ресурсами:
-
-<img src={useBaseUrl('/img/i18n/ru/custom-sprites/create-resources.png')} width='800'/>
-
-Выберите **Добавить ресурс** на верху меню и нажмите **Добавить существующий файл...**:
-
-<img src={useBaseUrl('/img/i18n/ru/custom-sprites/add-resources.png')} width='600'/>
-
-Теперь найдите свои изображения (с расширением `.bin`) и добавьте их как ресурсы:
-
-<img src={useBaseUrl('/img/i18n/ru/custom-sprites/select-resources.png')} width='600'/>
-
-Теперь вы можете ссылаться на данные ваших спрайтов из кода таким образом: `Properties.Resources.<НазваниеРесурса>`.
-
-:::note
-Если у вас ошибка, то убедитесь, что пространство имён по умолчанию, указанное в свойствах проекта во вкладке **Приложение**, то же самое, что вы и используете.
+:::info
+Если у вас не получается обращаться к ресурсам после этого, попробуйте добавить простой ресурс-строку в `Resources.resx` используя редактор в Visual Studio по умолчанию и удалить его, или же попробуйте переименовать уже существующий ресурс, сохранить и переименовать его обратно.
 :::
 
 ## `RogueSprite` {#roguesprite}
@@ -64,7 +56,7 @@ RogueLibs.CreateCustomSprite("name", SpriteScope.Items, Properties.Resources.Res
 ```csharp
 RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceName,
                                 // highlight-next-line
-                                new Rect(32f, 32f, 64f, 64f));
+                                new Rect(0f, 0f, 64f, 64f));
 ```
 
 Если вы используете текстуры размером, отличающимся от 64x64, то вам также надо указать PPU (pixels-per-unit) параметр:
@@ -94,16 +86,16 @@ public class Present : CustomItem, IItemUsable
     }
 
     public override void SetupDetails()
-	{
+    {
         /* ... */
-		int rnd = new Random().Next(3) + 1;
+        int rnd = new Random().Next(3) + 1;
         // случайное целое число x, такое что 1 ≤ x ≤ 3
 
         if (rnd != 1) // загрузить другой спрайт, если это 2 или 3
-		    Item.LoadItemSprite($"Present{rnd}");
+        Item.LoadItemSprite($"Present{rnd}");
 
         // если это 1, спрайт "Present" будет использован по умолчанию
-	}
+    }
 }
 ```
 

@@ -270,7 +270,7 @@ public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerabl
         {
             new CodeInstruction(OpCodes.Pop),
             new CodeInstruction(OpCodes.Pop),
-            new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize)))
+            new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(LoadUnlockWrappersAndCategorize))),
         });
 
 private static readonly MethodInfo List_Unlock_GetEnumerator = typeof(List<Unlock>).GetMethod("GetEnumerator");

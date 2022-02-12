@@ -53,17 +53,16 @@ public virtual void UpdateUnlock()
 
 // determines whether the unlock can be unlocked right now
 public virtual bool CanBeUnlocked() => UnlockCost > -1
-    && Unlock.prerequisites.All(c => gc.sessionDataBig.unlocks.Exists(u => u.unlockName == c && u.unlocked));
+    && Unlock.prerequisites.TrueForAll(c => gc.sessionDataBig.unlocks.Exists(u => u.unlockName == c && u.unlocked));
 
 // gets the unlock's raw name, without any rich text, costs and values
-public virtual string GetName() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockNameType) : "?????";
+public virtual string GetName() => gc.nameDB.GetName(Name, Unlock.unlockNameType);
 
 // gets the unlock's raw description, without any rich text, costs and values
-public virtual string GetDescription() => IsUnlocked || Unlock.nowAvailable ? gc.nameDB.GetName(Name, Unlock.unlockDescriptionType) : "?????";
+public virtual string GetDescription() => gc.nameDB.GetName(Name, Unlock.unlockDescriptionType);
 
 // gets the unlock's image (displayed in the menus)
-public virtual Sprite GetImage() => (IsUnlocked || Unlock.nowAvailable)
-    && RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image : null;
+public virtual Sprite GetImage() => RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image;
 ```
 
 :::tip Pro-tip
@@ -133,9 +132,7 @@ public class PresentUnlock : ItemUnlock
     public override Sprite GetImage()
     {
         int rnd = new System.Random().Next(3) + 1;
-        return (IsUnlocked || Unlock.nowAvailable) && rnd != 1
-            && gc.gameResources.itemDic.TryGetValue($"Present{rnd}", out Sprite sprite)
-            ? sprite : base.GetImage();
+        return gc.gameResources.itemDic[$"Present{rnd}"];
     }
 }
 ```
@@ -281,7 +278,7 @@ public class MyCategory : MutatorUnlock
         }
     }
 
-    public override void GetFancyName()
+    public override string GetFancyName()
     {
         string name = base.GetFancyName();
         name += " - " +  gc.nameDB.GetName(IsExpanded ? "CategoryHide" : "CategoryShow", "Interface");
@@ -289,7 +286,7 @@ public class MyCategory : MutatorUnlock
     }
     public override void OnPushedButton()
     {
-        if (Menu.Type == UnlocksMenuType.MutatorMenu)
+        if (Menu!.Type == UnlocksMenuType.MutatorMenu)
         {
             PlaySound("ClickButton");
             // toggle the IsExpanded property

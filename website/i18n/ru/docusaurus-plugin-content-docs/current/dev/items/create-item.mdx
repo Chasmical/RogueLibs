@@ -345,35 +345,3 @@ public class MyCustomItem : CustomItem
 
 </TabItem>
 </Tabs>
-
-## Генератор кода `SetupDetails` {#setupdetails-codegen}
-
-:::caution Work-In-Progress
-Генератор кода ещё в процессе написания, но, как видите, он будет реально крутым. Всё в точности до каждого пикселя и оттенка. Всё сгруппированно и всякое такое.
-:::
-
-import { useState } from 'react';
-import { Dropdown, DropdownHeader, DropdownOption, DropdownDivider } from '@site/src/components/Dropdown';
-
-export function Test({...props}) {
-  const [item, setItem] = useState("Food");
-  return (
-    <Dropdown onChange={e => setItem(e.values[0])}>
-      <DropdownHeader>{`Тип предмета: ${item}`}</DropdownHeader>
-      {"Обычные:"}
-      <DropdownOption value="Food"/>
-      <DropdownOption value="Consumable"/>
-      <DropdownOption value="Tool"/>
-      <DropdownOption value="Combine" label="Combinable"/>
-      <DropdownDivider/>
-      {"Оружие:"}
-      <DropdownOption value="WeaponMelee" label="Melee Weapon"/>
-      <DropdownOption value="WeaponThrown" label="Thrown Weapon"/>
-      <DropdownOption value="WeaponProjectile" label="Projectile Weapon"/>
-      <DropdownDivider/>
-      <DropdownOption value="Wearable"/>
-    </Dropdown>
-  );
-};
-
-<Test/>

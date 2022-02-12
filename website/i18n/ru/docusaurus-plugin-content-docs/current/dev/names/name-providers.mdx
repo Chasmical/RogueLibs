@@ -9,7 +9,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 ```csharp title="MyNameProvider.cs"
 public class MyNameProvider : INameProvider
 {
-    public void GetName(string name, string type, ref string result)
+    public void GetName(string name, string type, ref string? result)
     {
         if (name.StartsWith("fake_"))
         {
@@ -33,7 +33,7 @@ RogueFramework.NameProviders.Add(new MyNameProvider());
 ```csharp
 public class DialogueNameProvider : INameProvider
 {
-	public void GetName(string name, string type, ref string result)
+	public void GetName(string name, string type, ref string? result)
 	{
 		if (result is null && type == "Dialogue" && name.StartsWith("NA_"))
 		{

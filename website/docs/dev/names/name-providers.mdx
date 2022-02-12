@@ -9,7 +9,7 @@ If you have some kind of complicated naming strategy, then you might want to use
 ```csharp title="MyNameProvider.cs"
 public class MyNameProvider : INameProvider
 {
-    public void GetName(string name, string type, ref string result)
+    public void GetName(string name, string type, ref string? result)
     {
         if (name.StartsWith("fake_"))
         {
@@ -33,7 +33,7 @@ Here's a more practical and useful example, that is already implemented in Rogue
 ```csharp
 public class DialogueNameProvider : INameProvider
 {
-	public void GetName(string name, string type, ref string result)
+	public void GetName(string name, string type, ref string? result)
 	{
 		if (result is null && type == "Dialogue" && name.StartsWith("NA_"))
 		{
