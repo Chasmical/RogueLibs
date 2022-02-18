@@ -23,7 +23,7 @@ namespace RogueLibsCore
                         });
                     }
                 }
-                else if (!h.Object.isBrokenShowButtons())
+                else if (h.Object.functional)
                 {
                     h.SetStopCallback(static m => m.Agent.SayDialogue("CantUseAmmoDispenser"));
 

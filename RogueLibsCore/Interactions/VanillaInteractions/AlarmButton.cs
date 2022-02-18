@@ -25,7 +25,7 @@
                         });
                     }
                 }
-                else if (!h.Object.isBroken())
+                else if (h.Object.functional)
                 {
                     h.AddImplicitButton("PressAlarmButton", static m =>
                     {

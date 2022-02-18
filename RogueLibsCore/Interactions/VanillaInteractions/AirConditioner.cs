@@ -15,7 +15,7 @@
                     h.SetStopCallback(static m => m.Agent.SayDialogue("AlreadyGassing"));
                     return;
                 }
-                if (!h.Object.isBroken())
+                if (h.Object.functional)
                 {
                     if (h.Agent.inventory.InvItemList.Exists(item => h.Object.playerHasUsableItem(item)))
                         h.AddButton("InsertItem", static m => m.Object.ShowUseOn("InsertItem"));
