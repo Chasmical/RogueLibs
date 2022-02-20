@@ -290,7 +290,11 @@ namespace RogueLibsCore
                     IsAddedToCC = !IsAddedToCC;
                     if (IsAddedToCC)
                         foreach (DisplayedUnlock du in EnumerateCancellations())
-                            ((IUnlockInCC)du).IsAddedToCC = false;
+                            if (((IUnlockInCC)du).IsAddedToCC)
+                            {
+                                ((IUnlockInCC)du).IsAddedToCC = false;
+                                du.UpdateButton();
+                            }
                     UpdateButton();
                     UpdateMenu();
                 }

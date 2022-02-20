@@ -75,7 +75,11 @@
                     IsEnabled = !IsEnabled;
                     if (IsEnabled)
                         foreach (DisplayedUnlock du in EnumerateCancellations())
-                            du.IsEnabled = false;
+                            if (du.IsEnabled)
+                            {
+                                du.IsEnabled = false;
+                                du.UpdateButton();
+                            }
                     SendAnnouncementInChat(IsEnabled ? "AddedChallenge" : "RemovedChallenge", Name);
                     UpdateButton();
                     UpdateMenu();
