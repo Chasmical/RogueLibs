@@ -123,7 +123,8 @@ namespace RogueLibsCore
             __instance.playerInvDatabase = agent.GetComponent<InvDatabase>();
             #endregion
 
-            __instance.ShowObjectButtons();
+            if (__instance.buttons.Count > 0)
+                __instance.ShowObjectButtons();
             return false;
         }
         // unnecessary?

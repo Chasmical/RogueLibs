@@ -111,8 +111,8 @@ namespace RogueLibsCore
                 return;
             }
 
-            // TODO: re-render the menu; this might be really complicated
-
+            // refresh the buttons (restarts the cycle)
+            Agent.worldSpaceGUI.StartCoroutine(Agent.worldSpaceGUI.RefreshObjectButtons2(Object));
         }
 
     }
