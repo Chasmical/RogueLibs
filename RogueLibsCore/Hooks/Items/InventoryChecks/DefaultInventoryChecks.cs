@@ -105,7 +105,7 @@
         public static void OnlyBloodMedicineCheck(OnItemUsingArgs e)
         {
             if (e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health")
-                && e.User.HasTrait("BloodRestoresHealth"))
+                && e.User.HasTrait("BloodRestoresHealth") && !e.Item.Categories.Contains("Blood"))
             {
                 if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
                     RogueFramework.LogDebug("---- Triggered \"OnlyBloodMedicine\" inventory check.");

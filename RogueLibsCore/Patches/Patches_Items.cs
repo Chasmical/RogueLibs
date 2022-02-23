@@ -40,6 +40,11 @@ namespace RogueLibsCore
 
         public static void InvItem_SetupDetails(InvItem __instance)
         {
+            switch (__instance.invItemName)
+            {
+                case "BloodBag": __instance.Categories.Add("Blood"); break;
+            }
+
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
             bool debug2 = RogueFramework.IsDebugEnabled(DebugFlags.Abilities);
             foreach (IHookFactory<InvItem> factory in RogueFramework.ItemFactories)
