@@ -2,7 +2,7 @@
 
 namespace RogueLibsCore
 {
-    internal sealed partial class RogueLibsPlugin
+    public sealed partial class RogueLibsPlugin
     {
         public void PatchAgents()
         {

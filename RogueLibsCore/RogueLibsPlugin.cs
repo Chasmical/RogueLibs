@@ -11,7 +11,7 @@ namespace RogueLibsCore
     [BepInPlugin(RogueLibs.GUID, RogueLibs.Name, RogueLibs.CompiledVersion)]
     [BepInIncompatibility(@"abbysssal.streetsofrogue.ectd")]
     [BepInIncompatibility(@"abbysssal.streetsofrogue.roguelibs")]
-    internal sealed partial class RogueLibsPlugin : BaseUnityPlugin
+    public sealed partial class RogueLibsPlugin : BaseUnityPlugin
     {
         public RoguePatcher Patcher = null!; // initialized in Awake()
 

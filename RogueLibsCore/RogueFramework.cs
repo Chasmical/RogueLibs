@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using BepInEx.Logging;
 using UnityEngine;
-using BepInEx;
 
 namespace RogueLibsCore
 {
@@ -14,7 +13,7 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>The RogueLibs' plugin instance.</para>
         /// </summary>
-        public static BaseUnityPlugin Plugin { get; internal set; } = null!; // set in RogueLibsPlugin.Awake()
+        public static RogueLibsPlugin Plugin { get; internal set; } = null!; // set in RogueLibsPlugin.Awake()
         internal static ManualLogSource Logger { get; set; } = null!; // set in RogueLibsPlugin.Awake()
 
         /// <summary>

@@ -10,7 +10,7 @@ namespace RogueLibsCore
 
         internal static void PatchAll()
         {
-            patcher = ((RogueLibsPlugin)RogueFramework.Plugin).Patcher;
+            patcher = RogueFramework.Plugin.Patcher;
             patcher.Postfix(typeof(PlayfieldObject), "Awake");
 
             object[] empty = new object[0];

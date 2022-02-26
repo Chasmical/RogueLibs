@@ -12,7 +12,7 @@ using static RogueLibsCore.VanillaItems;
 
 namespace RogueLibsCore
 {
-    internal sealed partial class RogueLibsPlugin
+    public sealed partial class RogueLibsPlugin
     {
         public void PatchUnlocks()
         {
