@@ -68,6 +68,6 @@
             Item.invInterface.HideTarget();
             return true;
         }
-        public CustomTooltip TargetCursorText(PlayfieldObject _) => DisguiseCursorText;
+        public CustomTooltip TargetCursorText(PlayfieldObject? _) => DisguiseCursorText;
     }
 }

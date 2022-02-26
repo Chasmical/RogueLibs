@@ -38,7 +38,7 @@ namespace RogueLibsCore.Test
             if (other.itemType != ItemTypes.Food || other.healthChange is 0
                 || !other.Categories.Contains(RogueCategories.Food)) return false;
 
-            SpicedHook hook = other.GetHook<SpicedHook>();
+            SpicedHook? hook = other.GetHook<SpicedHook>();
             return hook is null || hook.Spiciness < 3;
         }
         public bool CombineItems(InvItem other)
@@ -57,7 +57,7 @@ namespace RogueLibsCore.Test
         {
             if (!CombineFilter(other)) return default;
 
-            SpicedHook hook = other.GetHook<SpicedHook>();
+            SpicedHook? hook = other.GetHook<SpicedHook>();
             int bonus = hook is null ? (int)Mathf.Ceil(other.healthChange / 4f) : hook.HealthBonus;
             return new CustomTooltip($"+{bonus}", Color.green);
         }
