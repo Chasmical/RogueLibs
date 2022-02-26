@@ -26,9 +26,9 @@ Open your project's `Resources.resx` in an **external** editor and add the follo
 
 You only need to change the `name` attribute and the first part of the `value` element for your resources. Then you should be able to reference them like this: `Properties.Resources.MyAwesomeSprite`. You can do the same thing with other types of files as well, like audioclips, fonts and models.
 
-:::info
-If you can't reference it right after adding it, try adding a simple string resource to the `Resources.resx` using Visual Studio's default resources editor and then deleting it, or renaming an existing resource, saving, and then renaming it back.
-:::
+After changing the `.resx` file, go to your solution and rebuild the resources code by right-clicking on Resources.resx and selecting "Run Custom Tool".
+
+<img src={useBaseUrl('img/custom-sprites/run-custom-tool.png')} width='400'/>
 
 ## `RogueSprite` {#roguesprite}
 
