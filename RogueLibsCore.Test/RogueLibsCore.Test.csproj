@@ -25,6 +25,7 @@
   </Target>
 
   <ItemGroup>
+    <ProjectReference Include="..\RogueLibsCore\RogueLibsCore.csproj" />
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\.ref\Assembly-CSharp.dll</HintPath>
     </Reference>
@@ -33,9 +34,6 @@
     </Reference>
     <Reference Include="netstandard">
       <HintPath>..\..\.ref\static\netstandard.dll</HintPath>
-    </Reference>
-    <Reference Include="RogueLibsCore">
-      <HintPath>..\..\.ref\RogueLibsCore.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\..\.ref\static\UnityEngine.dll</HintPath>
