@@ -10,7 +10,13 @@
             MakeInteractable<Altar>();
             RogueInteractions.CreateProvider<Altar>(static h =>
             {
+                if (!h.Object.functional)
+                {
+                    h.SetStopCallback(static m => m.Agent.SayDialogue("ObjectBroken"));
+                    return;
+                }
                 if (h.Helper.interactingFar) return;
+
                 h.AddButton("MakeOffering", static m =>
                 {
                     if (m.Object.offeringsMade >= m.Object.offeringLimit)

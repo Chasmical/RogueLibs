@@ -130,8 +130,29 @@ namespace RogueLibsCore
         // unnecessary?
         public static bool InteractFarHook(PlayfieldObject __instance, Agent agent)
         {
-            // TODO
             #region Re-implementing base.InteractFar(agent)
+            // PlayfieldObject.InteractFar
+            __instance.interactingAgent = agent;
+            if (__instance.gc.multiplayerMode && !__instance.gc.serverPlayer)
+            {
+                agent.interactionHelper.clientInteracting = true;
+                Debug.Log("CmdInteractFar");
+                agent.objectMult.CallCmdInteractFar(__instance.objectNetID);
+            }
+            __instance.someoneInteracting = true;
+            agent.interactionHelper.interactingFar = true;
+            __instance.DetermineButtons();
+            if (__instance.playfieldObjectReal != null)
+                __instance.gc.playerAgent.SetCheckUseWithItemsAgain(__instance.playfieldObjectReal);
+            agent.interactionHelper.interactionObject = __instance.objectSprite.go;
+            agent.worldSpaceGUI.ShowObjectNameDisplay();
+            if (__instance.playfieldObjectType == "ObjectReal")
+                agent.worldSpaceGUI.objectNameDisplayText.text = __instance.GetComponent<ObjectReal>().objectRealRealName;
+            else if (__instance.playfieldObjectType == "Agent")
+                agent.worldSpaceGUI.objectNameDisplayText.text = __instance.GetComponent<Agent>().agentRealName;
+            agent.interactionHelper.interactingLimbo = 0f;
+            // ObjectReal.InteractFar
+            __instance.playerInvDatabase = agent.GetComponent<InvDatabase>();
             #endregion
             return false;
         }

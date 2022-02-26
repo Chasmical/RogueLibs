@@ -14,9 +14,14 @@
             });
             RogueInteractions.CreateProvider<AlarmButton>(static h =>
             {
+                if (!h.Object.functional)
+                {
+                    h.SetStopCallback(static m => m.Agent.SayDialogue("ObjectBroken"));
+                    return;
+                }
                 if (h.Helper.interactingFar)
                 {
-                    if (!h.Object.hacked)
+                    if (!h.Object.hacked && !h.Object.tempNoOperating)
                     {
                         h.AddButton("AllAccessAlarmButton", static m =>
                         {
@@ -25,7 +30,7 @@
                         });
                     }
                 }
-                else if (h.Object.functional)
+                else
                 {
                     h.AddImplicitButton("PressAlarmButton", static m =>
                     {

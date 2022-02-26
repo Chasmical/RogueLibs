@@ -111,6 +111,9 @@ namespace RogueLibsCore
                 return;
             }
 
+            // if the interaction opened the player's inventory, stop here
+            if (Agent.worldSpaceGUI.openedUseOn) return;
+
             // refresh the buttons (restarts the cycle)
             Agent.worldSpaceGUI.StartCoroutine(Agent.worldSpaceGUI.RefreshObjectButtons2(Object));
         }

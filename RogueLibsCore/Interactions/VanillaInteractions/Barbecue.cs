@@ -8,7 +8,13 @@
             Patch<Barbecue>(Params2);
             RogueInteractions.CreateProvider<Barbecue>(static h =>
             {
+                if (!h.Object.functional)
+                {
+                    h.SetStopCallback(static m => m.Agent.SayDialogue("ObjectBroken"));
+                    return;
+                }
                 if (h.Helper.interactingFar) return;
+
                 if (h.Object.burntOut)
                 {
                     h.SetStopCallback(static m => m.Agent.SayDialogue("BarbecueBurntOut"));

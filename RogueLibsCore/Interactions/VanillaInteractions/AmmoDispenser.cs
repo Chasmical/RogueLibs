@@ -11,6 +11,11 @@ namespace RogueLibsCore
             PatchInteract<AmmoDispenser>();
             RogueInteractions.CreateProvider<AmmoDispenser>(static h =>
             {
+                if (!h.Object.functional)
+                {
+                    h.SetStopCallback(static m => m.Agent.SayDialogue("ObjectBroken"));
+                    return;
+                }
                 if (h.Helper.interactingFar)
                 {
                     if (h.Object.hacked == 0)
@@ -23,7 +28,7 @@ namespace RogueLibsCore
                         });
                     }
                 }
-                else if (h.Object.functional)
+                else
                 {
                     h.SetStopCallback(static m => m.Agent.SayDialogue("CantUseAmmoDispenser"));
 

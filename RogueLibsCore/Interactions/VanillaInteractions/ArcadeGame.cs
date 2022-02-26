@@ -9,6 +9,11 @@
             PatchInteract<ArcadeGame>();
             RogueInteractions.CreateProvider<ArcadeGame>(static h =>
             {
+                if (!h.Object.functional)
+                {
+                    h.SetStopCallback(static m => m.Agent.SayDialogue("ObjectBroken"));
+                    return;
+                }
                 if (h.Helper.interactingFar && !h.Object.isHighVolume)
                 {
                     h.AddButton("IncreaseVolume", static m => m.Object.IncreaseVolume());
