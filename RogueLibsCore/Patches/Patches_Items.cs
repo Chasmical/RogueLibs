@@ -45,6 +45,8 @@ namespace RogueLibsCore
                 case "BloodBag": __instance.Categories.Add("Blood"); break;
             }
 
+            __instance.__RogueLibsHooks = null;
+
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
             bool debug2 = RogueFramework.IsDebugEnabled(DebugFlags.Abilities);
             foreach (IHookFactory<InvItem> factory in RogueFramework.ItemFactories)

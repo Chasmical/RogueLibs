@@ -30,6 +30,9 @@ namespace RogueLibsCore
             Patcher.Postfix(typeof(MainGUI), "Awake");
             Patcher.Postfix(typeof(GameController), nameof(GameController.SetVersionText));
 
+            // clear hooks on PlayfieldObject.RecycleAwake()
+            Patcher.Postfix(typeof(PlayfieldObject), nameof(PlayfieldObject.RecycleAwake));
+
             Patcher.AnyErrors();
 
             RogueLibs.CreateVersionText("RogueLibsVersion", "RL v" + RogueLibs.CompiledSemanticVersion);
@@ -232,6 +235,10 @@ namespace RogueLibsCore
             if (!version.text.StartsWith("SoR ", StringComparison.OrdinalIgnoreCase))
                 version.text = "SoR " + version.text;
         }
+
+        public static void PlayfieldObject_RecycleAwake(PlayfieldObject __instance)
+            => __instance.__RogueLibsHooks = null;
+
     }
     public class VersionText
     {
