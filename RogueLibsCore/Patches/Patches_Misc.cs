@@ -237,8 +237,10 @@ namespace RogueLibsCore
         }
 
         public static void PlayfieldObject_RecycleAwake(PlayfieldObject __instance)
-            => __instance.__RogueLibsHooks = null;
-
+        {
+            (__instance.__RogueLibsHooks as IDisposable)?.Dispose();
+            __instance.__RogueLibsHooks = null;
+        }
     }
     public class VersionText
     {

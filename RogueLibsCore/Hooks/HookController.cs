@@ -8,7 +8,7 @@ namespace RogueLibsCore
     ///   <para>The default implementation of <see cref="IHookController{T}"/>.</para>
     /// </summary>
     /// <typeparam name="T">The type of objects that the hooks can be attached to.</typeparam>
-    public sealed class HookController<T> : IHookController<T>
+    public sealed class HookController<T> : IHookController<T>, IDisposable
     {
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="HookController{T}"/> class with the specified <paramref name="instance"/>.</para>
@@ -80,6 +80,22 @@ namespace RogueLibsCore
         /// </summary>
         /// <returns>A collection of hooks attached to the current instance.</returns>
         public IEnumerable<IHook<T>> GetHooks() => hooks.ToArray();
+
+        public void Dispose()
+        {
+            for (int i = 0, count = hooks.Count; i < count; i++)
+            {
+                IHook<T> hook = hooks[i];
+                try
+                {
+                    (hook as IDisposable)?.Dispose();
+                }
+                catch (Exception e)
+                {
+                    RogueFramework.LogError(e, nameof(IDisposable.Dispose), hook, Instance);
+                }
+            }
+        }
 
     }
 }

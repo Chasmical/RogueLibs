@@ -45,6 +45,7 @@ namespace RogueLibsCore
                 case "BloodBag": __instance.Categories.Add("Blood"); break;
             }
 
+            (__instance.__RogueLibsHooks as IDisposable)?.Dispose();
             __instance.__RogueLibsHooks = null;
 
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
