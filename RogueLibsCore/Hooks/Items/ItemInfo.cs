@@ -56,7 +56,7 @@ namespace RogueLibsCore
 
             string[] categories = type.GetCustomAttributes<ItemCategoriesAttribute>()
                                       .SelectMany(static c => c.Categories).Distinct().ToArray();
-            if (categories.Length is 0)
+            if (categories.Length is 0 && !typeof(CustomAbility).IsAssignableFrom(type))
                 RogueFramework.LogWarning($"Type {type} does not have any {nameof(ItemCategoriesAttribute)}!");
             Categories = new ReadOnlyCollection<string>(categories);
 
