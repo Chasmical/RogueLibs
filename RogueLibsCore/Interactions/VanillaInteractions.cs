@@ -26,7 +26,7 @@ namespace RogueLibsCore
         {
             RogueInteractions.CreateProvider(static h =>
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.EnableHints))
+                // if (RogueFramework.IsDebugEnabled(DebugFlags.EnableHints))
                     h.AddButton("InteractionsPatched", static m => m.StopInteraction());
             });
             RogueLibs.CreateCustomName("InteractionsPatched", NameTypes.Interface, new CustomNameInfo
@@ -34,6 +34,37 @@ namespace RogueLibsCore
                 English = "I am patched!",
                 Russian = @"Я пропатчен!",
             });
+
+            RogueLibs.CreateCustomItem<InteractDebugTool>()
+                     .WithName(new CustomNameInfo("Interact Debug Tool"))
+                     .WithDescription(new CustomNameInfo("Allows you to hack-interact with anything."))
+                     .WithUnlock(new ItemUnlock(true)
+                     {
+                         IsAvailable = false,
+                         IsAvailableInCC = false,
+                         IsAvailableInItemTeleporter = true,
+                     });
+        }
+        [ItemCategories(RogueCategories.Usable)]
+        public class InteractDebugTool : CustomItem, IItemTargetable
+        {
+            public override void SetupDetails()
+            {
+                Item.LoadItemSprite(VanillaItems.RemoteBombTrigger);
+                Item.initCount = 10;
+                Item.stackable = true;
+                Item.goesInToolbar = true;
+                Item.itemValue = 9999;
+            }
+
+            public bool TargetFilter(PlayfieldObject target) => true;
+            public CustomTooltip TargetCursorText(PlayfieldObject? target) => "Hack-Interact";
+            public bool TargetObject(PlayfieldObject target)
+            {
+                target.InteractFar(Owner);
+                return true;
+            }
+
         }
 
         private static readonly Type[] Params1 = { typeof(string) };
