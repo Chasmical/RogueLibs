@@ -249,8 +249,9 @@ namespace RogueLibsCore
         public static LocaleLanguage? Current { get; private set; }
         public static LocaleLanguage? FallBack { get; private set; }
 
-        public static string? GetName(string name, string type)
+        public static string? GetName(string? name, string type)
         {
+            if (name is null) return null;
             return Current?[type, name] ?? FallBack?[type, name];
         }
     }

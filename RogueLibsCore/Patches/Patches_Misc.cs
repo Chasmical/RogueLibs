@@ -58,7 +58,7 @@ namespace RogueLibsCore
                 LanguageService.Current = code;
             }
         }
-        public static bool NameDB_GetName(string myName, string type, out string? __result)
+        public static bool NameDB_GetName(string? myName, string type, out string? __result)
         {
             string? res = Localization.GetName(myName, type);
             if (res?.StartsWith("E_") == true) res = null;
