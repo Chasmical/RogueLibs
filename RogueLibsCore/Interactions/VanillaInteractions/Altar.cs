@@ -7,6 +7,7 @@
         {
             Patch<Altar>(Params2);
             PatchInteract<Altar>();
+            PatchInteractFar<Altar>();
             MakeInteractable<Altar>();
             RogueInteractions.CreateProvider<Altar>(static h =>
             {

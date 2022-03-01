@@ -9,6 +9,7 @@ namespace RogueLibsCore
         {
             Patch<AmmoDispenser>(Params2);
             PatchInteract<AmmoDispenser>();
+            PatchInteractFar<AmmoDispenser>();
             RogueInteractions.CreateProvider<AmmoDispenser>(static h =>
             {
                 if (!h.Object.functional)
@@ -24,7 +25,6 @@ namespace RogueLibsCore
                         {
                             m.gc.audioHandler.Play(m.Agent, "Success");
                             m.Object.ReduceAmmoPrices(m.Agent);
-                            m.StopInteraction();
                         });
                     }
                 }
@@ -50,11 +50,7 @@ namespace RogueLibsCore
                         int healCost = Mathf.Clamp(h.Object.determineMoneyCost((int)(h.Agent.healthMax / invItem.initCount * invItem.itemValue - currentHealthCost), "AmmoDispenser"), 0, 9999);
                         if (healCost > 0)
                         {
-                            h.AddButton("GiveMechOil", healCost, static m =>
-                            {
-                                m.Object.GiveMechOil();
-                                m.StopInteraction();
-                            });
+                            h.AddButton("GiveMechOil", healCost, static m => m.Object.GiveMechOil());
                         }
                     }
                 }

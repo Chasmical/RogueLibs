@@ -6,6 +6,7 @@
         private static void Patch_Barbecue()
         {
             Patch<Barbecue>(Params2);
+            PatchInteract<Barbecue>();
             RogueInteractions.CreateProvider<Barbecue>(static h =>
             {
                 if (!h.Object.functional)
@@ -29,11 +30,7 @@
                 {
                     if (h.Agent.inventory.HasItem(VanillaItems.CigaretteLighter))
                     {
-                        h.AddButton("LightBarbecue", static m =>
-                        {
-                            m.Object.StartFireInObject();
-                            m.StopInteraction();
-                        });
+                        h.AddButton("LightBarbecue", static m => m.Object.StartFireInObject());
                     }
                     else h.SetStopCallback(static m => m.Agent.SayDialogue("CantOperateBarbecue"));
                 }

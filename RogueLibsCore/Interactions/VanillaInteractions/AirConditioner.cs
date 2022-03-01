@@ -7,6 +7,7 @@
         {
             Patch<AirConditioner>(Params2);
             PatchInteract<AirConditioner>();
+            PatchInteractFar<AirConditioner>();
             RogueInteractions.CreateProvider<AirConditioner>(static h =>
             {
                 if (!h.Object.functional)

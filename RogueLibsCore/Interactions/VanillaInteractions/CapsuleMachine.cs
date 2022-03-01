@@ -25,6 +25,9 @@
                             m.Object.LowerCapsuleMachinePrice(m.Agent);
                         });
                     }
+                }
+                else
+                {
                     h.AddButton("SpawnCapsuleItem", h.Object.determineMoneyCost("CapsuleMachine"), static m =>
                     {
                         m.Object.SpawnCapsuleItem();
