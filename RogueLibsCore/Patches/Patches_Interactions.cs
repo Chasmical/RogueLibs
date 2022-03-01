@@ -26,6 +26,7 @@ namespace RogueLibsCore
             });
             RogueInteractions.CreateProvider(static h =>
             {
+                if (h.Helper.interactingFar) return;
                 if (h.Object is ObjectReal objReal && objReal.CanCollectAlienPart())
                 {
                     if (objReal is AmmoDispenser or ATMMachine or AugmentationBooth
