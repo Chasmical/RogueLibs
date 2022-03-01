@@ -111,11 +111,17 @@ namespace RogueLibsCore
                 return;
             }
 
-            // if the interaction opened the player's inventory, stop here
-            if (Agent.worldSpaceGUI.openedUseOn) return;
+            // if the interaction opened some kind of menu, stop here (presumably, object buttons are hidden)
+            if (Agent.worldSpaceGUI?.openedUseOn is true
+                || Agent.worldSpaceGUI?.openedChest is true
+                || Agent.worldSpaceGUI?.openedChest2 is true
+                || Agent.worldSpaceGUI?.openedNPCChest is true
+                || Agent.mainGUI?.showingTarget is true
+                || Agent.mainGUI?.openedScrollingMenu is true
+                || Agent.mainGUI?.openedScrollingMenuPersonal is true) return;
 
             // refresh the buttons (restarts the cycle)
-            Agent.worldSpaceGUI.StartCoroutine(Agent.worldSpaceGUI.RefreshObjectButtons2(Object));
+            Agent.worldSpaceGUI?.StartCoroutine(Agent.worldSpaceGUI.RefreshObjectButtons2(Object));
         }
 
     }

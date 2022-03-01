@@ -13,6 +13,11 @@ namespace RogueLibsCore
             patcher = RogueFramework.Plugin.Patcher;
             patcher.Postfix(typeof(PlayfieldObject), "Awake");
 
+            patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.DetermineButtons), nameof(RogueLibsPlugin.DetermineButtonsHook));
+            patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.PressedButton), nameof(RogueLibsPlugin.PressedButtonHook), Params2);
+            patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.Interact), nameof(RogueLibsPlugin.InteractHook));
+            patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.InteractFar), nameof(RogueLibsPlugin.InteractFarHook));
+
             object[] empty = new object[0];
             foreach (MethodInfo method in typeof(VanillaInteractions).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
             {
