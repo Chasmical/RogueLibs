@@ -9,6 +9,7 @@
 
             RogueInteractions.CreateProvider<ChestBasic>(static h =>
             {
+                if (h.Helper.interactingFar) return;
                 h.AddImplicitButton("Open", static m =>
                 {
                     m.Object.ShowChest();

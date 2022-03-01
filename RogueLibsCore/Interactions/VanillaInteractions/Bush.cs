@@ -14,6 +14,7 @@
             });
             RogueInteractions.CreateProvider<Bush>(static h =>
             {
+                if (h.Helper.interactingFar) return;
                 h.AddImplicitButton("HideInBush", static m =>
                 {
                     m.Agent.statusEffects.BecomeHidden(m.Object);
