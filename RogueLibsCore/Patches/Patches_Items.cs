@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,6 +24,8 @@ namespace RogueLibsCore
             Patcher.Postfix(typeof(InvInterface), nameof(InvInterface.ShowCursorText),
                 new Type[] { typeof(string), typeof(string), typeof(PlayfieldObject), typeof(int) });
             Patcher.Postfix(typeof(InvInterface), nameof(InvInterface.HideCursorText));
+            // Set RecentTargetItem hook (used by interactions to determine interaction type)
+            Patcher.Prefix(typeof(InvInterface), nameof(InvInterface.HideTarget));
 
             // CustomItem, IItemCombinable.CombineTooltip(.) patch
             Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.SetColor));
@@ -43,6 +46,8 @@ namespace RogueLibsCore
             switch (__instance.invItemName)
             {
                 case "BloodBag": __instance.Categories.Add("Blood"); break;
+                case "HackingTool": __instance.Categories.Add("Internal:HackInteract"); break;
+                case "Laptop": __instance.Categories.Add("Internal:HackInteract"); break;
             }
 
             (__instance.__RogueLibsHooks as IDisposable)?.Dispose();
@@ -311,6 +316,23 @@ namespace RogueLibsCore
                 __instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
                 __instance.cursorTextString3.color = tooltip.Color ?? Color.white;
             }
+        }
+        public static void InvInterface_HideTarget(InvInterface __instance)
+        {
+            Agent agent = __instance.mainGUI.agent;
+            RecentTargetItemHook hook = agent.GetHook<RecentTargetItemHook>() ?? agent.AddHook<RecentTargetItemHook>();
+            hook.Item = __instance.mainGUI.targetItem;
+            __instance.StartCoroutine(ResetRecentTargetItem(hook));
+        }
+        private static IEnumerator ResetRecentTargetItem(RecentTargetItemHook hook)
+        {
+            yield return null;
+            hook.Item = null;
+        }
+        public class RecentTargetItemHook : HookBase<PlayfieldObject>
+        {
+            public InvItem? Item { get; internal set; }
+            protected override void Initialize() { }
         }
 
         public static void InvSlot_SetColor(InvSlot __instance)

@@ -128,7 +128,6 @@ namespace RogueLibsCore
                 __instance.ShowObjectButtons();
             return false;
         }
-        // unnecessary?
         public static bool InteractFarHook(PlayfieldObject __instance, Agent agent)
         {
             #region Re-implementing base.InteractFar(agent)
@@ -146,7 +145,7 @@ namespace RogueLibsCore
             if (__instance.playfieldObjectReal != null)
                 __instance.gc.playerAgent.SetCheckUseWithItemsAgain(__instance.playfieldObjectReal);
             agent.interactionHelper.interactionObject = __instance.objectSprite.go;
-            agent.worldSpaceGUI.ShowObjectNameDisplay();
+            // agent.worldSpaceGUI.ShowObjectNameDisplay();
             if (__instance.playfieldObjectType == "ObjectReal")
                 agent.worldSpaceGUI.objectNameDisplayText.text = __instance.GetComponent<ObjectReal>().objectRealRealName;
             else if (__instance.playfieldObjectType == "Agent")
@@ -155,6 +154,15 @@ namespace RogueLibsCore
             // ObjectReal.InteractFar
             __instance.playerInvDatabase = agent.GetComponent<InvDatabase>();
             #endregion
+
+            RecentTargetItemHook? hook = agent.GetHook<RecentTargetItemHook>();
+            if (hook?.Item?.Categories.Contains("Internal:HackInteract") is true)
+            {
+                if (__instance.functional && !__instance.tempNoOperating && __instance is ObjectReal real)
+                    real.HackObject(agent);
+            }
+            else if (__instance.buttons.Count > 0)
+                __instance.ShowObjectButtons();
             return false;
         }
         public static void AwakeInteractableHook(PlayfieldObject __instance)
