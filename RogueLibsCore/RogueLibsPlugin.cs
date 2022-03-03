@@ -49,6 +49,24 @@ namespace RogueLibsCore
                 return;
             }
 
+            try
+            {
+                PlayfieldObject test = new PlayfieldObject();
+                object? value = test.__RogueLibsHooks;
+                test.__RogueLibsHooks = new object();
+            }
+            catch (Exception)
+            {
+                Application.Quit(0);
+                Logger.LogError("\n==========================================" +
+                                "\n‖‖‖ RogueLibsPatcher is not installed! ‖‖‖" +
+                                "\n‖‖‖  Install it and restart the game.  ‖‖‖" +
+                                "\n==========================================");
+                Thread.Sleep(3000);
+                Process.GetCurrentProcess().Kill();
+                return;
+            }
+
             Logger.LogInfo($"Running RogueLibs v{RogueLibs.CompiledSemanticVersion}.");
             Stopwatch sw = new Stopwatch();
             sw.Start();
