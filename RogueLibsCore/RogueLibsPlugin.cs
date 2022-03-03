@@ -41,9 +41,10 @@ namespace RogueLibsCore
                 // Process.Start(fileName, args.ToString());
 
                 Application.Quit(0);
-                Logger.LogError("\n==================================" +
-                                "\n‖‖‖ Restart the game manually! ‖‖‖" +
-                                "\n==================================");
+                Logger.LogError("\n===================================================" +
+                                "\n‖‖‖    RogueLibsPatcher was installed in the    ‖‖‖" +
+                                "\n‖‖‖ wrong directory! Restart the game manually. ‖‖‖" +
+                                "\n===================================================");
                 Thread.Sleep(3000);
                 Process.GetCurrentProcess().Kill();
                 return;
