@@ -11,6 +11,7 @@
             MakeInteractable<Boulder>();
             MakeInteractable<BoulderSmall>();
             MakeInteractable<Chair>();
+            MakeInteractable<Desk>();
         }
     }
 }
