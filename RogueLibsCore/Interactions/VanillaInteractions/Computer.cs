@@ -11,6 +11,7 @@ namespace RogueLibsCore
             Patch<Computer>(Params1);
             PatchInteract<Computer>();
             PatchInteractFar<Computer>();
+
             RogueInteractions.CreateProvider<Computer>(static h =>
             {
                 if (!h.Object.functional)

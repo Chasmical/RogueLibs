@@ -8,6 +8,7 @@
             Patch<AlarmButton>(Params2);
             PatchInteract<AlarmButton>();
             PatchInteractFar<AlarmButton>();
+
             RogueLibs.CreateCustomName("PressAlarmButton", NameTypes.Interface, new CustomNameInfo
             {
                 English = "Press",

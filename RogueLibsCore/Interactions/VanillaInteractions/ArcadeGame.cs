@@ -9,6 +9,7 @@
             PatchInteract<ArcadeGame>();
             PatchInteractFar<ArcadeGame>();
             MakeInteractable<ArcadeGame>();
+
             RogueInteractions.CreateProvider<ArcadeGame>(static h =>
             {
                 if (!h.Object.functional)

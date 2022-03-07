@@ -8,6 +8,7 @@
             Patch<ATMMachine>(Params2);
             PatchInteract<ATMMachine>();
             PatchInteractFar<ATMMachine>();
+
             RogueInteractions.CreateProvider<ATMMachine>(static h =>
             {
                 if (!h.Object.functional)

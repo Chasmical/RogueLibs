@@ -7,6 +7,7 @@
         {
             Patch<Barbecue>(Params2);
             PatchInteract<Barbecue>();
+
             RogueInteractions.CreateProvider<Barbecue>(static h =>
             {
                 if (!h.Object.functional)

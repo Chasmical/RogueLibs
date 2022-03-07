@@ -10,6 +10,7 @@ namespace RogueLibsCore
             Patch<AmmoDispenser>(Params2);
             PatchInteract<AmmoDispenser>();
             PatchInteractFar<AmmoDispenser>();
+
             RogueInteractions.CreateProvider<AmmoDispenser>(static h =>
             {
                 if (!h.Object.functional)

@@ -8,6 +8,7 @@
             Patch<CapsuleMachine>(Params2);
             PatchInteract<CapsuleMachine>();
             PatchInteractFar<CapsuleMachine>();
+
             RogueInteractions.CreateProvider<CapsuleMachine>(static h =>
             {
                 if (!h.Object.functional || h.Object.numPurchases >= 3 && !h.gc.challenges.Contains("NoLimits"))

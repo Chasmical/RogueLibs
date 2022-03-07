@@ -7,6 +7,7 @@
         {
             Patch<Bed>(Params1);
             PatchInteract<Bed>();
+
             RogueInteractions.CreateProvider<Bed>(static h =>
             {
                 if (h.Helper.interactingFar) return;

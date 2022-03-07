@@ -8,6 +8,7 @@
             Patch<CloneMachine>(Params2);
             PatchInteract<CloneMachine>();
             PatchInteractFar<CloneMachine>();
+
             RogueInteractions.CreateProvider<CloneMachine>(static h =>
             {
                 if (!h.Object.functional)
