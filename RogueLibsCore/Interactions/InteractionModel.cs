@@ -120,11 +120,13 @@ namespace RogueLibsCore
             }
 
             // if the interaction opened some kind of menu, stop here (presumably, object buttons are hidden)
-            if (Agent.worldSpaceGUI?.openedUseOn is true
+            if (Instance.interactingAgent is null
+                || Agent.worldSpaceGUI?.openedUseOn is true
                 || Agent.worldSpaceGUI?.openedChest is true
                 || Agent.worldSpaceGUI?.openedChest2 is true
                 || Agent.worldSpaceGUI?.openedNPCChest is true
                 || Agent.mainGUI?.showingTarget is true
+                || Agent.mainGUI?.openedOperatingBar is true
                 || Agent.mainGUI?.openedScrollingMenu is true
                 || Agent.mainGUI?.openedScrollingMenuPersonal is true) return;
 
