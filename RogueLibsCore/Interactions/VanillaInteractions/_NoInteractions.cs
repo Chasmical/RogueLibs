@@ -31,6 +31,20 @@
 
             MakeInteractable<Gravestone>();
 
+            MakeInteractable<KillerPlant>();
+            MakeInteractable<Lamp>();
+
+            MakeInteractable<LockdownWall>();
+            MakeInteractable<Manhole>();
+
+            MakeInteractable<MineCart>();
+            PatchInteract<MineCart>();
+
+            MakeInteractable<MovieScreen>();
+            MakeInteractable<Plant>();
+            MakeInteractable<PoolTable>();
+
+
         }
     }
 }
