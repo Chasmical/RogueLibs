@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -26,6 +27,13 @@ namespace RogueLibsCore
 
         private readonly List<Interaction> interactions = new List<Interaction>();
         public ReadOnlyCollection<Interaction> Interactions { get; }
+
+        public Coroutine StartOperating(float timeToUnlock, bool makeNoise, string barType)
+            => StartOperating((InvItem?)null, timeToUnlock, makeNoise, barType);
+        public Coroutine StartOperating(string itemName, float timeToUnlock, bool makeNoise, string barType)
+            => StartOperating(Agent.inventory.FindItem(itemName), timeToUnlock, makeNoise, barType);
+        public Coroutine StartOperating(InvItem? item, float timeToUnlock, bool makeNoise, string barType)
+            => Object.StartCoroutine(Object.Operating(Agent, item, timeToUnlock, makeNoise, barType));
 
         public void OnDetermineButtons()
         {

@@ -23,7 +23,7 @@
                 else if (h.Object.ora.hasParticleEffect)
                 {
                     if (h.Agent.inventory.HasItem(VanillaItems.Fud))
-                        h.AddButton("GrillFud", static m => m.Object.StartCoroutine(m.Object.Operating(m.Agent, null, 2f, true, "Grilling")));
+                        h.AddButton("GrillFud", static m => m.StartOperating(2f, true, "Grilling"));
                     else h.SetStopCallback(static m => m.Agent.SayDialogue("CantGrillFud"));
                 }
                 else

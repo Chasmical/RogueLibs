@@ -25,8 +25,7 @@
                                 m.StopInteraction();
                                 return;
                             }
-                            m.Object.StartCoroutine(m.Object.Operating(m.Agent, m.Agent.inventory.FindItem("Wrench"),
-                                                                       2f, true, "Tampering"));
+                            m.StartOperating("Wrench", 2f, true, "Tampering");
                         });
                     }
                 }

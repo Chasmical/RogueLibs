@@ -51,20 +51,14 @@
                         {
                             if (h.Agent.inventory.HasItem("SafeCrackingTool"))
                             {
-                                h.AddButton("UseSafeCrackingTool", static m =>
-                                {
-                                    m.Object.StartCoroutine(m.Object.Operating(m.Agent, m.Agent.inventory.FindItem("SafeCrackingTool"),
-                                                                               2f, true, "Unlocking"));
-                                });
+                                h.AddButton("UseSafeCrackingTool",
+                                            static m => m.StartOperating("SafeCrackingTool", 2f, true, "Unlocking"));
                             }
                             InvItem? safeBuster = h.Agent.inventory.FindItem("SafeBuster");
                             if (safeBuster is not null)
                             {
-                                h.AddButton("UseSafeBuster", $" ({safeBuster.invItemCount})", static m =>
-                                {
-                                    m.Object.StartCoroutine(m.Object.Operating(m.Agent, m.Agent.inventory.FindItem("SafeBuster"),
-                                                                               2f, true, "Unlocking"));
-                                });
+                                h.AddButton("UseSafeBuster", $" ({safeBuster.invItemCount})",
+                                            static m => m.StartOperating("SafeBuster", 2f, true, "Unlocking"));
                             }
                         }
                     }

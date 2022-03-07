@@ -34,7 +34,7 @@ namespace RogueLibsCore
                     {
                         h.AddButton("CollectPart", static m =>
                         {
-                            m.Object.StartCoroutine(m.Object.Operating(m.Agent, null, 5f, true, "Collecting"));
+                            m.StartOperating(5f, true, "Collecting");
                             if (!m.Agent.statusEffects.hasTrait("OperateSecretly") && m.Object.functional)
                             {
                                 m.gc.spawnerMain.SpawnNoise(m.Object.tr.position, 1f, m.Agent, "Normal", m.Agent);

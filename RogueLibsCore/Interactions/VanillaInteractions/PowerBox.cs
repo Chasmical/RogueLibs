@@ -32,10 +32,7 @@
                         h.SetStopCallback(static m => m.Agent.SayDialogue("CantUseTech"));
                         return;
                     }
-                    h.AddButton("ShutDownPowerBox", static m =>
-                    {
-                        m.Object.StartCoroutine(m.Object.Operating(m.Agent, null, 2f, true, "ShuttingDown"));
-                    });
+                    h.AddButton("ShutDownPowerBox", static m => m.StartOperating(2f, true, "ShuttingDown"));
                 }
             });
         }

@@ -63,10 +63,8 @@ namespace RogueLibsCore
 
                 if (h.Object.placedDetonatorInitial is 1 && !h.Agent.isHoisting)
                 {
-                    h.AddButton("AttemptDisarmDoorDetonator", $" ({h.Object.FindDisarmPercentage(false)}%)", static m =>
-                    {
-                        m.Object.StartCoroutine(m.Object.Operating(m.Agent, null, 2f, true, "DisarmingDetonator"));
-                    });
+                    h.AddButton("AttemptDisarmDoorDetonator", $" ({h.Object.FindDisarmPercentage(false)}%)",
+                                static m => m.StartOperating(2f, true, "DisarmingDetonator"));
                 }
                 if (h.Object.prisonObject is 0 && h.gc.levelShape is 0 && h.Object.extraVar is not 7
                     && h.gc.levelType is not "Tutorial" and not "HomeBase")
@@ -81,11 +79,8 @@ namespace RogueLibsCore
                 InvItem? doorDetonator = h.Agent.inventory.FindItem("DoorDetonator");
                 if (!h.Object.hasDetonator && doorDetonator is not null && !h.Agent.isHoisting)
                 {
-                    h.AddButton("PlaceDetonator", $" ({doorDetonator.invItemCount})", static m =>
-                    {
-                        m.Object.StartCoroutine(m.Object.Operating(m.Agent, m.Agent.inventory.FindItem("DoorDetonator"),
-                                                                   2f, true, "PlacingDetonator"));
-                    });
+                    h.AddButton("PlaceDetonator", $" ({doorDetonator.invItemCount})", static m
+                                    => m.StartOperating("DoorDetonator", 2f, true, "PlacingDetonator"));
                 }
 
                 if (!h.Agent.inventory.InvItemList.Exists(i => i.invItemName is "Key" or "KeyCard"
@@ -114,20 +109,14 @@ namespace RogueLibsCore
                     InvItem? lockpick = h.Agent.inventory.FindItem("Lockpick");
                     if (lockpick is not null && !h.Agent.isHoisting)
                     {
-                        h.AddButton("UseLockpick", $" ({lockpick.invItemCount})", static m =>
-                        {
-                            m.Object.StartCoroutine(m.Object.Operating(m.Agent, m.Agent.inventory.FindItem("Lockpick"),
-                                                                       2f, true, "Unlocking"));
-                        });
+                        h.AddButton("UseLockpick", $" ({lockpick.invItemCount})",
+                                    static m => m.StartOperating("Lockpick", 2f, true, "Unlocking"));
                     }
                     InvItem? crowbar = h.Agent.inventory.FindItem("Crowbar");
                     if (crowbar is not null && !h.Agent.isHoisting)
                     {
-                        h.AddButton("UseCrowbar", $" ({crowbar.invItemCount}) -30", static m =>
-                        {
-                            m.Object.StartCoroutine(m.Object.Operating(m.Agent, m.Agent.inventory.FindItem("Crowbar"),
-                                                                       2f, true, "Unlocking"));
-                        });
+                        h.AddButton("UseCrowbar", $" ({crowbar.invItemCount}) -30",
+                                    static m => m.StartOperating("Crowbar", 2f, true, "Unlocking"));
                     }
                 }
                 if (h.gc.levelType == "Tutorial")

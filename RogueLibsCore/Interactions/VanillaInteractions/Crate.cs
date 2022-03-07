@@ -19,10 +19,8 @@
                     InvItem? crowbar = h.Agent.inventory.FindItem("Crowbar");
                     if (crowbar is not null && !h.Object.startedFlashing)
                     {
-                        h.AddButton("UseCrowbar", $" ({crowbar.invItemCount}) -30", static m =>
-                        {
-                            m.Object.StartCoroutine(m.Object.Operating(m.Agent, m.Agent.inventory.FindItem("Crowbar"), 2f, true, "Opening"));
-                        });
+                        h.AddButton("UseCrowbar", $" ({crowbar.invItemCount}) -30",
+                                    static m => m.StartOperating("Crowbar", 2f, true, "Opening"));
                     }
                 }
                 else
