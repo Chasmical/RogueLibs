@@ -9,7 +9,7 @@
             PatchInteract<AlarmButton>();
             PatchInteractFar<AlarmButton>();
 
-            RogueLibs.CreateCustomName("PressAlarmButton", NameTypes.Interface, new CustomNameInfo
+            RogueLibs.CreateCustomName("Press", NameTypes.Interface, new CustomNameInfo
             {
                 English = "Press",
                 Russian = @"Нажать",
@@ -34,7 +34,7 @@
                 }
                 else
                 {
-                    h.AddImplicitButton("PressAlarmButton", static m =>
+                    h.AddImplicitButton("Press", static m =>
                     {
                         m.Object.lastHitByAgent = m.Object.interactingAgent;
                         if (m.Agent.upperCrusty || m.Object.hacked)
