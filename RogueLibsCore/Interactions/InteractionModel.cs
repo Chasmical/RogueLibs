@@ -127,6 +127,7 @@ namespace RogueLibsCore
                 || Agent.worldSpaceGUI?.openedNPCChest is true
                 || Agent.mainGUI?.showingTarget is true
                 || Agent.mainGUI?.openedOperatingBar is true
+                || Agent.mainGUI?.openedBigImage is true
                 || Agent.mainGUI?.openedScrollingMenu is true
                 || Agent.mainGUI?.openedScrollingMenuPersonal is true) return;
 
