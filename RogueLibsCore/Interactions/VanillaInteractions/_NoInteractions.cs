@@ -12,6 +12,25 @@
             MakeInteractable<BoulderSmall>();
             MakeInteractable<Chair>();
             MakeInteractable<Desk>();
+
+            MakeInteractable<ExplodingBarrel>();
+            PatchInteract<ExplodingBarrel>();
+
+            MakeInteractable<Fireplace>();
+
+            MakeInteractable<FireSpewer>();
+            PatchInteract<FireSpewer>();
+
+            MakeInteractable<FlameGrate>();
+            PatchInteract<FlameGrate>();
+
+            MakeInteractable<FlamingBarrel>();
+
+            MakeInteractable<GasVent>();
+            PatchInteract<GasVent>();
+
+            MakeInteractable<Gravestone>();
+
         }
     }
 }
