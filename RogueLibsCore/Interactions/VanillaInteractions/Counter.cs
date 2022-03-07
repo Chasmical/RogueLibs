@@ -7,10 +7,10 @@ namespace RogueLibsCore
         [Include]
         private static void Patch_Counter()
         {
-            PatchInteract<Bars>();
+            PatchInteract<Counter>();
 
             // See "InteractWithAgent" in Bars.cs
-            RogueInteractions.CreateProvider<Bars>(static h =>
+            RogueInteractions.CreateProvider<Counter>(static h =>
             {
                 if (h.Helper.interactingFar) return;
 
