@@ -98,10 +98,10 @@ namespace RogueLibsCore
         /// <returns><see langword="true"/>, if the unlock can be unlocked right now; otherwise, <see langword="false"/>.</returns>
         public virtual bool CanBeUnlocked() => UnlockCost > -1
             && Unlock.prerequisites.TrueForAll(static c => gc.sessionDataBig.unlocks.Exists(u => u.unlockName == c && u.unlocked));
-		/// <summary>
-		///   <para>Updates the unlock information of the unlock. When overriden, you must set the <see cref="Unlock.nowAvailable"/> field.</para>
-		/// </summary>
-		public virtual void UpdateUnlock()
+        /// <summary>
+        ///   <para>Updates the unlock information of the unlock. When overriden, you must set the <see cref="Unlock.nowAvailable"/> field.</para>
+        /// </summary>
+        public virtual void UpdateUnlock()
         {
             if ((Unlock.nowAvailable = !Unlock.unlocked && CanBeUnlocked()) && UnlockCost is 0)
                 gc.unlocks.DoUnlockForced(Name, Type);

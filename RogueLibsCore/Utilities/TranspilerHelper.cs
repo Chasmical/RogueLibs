@@ -7,8 +7,8 @@ namespace RogueLibsCore
 {
 #pragma warning disable IDE0079 // Remove unnecessary suppression
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-	public static class TranspilerHelper
-	{
+    public static class TranspilerHelper
+    {
         public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool> begin,
             Func<CodeInstruction, bool> end)
             => RemoveRegion(code, new Func<CodeInstruction, bool>[] { begin }, new Func<CodeInstruction, bool>[] { end });

@@ -19,7 +19,7 @@ namespace RogueLibsCore
         {
             xml.WriteAttributeString("Id", Id);
             if (Version != 0) xml.WriteAttributeString("Version", Version.ToString());
-			if (categories is not null)
+            if (categories is not null)
                 foreach (LocaleCategory category in categories.Values)
                 {
                     xml.WriteStartElement("Category");
