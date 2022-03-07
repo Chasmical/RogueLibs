@@ -7,7 +7,7 @@
         {
             Patch<AugmentationBooth>(Params2);
             PatchInteract<AugmentationBooth>();
-            PatchInteractFar<AugmentationBooth>();
+
             RogueInteractions.CreateProvider<AugmentationBooth>(static h =>
             {
                 if (!h.Object.functional)
