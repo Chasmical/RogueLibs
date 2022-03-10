@@ -43,15 +43,13 @@ namespace RogueLibsCore
                     return;
                 }
 
-                bool canReach = h.Object.direction is "E" or "W"
+                h.SetStopCallback(static m => m.Agent.SayDialogue("CantOpenDoor"));
+
+                bool onInside = h.Object.direction is "E" or "W"
                     ? Mathf.Abs(h.Object.doorHelper.tr.position.x - h.Agent.tr.position.x) < 0.5f
                     : Mathf.Abs(h.Object.doorHelper.tr.position.y - h.Agent.tr.position.y) < 0.5f;
 
-                if (!canReach) return;
-
-                h.SetStopCallback(static m => m.Agent.SayDialogue("CantOpenDoor"));
-
-                if (!h.Object.locked)
+                if (!h.Object.locked || onInside)
                 {
                     h.AddImplicitButton("Open", static m =>
                     {
@@ -60,6 +58,8 @@ namespace RogueLibsCore
                         m.StopInteraction();
                     });
                 }
+
+                if (!h.Object.locked) return;
 
                 if (h.Object.placedDetonatorInitial is 1 && !h.Agent.isHoisting)
                 {
@@ -83,10 +83,10 @@ namespace RogueLibsCore
                                     => m.StartOperating("DoorDetonator", 2f, true, "PlacingDetonator"));
                 }
 
-                if (!h.Agent.inventory.InvItemList.Exists(i => i.invItemName is "Key" or "KeyCard"
-                                                               && (i.chunks.Contains(h.Object.startingChunk)
-                                                                   || h.Object.startingSector is not 0
-                                                                   && i.sectors.Contains(h.Object.startingSector))))
+                if (h.Agent.inventory.InvItemList.Exists(i => i.invItemName is "Key" or "KeyCard"
+                                                              && (i.chunks.Contains(h.Object.startingChunk)
+                                                                  || h.Object.startingSector is not 0
+                                                                  && i.sectors.Contains(h.Object.startingSector))))
                 {
                     h.AddButton("UseKey", static m =>
                     {
