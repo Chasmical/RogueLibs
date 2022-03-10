@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 
 namespace RogueLibsCore
@@ -51,10 +52,10 @@ namespace RogueLibsCore
             Patcher.AnyErrors();
         }
 
-        private static readonly Dictionary<Type, ConstructorInfo> interactionModelConstructors = new Dictionary<Type, ConstructorInfo>();
-        public static void PlayfieldObject_Awake(PlayfieldObject __instance)
+        private static InteractionModel GetOrCreateModel(PlayfieldObject __instance)
         {
-            if (__instance.GetHook<InteractionModel>() is null)
+            InteractionModel? model = __instance.GetHook<InteractionModel>();
+            if (model is null)
             {
                 Type myType = __instance.GetType();
                 if (!interactionModelConstructors.TryGetValue(myType, out ConstructorInfo? ctor))
@@ -65,10 +66,17 @@ namespace RogueLibsCore
                 if (ctor is null)
                 {
                     RogueFramework.LogError($"Error patching {__instance.GetType()}. Constructor is null for some reason.");
-                    return;
+                    return null!;
                 }
-                __instance.AddHook((InteractionModel)ctor.Invoke(new object[0]));
+                __instance.AddHook(model = (InteractionModel)ctor.Invoke(new object[0]));
             }
+            return model;
+        }
+
+        private static readonly Dictionary<Type, ConstructorInfo> interactionModelConstructors = new Dictionary<Type, ConstructorInfo>();
+        public static void PlayfieldObject_Awake(PlayfieldObject __instance)
+        {
+            GetOrCreateModel(__instance);
         }
         public static bool DetermineButtonsHook(PlayfieldObject __instance)
         {
@@ -78,7 +86,7 @@ namespace RogueLibsCore
             __instance.buttonsExtra.Clear();
             #endregion
 
-            __instance.GetHook<InteractionModel>()?.OnDetermineButtons();
+            GetOrCreateModel(__instance).OnDetermineButtons();
             return false;
         }
         public static bool PressedButtonHook(PlayfieldObject __instance, string buttonText)
@@ -90,7 +98,7 @@ namespace RogueLibsCore
             }
             #endregion
 
-            __instance.GetHook<InteractionModel>()?.OnPressedButton(buttonText);
+            GetOrCreateModel(__instance).OnPressedButton(buttonText);
             return false;
         }
 
