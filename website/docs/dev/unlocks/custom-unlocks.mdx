@@ -49,9 +49,9 @@ public class MyCustomItem : CustomItem
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomItem<MyCustomItem>();
+        RogueLibs.CreateCustomItem<MyCustomItem>()
             .WithName(new CustomNameInfo("My Custom Item"))
-            .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"));
+            .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"))
             .WithSprite(Properties.Resources.MyCustomItem)
             // highlight-next-line
             .WithUnlock(new ItemUnlock
