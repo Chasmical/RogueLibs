@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,8 @@ namespace RogueLibsCore
             Patcher.Postfix(typeof(ObjectSprite), nameof(ObjectSprite.SetAgentHighlight));
 
             Patcher.Postfix(typeof(InvDatabase), nameof(InvDatabase.ThrowWeapon));
+            Patcher.Prefix(typeof(InvDatabase), nameof(InvDatabase.DropItemAmount),
+                           new Type[4] { typeof(InvItem), typeof(int), typeof(bool), typeof(Vector2) });
             Patcher.Postfix(typeof(Item), nameof(Item.DestroyMe2));
             Patcher.Postfix(typeof(Item), nameof(Item.FakeStart));
             Patcher.Postfix(typeof(Melee), nameof(Melee.MeleeLateUpdate));
@@ -214,6 +217,42 @@ namespace RogueLibsCore
         {
             if (__instance.agent?.agentHitboxScript?.heldItem2?.CurrentSprite?.__RogueLibsCustom is RogueSprite sprite)
                 __instance.agent.agentHitboxScript.heldItem2Renderer.sharedMaterial = sprite.Material;
+        }
+        public static bool InvDatabase_DropItemAmount(InvDatabase __instance, InvItem item, int amount, bool actionsAfterDrop,
+                                                      Vector2 teleportingItemLocation, out Item __result)
+        {
+            GameController gc = GameController.gameController;
+            Item? dropped = null;
+            if (gc.serverPlayer)
+            {
+                Vector2 vector = __instance.tr.position;
+                if (teleportingItemLocation != Vector2.zero) vector = teleportingItemLocation;
+                Vector3 itemPos = new Vector3(vector.x + UnityEngine.Random.Range(0f, 0.08f),
+                                              vector.y + UnityEngine.Random.Range(0f, 0.08f), __instance.tr.position.z);
+
+                InvItem invItem = new InvItem
+                {
+                    invItemName = item.invItemName,
+                    invItemCount = amount,
+                    contents = item.contents,
+                    itemType = item.itemType,
+                    isWeapon = item.isWeapon,
+                    autoSortToolbarSlot = -1,
+                };
+                invItem.SetupDetails(true);
+
+                dropped = gc.spawnerMain.SpawnItem(itemPos, invItem, actionsAfterDrop, __instance.GetComponent<Agent>());
+                if (!actionsAfterDrop) dropped.SetCantPickUp(false);
+            }
+            else __instance.agent.objectMult.DropItem(item, amount, actionsAfterDrop, teleportingItemLocation);
+
+            __instance.SubtractFromItemCount(item, amount);
+            if (gc.serverPlayer && dropped?.owner != null && dropped.owner.isPlayer > 0 && dropped.owner.localPlayer)
+                dropped.owner.mainGUI.invInterface.justPressedAttackOnInterface = true;
+            if (gc.serverPlayer && teleportingItemLocation == Vector2.zero)
+                gc.audioHandler.Play(__instance.agent, "DropItem");
+            __result = dropped!;
+            return false;
         }
         public static void Item_DestroyMe2(Item __instance)
         {

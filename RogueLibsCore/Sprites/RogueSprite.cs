@@ -140,7 +140,7 @@ namespace RogueLibsCore
         {
             if (Texture is null || PixelsPerUnit <= 0f) return null;
             Rect reg = Region ?? new Rect(0, 0, Texture.width, Texture.height);
-            Sprite sprite = Sprite.Create(Texture, reg, reg.size / 2f, PixelsPerUnit);
+            Sprite sprite = Sprite.Create(Texture, reg, new Vector2(0.5f, 0.5f), PixelsPerUnit);
             sprite.name = Name;
             return sprite;
         }
@@ -250,7 +250,7 @@ namespace RogueLibsCore
 
             if (coll != null)
             {
-                tk2dSpriteDefinition def = CreateDefinition(texture!, region, 1f / coll.invOrthoSize / coll.halfTargetHeight);
+                tk2dSpriteDefinition def = CreateDefinition(texture!, region, 64f / PixelsPerUnit / coll.invOrthoSize / coll.halfTargetHeight);
                 AddDefinition(coll, def);
                 def.__RogueLibsCustom = this;
                 definitions!.Add(new CustomTk2dDefinition(coll, def, targetScope));
@@ -341,21 +341,16 @@ namespace RogueLibsCore
 
             float x = texture.width;
             float y = texture.height;
-            Rect uvRegion = region ?? new Rect(0f, 0f, x, y);
-            Vector2 anchor = new Vector2(0.5f * x, 0.5f * y);
-            Rect trimRect = new Rect(0f, 0f, 0f, 0f);
 
-            Vector2 vector = new Vector2(0.001f, 0.001f);
-            Vector2 vector2 = new Vector2((uvRegion.x + vector.x) / x, 1f - (uvRegion.y + uvRegion.height + vector.y) / y);
-            Vector2 vector3 = new Vector2((uvRegion.x + uvRegion.width - vector.x) / x, 1f - (uvRegion.y - vector.y) / y);
-            Vector2 vector4 = new Vector2(trimRect.x - anchor.x, -trimRect.y + anchor.y) * scale;
-            Vector3 vector5 = new Vector3(-anchor.x * scale, anchor.y * scale, 0f);
-            Vector3 vector6 = vector5 + new Vector3(trimRect.width * scale, -trimRect.height * scale, 0f);
-            Vector3 vector7 = new Vector3(0f, -y * scale, 0f);
-            Vector3 vector8 = vector7 + new Vector3(x * scale, y * scale, 0f);
+            Rect spriteRegion = region ?? new Rect(0f, 0f, x, y);
+            Vector2 spriteCenter = spriteRegion.center;
 
-            Vector3 b = new Vector3(vector5.x, vector6.y, 0f);
-            Vector3 a = new Vector3(vector6.x, vector5.y, 0f);
+            Vector2 epsilon = new Vector2(0.001f, 0.001f);
+            Vector2 upperRightUv = new Vector2(spriteRegion.xMax + epsilon.x, y - (spriteRegion.yMin - epsilon.y)) / new Vector2(x, y);
+            Vector2 lowerLeftUv = new Vector2(spriteRegion.xMin - epsilon.x, y - (spriteRegion.yMax + epsilon.y)) / new Vector2(x, y);
+
+            Vector3 b = new Vector3(-spriteCenter.x, spriteCenter.y - spriteRegion.height, 0f) * scale;
+            Vector3 a = new Vector3(spriteRegion.width - spriteCenter.x, spriteCenter.y, 0f) * scale;
 
             Material mat = new Material(Shader.Find("tk2d/BlendVertexColor")) { name = texture.name, mainTexture = texture };
             return new tk2dSpriteDefinition
@@ -368,17 +363,17 @@ namespace RogueLibsCore
                 indices = new int[6] { 0, 3, 1, 2, 3, 0 },
                 positions = new Vector3[]
                 {
-                    new Vector3(vector7.x + vector4.x, vector7.y + vector4.y, 0f),
-                    new Vector3(vector8.x + vector4.x, vector7.y + vector4.y, 0f),
-                    new Vector3(vector7.x + vector4.x, vector8.y + vector4.y, 0f),
-                    new Vector3(vector8.x + vector4.x, vector8.y + vector4.y, 0f),
+                    new Vector3(spriteRegion.xMin - spriteCenter.x, spriteRegion.yMin - spriteCenter.y, 0f) * scale,
+                    new Vector3(spriteRegion.xMax - spriteCenter.x, spriteRegion.yMin - spriteCenter.y, 0f) * scale,
+                    new Vector3(spriteRegion.xMin - spriteCenter.x, spriteRegion.yMax - spriteCenter.y, 0f) * scale,
+                    new Vector3(spriteRegion.xMax - spriteCenter.x, spriteRegion.yMax - spriteCenter.y, 0f) * scale,
                 },
                 uvs = new Vector2[]
                 {
-                    new Vector2(vector2.x, vector2.y),
-                    new Vector2(vector3.x, vector2.y),
-                    new Vector2(vector2.x, vector3.y),
-                    new Vector2(vector3.x, vector3.y),
+                    new Vector2(lowerLeftUv.x, lowerLeftUv.y),
+                    new Vector2(upperRightUv.x, lowerLeftUv.y),
+                    new Vector2(lowerLeftUv.x, upperRightUv.y),
+                    new Vector2(upperRightUv.x, upperRightUv.y),
                 },
                 boundsData = new Vector3[] { (a + b) / 2f, a - b },
                 untrimmedBoundsData = new Vector3[] { (a + b) / 2f, a - b },
