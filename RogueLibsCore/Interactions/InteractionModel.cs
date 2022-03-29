@@ -22,6 +22,7 @@ namespace RogueLibsCore
         internal bool shouldStop;
         public void StopInteraction() => shouldStop = true;
         public Action? CancelCallback { get; set; }
+        public Action? SideEffect { get; set; }
 
         protected override void Initialize() { }
 
@@ -83,6 +84,9 @@ namespace RogueLibsCore
                 Instance.buttonPrices.Add(interaction.ButtonPrice ?? 0);
                 Instance.buttonsExtra.Add(interaction.ButtonExtra ?? string.Empty);
             }
+
+            // invoke the SideEffect
+            SideEffect?.Invoke();
 
             // invoke OnOpen method, because right after this, a menu will show up.
             // TODO: maybe we should rely on ShowObjectButtons() explicitly instead of this assumption

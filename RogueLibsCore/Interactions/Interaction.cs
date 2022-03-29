@@ -156,13 +156,23 @@ namespace RogueLibsCore
             return interaction;
         }
 
-        public Action SetStopCallback(Action<InteractionModel> stopCallback)
+        public Action SetStopCallback(Action<InteractionModel> stopCallback, bool overrideExisting = false)
         {
             EnsureModel();
             InteractionModel model = Model;
             void Callback() => stopCallback(model);
-            model.CancelCallback ??= Callback;
+            if (overrideExisting || model.CancelCallback is null)
+                model.CancelCallback ??= Callback;
             return Callback;
+        }
+        public Action SetSideEffect(Action<InteractionModel> sideEffect, bool overrideExisting = false)
+        {
+            EnsureModel();
+            InteractionModel model = Model;
+            void SideEffect() => sideEffect(model);
+            if (overrideExisting || model.SideEffect is null)
+                model.SideEffect ??= SideEffect;
+            return SideEffect;
         }
         public void StopInteraction() => Model.StopInteraction();
 
@@ -245,13 +255,23 @@ namespace RogueLibsCore
             return interaction;
         }
 
-        public Action SetStopCallback(Action<InteractionModel<T>> stopCallback)
+        public Action SetStopCallback(Action<InteractionModel<T>> stopCallback, bool overrideExisting = false)
         {
             EnsureModel();
             InteractionModel<T> model = Model;
             void Callback() => stopCallback(model);
-            model.CancelCallback ??= Callback;
+            if (overrideExisting || model.CancelCallback is null)
+                model.CancelCallback ??= Callback;
             return Callback;
+        }
+        public Action SetSideEffect(Action<InteractionModel<T>> sideEffect, bool overrideExisting = false)
+        {
+            EnsureModel();
+            InteractionModel<T> model = Model;
+            void SideEffect() => sideEffect(model);
+            if (overrideExisting || model.SideEffect is null)
+                model.SideEffect ??= SideEffect;
+            return SideEffect;
         }
         public void StopInteraction() => Model.StopInteraction();
 
