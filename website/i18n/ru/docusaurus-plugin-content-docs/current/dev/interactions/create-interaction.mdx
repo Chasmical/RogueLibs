@@ -1,0 +1,167 @@
+# Создаём кастомное взаимодействие
+
+## Используем класс `SimpleInteractionProvider` {#simpleinteractionprovider}
+
+Наипростейший способ создания кастомных взаимодействий - использование класса `SimpleInteractionProvider`. Он позволяет вам использовать все принципы объектно-ориентированного программирования и упрощает написание кода. Используйте методы `RogueInteractions.CreateProvider<T>` для создания экземпляров этого класса. Добавлять кнопки вы можете с помощью `h.AddButton` внутри обработчика.
+
+```cs
+// highlight-next-line
+RogueInteractions.CreateProvider<Crate>(static h => /* h - handler (обработчик) */
+{
+    // При взаимодействии через взлом, не добавлять кнопку
+    if (h.Helper.interactingFar) return;
+
+    InvItem crateOpener = h.Agent.inventory.FindItem("CrateOpener");
+    if (crateOpener is not null)
+    {
+        // Добавить кнопку с именем "UseCrateOpener", со строкой " (<count>) -1", добавленной в конец
+        string extra = $" ({crateOpener.invItemCount}) -1";
+        // highlight-next-line
+        h.AddButton("UseCrateOpener", extra, static m => /* m - interaction model (модель взаимодействия) */
+        {
+            m.Agent.inventory.SubtractFromItemCount(m.Agent.inventory.FindItem("CrateOpener"), 1);
+            m.Object.UnlockCrate();
+            m.Object.ShowChest();
+        });
+    }
+});
+
+// Не забудьте добавить строки локализации для "UseCrateOpener"
+RogueLibs.CreateCustomName("UseCrateOpener", NameTypes.Interface,
+                           new CustomNameInfo("Use Crate Opener"));
+```
+
+:::caution Чистота обработчиков
+Методы обработчиков должны быть чистыми, а то есть, они не должны вносить какие-либо видимые изменения. Вся логика должна находиться внутри кнопок, [остановочных обратных вызовов](#stop-callbacks) и [побочных эффектах](#side-effects) All of the logic must be contained in buttons, [stop callbacks](#stop-callbacks) and [side effects](#side-effects).
+:::
+
+Если у вас запутанная логика добавления кнопок, вы можете перенести их действия в локальные или объявленные методы:
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    // highlight-next-line
+    static void UseCrateOpener(InteractionModel<Crate> model)
+    { 
+        /* ... */
+    }
+
+    // highlight-next-line
+    h.AddButton("UseCrateOpener", UseCrateOpener);
+});
+```
+
+Указывая типовой параметр в методе (как в `CreateProvider<Crate>`), вы сужаете круг объектов, к которым вы хотите добавить взаимодействия. Если ваше действие может касаться нескольких типов объектов, вы можете использовать более общий метод `CreateProvider`, который срабатывает на всех типах объектов.
+
+```cs
+// highlight-next-line
+RogueInteractions.CreateProvider(static h =>
+{
+    if (h.Object is Crate)
+        h.AddButton("UseCrateOpener", static m => { /* ... */ });
+    else if (h.Object is Safe)
+        h.AddButton("UseSafeOpener", static m => { /* ... */ });
+    else if (h.Object is Agent)
+        h.AddButton("UseSkullOpener", static m => { /* ... */ });
+});
+```
+
+:::caution Обратите внимание на статичность лямбд
+Не обращайтесь к `h` или к другим переменным внутри действий кнопок, так как они вызываются в разных фазах процесса взаимодействия (будет кинуто исключение). Я рекомендую использовать ключевое слово `static` при написании лямбд выражений чтобы этого избежать.
+:::
+
+## Неявные кнопки {#implicit-buttons}
+
+Иногда кнопки представляют из себя такие очевидные действия, что вы не хотите чтобы игрок явно нажимал их. Например, двери. Это было бы довольно неудобно нажимать "Открыть" каждый раз когда вы взаимодействуете с дверью. **Неявная кнопка** нажимается автоматически, если она - единственная в меню; иначе, она работает как обычная кнопка.
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    // highlight-next-line
+    h.AddImplicitButton("InspectWeirdCrate", static m =>
+    {
+        /* ... */
+        m.Agent.SayDialogue("InspectWeirdCrate");
+    });
+
+    if (h.Agent.inventory.HasItem("CrateOpener"))
+    {
+        h.AddButton("UseCrateOpener", static m => { /* ... */ });
+    }
+});
+```
+
+Если у игрока нет Открывашки ящиков, кнопка `"InspectWeirdCrate"` нажмётся сразу же, даже не показывая сами кнопки. А вот если у игрока есть Открывашка ящиков, то откроется меню с 2 кнопками (2, не считая кнопку `"Готово"`).
+
+## Остановочные обратные вызовы {#stop-callbacks}
+
+Если конкретно ваше действие не удалось, но другие взаимодействия из других модов всё ещё могут работать, используйте **остановочные обратные вызовы**. Они вызываются только если в меню нет никаких кнопок, или если взаимодействие было остановлено с помощью `StopInteraction`.
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    if (h.Helper.interactingFar) return;
+
+    if (!h.Agent.inventory.HasItem("CrateOpener"))
+    {
+        // highlight-start
+        h.SetStopCallback(static m =>
+        {
+            m.gc.audioHandler.Play(m.Agent, "CantDo");
+            m.Agent.SayDialogue("NeedCrateOpener");
+        });
+        // highlight-end
+    }
+    /* ... */
+});
+```
+
+:::note Переопределение остановочных обратных вызовов
+По умолчанию, `SetStopCallback` не переопределяет ранее определённые остановочные обратные вызовы, так что если вы хотите переопределить их, добавьте `true` в качестве второго параметра.
+:::
+
+Если ваше действие ужасно провалилось, не позволяя игроку нажать какие-либо другие кнопки, или вы хотите чтобы игрок пошёл делать что-то другое сразу после этого, используйте `m.StopInteraction()`.
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    if (h.Helper.interactingFar) return;
+
+    if (h.Agent.HasTrait("CrateBomber"))
+    {
+        h.AddButton("TriggerBomb", static m =>
+        {
+            m.gc.spawnerMain.SpawnExplosion(m.Object, m.Object.tr.position, "Big");
+            // highlight-next-line
+            m.StopInteraction();
+        })
+    }
+});
+```
+
+## Побочны эффекты (?) {#side-effects}
+
+Иногда вам может понадобиться сделать что-то сразу после настройки кнопок. Например, заставить цель взаимодействия отреагировать на ваше взаимодействие. Побочные эффекты вызываются сразу после настройки кнопок, но перед остановочными обратными вызовами. Так что, побочные эффекты могут быть вызваны, даже если взаимодействие провалилось или в меню нет каких-либо кнопок.
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    // Заставить игрока сказать что-то сразу после взаимодействия
+    // с ящиком, даже если у них нету Открывавшки ящиков
+    // highlight-start
+    h.SetSideEffect(static m => m.Agent.SayDialogue("DialogueWeirdCrate"));
+    // highlight-end
+    
+    if (h.Agent.inventory.HasItem("CrateOpener"))
+    {
+        h.AddButton("UseCrateOpener", static m =>
+        {
+            /* ... */
+        });
+    }
+});
+```
+
+:::note Переопределение побочных эффектов
+По умолчанию, `SetSideEffect` не переопределяет ранее определённые побочные эффекты, так что если вы хотите переопределить их, добавьте `true` в качестве второго параметра.
+:::

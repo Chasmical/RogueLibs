@@ -40,6 +40,9 @@ module.exports = {
             'dev/traits/create-trait',
             'dev/traits/create-effect',
           ],
+          'Custom Interactions (beta!)': [
+            'dev/interactions/create-interaction',
+          ],
           'Custom Unlocks': [
             'dev/unlocks/custom-unlocks',
             'dev/unlocks/overriding-behavior',

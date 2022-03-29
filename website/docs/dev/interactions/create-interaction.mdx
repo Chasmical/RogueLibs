@@ -1,0 +1,167 @@
+# Creating a Custom Interaction
+
+## Using `SimpleInteractionProvider` class {#simpleinteractionprovider}
+
+The simplest way to create custom interactions is by using a `SimpleInteractionProvider` class. It allows you to utilize all of the object-oriented programming principles and keeps the code simple and straightforward. Use `RogueInteractions.CreateProvider<T>` methods to create instances of that class. You can add buttons using `h.AddButton` inside the handler.
+
+```cs
+// highlight-next-line
+RogueInteractions.CreateProvider<Crate>(static h => /* h - handler */
+{
+    // If interacted with via hacking, do not add the button
+    if (h.Helper.interactingFar) return;
+
+    InvItem crateOpener = h.Agent.inventory.FindItem("CrateOpener");
+    if (crateOpener is not null)
+    {
+        // Add the button with a name "UseCrateOpener", with " (<count>) -1" string added to the end
+        string extra = $" ({crateOpener.invItemCount}) -1";
+        // highlight-next-line
+        h.AddButton("UseCrateOpener", extra, static m => /* m - interaction model */
+        {
+            m.Agent.inventory.SubtractFromItemCount(m.Agent.inventory.FindItem("CrateOpener"), 1);
+            m.Object.UnlockCrate();
+            m.Object.ShowChest();
+        });
+    }
+});
+
+// Don't forget to add the localization string for "UseCrateOpener"
+RogueLibs.CreateCustomName("UseCrateOpener", NameTypes.Interface,
+                           new CustomNameInfo("Use Crate Opener"));
+```
+
+:::caution Handler purity
+Handler methods must be pure, that is, they shouldn't make any visible changes. All of the logic must be contained in buttons, [stop callbacks](#stop-callbacks) and [side effects](#side-effects).
+:::
+
+If you have complicated logic with buttons, you can delegate their actions to local or declared methods:
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    // highlight-next-line
+    static void UseCrateOpener(InteractionModel<Crate> model)
+    { 
+        /* ... */
+    }
+
+    // highlight-next-line
+    h.AddButton("UseCrateOpener", UseCrateOpener);
+});
+```
+
+By specifying a type parameter to the method (like `CreateProvider<Crate>`), it will narrow down the type of objects that you want to add interactions to. If your action may affect multiple types of objects, you can use the more general `CreateProvider` method, that is triggered on all kinds of objects.
+
+```cs
+// highlight-next-line
+RogueInteractions.CreateProvider(static h =>
+{
+    if (h.Object is Crate)
+        h.AddButton("UseCrateOpener", static m => { /* ... */ });
+    else if (h.Object is Safe)
+        h.AddButton("UseSafeOpener", static m => { /* ... */ });
+    else if (h.Object is Agent)
+        h.AddButton("UseSkullOpener", static m => { /* ... */ });
+});
+```
+
+:::caution Note the staticity of the lambdas
+It is important that you do not reference `h` or other variables inside button actions, as they are called in different phases of the interaction process (an exception will be thrown). I recommend using the `static` keyword when writing lambda expressions to avoid that.
+:::
+
+## Implicit Buttons {#implicit-buttons}
+
+Sometimes buttons represent interactions so obvious that you don't want the player to explicitly press them. For example, doors. It would be a nuisance to press "Open" every time you interact with the door. An **implicit button** is pressed automatically if it's the only button in the menu; otherwise, it acts as a regular button.
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    // highlight-next-line
+    h.AddImplicitButton("InspectWeirdCrate", static m =>
+    {
+        /* ... */
+        m.Agent.SayDialogue("InspectWeirdCrate");
+    });
+
+    if (h.Agent.inventory.HasItem("CrateOpener"))
+    {
+        h.AddButton("UseCrateOpener", static m => { /* ... */ });
+    }
+});
+```
+
+If the player doesn't have a Crate Opener, the `"InspectWeirdCrate"` button will be pressed immediately, without even showing the buttons. If the player has a Crate Opener though, a menu with 2 buttons will pop up (2, not counting the `"Done"` button).
+
+## Stop Callbacks {#stop-callbacks}
+
+If your specific interaction failed, but some other interactions from other mods might still work, use **stop callbacks**. They are called only if there are no other buttons in the menu, or if the interaction is stopped using `StopInteraction`.
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    if (h.Helper.interactingFar) return;
+
+    if (!h.Agent.inventory.HasItem("CrateOpener"))
+    {
+        // highlight-start
+        h.SetStopCallback(static m =>
+        {
+            m.gc.audioHandler.Play(m.Agent, "CantDo");
+            m.Agent.SayDialogue("NeedCrateOpener");
+        });
+        // highlight-end
+    }
+    /* ... */
+});
+```
+
+:::note Overriding stop callbacks
+By default, `SetStopCallback` doesn't override any previously defined stop callbacks, so if you want to override them, add `true` as a second parameter.
+:::
+
+If your interaction failed miserably, not allowing the player to press any other buttons, or if you just want the player to go do something else right after this interaction, use `m.StopInteraction()`.
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    if (h.Helper.interactingFar) return;
+
+    if (h.Agent.HasTrait("CrateBomber"))
+    {
+        h.AddButton("TriggerBomb", static m =>
+        {
+            m.gc.spawnerMain.SpawnExplosion(m.Object, m.Object.tr.position, "Big");
+            // highlight-next-line
+            m.StopInteraction();
+        })
+    }
+});
+```
+
+## Side Effects (?) {#side-effects}
+
+Sometimes you might need to do some stuff right after the button setup. For example, make the interacted agent react to you interacting with them. **Side effects** are called right after the buttons are set up, but before stop callbacks. So, side effects might get called even if the interaction failed or if there are no available buttons.
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    // Make the interacting agent say something right after interacting
+    // with the crate, even if they don't have the Crate Opener.
+    // highlight-start
+    h.SetSideEffect(static m => m.Agent.SayDialogue("DialogueWeirdCrate"));
+    // highlight-end
+    
+    if (h.Agent.inventory.HasItem("CrateOpener"))
+    {
+        h.AddButton("UseCrateOpener", static m =>
+        {
+            /* ... */
+        });
+    }
+});
+```
+
+:::note Overriding side effects
+By default, `SetSideEffect` doesn't override any previously defined side effects, so if you want to override them, add `true` as a second parameter.
+:::
