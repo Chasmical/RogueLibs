@@ -97,9 +97,9 @@ public class MyCustomTrait : CustomTrait
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomTrait<MyCustomTrait>();
+        RogueLibs.CreateCustomTrait<MyCustomTrait>()
             .WithName(new CustomNameInfo("My Custom Trait"))
-            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"));
+            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"))
             // highlight-start
             // спрайт будет отображаться только в меню (необязательно)
             .WithSprite(Properties.Resources.MyCustomTrait)
