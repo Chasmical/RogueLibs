@@ -31,7 +31,7 @@ namespace RogueLibsCore
         {
             RogueInteractions.CreateProvider(static h =>
             {
-                // if (RogueFramework.IsDebugEnabled(DebugFlags.EnableHints))
+                if (RogueFramework.IsDebugEnabled(DebugFlags.EnableHints))
                     h.AddButton("InteractionsPatched", static m => m.StopInteraction());
             });
             RogueLibs.CreateCustomName("InteractionsPatched", NameTypes.Interface, new CustomNameInfo

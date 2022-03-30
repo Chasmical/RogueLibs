@@ -73,6 +73,17 @@ namespace RogueLibsCore
             if (interactions.Count is 1 && interactions[0].ImplicitAction) // TODO: try-catch
             {
                 interactions[0].OnPressedImplicitly(); // TODO: try-catch
+                // if the interaction opened some kind of menu, stop here (presumably, object buttons are hidden)
+                if (Instance.interactingAgent is null
+                    || Agent.worldSpaceGUI?.openedUseOn is true
+                    || Agent.worldSpaceGUI?.openedChest is true
+                    || Agent.worldSpaceGUI?.openedChest2 is true
+                    || Agent.worldSpaceGUI?.openedNPCChest is true
+                    || Agent.mainGUI?.showingTarget is true
+                    || Agent.mainGUI?.openedOperatingBar is true
+                    || Agent.mainGUI?.openedBigImage is true
+                    || Agent.mainGUI?.openedScrollingMenu is true
+                    || Agent.mainGUI?.openedScrollingMenuPersonal is true) return;
                 Instance.StopInteraction();
                 return;
             }

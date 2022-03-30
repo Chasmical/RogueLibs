@@ -17,9 +17,9 @@ namespace RogueLibsCore
         internal static ManualLogSource Logger { get; set; } = null!; // set in RogueLibsPlugin.Awake()
 
         /// <summary>
-        ///   <para>Determines whether the RogueLibs is in Debug mode.</para>
+        ///   <para>Determines whether RogueLibs was compiled in the Debug configuration.</para>
         /// </summary>
-        public static bool Debug { get; set; }
+        public static bool Debug { get; }
 #if DEBUG
             = true;
 #endif
