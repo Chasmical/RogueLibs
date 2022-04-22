@@ -17,11 +17,7 @@ function HomepageHeader() {
   const { isDarkTheme } = useColorMode();
   const params = queryParse(useLocation().search);
   let logo = isDarkTheme ? LogoDark : Logo;
-  console.log(logo);
-  console.log(params.pokemon);
-  console.log(!!params.pokemon);
   if (params.pokemon) logo = LogoPokemon;
-  console.log(logo);
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">

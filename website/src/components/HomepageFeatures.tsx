@@ -2,42 +2,90 @@ import React from 'react';
 import clsx from 'clsx';
 import styles from './HomepageFeatures.module.css';
 import Translate from '@docusaurus/Translate';
-import svg1 from '@site/static/img/undraw_docusaurus_mountain.png';
-import svg2 from '@site/static/img/undraw_docusaurus_tree.png';
+import SpritesImage from '@site/static/img/features/Sprites.jpg';
+import InteractionsImage from '@site/static/img/features/Interactions.gif';
+import MutatorsImage from '@site/static/img/features/Mutators.jpg';
+import AbilitiesImage from '@site/static/img/features/Abilities.jpg';
+import ItemsImage from '@site/static/img/features/Items.jpg';
+import TraitsImage from '@site/static/img/features/Traits.jpg';
 
 const FeatureList: FeatureProps[] = [
   {
     title: (
-      <Translate id="features.easy.title">
-        Easy to Use
+      <Translate id="features.sprites.title">
+        {"Custom Sprites"}
       </Translate>
     ),
-    svg: svg1,
+    svg: SpritesImage,
     description: (
-      <Translate id="features.easy.description">
-        RogueLibs does all of the patching for you!
+      <Translate id="features.sprites.description">
+        {"RogueLibs allows you to add your own and modify existing tk2d/Unity sprites!"}
       </Translate>
     ),
   },
   {
     title: (
-      <Translate id="features.focus.title">
-        Focus on What Matters
+      <Translate id="features.interactions.title">
+        {"Custom Interactions"}
       </Translate>
     ),
-    svg: svg2,
+    svg: InteractionsImage,
     description: (
-      <span>
-        <Translate id="features.focus.description">
-          Let RogueLibs handle the hard work, and
-        </Translate>
-        {' '}
-        <b>
-          <Translate id="features.focus.description.bold">
-            you just focus on the content!
-          </Translate>
-        </b>
-      </span>
+      <Translate id="features.interactions.description">
+        {"Ever wondered why SoR doesn't have certain interactions? It's time for you to fill in the blanks!"}
+      </Translate>
+    ),
+  },
+  {
+    title: (
+      <Translate id="features.items.title">
+        {"Custom Items"}
+      </Translate>
+    ),
+    svg: ItemsImage,
+    description: (
+      <Translate id="features.items.description">
+        {"Adding custom items with various usages and effects could not be easier with RogueLibs!"}
+      </Translate>
+    ),
+  },
+  {
+    title: (
+      <Translate id="features.mutators.title">
+        {"Custom Mutators"}
+      </Translate>
+    ),
+    svg: MutatorsImage,
+    description: (
+      <Translate id="features.mutators.description">
+        {"Mutators are pretty cool!"}
+      </Translate>
+    ),
+  },
+  {
+    title: (
+      <Translate id="features.abilities.title">
+        {"Custom Abilities"}
+      </Translate>
+    ),
+    svg: AbilitiesImage,
+    description: (
+      <Translate id="features.abilities.description">
+        {"Yep, RogueLibs also has custom abilities!"}
+      </Translate>
+    ),
+  },
+  {
+    title: (
+      <Translate id="features.traits.title">
+        {"Custom Traits"}
+      </Translate>
+    ),
+    svg: TraitsImage,
+    description: (
+      <Translate id="features.traits.description">
+        {"And traits too!"}
+      </Translate>
     ),
   },
 ];
