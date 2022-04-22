@@ -162,7 +162,7 @@ namespace RogueLibsCore
             InteractionModel model = Model;
             void Callback() => stopCallback(model);
             if (overrideExisting || model.CancelCallback is null)
-                model.CancelCallback ??= Callback;
+                model.CancelCallback = Callback;
             return Callback;
         }
         public Action SetSideEffect(Action<InteractionModel> sideEffect, bool overrideExisting = false)
@@ -171,7 +171,7 @@ namespace RogueLibsCore
             InteractionModel model = Model;
             void SideEffect() => sideEffect(model);
             if (overrideExisting || model.SideEffect is null)
-                model.SideEffect ??= SideEffect;
+                model.SideEffect = SideEffect;
             return SideEffect;
         }
         public void StopInteraction() => Model.StopInteraction();
@@ -261,7 +261,7 @@ namespace RogueLibsCore
             InteractionModel<T> model = Model;
             void Callback() => stopCallback(model);
             if (overrideExisting || model.CancelCallback is null)
-                model.CancelCallback ??= Callback;
+                model.CancelCallback = Callback;
             return Callback;
         }
         public Action SetSideEffect(Action<InteractionModel<T>> sideEffect, bool overrideExisting = false)
@@ -270,7 +270,7 @@ namespace RogueLibsCore
             InteractionModel<T> model = Model;
             void SideEffect() => sideEffect(model);
             if (overrideExisting || model.SideEffect is null)
-                model.SideEffect ??= SideEffect;
+                model.SideEffect = SideEffect;
             return SideEffect;
         }
         public void StopInteraction() => Model.StopInteraction();
