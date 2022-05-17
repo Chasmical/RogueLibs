@@ -25,9 +25,9 @@ namespace RogueLibsCore
                     h.AddImplicitButton("InteractWithAgent", static m =>
                     {
                         Agent agent = m.Agent;
-                        InteractionHelper helper = m.Helper;
                         Agent counterAgent = m.Object.counterAgent;
                         m.Object.StopInteraction();
+                        InteractionHelper helper = agent.interactionHelper;
 
                         if (helper.CanInteractWithAgent(counterAgent))
                         {
