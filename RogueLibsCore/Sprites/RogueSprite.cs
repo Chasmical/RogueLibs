@@ -346,8 +346,8 @@ namespace RogueLibsCore
             Vector2 spriteCenter = spriteRegion.center;
 
             Vector2 epsilon = new Vector2(0.001f, 0.001f);
-            Vector2 upperRightUv = new Vector2(spriteRegion.xMax + epsilon.x, y - (spriteRegion.yMin - epsilon.y)) / new Vector2(x, y);
-            Vector2 lowerLeftUv = new Vector2(spriteRegion.xMin - epsilon.x, y - (spriteRegion.yMax + epsilon.y)) / new Vector2(x, y);
+            Vector2 upperRightUv = new Vector2(spriteRegion.xMax + epsilon.x, spriteRegion.yMax + epsilon.y) / new Vector2(x, y);
+            Vector2 lowerLeftUv = new Vector2(spriteRegion.xMin - epsilon.x, spriteRegion.yMin - epsilon.y) / new Vector2(x, y);
 
             Vector3 b = new Vector3(-spriteCenter.x, spriteCenter.y - spriteRegion.height, 0f) * scale;
             Vector3 a = new Vector3(spriteRegion.width - spriteCenter.x, spriteCenter.y, 0f) * scale;
