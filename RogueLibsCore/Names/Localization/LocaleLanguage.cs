@@ -8,7 +8,7 @@ namespace RogueLibsCore
     [XmlRoot("Language")]
     public sealed class LocaleLanguage : IXmlSerializable
     {
-        private LocaleLanguage() { }
+        internal LocaleLanguage() { }
         public string Id { get; private set; } = null!; // initialized on deserialization
         public int Version { get; private set; }
         public LanguageCode Code { get; internal set; }

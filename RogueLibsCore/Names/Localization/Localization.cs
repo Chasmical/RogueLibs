@@ -52,10 +52,12 @@ namespace RogueLibsCore
                 WebClient web = new WebClient();
                 web.DownloadFile(url, downloadPath);
 
-                XmlSerializer ser = new XmlSerializer(typeof(LanguageVersions));
                 using (FileStream stream = new FileStream(downloadPath, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (XmlReader reader = XmlReader.Create(stream))
-                    Versions = (LanguageVersions)ser.Deserialize(reader);
+                {
+                    Versions = new LanguageVersions();
+                    Versions.ReadXml(reader);
+                }
 
                 string lastAccessFile = Path.Combine(localePath, ".lastaccess");
                 File.WriteAllText(lastAccessFile, DateTime.Now.ToString(CultureInfo.InvariantCulture));
@@ -132,7 +134,6 @@ namespace RogueLibsCore
             }
         }
 
-        private static readonly XmlSerializer languageSer = new XmlSerializer(typeof(LocaleLanguage));
         private static string localePath = null!; // initialized in Init()
 
         private static void InitializeLanguages()
@@ -185,7 +186,11 @@ namespace RogueLibsCore
             {
                 using (FileStream stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (XmlReader reader = XmlReader.Create(stream))
-                    return (LocaleLanguage)languageSer.Deserialize(reader);
+                {
+                    LocaleLanguage language = new LocaleLanguage();
+                    language.ReadXml(reader);
+                    return language;
+                }
             }
             catch
             {

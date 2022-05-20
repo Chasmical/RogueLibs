@@ -6,7 +6,7 @@ namespace RogueLibsCore
 {
     public sealed class LanguageVersions : IXmlSerializable
     {
-        private LanguageVersions() { }
+        internal LanguageVersions() { }
         public Dictionary<string, int> Entries { get; private set; } = null!; // initialized on deserialization
 
         public void WriteXml(XmlWriter xml)
