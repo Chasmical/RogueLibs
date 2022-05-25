@@ -308,6 +308,32 @@ namespace RogueLibsCore
             return instance.__RogueLibsCustom is THook tHook ? tHook : null;
         }
 
+        public static THook GetOrAddHook<THook>(this InvItem instance) where THook : IHook<InvItem>, new()
+        {
+            THook? hook = instance.GetHook<THook>();
+            return hook.IsDefault() ? instance.AddHook<THook>() : hook;
+        }
+        public static THook GetOrAddHook<THook>(this PlayfieldObject instance) where THook : IHook<PlayfieldObject>, new()
+        {
+            THook? hook = instance.GetHook<THook>();
+            return hook.IsDefault() ? instance.AddHook<THook>() : hook;
+        }
+        public static THook GetOrAddHook<THook>(this StatusEffect instance) where THook : IHook<StatusEffect>, new()
+        {
+            THook? hook = instance.GetHook<THook>();
+            return hook.IsDefault() ? instance.AddHook<THook>() : hook;
+        }
+        public static THook GetOrAddHook<THook>(this Trait instance) where THook : IHook<Trait>, new()
+        {
+            THook? hook = instance.GetHook<THook>();
+            return hook.IsDefault() ? instance.AddHook<THook>() : hook;
+        }
+
+        public static bool HasHook<THook>(this InvItem instance) => !GetHook<THook>(instance).IsDefault();
+        public static bool HasHook<THook>(this PlayfieldObject instance) => !GetHook<THook>(instance).IsDefault();
+        public static bool HasHook<THook>(this StatusEffect instance) => !GetHook<THook>(instance).IsDefault();
+        public static bool HasHook<THook>(this Trait instance) => !GetHook<THook>(instance).IsDefault();
+
         /// <summary>
         ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
