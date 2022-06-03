@@ -54,6 +54,13 @@ namespace RogueLibsCore
             void Callback() => callback(model);
             _model!.CancelCallback = Callback;
         }
+        public void SetSideEffect(Action<InteractionModel> sideEffect)
+        {
+            EnsureModel();
+            InteractionModel model = _model!;
+            void SideEffect() => sideEffect(model);
+            _model!.SideEffect = SideEffect;
+        }
         public void StopInteraction() => Model.StopInteraction();
 
         private InteractionModel? _model;
@@ -83,6 +90,7 @@ namespace RogueLibsCore
             {
                 RogueFramework.LogError($"SimpleInteractionProvider's handler on {Object} threw an exception.");
                 RogueFramework.LogError(e.ToString());
+                RogueFramework.LogError(_handler.Method);
             }
             finally
             {
@@ -143,6 +151,13 @@ namespace RogueLibsCore
             void Callback() => callback(model);
             _model!.CancelCallback = Callback;
         }
+        public void SetSideEffect(Action<InteractionModel<T>> sideEffect)
+        {
+            EnsureModel();
+            InteractionModel<T> model = _model!;
+            void SideEffect() => sideEffect(model);
+            _model!.SideEffect = SideEffect;
+        }
         public void StopInteraction() => Model.StopInteraction();
 
         private InteractionModel<T>? _model;
@@ -174,6 +189,7 @@ namespace RogueLibsCore
                 {
                     RogueFramework.LogError($"SimpleInteractionProvider's handler on {Object} threw an exception.");
                     RogueFramework.LogError(e.ToString());
+                    RogueFramework.LogError(_handler.Method);
                 }
                 finally
                 {

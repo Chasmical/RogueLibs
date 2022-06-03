@@ -28,27 +28,20 @@ namespace RogueLibsCore
                         Queuing = false;
                     }
 
-                    if (preparedButtons.Count is 0) // no buttons, any actions are a part of a stop callback
+                    if (queuedActions.Count > 0) // there are side effects to be executed
                     {
-                        if (queuedActions.Count is 0) return; // no actions, no stop callback
-
-                        QueuedAction[] stopCallback = queuedActions.ToArray();
-                        h.SetStopCallback(m =>
-                        {
-                            for (int i = 0, length = stopCallback.Length; i < length; i++)
-                                stopCallback[i].Action(m);
-                        });
+                        QueuedAction[] actions = queuedActions.ToArray();
+                        h.SetSideEffect(m => Array.ForEach(actions, a => a.Action(m)));
                     }
-                    else // there are buttons, create an action for each one
+
+                    // create an action for each button
+                    for (int i = 0, length = preparedButtons.Count; i < length; i++)
                     {
-                        for (int i = 0, length = preparedButtons.Count; i < length; i++)
+                        PreparedButton button = preparedButtons[i];
+                        h.AddButton(button.ButtonName, button.ButtonPrice, button.ButtonExtra, m =>
                         {
-                            PreparedButton button = preparedButtons[i];
-                            h.AddButton(button.ButtonName, button.ButtonPrice, button.ButtonExtra, m =>
-                            {
-                                m.Object.agentInteractions.PressedButton(m.Object, m.Agent, button.ButtonName, button.ButtonPrice);
-                            });
-                        }
+                            m.Object.agentInteractions.PressedButton(m.Object, m.Agent, button.ButtonName, button.ButtonPrice);
+                        });
                     }
                 }
                 finally // clean up, prepare fields for the next interaction

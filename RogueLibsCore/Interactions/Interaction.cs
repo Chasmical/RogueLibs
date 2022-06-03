@@ -45,13 +45,14 @@ namespace RogueLibsCore
         public abstract void OnPressed();
         public virtual void OnPressedImplicitly() => OnPressed();
 
-        public virtual void OnOpen() { }    // TODO
-        public virtual void WhileOpen() { } // TODO
-        public virtual void OnClose() { }   // TODO
+        // TODO
+        // public virtual void OnOpen() { }
+        // public virtual void WhileOpen() { }
+        // public virtual void OnClose() { }
 
-        public virtual void OnMouseEnter() { } // TODO
-        public virtual void OnMouseOver() { }  // TODO
-        public virtual void OnMouseExit() { }  // TODO
+        // public virtual void OnMouseEnter() { }
+        // public virtual void OnMouseOver() { }
+        // public virtual void OnMouseExit() { }
 
     }
     public interface IInteractionProvider

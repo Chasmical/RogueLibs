@@ -155,10 +155,15 @@ namespace RogueLibsCore
             __instance.interactable = true;
         }
 
+        internal static bool useModelStopInteraction;
         public static bool PlayfieldObject_StopInteraction(PlayfieldObject __instance)
         {
-            GetOrCreateModel(__instance).shouldStop = true;
-            return false;
+            if (useModelStopInteraction)
+            {
+                GetOrCreateModel(__instance).shouldStop = true;
+                return false;
+            }
+            return true;
         }
 
 

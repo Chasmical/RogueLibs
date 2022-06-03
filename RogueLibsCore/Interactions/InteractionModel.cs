@@ -54,6 +54,18 @@ namespace RogueLibsCore
 
         public void OnDetermineButtons()
         {
+            try
+            {
+                RogueLibsPlugin.useModelStopInteraction = true;
+                OnDetermineButtons2();
+            }
+            finally
+            {
+                RogueLibsPlugin.useModelStopInteraction = false;
+            }
+        }
+        private void OnDetermineButtons2()
+        {
             // reset state
             interactions.Clear();
             shouldStop = false;
@@ -89,25 +101,15 @@ namespace RogueLibsCore
             if (interactions.Count is 0 || shouldStop)
             {
                 CancelCallback?.Invoke(); // TODO: try-catch
-                Instance.StopInteraction();
+                OriginalStopInteraction(Instance);
                 return;
             }
             // if there's only one button and its action is implicit
             if (interactions.Count is 1 && interactions[0].ImplicitAction) // TODO: try-catch
             {
                 interactions[0].OnPressedImplicitly(); // TODO: try-catch
-                // if the interaction opened some kind of menu, stop here (presumably, object buttons are hidden)
-                if (Instance.interactingAgent is null
-                    || Agent.worldSpaceGUI?.openedUseOn is true
-                    || Agent.worldSpaceGUI?.openedChest is true
-                    || Agent.worldSpaceGUI?.openedChest2 is true
-                    || Agent.worldSpaceGUI?.openedNPCChest is true
-                    || Agent.mainGUI?.showingTarget is true
-                    || Agent.mainGUI?.openedOperatingBar is true
-                    || Agent.mainGUI?.openedBigImage is true
-                    || Agent.mainGUI?.openedScrollingMenu is true
-                    || Agent.mainGUI?.openedScrollingMenuPersonal is true) return;
-                Instance.StopInteraction();
+                if (IsControlIntercepted()) return;
+                OriginalStopInteraction(Instance);
                 return;
             }
 
@@ -119,12 +121,20 @@ namespace RogueLibsCore
                 Instance.buttonsExtra.Add(interaction.ButtonExtra ?? string.Empty);
             }
 
-            // invoke OnOpen method, because right after this, a menu will show up.
-            // TODO: maybe we should rely on ShowObjectButtons() explicitly instead of this assumption
-            interactions.ForEach(static i => i.OnOpen()); // TODO: try-catch
-
         }
         public void OnPressedButton(string buttonName)
+        {
+            try
+            {
+                RogueLibsPlugin.useModelStopInteraction = true;
+                OnPressedButton2(buttonName);
+            }
+            finally
+            {
+                RogueLibsPlugin.useModelStopInteraction = false;
+            }
+        }
+        private void OnPressedButton2(string buttonName)
         {
             // reset state
             shouldStop = false;
@@ -133,7 +143,7 @@ namespace RogueLibsCore
             // handle the default "Done" button
             if (buttonName is "Done")
             {
-                Instance.StopInteraction();
+                OriginalStopInteraction(Instance);
                 return;
             }
             // find the button that was pressed
@@ -150,24 +160,41 @@ namespace RogueLibsCore
             if (shouldStop)
             {
                 CancelCallback?.Invoke(); // TODO: try-catch
-                Instance.StopInteraction();
+                OriginalStopInteraction(Instance);
                 return;
             }
 
-            // if the interaction opened some kind of menu, stop here (presumably, object buttons are hidden)
-            if (Instance.interactingAgent is null
-                || Agent.worldSpaceGUI?.openedUseOn is true
-                || Agent.worldSpaceGUI?.openedChest is true
-                || Agent.worldSpaceGUI?.openedChest2 is true
-                || Agent.worldSpaceGUI?.openedNPCChest is true
-                || Agent.mainGUI?.showingTarget is true
-                || Agent.mainGUI?.openedOperatingBar is true
-                || Agent.mainGUI?.openedBigImage is true
-                || Agent.mainGUI?.openedScrollingMenu is true
-                || Agent.mainGUI?.openedScrollingMenuPersonal is true) return;
+            if (IsControlIntercepted()) return;
 
             // refresh the buttons (restarts the cycle)
             Agent.worldSpaceGUI?.StartCoroutine(Agent.worldSpaceGUI.RefreshObjectButtons2(Object));
+        }
+
+        public bool IsControlIntercepted()
+        {
+            if (Instance.interactingAgent is null) return true;
+
+            WorldSpaceGUI? ws = Agent.worldSpaceGUI;
+            if (ws is not null)
+            {
+                if (ws.openedUseOn || ws.openedChest || ws.openedChest2 || ws.openedNPCChest) return true;
+            }
+
+            MainGUI? gui = Agent.mainGUI;
+            if (gui is not null)
+            {
+                if (gui.showingTarget || gui.openedOperatingBar || gui.openedInventory || gui.openedCharacterSheet
+                    || gui.openedQuestSheet || gui.openedBigImage || gui.openedSetSeed || gui.openedBigMessage
+                    || gui.openedCharacterSelect || gui.openedScrollingMenu || gui.openedScrollingMenuPersonal
+                    || gui.openedCharacterCreation) return true;
+            }
+            return false;
+        }
+
+        private static void OriginalStopInteraction(PlayfieldObject obj)
+        {
+            RogueLibsPlugin.useModelStopInteraction = false;
+            obj.StopInteraction();
         }
 
     }

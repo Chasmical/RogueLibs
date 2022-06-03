@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using BepInEx.Logging;
 using UnityEngine;
 
@@ -64,6 +65,11 @@ namespace RogueLibsCore
 
             Logger.LogError($"{methodName} error in {hookObj} ({instanceName}{containerName})");
             Logger.LogError(e);
+        }
+        internal static void LogError(MethodBase method)
+        {
+            LogError(method.DeclaringType?.FullName ?? "[No declaring type]");
+            LogError(method.Name);
         }
 
         /// <summary>
