@@ -61,7 +61,7 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
-                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 bool? cur = gc?.sessionDataBig?.bigQuestUnlocks?.Contains(Unlock);
                 if (cur == true && !value) { gc!.sessionDataBig!.bigQuestUnlocks!.Remove(Unlock); Unlock.bigQuestCount--; }
                 else if (cur == false && value) { gc!.sessionDataBig!.bigQuestUnlocks!.Add(Unlock); Unlock.bigQuestCount++; }

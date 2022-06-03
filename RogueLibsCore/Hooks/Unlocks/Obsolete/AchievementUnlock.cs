@@ -43,7 +43,7 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
-                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 bool? cur = gc?.sessionDataBig?.achievementUnlocks?.Contains(Unlock);
                 if (cur == true && !value) { gc!.sessionDataBig!.achievementUnlocks!.Remove(Unlock); Unlock.achievementCount--; }
                 else if (cur == false && value) { gc!.sessionDataBig!.achievementUnlocks!.Add(Unlock); Unlock.achievementCount++; }

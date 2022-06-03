@@ -42,7 +42,7 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
-                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 bool? cur = gc?.sessionDataBig?.loadoutUnlocks?.Contains(Unlock);
                 if (cur == true && !value) { gc!.sessionDataBig!.loadoutUnlocks!.Remove(Unlock); Unlock.loadoutCount--; }
                 else if (cur == false && value) { gc!.sessionDataBig!.loadoutUnlocks!.Add(Unlock); Unlock.loadoutCount++; }

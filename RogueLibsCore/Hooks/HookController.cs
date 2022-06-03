@@ -88,6 +88,7 @@ namespace RogueLibsCore
                 IHook<T> hook = hooks[i];
                 try
                 {
+                    // ReSharper disable once SuspiciousTypeConversion.Global
                     (hook as IDisposable)?.Dispose();
                 }
                 catch (Exception e)

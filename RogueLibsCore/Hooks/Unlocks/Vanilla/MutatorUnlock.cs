@@ -57,7 +57,7 @@
             set
             {
                 Unlock.unavailable = !value;
-                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 bool? cur = gc?.sessionDataBig?.challengeUnlocks?.Contains(Unlock);
                 if (cur == true && !value) { gc!.sessionDataBig!.challengeUnlocks!.Remove(Unlock); Unlock.challengeCount--; }
                 else if (cur == false && value) { gc!.sessionDataBig!.challengeUnlocks!.Add(Unlock); Unlock.challengeCount++; }

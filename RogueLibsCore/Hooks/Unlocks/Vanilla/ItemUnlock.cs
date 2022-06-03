@@ -95,7 +95,7 @@ namespace RogueLibsCore
             set
             {
                 Unlock.unavailable = !value;
-                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 bool? cur = gc?.sessionDataBig?.itemUnlocks?.Contains(Unlock);
                 if (cur == true && !value) { gc!.sessionDataBig!.itemUnlocks!.Remove(Unlock); Unlock.itemCount--; }
                 else if (cur == false && value) { gc!.sessionDataBig!.itemUnlocks!.Add(Unlock); Unlock.itemCount++; }
@@ -108,7 +108,7 @@ namespace RogueLibsCore
             set
             {
                 Unlock.onlyInCharacterCreation = value;
-                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 bool? cur = gc?.sessionDataBig?.itemUnlocksCharacterCreation?.Contains(Unlock);
                 if (cur == true && !value) { gc!.sessionDataBig!.itemUnlocksCharacterCreation!.Remove(Unlock); Unlock.itemCountCharacterCreation--; }
                 else if (cur == false && value) { gc!.sessionDataBig!.itemUnlocksCharacterCreation!.Add(Unlock); Unlock.itemCountCharacterCreation++; }
@@ -123,7 +123,7 @@ namespace RogueLibsCore
             set
             {
                 Unlock.freeItem = value;
-                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 bool? cur = gc?.sessionDataBig?.freeItemUnlocks?.Contains(Unlock);
                 if (cur == true && !value) { gc!.sessionDataBig!.freeItemUnlocks!.Remove(Unlock); Unlock.itemCountFree--; }
                 else if (cur == false && value) { gc!.sessionDataBig!.freeItemUnlocks!.Add(Unlock); Unlock.itemCountFree++; }

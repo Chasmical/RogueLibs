@@ -19,7 +19,7 @@ namespace RogueLibsCore
         ///   <para>Initializes a new instance of the <see cref="RoguePatcher"/> class with the specified <paramref name="callerPlugin"/>.</para>
         /// </summary>
         /// <param name="callerPlugin">The instance of <see cref="BaseUnityPlugin"/> responsible for the patches.</param>
-        // ReSharper disable once ConstantConditionalAccessQualifier
+        // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
         public RoguePatcher(BaseUnityPlugin callerPlugin) : this(callerPlugin, callerPlugin?.GetType()!) { }
         /// <summary>
         ///   <para>Initializes a new instance of the <see cref="RoguePatcher"/> class with the specified <paramref name="callerPlugin"/>.</para>

@@ -220,7 +220,7 @@ namespace RogueLibsCore
             }
             catch (Exception e)
             {
-                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 RogueFramework.Logger.LogError($"Error setting up {wrapper.Unlock?.unlockName} ({wrapper.Unlock?.unlockType}) unlock.");
                 RogueFramework.Logger.LogError(e);
             }

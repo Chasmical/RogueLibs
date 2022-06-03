@@ -40,7 +40,7 @@
             set
             {
                 Unlock.unavailable = !value;
-                // ReSharper disable once ConstantConditionalAccessQualifier
+                // ReSharper disable once ConditionalAccessQualifierIsNonNullableAccordingToAPIContract
                 bool? cur = gc?.sessionDataBig?.floorUnlocks?.Contains(Unlock);
                 if (cur == true && !value) { gc!.sessionDataBig!.floorUnlocks!.Remove(Unlock); Unlock.floorCount--; }
                 else if (cur == false && value) { gc!.sessionDataBig!.floorUnlocks!.Add(Unlock); Unlock.floorCount++; }
