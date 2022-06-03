@@ -19,17 +19,17 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Determines whether RogueLibs was compiled in the Debug configuration.</para>
         /// </summary>
-        public static bool Debug { get; }
+        public static bool Debug =>
 #if DEBUG
-            = true;
+            true;
+#else
+            false;
 #endif
+
         /// <summary>
         ///   <para>Determines the RogueLibs' enabled debugging flags.</para>
         /// </summary>
         public static DebugFlags DebugFlags { get; set; }
-#if DEBUG
-            = DebugFlags.EnableTools | DebugFlags.Abilities | DebugFlags.Effects;
-#endif
 
         /// <summary>
         ///   <para>Determines whether any of the specified <paramref name="flags"/> is enabled.</para>

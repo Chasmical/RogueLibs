@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace RogueLibsCore
+﻿namespace RogueLibsCore
 {
     public static partial class VanillaInteractions
     {

@@ -6,7 +6,7 @@
         private static void Patch_SatelliteDish()
         {
             Patch<SatelliteDish>(Params2);
-			PatchInteract<SatelliteDish>();
+            PatchInteract<SatelliteDish>();
             PatchInteractFar<SatelliteDish>();
 
             RogueInteractions.CreateProvider<SatelliteDish>(static h =>
@@ -39,5 +39,5 @@
                 }
             });
         }
-	}
+    }
 }

@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using HarmonyLib;
-// ReSharper disable UnusedParameter.Local
 
 namespace RogueLibsCore
 {
@@ -54,11 +50,8 @@ namespace RogueLibsCore
                             });
                         }
                     }
-
-                    // if original returned some buttons, add queued actions as a side effect; otherwise, as a stop callback
-                    // for each button create an action that calls original PressedButton
                 }
-				finally // clean up, prepare fields for the next interaction
+                finally // clean up, prepare fields for the next interaction
                 {
                     queuedActions.Clear();
                     preparedButtons.Clear();
@@ -74,8 +67,8 @@ namespace RogueLibsCore
                 Id = id;
                 Action = action;
             }
-            public readonly Action<InteractionModel<Agent>> Action;
             public readonly string Id;
+            public readonly Action<InteractionModel<Agent>> Action;
         }
         private readonly struct PreparedButton
         {
@@ -90,7 +83,7 @@ namespace RogueLibsCore
             public readonly string? ButtonExtra;
         }
 
-		public static bool Queuing { get; private set; }
+        public static bool Queuing { get; private set; }
         private static readonly Queue<QueuedAction> queuedActions = new Queue<QueuedAction>();
         private static readonly List<PreparedButton> preparedButtons = new List<PreparedButton>();
 

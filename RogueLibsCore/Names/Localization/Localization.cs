@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Threading;
 using System.Linq;
 using System.Xml;
-using System.Xml.Serialization;
 using System.Net;
 using BepInEx;
 
