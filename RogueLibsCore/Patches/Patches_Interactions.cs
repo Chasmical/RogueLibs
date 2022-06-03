@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
 using UnityEngine;
 
 namespace RogueLibsCore
@@ -10,44 +9,17 @@ namespace RogueLibsCore
     {
         public void PatchInteractions()
         {
-            VanillaInteractions.PatchAll();
+            Patcher.Postfix(typeof(PlayfieldObject), "Awake");
 
-            RogueInteractions.CreateProvider(static h =>
-            {
-                if (!h.Helper.interactingFar) return;
-                PlayfieldObject obj = h.Object;
-                if (obj is AlarmButton or AmmoDispenser or ArcadeGame or ATMMachine or Door { placedDetonatorInitial: 1 })
-                {
-                    if (h.Agent.oma.superSpecialAbility && h.Agent.agentName == "Hacker"
-                        || h.Agent.statusEffects.hasTrait("HacksBlowUpObjects"))
-                    {
-                        h.AddButton("HackExplode", static m => (m.Object as ObjectReal)?.HackExplode(m.Agent));
-                    }
-                }
-            });
-            RogueInteractions.CreateProvider(static h =>
-            {
-                if (h.Helper.interactingFar) return;
-                if (h.Object is ObjectReal objReal && objReal.CanCollectAlienPart())
-                {
-                    if (objReal is AmmoDispenser or ATMMachine or AugmentationBooth
-                        or CapsuleMachine or CloneMachine or LoadoutMachine or PawnShopMachine)
-                    {
-                        h.AddButton("CollectPart", static m =>
-                        {
-                            m.StartOperating(5f, true, "Collecting");
-                            if (!m.Agent.statusEffects.hasTrait("OperateSecretly") && m.Object.functional)
-                            {
-                                m.gc.spawnerMain.SpawnNoise(m.Object.tr.position, 1f, m.Agent, "Normal", m.Agent);
-                                m.gc.audioHandler.Play(m.Object, "Hack");
-                                (m.Object as ObjectReal)?.SpawnParticleEffect("Hack", m.Object.tr.position);
-                                m.gc.spawnerMain.SpawnStateIndicator(m.Object, "HighVolume");
-                                m.gc.OwnCheck(m.Agent, m.Object.go, "Normal", 0);
-                            }
-                        });
-                    }
-                }
-            });
+            Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.DetermineButtons), nameof(DetermineButtonsHook));
+            Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.PressedButton), nameof(PressedButtonHook),
+                           new Type[2] { typeof(string), typeof(int) });
+            Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.Interact), nameof(InteractHook));
+            Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.InteractFar), nameof(InteractFarHook));
+
+            Patcher.Prefix(typeof(PlayfieldObject), nameof(PlayfieldObject.StopInteraction), new Type[1] { typeof(bool) });
+
+            VanillaInteractions.PatchAll();
 
             Patcher.AnyErrors();
         }
@@ -182,6 +154,13 @@ namespace RogueLibsCore
         {
             __instance.interactable = true;
         }
+
+        public static bool PlayfieldObject_StopInteraction(PlayfieldObject __instance)
+        {
+            GetOrCreateModel(__instance).shouldStop = true;
+            return false;
+        }
+
 
     }
 }

@@ -9,7 +9,10 @@ namespace RogueLibsCore
 {
     public abstract class InteractionModel : HookBase<PlayfieldObject>
     {
-        protected InteractionModel() => Interactions = new ReadOnlyCollection<Interaction>(interactions);
+        protected InteractionModel()
+        {
+            Interactions = new ReadOnlyCollection<Interaction>(interactions);
+        }
 
         public new PlayfieldObject Instance => base.Instance;
         public PlayfieldObject Object => base.Instance;
@@ -21,13 +24,26 @@ namespace RogueLibsCore
 
         internal bool shouldStop;
         public void StopInteraction() => shouldStop = true;
-        public Action? CancelCallback { get; set; }
-        public Action? SideEffect { get; set; }
 
         protected override void Initialize() { }
 
         private readonly List<Interaction> interactions = new List<Interaction>();
         public ReadOnlyCollection<Interaction> Interactions { get; }
+
+        public Action? CancelCallback { get; set; }
+        public Action? SideEffect { get; set; }
+
+        public bool RemoveInteraction(Interaction interaction)
+            => interactions.Remove(interaction);
+        public bool RemoveInteraction(Predicate<Interaction> predicate)
+        {
+            int index = interactions.FindIndex(predicate);
+            if (index is -1) return false;
+            interactions.RemoveAt(index);
+            return true;
+        }
+        public bool RemoveInteraction(string buttonName)
+            => RemoveInteraction(i => i.ButtonName == buttonName);
 
         public Coroutine StartOperating(float timeToUnlock, bool makeNoise, string barType)
             => StartOperating((InvItem?)null, timeToUnlock, makeNoise, barType);
@@ -42,13 +58,21 @@ namespace RogueLibsCore
             interactions.Clear();
             shouldStop = false;
             CancelCallback = null;
+            SideEffect = null;
 
             // repopulate the interactions
             foreach (IInteractionProvider provider in RogueInteractions.Providers)
             {
                 try
                 {
-                    interactions.AddRange(provider.GetInteractions(this).ToArray());
+                    Interaction[] provided = provider.GetInteractions(this).ToArray();
+                    for (int i = 0, length = provided.Length; i < length; i++)
+                    {
+                        Interaction interaction = provided[i];
+                        interaction.Model = this;
+                        bool success = interaction.SetupButton() && interaction.ButtonName is not null;
+                        if (success) interactions.Add(interaction);
+                    }
                 }
                 catch (Exception e)
                 {
@@ -56,11 +80,10 @@ namespace RogueLibsCore
                     RogueFramework.LogError(e.ToString());
                 }
             }
-            // set interactions' Model property
-            interactions.ForEach(i => i.Model = this);
+            interactions.Sort();
 
-            // remove those that couldn't set up // TODO: try-catch
-            interactions.RemoveAll(static i => !i.SetupButton() || i.ButtonName is null);
+            // invoke the SideEffect
+            SideEffect?.Invoke();
 
             // if there are no buttons, or one of them cancelled the entire interaction
             if (interactions.Count is 0 || shouldStop)
@@ -96,9 +119,6 @@ namespace RogueLibsCore
                 Instance.buttonsExtra.Add(interaction.ButtonExtra ?? string.Empty);
             }
 
-            // invoke the SideEffect
-            SideEffect?.Invoke();
-
             // invoke OnOpen method, because right after this, a menu will show up.
             // TODO: maybe we should rely on ShowObjectButtons() explicitly instead of this assumption
             interactions.ForEach(static i => i.OnOpen()); // TODO: try-catch
@@ -111,7 +131,7 @@ namespace RogueLibsCore
             CancelCallback = null;
 
             // handle the default "Done" button
-            if (buttonName == "Done")
+            if (buttonName is "Done")
             {
                 Instance.StopInteraction();
                 return;

@@ -11,12 +11,6 @@ namespace RogueLibsCore
         internal static void PatchAll()
         {
             patcher = RogueFramework.Plugin.Patcher;
-            patcher.Postfix(typeof(PlayfieldObject), "Awake");
-
-            patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.DetermineButtons), nameof(RogueLibsPlugin.DetermineButtonsHook));
-            patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.PressedButton), nameof(RogueLibsPlugin.PressedButtonHook), Params2);
-            patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.Interact), nameof(RogueLibsPlugin.InteractHook));
-            patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.InteractFar), nameof(RogueLibsPlugin.InteractFarHook));
 
             object[] empty = new object[0];
             foreach (MethodInfo method in typeof(VanillaInteractions).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
@@ -24,6 +18,43 @@ namespace RogueLibsCore
                 if (method.GetCustomAttribute<IncludeAttribute>() is not null)
                     method.Invoke(null, empty);
             }
+
+            RogueInteractions.CreateProvider(static h =>
+            {
+                if (!h.Helper.interactingFar) return;
+                PlayfieldObject obj = h.Object;
+                if (obj is AlarmButton or AmmoDispenser or ArcadeGame or ATMMachine or Door { placedDetonatorInitial: 1 })
+                {
+                    if (h.Agent.oma.superSpecialAbility && h.Agent.agentName == "Hacker"
+                        || h.Agent.statusEffects.hasTrait("HacksBlowUpObjects"))
+                    {
+                        h.AddButton("HackExplode", static m => (m.Object as ObjectReal)?.HackExplode(m.Agent));
+                    }
+                }
+            });
+            RogueInteractions.CreateProvider(static h =>
+            {
+                if (h.Helper.interactingFar) return;
+                if (h.Object is ObjectReal objReal && objReal.CanCollectAlienPart())
+                {
+                    if (objReal is AmmoDispenser or ATMMachine or AugmentationBooth
+                        or CapsuleMachine or CloneMachine or LoadoutMachine or PawnShopMachine)
+                    {
+                        h.AddButton("CollectPart", static m =>
+                        {
+                            m.StartOperating(5f, true, "Collecting");
+                            if (!m.Agent.statusEffects.hasTrait("OperateSecretly") && m.Object.functional)
+                            {
+                                m.gc.spawnerMain.SpawnNoise(m.Object.tr.position, 1f, m.Agent, "Normal", m.Agent);
+                                m.gc.audioHandler.Play(m.Object, "Hack");
+                                (m.Object as ObjectReal)?.SpawnParticleEffect("Hack", m.Object.tr.position);
+                                m.gc.spawnerMain.SpawnStateIndicator(m.Object, "HighVolume");
+                                m.gc.OwnCheck(m.Agent, m.Object.go, "Normal", 0);
+                            }
+                        });
+                    }
+                }
+            });
         }
 
         [Include]

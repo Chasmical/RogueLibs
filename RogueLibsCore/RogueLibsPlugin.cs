@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using BepInEx;
 using System.Threading;
@@ -52,9 +53,14 @@ namespace RogueLibsCore
 
             try
             {
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+                // ReSharper disable once UnusedLocalFunctionReturnValue
+                static int Use(object? obj) => obj?.GetHashCode() ?? 0;
+
                 PlayfieldObject test = new PlayfieldObject();
-                object? value = test.__RogueLibsHooks;
+                Use(test.__RogueLibsHooks);
                 test.__RogueLibsHooks = new object();
+                Use(test.__RogueLibsHooks);
             }
             catch (Exception)
             {
@@ -89,6 +95,7 @@ namespace RogueLibsCore
             PatchUnlocks();
             PatchAgents();
             PatchInteractions();
+            PatchAgentInteractions();
 #if DEBUG
             Patcher.SortResults();
             Patcher.LogResults();
