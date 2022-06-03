@@ -194,7 +194,7 @@ namespace RogueLibsCore
 
         internal static bool versionLinesReady;
         internal static readonly List<VersionText> versionLines = new List<VersionText>();
-        private static Vector3 versionTextOffset = new Vector3(5f, -10f, 0f);
+        private static Vector3 versionTextOffset;
         internal static Text AttachVersionText(GameObject versionObj, string id, string? text)
         {
             GameObject? myObject = versionObj.transform.Find(id)?.gameObject;
@@ -221,6 +221,7 @@ namespace RogueLibsCore
         public static void MainGUI_Awake()
         {
             versionLinesReady = true;
+            versionTextOffset = new Vector3(5f, -10f, 0f);
             GameObject versionObj = GameObject.Find("VersionText2");
             foreach (VersionText versionText in versionLines)
             {
