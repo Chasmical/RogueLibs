@@ -37,6 +37,7 @@ namespace RogueLibsCore
 
         private static readonly PropertyInfo loggerProperty = AccessTools.Property(typeof(BaseUnityPlugin), "Logger");
         private readonly Harmony harmony;
+        public Harmony GetHarmony() => harmony;
         private readonly ManualLogSource log;
         private Type _typeWithPatches;
         /// <summary>
