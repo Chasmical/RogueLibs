@@ -21,7 +21,7 @@ namespace RogueLibsCore
                     {
                         Agent agent = m.Agent;
                         Agent counterAgent = m.Object.counterAgent;
-                        m.Object.StopInteraction();
+                        m.StopInteraction(true);
                         InteractionHelper helper = agent.interactionHelper;
 
                         if (helper.CanInteractWithAgent(counterAgent))

@@ -23,7 +23,20 @@ namespace RogueLibsCore
         public GameController gc => GameController.gameController;
 
         internal bool shouldStop;
-        public void StopInteraction() => shouldStop = true;
+        internal bool forcedStop;
+        public void StopInteraction() => StopInteraction(false);
+        public void StopInteraction(bool forced)
+        {
+            if (forcedStop) return;
+            if (!forced)
+            {
+                shouldStop = true;
+                return;
+            }
+            shouldStop = false;
+            forcedStop = true;
+            OriginalStopInteraction(Instance);
+        }
 
         protected override void Initialize() { }
 
@@ -69,6 +82,7 @@ namespace RogueLibsCore
             // reset state
             interactions.Clear();
             shouldStop = false;
+            forcedStop = false;
             CancelCallback = null;
             SideEffect = null;
 
@@ -104,6 +118,7 @@ namespace RogueLibsCore
                 OriginalStopInteraction(Instance);
                 return;
             }
+            if (forcedStop) return;
             // if there's only one button and its action is implicit
             if (interactions.Count is 1 && interactions[0].ImplicitAction) // TODO: try-catch
             {
@@ -138,6 +153,7 @@ namespace RogueLibsCore
         {
             // reset state
             shouldStop = false;
+            forcedStop = false;
             CancelCallback = null;
 
             // handle the default "Done" button
@@ -163,7 +179,6 @@ namespace RogueLibsCore
                 OriginalStopInteraction(Instance);
                 return;
             }
-
             if (IsControlIntercepted()) return;
 
             // refresh the buttons (restarts the cycle)
@@ -172,7 +187,7 @@ namespace RogueLibsCore
 
         public bool IsControlIntercepted()
         {
-            if (Instance.interactingAgent is null) return true;
+            if (forcedStop || Instance.interactingAgent is null) return true;
 
             WorldSpaceGUI? ws = Agent.worldSpaceGUI;
             if (ws is not null)
