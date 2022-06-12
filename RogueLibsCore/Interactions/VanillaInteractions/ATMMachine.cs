@@ -61,9 +61,9 @@
                         h.AddButton("PayBackDebt", h.Agent.CalculateDebt(), static m => m.Object.PayBackDebt());
 
                     if (h.Agent.HasEffect("OweCops1"))
-                        h.AddButton("PayCops", h.Object.determineMoneyCost("OweCops1"), static m => m.Object.PayCops());
+                        h.AddButton("PayCops", h.Object.determineMoneyCost("PayCops1"), static m => m.Object.PayCops());
                     else if (h.Agent.HasEffect("OweCops2"))
-                        h.AddButton("PayCops", h.Object.determineMoneyCost("OweCops2"), static m => m.Object.PayCops());
+                        h.AddButton("PayCops", h.Object.determineMoneyCost("PayCops2"), static m => m.Object.PayCops());
 
                     if (h.Agent.bigQuest == "Hobo" && !h.gc.loadLevel.LevelContainsMayor())
                     {
