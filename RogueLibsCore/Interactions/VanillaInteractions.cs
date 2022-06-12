@@ -23,7 +23,9 @@ namespace RogueLibsCore
             {
                 if (!h.Helper.interactingFar) return;
                 PlayfieldObject obj = h.Object;
-                if (obj is AlarmButton or AmmoDispenser or ArcadeGame or ATMMachine or Door { placedDetonatorInitial: 1 })
+                if (obj is AlarmButton or AmmoDispenser or AugmentationBooth or ArcadeGame or ATMMachine or CloneMachine
+                    or Door { placedDetonatorInitial: 1 } or PawnShopMachine or Refrigerator or SlotMachine or Turret
+                    or Turntables or SecurityCam or SatelliteDish or PowerBox or Jukebox or Computer or CapsuleMachine)
                 {
                     if (h.Agent.oma.superSpecialAbility && h.Agent.agentName == "Hacker"
                         || h.Agent.statusEffects.hasTrait("HacksBlowUpObjects"))
