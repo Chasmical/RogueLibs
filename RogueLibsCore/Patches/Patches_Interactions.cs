@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using HarmonyLib;
 using UnityEngine;
 
 namespace RogueLibsCore
@@ -18,6 +19,8 @@ namespace RogueLibsCore
             Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.InteractFar), nameof(InteractFarHook));
 
             Patcher.Prefix(typeof(PlayfieldObject), nameof(PlayfieldObject.StopInteraction), new Type[1] { typeof(bool) });
+
+            Patcher.Prefix(typeof(InteractionHelper), "EnterDetails");
 
             VanillaInteractions.PatchAll();
 
@@ -164,6 +167,64 @@ namespace RogueLibsCore
                 return false;
             }
             return true;
+        }
+
+        private static readonly FieldInfo interactionHelperAgentField = AccessTools.Field(typeof(InteractionHelper), "agent");
+        public static bool InteractionHelper_EnterDetails(InteractionHelper __instance, Collider2D other)
+        {
+            __instance.EnterRange(other.gameObject);
+
+            Agent agent = (Agent)interactionHelperAgentField.GetValue(__instance);
+            Vector3 pointPos = agent.tr.position;
+
+            float itemDistance = float.MaxValue;
+            float objectDistance = float.MaxValue;
+            __instance.closestItem = null;
+            __instance.closestObject = null;
+            foreach (GameObject obj in __instance.TriggerList)
+            {
+                PlayfieldObject playfieldObj = obj.GetComponent<PlayfieldObject>()
+                                               ?? obj.GetComponent<ObjectSprite>()?.playFieldObject
+                                               ?? obj.transform.parent.GetComponent<PlayfieldObject>()
+                                               ?? obj.transform.parent.GetComponent<ObjectSprite>().playFieldObject;
+                InteractionModel model = GetOrCreateModel(playfieldObj);
+
+                float dist = Vector3.Distance(playfieldObj.tr.position, pointPos);
+                if (obj.CompareTag("AgentSprite") || obj.CompareTag("ObjectRealSprite"))
+                {
+                    if (dist < objectDistance && model.ShouldBeHighlighted(agent))
+                    {
+                        objectDistance = dist;
+                        __instance.closestObject = obj;
+                    }
+                }
+                else if (obj.CompareTag("ItemImage"))
+                {
+                    if (dist < itemDistance && model.ShouldBeHighlighted(agent))
+                    {
+                        itemDistance = dist;
+                        __instance.closestItem = obj;
+                    }
+                }
+            }
+            foreach (GameObject obj in __instance.TriggerList)
+            {
+                PlayfieldObject playfieldObj = obj.GetComponent<PlayfieldObject>()
+                                               ?? obj.GetComponent<ObjectSprite>()?.playFieldObject
+                                               ?? obj.transform.parent.GetComponent<PlayfieldObject>()
+                                               ?? obj.transform.parent.GetComponent<ObjectSprite>().playFieldObject;
+
+                if (obj == __instance.closestItem || obj == __instance.closestObject)
+                {
+                    try { playfieldObj.objectSprite.SetHighlight("Normal", agent); } catch { }
+                }
+                else
+                {
+                    try { playfieldObj.objectSprite.SetHighlight("Off", agent); } catch { }
+                }
+            }
+
+            return false;
         }
 
 

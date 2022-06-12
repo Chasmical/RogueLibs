@@ -184,6 +184,55 @@ namespace RogueLibsCore
             // refresh the buttons (restarts the cycle)
             Agent.worldSpaceGUI?.StartCoroutine(Agent.worldSpaceGUI.RefreshObjectButtons2(Object));
         }
+        public bool ShouldBeHighlighted(Agent agent)
+        {
+            Agent prevAgent = Instance.interactingAgent;
+            try
+            {
+                RogueLibsPlugin.useModelStopInteraction = true;
+                Instance.interactingAgent = agent;
+                bool res = ShouldBeHighlighted2();
+                // RogueFramework.LogWarning($"{Instance} will{(res ? null : " not")} be highlighted.");
+                return res;
+            }
+            finally
+            {
+                RogueLibsPlugin.useModelStopInteraction = false;
+                Instance.interactingAgent = prevAgent;
+            }
+        }
+        private bool ShouldBeHighlighted2()
+        {
+            // reset state
+            interactions.Clear();
+            shouldStop = false;
+            forcedStop = false;
+            CancelCallback = null;
+            SideEffect = null;
+
+            // repopulate the interactions
+            foreach (IInteractionProvider provider in RogueInteractions.Providers)
+            {
+                try
+                {
+                    Interaction[] provided = provider.GetInteractions(this).ToArray();
+                    for (int i = 0, length = provided.Length; i < length; i++)
+                    {
+                        Interaction interaction = provided[i];
+                        interaction.Model = this;
+                        bool success = interaction.SetupButton() && interaction.ButtonName is not null;
+                        if (success) interactions.Add(interaction);
+                    }
+                }
+                catch (Exception e)
+                {
+                    RogueFramework.LogError($"Interaction provider {provider} threw an exception while getting interactions for {Object}.");
+                    RogueFramework.LogError(e.ToString());
+                }
+            }
+
+            return interactions.Count > 0 || CancelCallback is not null || SideEffect is not null;
+        }
 
         public bool IsControlIntercepted()
         {
