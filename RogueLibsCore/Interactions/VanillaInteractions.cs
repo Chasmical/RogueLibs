@@ -12,6 +12,10 @@ namespace RogueLibsCore
         {
             patcher = RogueFramework.Plugin.Patcher;
 
+            Patch<PlayfieldObject>(Params2);
+            PatchInteract<PlayfieldObject>();
+            PatchInteractFar<PlayfieldObject>();
+
             object[] empty = new object[0];
             foreach (MethodInfo method in typeof(VanillaInteractions).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
             {

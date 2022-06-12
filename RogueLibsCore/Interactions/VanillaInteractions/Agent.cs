@@ -9,7 +9,6 @@ namespace RogueLibsCore
         private static void Patch_Agent()
         {
             Patch<Agent>(Params2);
-            PatchInteractFar<Agent>();
             // See Agent.Interact patch and other patches in Patches_AgentInteractions.cs
 
             RogueInteractions.CreateProvider<Agent>(static h =>
