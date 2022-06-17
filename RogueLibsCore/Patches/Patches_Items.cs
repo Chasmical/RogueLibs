@@ -181,7 +181,7 @@ namespace RogueLibsCore
                         new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, "Combine");
                     }
 
-                    if (__instance.invItemCount < 1 || __instance.database?.InvItemList.Contains(__instance) != false
+                    if (__instance.invItemCount < 1 || __instance.database?.InvItemList.Contains(__instance) == false
                         && InventoryChecks.IsCheckAllowed(custom, "StopOnZero"))
                     {
                         if (debug) RogueFramework.LogDebug("---- Triggered \"StopOnZero\" inventory check.");
@@ -260,7 +260,7 @@ namespace RogueLibsCore
                             new ItemFunctions().TargetObject(__instance, __instance.agent, otherObject, "Combine");
                         }
 
-                        if (__instance.invItemCount < 1 || __instance.database?.InvItemList.Contains(__instance) != false
+                        if (__instance.invItemCount < 1 || __instance.database?.InvItemList.Contains(__instance) == false
                             && InventoryChecks.IsCheckAllowed(custom, "StopOnZero"))
                         {
                             if (debug) RogueFramework.LogDebug("---- Triggered \"StopOnZero\" inventory check.");
@@ -450,7 +450,7 @@ namespace RogueLibsCore
                                 if (debug) RogueFramework.LogDebug($"---- Targeting {(success ? "was successful" : "failed")}.");
                                 if (success) new ItemFunctions().UseItemAnim(invItem, invItem.agent);
 
-                                if (custom.Count < 1 || custom.Inventory?.InvItemList.Contains(custom.Item) != false
+                                if (custom.Count < 1 || custom.Inventory?.InvItemList.Contains(custom.Item) == false
                                     && InventoryChecks.IsCheckAllowed(custom, "StopOnZero"))
                                 {
                                     if (debug) RogueFramework.LogDebug("---- Triggered \"StopOnZero\" inventory check.");
