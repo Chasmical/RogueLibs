@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace RogueLibsCore
 {
@@ -87,25 +88,28 @@ namespace RogueLibsCore
             SideEffect = null;
 
             // repopulate the interactions
-            foreach (IInteractionProvider provider in RogueInteractions.Providers)
+            IInteractionProvider? lastProvider = null;
+            try
             {
-                try
+                for (int i = 0, count = RogueInteractions.Providers.Count; i < count; i++)
                 {
-                    Interaction[] provided = provider.GetInteractions(this).ToArray();
-                    for (int i = 0, length = provided.Length; i < length; i++)
+                    IInteractionProvider provider = RogueInteractions.Providers[i];
+                    Interaction[] provided = provider.GetInteractions(this);
+                    for (int j = 0, length = provided.Length; j < length; j++)
                     {
-                        Interaction interaction = provided[i];
+                        Interaction interaction = provided[j];
                         interaction.Model = this;
                         bool success = interaction.SetupButton() && interaction.ButtonName is not null;
                         if (success) interactions.Add(interaction);
                     }
                 }
-                catch (Exception e)
-                {
-                    RogueFramework.LogError($"Interaction provider {provider} threw an exception while getting interactions for {Object}.");
-                    RogueFramework.LogError(e.ToString());
-                }
             }
+            catch (Exception e)
+            {
+                RogueFramework.LogError($"Interaction provider {lastProvider} threw an exception while getting interactions for {Object}.");
+                RogueFramework.LogError(e.ToString());
+            }
+
             interactions.Sort();
 
             // invoke the SideEffect
@@ -185,7 +189,6 @@ namespace RogueLibsCore
             Agent.worldSpaceGUI?.StartCoroutine(Agent.worldSpaceGUI.RefreshObjectButtons2(Object));
         }
 
-        private static string? lastLog;
         private bool fakingInteraction;
         public bool IsInteractable(Agent agent)
         {
@@ -214,24 +217,26 @@ namespace RogueLibsCore
             SideEffect = null;
 
             // repopulate the interactions
-            foreach (IInteractionProvider provider in RogueInteractions.Providers)
+            IInteractionProvider? lastProvider = null;
+            try
             {
-                try
+                for (int i = 0, count = RogueInteractions.Providers.Count; i < count; i++)
                 {
-                    Interaction[] provided = provider.GetInteractions(this).ToArray();
-                    for (int i = 0, length = provided.Length; i < length; i++)
+                    IInteractionProvider provider = RogueInteractions.Providers[i];
+                    Interaction[] provided = provider.GetInteractions(this);
+                    for (int j = 0, length = provided.Length; j < length; j++)
                     {
-                        Interaction interaction = provided[i];
+                        Interaction interaction = provided[j];
                         interaction.Model = this;
                         bool success = interaction.SetupButton() && interaction.ButtonName is not null;
                         if (success) interactions.Add(interaction);
                     }
                 }
-                catch (Exception e)
-                {
-                    RogueFramework.LogError($"Interaction provider {provider} threw an exception while getting interactions for {Object}.");
-                    RogueFramework.LogError(e.ToString());
-                }
+            }
+            catch (Exception e)
+            {
+                RogueFramework.LogError($"Interaction provider {lastProvider} threw an exception while getting interactions for {Object}.");
+                RogueFramework.LogError(e.ToString());
             }
 
             return interactions.Count > 0 || CancelCallback is not null || SideEffect is not null;

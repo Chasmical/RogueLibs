@@ -79,7 +79,7 @@ namespace RogueLibsCore
         [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "That's how it's called in the original code")]
         public GameController gc => GameController.gameController;
 
-        IEnumerable<Interaction> IInteractionProvider.GetInteractions(InteractionModel model)
+        Interaction[] IInteractionProvider.GetInteractions(InteractionModel model)
         {
             try
             {
@@ -176,7 +176,7 @@ namespace RogueLibsCore
         [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "That's how it's called in the original code")]
         public GameController gc => GameController.gameController;
 
-        IEnumerable<Interaction> IInteractionProvider.GetInteractions(InteractionModel model)
+        Interaction[] IInteractionProvider.GetInteractions(InteractionModel model)
         {
             if (model is InteractionModel<T> tModel)
             {
@@ -199,7 +199,7 @@ namespace RogueLibsCore
                 interactions.Clear();
                 return array;
             }
-            return Enumerable.Empty<Interaction>();
+            return Array.Empty<Interaction>();
         }
 
     }

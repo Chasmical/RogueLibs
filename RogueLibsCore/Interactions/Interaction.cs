@@ -57,6 +57,6 @@ namespace RogueLibsCore
     }
     public interface IInteractionProvider
     {
-        IEnumerable<Interaction> GetInteractions(InteractionModel model);
+        Interaction[] GetInteractions(InteractionModel model);
     }
 }
