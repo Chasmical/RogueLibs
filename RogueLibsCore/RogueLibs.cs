@@ -194,7 +194,7 @@ namespace RogueLibsCore
         /// <param name="type">The type of the unlock to search for.</param>
         /// <returns>The unlock with the specified <paramref name="name"/> and <paramref name="type"/>, if found; otherwise, <see langword="null"/>.</returns>
         public static UnlockWrapper? GetUnlock(string name, string type)
-            => RogueFramework.Unlocks.Find(u => u.Name == name && u.Type == type);
+            => RogueFramework.Unlocks.Find(u => u.Type == type && u.Name == name);
         /// <summary>
         ///   <para>Gets an unlock of the specified <typeparamref name="TUnlock"/> type and with the specified <paramref name="name"/>.</para>
         /// </summary>
