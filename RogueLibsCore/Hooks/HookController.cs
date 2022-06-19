@@ -27,6 +27,8 @@ namespace RogueLibsCore
             if (hook is null) throw new ArgumentNullException(nameof(hook));
             hook.Instance = Instance;
             hooks.Add(hook);
+            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Add(hook);
+            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Add(hook);
             hook.Initialize();
         }
         /// <summary>
@@ -39,6 +41,8 @@ namespace RogueLibsCore
         {
             THook hook = new THook { Instance = Instance };
             hooks.Add(hook);
+            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Add(hook);
+            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Add(hook);
             hook.Initialize();
             return hook;
         }
@@ -50,7 +54,16 @@ namespace RogueLibsCore
         }
 
         /// <inheritdoc/>
-        public bool RemoveHook(IHook<T> hook) => hooks.Remove(hook);
+        public bool RemoveHook(IHook<T> hook)
+        {
+            if (hooks.Remove(hook))
+            {
+                if (hook is IDoUpdate) RogueLibsPlugin.updateList.Remove(hook);
+                if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Remove(hook);
+                return true;
+            }
+            return false;
+        }
         /// <summary>
         ///   <para>Detaches a hook of the specified <typeparamref name="THook"/> type from the current instance.</para>
         /// </summary>
@@ -60,7 +73,10 @@ namespace RogueLibsCore
         {
             int index = hooks.FindIndex(static h => h is THook);
             if (index is -1) return false;
+            IHook hook = hooks[index];
             hooks.RemoveAt(index);
+            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Remove(hook);
+            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Remove(hook);
             return true;
         }
         bool IHookController.RemoveHook(IHook hook)
@@ -68,6 +84,8 @@ namespace RogueLibsCore
             int index = hooks.FindIndex(h => h == hook);
             if (index is -1) return false;
             hooks.RemoveAt(index);
+            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Remove(hook);
+            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Remove(hook);
             return true;
         }
 

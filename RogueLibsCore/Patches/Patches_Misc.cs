@@ -70,103 +70,61 @@ namespace RogueLibsCore
             return __result is null;
         }
 
+        internal static readonly List<IHook> updateList = new List<IHook>();
+        internal static readonly List<IHook> fixedUpdateList = new List<IHook>();
+
+        private static bool IsUpdateHookValid(IHook hook)
+        {
+            static bool IsInvalid(InvItem item)
+            {
+                InvDatabase? inventory = item.database;
+                if (item.slotNum is -1) return !GameController.gameController.itemList.Exists(i => i.invItem == item);
+                if (inventory is null) return true;
+
+                return inventory.InvItemList?.Contains(item) is true
+                       || inventory.tempSlot == item || inventory.fist == item
+                       || inventory.equippedSpecialAbility == item;
+            }
+
+            return hook.Instance switch
+            {
+                InvItem item => IsInvalid(item),
+                ObjectReal objectReal => !GameController.gameController.objectRealListUpdate.Contains(objectReal),
+                Agent agent => !GameController.gameController.agentList.Contains(agent),
+                StatusEffect statusEffect => !statusEffect.GetStatusEffects().StatusEffectList.Contains(statusEffect),
+                Trait trait => !trait.GetStatusEffects().TraitList.Contains(trait),
+                _ => true,
+            };
+        }
         public static void Updater_Update()
         {
-            foreach (Agent agent in GameController.gameController.agentList.ToList())
+            GameController gc = GameController.gameController;
+            for (int i = 0, count = updateList.Count; i < count; i++)
             {
-                foreach (IDoUpdate obj in agent.GetHooks<IDoUpdate>())
-                    try { obj.Update(); }
-                    catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj); }
-
-                InvItem specialAbility = agent.inventory.equippedSpecialAbility;
-                if (specialAbility != null)
-                    foreach (IDoUpdate obj in specialAbility.GetHooks<IDoUpdate>())
-                        try { obj.Update(); }
-                        catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
-
-                foreach (InvItem item in agent.inventory.InvItemList.ToList())
-                    if (item != specialAbility)
-                        foreach (IDoUpdate obj in item.GetHooks<IDoUpdate>())
-                            try { obj.Update(); }
-                            catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
-
-                foreach (StatusEffect effect in agent.statusEffects.StatusEffectList.ToList())
-                    foreach (IDoUpdate obj in effect.GetHooks<IDoUpdate>())
-                        try { obj.Update(); }
-                        catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
-
-                foreach (Trait trait in agent.statusEffects.TraitList.ToList())
-                    foreach (IDoUpdate obj in trait.GetHooks<IDoUpdate>())
-                        try { obj.Update(); }
-                        catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, agent); }
+                IHook hook = updateList[i];
+                if (IsUpdateHookValid(hook))
+                {
+                    updateList.Remove(hook);
+                    i--;
+                    continue;
+                }
+                ((IDoUpdate)hook).Update();
             }
-
-            foreach (ObjectReal objectReal in GameController.gameController.objectRealListUpdate.ToList())
-            {
-                foreach (IDoUpdate obj in objectReal.GetHooks<IDoUpdate>())
-                    try { obj.Update(); }
-                    catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj); }
-
-                if (objectReal.objectInvDatabase != null)
-                    foreach (InvItem item in objectReal.objectInvDatabase.InvItemList)
-                        foreach (IDoUpdate obj in item.GetHooks<IDoUpdate>())
-                            try { obj.Update(); }
-                            catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, objectReal); }
-            }
-
-            foreach (Item item in GameController.gameController.itemList.ToList())
-                foreach (IDoUpdate obj in item.invItem.GetHooks<IDoUpdate>())
-                    try { obj.Update(); }
-                    catch (Exception e) { RogueFramework.LogError(e, "IDoUpdate.Update", obj, item); }
         }
         public static void Updater_FixedUpdate()
         {
-            foreach (Agent agent in GameController.gameController.agentList.ToList())
+            GameController gc = GameController.gameController;
+            for (int i = 0, count = fixedUpdateList.Count; i < count; i++)
             {
-                foreach (IDoFixedUpdate obj in agent.GetHooks<IDoFixedUpdate>())
-                    try { obj.FixedUpdate(); }
-                    catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj); }
-
-                InvItem specialAbility = agent.inventory.equippedSpecialAbility;
-                if (specialAbility != null)
-                    foreach (IDoFixedUpdate obj in specialAbility.GetHooks<IDoFixedUpdate>())
-                        try { obj.FixedUpdate(); }
-                        catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, agent); }
-
-                foreach (InvItem item in agent.inventory.InvItemList.ToList())
-                    if (item != specialAbility)
-                        foreach (IDoFixedUpdate obj in item.GetHooks<IDoFixedUpdate>())
-                            try { obj.FixedUpdate(); }
-                            catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, agent); }
-
-                foreach (StatusEffect effect in agent.statusEffects.StatusEffectList.ToList())
-                    foreach (IDoFixedUpdate obj in effect.GetHooks<IDoFixedUpdate>())
-                        try { obj.FixedUpdate(); }
-                        catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, agent); }
-
-                foreach (Trait trait in agent.statusEffects.TraitList.ToList())
-                    foreach (IDoFixedUpdate obj in trait.GetHooks<IDoFixedUpdate>())
-                        try { obj.FixedUpdate(); }
-                        catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, agent); }
+                IHook hook = fixedUpdateList[i];
+                if (IsUpdateHookValid(hook))
+                {
+                    fixedUpdateList.Remove(hook);
+                    i--;
+                    continue;
+                }
+                ((IDoFixedUpdate)hook).FixedUpdate();
             }
-
-            foreach (ObjectReal objectReal in GameController.gameController.objectRealListUpdate.ToList())
-            {
-                foreach (IDoFixedUpdate obj in objectReal.GetHooks<IDoFixedUpdate>())
-                    try { obj.FixedUpdate(); }
-                    catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj); }
-
-                if (objectReal.objectInvDatabase != null)
-                    foreach (InvItem item in objectReal.objectInvDatabase.InvItemList)
-                        foreach (IDoFixedUpdate obj in item.GetHooks<IDoFixedUpdate>())
-                            try { obj.FixedUpdate(); }
-                            catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, objectReal); }
-            }
-
-            foreach (Item item in GameController.gameController.itemList.ToList())
-                foreach (IDoFixedUpdate obj in item.invItem.GetHooks<IDoFixedUpdate>())
-                    try { obj.FixedUpdate(); }
-                    catch (Exception e) { RogueFramework.LogError(e, "IDoFixedUpdate.FixedUpdate", obj, item); }
         }
 
         // ReSharper disable once IdentifierTypo
