@@ -8,7 +8,6 @@ namespace RogueLibsCore
         private static void Patch_Bars()
         {
             PatchInteract<Bars>();
-            MakeInteractable<Bars>();
 
             RogueLibs.CreateCustomName("InteractWithAgent", NameTypes.Interface, new CustomNameInfo
             {

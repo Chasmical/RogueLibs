@@ -20,7 +20,18 @@ namespace RogueLibsCore
 
             Patcher.Prefix(typeof(PlayfieldObject), nameof(PlayfieldObject.StopInteraction), new Type[1] { typeof(bool) });
 
-            Patcher.Prefix(typeof(InteractionHelper), "EnterDetails");
+            Patcher.Prefix(typeof(InteractionHelper), "EnterDetails", nameof(InteractionHelper_EnterDetails_Prefix));
+            Patcher.Finalizer(typeof(InteractionHelper), "EnterDetails", nameof(InteractionHelper_EnterDetails_Finalizer));
+            Patcher.Prefix(typeof(InteractionHelper), nameof(InteractionHelper.UpdateInteractionHelper),
+                           nameof(InteractionHelper_UpdateInteractionHelper_Prefix));
+            Patcher.Finalizer(typeof(InteractionHelper), nameof(InteractionHelper.UpdateInteractionHelper),
+                              nameof(InteractionHelper_UpdateInteractionHelper_Finalizer));
+
+            MethodInfo interactableGetter = AccessTools.PropertyGetter(typeof(PlayfieldObject), nameof(PlayfieldObject.interactable));
+            Harmony harmony = Patcher.GetHarmony();
+            harmony.Patch(interactableGetter, new HarmonyMethod(AccessTools.Method(typeof(RogueLibsPlugin), nameof(PlayfieldObject_get_interactable))));
+
+            Patcher.Prefix(typeof(InteractionHelper), nameof(InteractionHelper.canInteractCounter));
 
             VanillaInteractions.PatchAll();
 
@@ -149,14 +160,6 @@ namespace RogueLibsCore
                 __instance.ShowObjectButtons();
             return false;
         }
-        public static void AwakeInteractableHook(PlayfieldObject __instance)
-        {
-            __instance.interactable = true;
-        }
-        public static void RecycleAwakeInteractableHook(PlayfieldObject __instance)
-        {
-            __instance.interactable = true;
-        }
 
         internal static bool useModelStopInteraction;
         public static bool PlayfieldObject_StopInteraction(PlayfieldObject __instance)
@@ -170,63 +173,23 @@ namespace RogueLibsCore
         }
 
         private static readonly FieldInfo interactionHelperAgentField = AccessTools.Field(typeof(InteractionHelper), "agent");
-        public static bool InteractionHelper_EnterDetails(InteractionHelper __instance, Collider2D other)
+        private static Agent? useModelInteractable;
+        public static void InteractionHelper_EnterDetails_Prefix(InteractionHelper __instance)
+            => useModelInteractable = (Agent)interactionHelperAgentField.GetValue(__instance);
+        public static void InteractionHelper_EnterDetails_Finalizer() => useModelInteractable = null;
+        public static void InteractionHelper_UpdateInteractionHelper_Prefix(InteractionHelper __instance)
+            => useModelInteractable = (Agent)interactionHelperAgentField.GetValue(__instance);
+        public static void InteractionHelper_UpdateInteractionHelper_Finalizer() => useModelInteractable = null;
+
+        public static bool PlayfieldObject_get_interactable(PlayfieldObject __instance, ref bool __result)
         {
-            __instance.EnterRange(other.gameObject);
-
-            Agent agent = (Agent)interactionHelperAgentField.GetValue(__instance);
-            Vector3 pointPos = agent.tr.position;
-
-            float itemDistance = float.MaxValue;
-            float objectDistance = float.MaxValue;
-            __instance.closestItem = null;
-            __instance.closestObject = null;
-            foreach (GameObject obj in __instance.TriggerList)
-            {
-                PlayfieldObject playfieldObj = obj.GetComponent<PlayfieldObject>()
-                                               ?? obj.GetComponent<ObjectSprite>()?.playFieldObject
-                                               ?? obj.transform.parent.GetComponent<PlayfieldObject>()
-                                               ?? obj.transform.parent.GetComponent<ObjectSprite>().playFieldObject;
-                InteractionModel model = GetOrCreateModel(playfieldObj);
-
-                float dist = Vector3.Distance(playfieldObj.tr.position, pointPos);
-                if (obj.CompareTag("AgentSprite") || obj.CompareTag("ObjectRealSprite"))
-                {
-                    if (dist < objectDistance && model.ShouldBeHighlighted(agent))
-                    {
-                        objectDistance = dist;
-                        __instance.closestObject = obj;
-                    }
-                }
-                else if (obj.CompareTag("ItemImage"))
-                {
-                    if (dist < itemDistance && model.ShouldBeHighlighted(agent))
-                    {
-                        itemDistance = dist;
-                        __instance.closestItem = obj;
-                    }
-                }
-            }
-            foreach (GameObject obj in __instance.TriggerList)
-            {
-                PlayfieldObject playfieldObj = obj.GetComponent<PlayfieldObject>()
-                                               ?? obj.GetComponent<ObjectSprite>()?.playFieldObject
-                                               ?? obj.transform.parent.GetComponent<PlayfieldObject>()
-                                               ?? obj.transform.parent.GetComponent<ObjectSprite>().playFieldObject;
-
-                if (obj == __instance.closestItem || obj == __instance.closestObject)
-                {
-                    try { playfieldObj.objectSprite.SetHighlight("Normal", agent); } catch { }
-                }
-                else
-                {
-                    try { playfieldObj.objectSprite.SetHighlight("Off", agent); } catch { }
-                }
-            }
-
+            if (useModelInteractable is null) return true;
+            InteractionModel model = GetOrCreateModel(__instance);
+            __result = model.IsInteractable(useModelInteractable);
             return false;
         }
 
+        public static bool InteractionHelper_canInteractCounter() => true;
 
     }
 }

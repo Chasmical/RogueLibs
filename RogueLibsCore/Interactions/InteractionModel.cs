@@ -35,7 +35,7 @@ namespace RogueLibsCore
             }
             shouldStop = false;
             forcedStop = true;
-            OriginalStopInteraction(Instance);
+            if (!fakingInteraction) OriginalStopInteraction(Instance);
         }
 
         protected override void Initialize() { }
@@ -184,24 +184,27 @@ namespace RogueLibsCore
             // refresh the buttons (restarts the cycle)
             Agent.worldSpaceGUI?.StartCoroutine(Agent.worldSpaceGUI.RefreshObjectButtons2(Object));
         }
-        public bool ShouldBeHighlighted(Agent agent)
+
+        private static string? lastLog;
+        private bool fakingInteraction;
+        public bool IsInteractable(Agent agent)
         {
-            Agent prevAgent = Instance.interactingAgent;
+            Agent? prevAgent = Instance.interactingAgent;
             try
             {
+                fakingInteraction = true;
                 RogueLibsPlugin.useModelStopInteraction = true;
                 Instance.interactingAgent = agent;
-                bool res = ShouldBeHighlighted2();
-                // RogueFramework.LogWarning($"{Instance} will{(res ? null : " not")} be highlighted.");
-                return res;
+                return IsInteractable2();
             }
             finally
             {
+                fakingInteraction = false;
                 RogueLibsPlugin.useModelStopInteraction = false;
                 Instance.interactingAgent = prevAgent;
             }
         }
-        private bool ShouldBeHighlighted2()
+        private bool IsInteractable2()
         {
             // reset state
             interactions.Clear();

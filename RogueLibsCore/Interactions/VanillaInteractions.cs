@@ -124,11 +124,6 @@ namespace RogueLibsCore
         {
             patcher.Prefix(typeof(T), nameof(PlayfieldObject.InteractFar), nameof(RogueLibsPlugin.InteractFarHook));
         }
-        public static void MakeInteractable<T>() where T : PlayfieldObject
-        {
-            patcher.Postfix(typeof(T), "Awake", nameof(RogueLibsPlugin.AwakeInteractableHook));
-            patcher.Postfix(typeof(T), nameof(PlayfieldObject.RecycleAwake), nameof(RogueLibsPlugin.RecycleAwakeInteractableHook));
-        }
 
         [AttributeUsage(AttributeTargets.Method), MeansImplicitUse]
         internal class IncludeAttribute : Attribute { }

@@ -8,7 +8,6 @@
             Patch<TrapDoor>(Params1);
             PatchInteract<TrapDoor>();
             PatchInteractFar<TrapDoor>();
-            MakeInteractable<TrapDoor>();
 
             RogueInteractions.CreateProvider<TrapDoor>(static h =>
             {

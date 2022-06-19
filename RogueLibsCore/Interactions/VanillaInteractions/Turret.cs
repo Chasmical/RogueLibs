@@ -8,7 +8,6 @@
             Patch<Turret>(Params2);
             PatchInteract<Turret>();
             PatchInteractFar<Turret>();
-            MakeInteractable<Turret>();
 
             RogueInteractions.CreateProvider<Turret>(static h =>
             {

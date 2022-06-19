@@ -9,7 +9,6 @@ namespace RogueLibsCore
         {
             Patch<Television>(Params1);
             PatchInteractFar<Television>();
-            MakeInteractable<Television>();
 
             RogueInteractions.CreateProvider<Television>(static h =>
             {

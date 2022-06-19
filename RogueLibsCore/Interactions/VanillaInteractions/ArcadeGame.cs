@@ -8,7 +8,6 @@
             Patch<ArcadeGame>(Params1);
             PatchInteract<ArcadeGame>();
             PatchInteractFar<ArcadeGame>();
-            MakeInteractable<ArcadeGame>();
 
             RogueInteractions.CreateProvider<ArcadeGame>(static h =>
             {
