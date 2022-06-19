@@ -35,7 +35,7 @@ namespace RogueLibsCore
         /// </summary>
         /// <typeparam name="THook">The type of the hooks to search for.</typeparam>
         /// <returns>An enumerable collection of hooks that are assignable to a variable of <typeparamref name="THook"/> type.</returns>
-        IEnumerable<THook> GetHooks<THook>();
+        THook[] GetHooks<THook>();
     }
     /// <summary>
     ///   <para>Represents a collection of hooks, attached to a single instance of type <typeparamref name="T"/>.</para>

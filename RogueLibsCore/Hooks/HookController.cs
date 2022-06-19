@@ -74,7 +74,16 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public THook? GetHook<THook>() => (THook?)hooks.Find(static h => h is THook);
         /// <inheritdoc/>
-        public IEnumerable<THook> GetHooks<THook>() => hooks.OfType<THook>();
+        public THook[] GetHooks<THook>()
+        {
+            List<THook> found = new List<THook>();
+            for (int i = 0, count = hooks.Count; i < count; i++)
+            {
+                IHook<T> hook = hooks[i];
+                if (hook is THook tHook) found.Add(tHook);
+            }
+            return found.ToArray();
+        }
         /// <summary>
         ///   <para>Gets all hooks attached to the current instance.</para>
         /// </summary>
