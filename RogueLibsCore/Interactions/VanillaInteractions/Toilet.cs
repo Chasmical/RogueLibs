@@ -10,7 +10,7 @@
 
             RogueInteractions.CreateProvider<Toilet>(static h =>
             {
-                if (h.Helper.interactingFar) return;
+                if (h.Helper.interactingFar || h.gc.levelType is "HomeBase") return;
 
                 h.SetStopCallback(static m => m.Agent.SayDialogue("ToiletWontGo"));
 

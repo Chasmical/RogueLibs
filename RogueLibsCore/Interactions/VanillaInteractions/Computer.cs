@@ -14,6 +14,7 @@ namespace RogueLibsCore
 
             RogueInteractions.CreateProvider<Computer>(static h =>
             {
+                if (h.gc.levelType is "HomeBase") return;
                 if (!h.Object.functional)
                 {
                     h.SetStopCallback(static m => m.Agent.SayDialogue("ObjectBroken"));

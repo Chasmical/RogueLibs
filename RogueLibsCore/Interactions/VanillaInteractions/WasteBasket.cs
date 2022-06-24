@@ -9,7 +9,7 @@
 
             RogueInteractions.CreateProvider<WasteBasket>(static h =>
             {
-                if (h.Helper.interactingFar) return;
+                if (h.Helper.interactingFar || h.gc.levelType is "HomeBase") return;
 
                 Quest? quest = h.Object.useForQuest ?? h.gc.quests.unchangingQuestList.Find(static q => q.questType is "PlantItem");
                 if (quest is not null)

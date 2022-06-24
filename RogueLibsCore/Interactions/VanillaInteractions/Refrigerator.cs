@@ -11,6 +11,7 @@
 
             RogueInteractions.CreateProvider<Refrigerator>(static h =>
             {
+                if (h.gc.levelType is "HomeBase") return;
                 if (h.Helper.interactingFar)
                 {
                     if (!h.Object.functional)

@@ -10,7 +10,7 @@
 
             RogueInteractions.CreateProvider<Generator>(static h =>
             {
-                if (h.Helper.interactingFar) return;
+                if (h.Helper.interactingFar || h.gc.levelType is "HomeBase") return;
                 if (h.Object.timer <= 0f && !h.Object.startedFlashing)
                 {
                     h.SetStopCallback(static m => m.Agent.SayDialogue("CantOperateGenerator"));
