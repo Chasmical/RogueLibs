@@ -33,6 +33,11 @@ namespace RogueLibsCore
 
             Patcher.Prefix(typeof(InteractionHelper), nameof(InteractionHelper.canInteractCounter));
 
+            Patcher.Prefix(typeof(Movement), nameof(Movement.HasLOSObject360));
+
+            Patcher.Postfix(typeof(LockdownWall), nameof(LockdownWall.SetWallDown));
+            Patcher.Postfix(typeof(LockdownWall), nameof(LockdownWall.SetWallDownAnim));
+
             VanillaInteractions.PatchAll();
 
             Patcher.AnyErrors();
@@ -173,19 +178,19 @@ namespace RogueLibsCore
         }
 
         private static readonly FieldInfo interactionHelperAgentField = AccessTools.Field(typeof(InteractionHelper), "agent");
-        private static Agent? useModelInteractable;
+        private static Agent? updatingInteractionHelper;
         public static void InteractionHelper_EnterDetails_Prefix(InteractionHelper __instance)
-            => useModelInteractable = (Agent)interactionHelperAgentField.GetValue(__instance);
-        public static void InteractionHelper_EnterDetails_Finalizer() => useModelInteractable = null;
+            => updatingInteractionHelper = (Agent)interactionHelperAgentField.GetValue(__instance);
+        public static void InteractionHelper_EnterDetails_Finalizer() => updatingInteractionHelper = null;
         public static void InteractionHelper_UpdateInteractionHelper_Prefix(InteractionHelper __instance)
-            => useModelInteractable = (Agent)interactionHelperAgentField.GetValue(__instance);
-        public static void InteractionHelper_UpdateInteractionHelper_Finalizer() => useModelInteractable = null;
+            => updatingInteractionHelper = (Agent)interactionHelperAgentField.GetValue(__instance);
+        public static void InteractionHelper_UpdateInteractionHelper_Finalizer() => updatingInteractionHelper = null;
 
         public static bool PlayfieldObject_get_interactable(PlayfieldObject __instance, ref bool __result)
         {
-            if (useModelInteractable is null) return true;
+            if (updatingInteractionHelper is null) return true;
             InteractionModel model = GetOrCreateModel(__instance);
-            __result = model.IsInteractable(useModelInteractable);
+            __result = model.IsInteractable(updatingInteractionHelper);
             return false;
         }
 
@@ -195,5 +200,37 @@ namespace RogueLibsCore
             return false;
         }
 
+        public static bool Movement_HasLOSObject360(Movement __instance, PlayfieldObject myPlayfieldObject, Transform ___tr, ref bool __result)
+        {
+            if (updatingInteractionHelper && myPlayfieldObject.gameObject.layer is 8 or 9) // Walls or WallsHard
+            {
+                int prevLayer = myPlayfieldObject.gameObject.layer;
+                GameObject? childWall = null;
+                int prevWallLayer = 0;
+                if (myPlayfieldObject is Boulder or Tree)
+                {
+                    string childWallName = myPlayfieldObject is Boulder ? "BoulderWall" : "TreeWall";
+                    childWall = myPlayfieldObject.gameObject.transform.Find(childWallName)?.gameObject;
+                    if (childWall is not null) prevWallLayer = childWall.layer;
+                }
+                try
+                {
+                    myPlayfieldObject.gameObject.layer = 21; // ObjectReals
+                    if (childWall is not null) childWall.layer = 21;
+                    __result = !Physics2D.Linecast(___tr.position, myPlayfieldObject.tr.position, __instance.myLayerMaskEfficient);
+                }
+                finally
+                {
+                    myPlayfieldObject.gameObject.layer = prevLayer;
+                    if (childWall is not null) childWall.layer = prevWallLayer;
+                }
+                return false;
+            }
+            return true;
+        }
+        public static void LockdownWall_SetWallDown(LockdownWall __instance)
+            => __instance.objectSprite.objectHitbox.enabled = true;
+        public static void LockdownWall_SetWallDownAnim(LockdownWall __instance)
+            => __instance.objectSprite.objectHitbox.enabled = true;
     }
 }
