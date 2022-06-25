@@ -3,7 +3,7 @@ description: Anything related to documentation.
 title: "[Documentation] "
 labels: [documentation]
 assignees:
-  - Abbysssal
+  - SugarBarrel
 body:
   - type: markdown
     attributes:
@@ -14,7 +14,7 @@ body:
     attributes:
       label: Is the issue related to an existing page?
       description: If so, provide a link to that page
-      placeholder: Ex. https://abbysssal.github.io/RogueLibs/docs/intro
+      placeholder: Ex. https://sugarbarrel.github.io/RogueLibs/docs/intro
   - type: textarea
     id: problem
     attributes:

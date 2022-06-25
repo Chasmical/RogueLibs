@@ -3,7 +3,7 @@ description: File a bug report
 title: "[Bug] "
 labels: [bug]
 assignees:
-  - Abbysssal
+  - SugarBarrel
 body:
   - type: markdown
     attributes:
@@ -46,19 +46,17 @@ body:
     attributes:
       label: What version of the game are you running?
       options:
+        - v97
+        - v96
         - v95
         - v94
-        - v93
-        - v92
     validations:
       required: true
-  - type: dropdown
+  - type: input
     id: version
     attributes:
       label: What version of RogueLibs are you running?
-      options:
-        - v3.x.x
-        - v2.x.x
+      placeholder: Ex. v3.5.0-rc.4
     validations:
       required: true
   - type: input
