@@ -59,6 +59,13 @@ namespace RogueLibsCore
         public bool RemoveInteraction(string buttonName)
             => RemoveInteraction(i => i.ButtonName == buttonName);
 
+        public bool HasInteraction(Interaction interaction)
+            => interactions.Contains(interaction);
+        public bool HasInteraction(Predicate<Interaction> interaction)
+            => interactions.Exists(interaction);
+        public bool HasInteraction(string buttonName)
+            => interactions.Exists(i => i.ButtonName == buttonName);
+
         public Coroutine StartOperating(float timeToUnlock, bool makeNoise, string barType)
             => StartOperating((InvItem?)null, timeToUnlock, makeNoise, barType);
         public Coroutine StartOperating(string itemName, float timeToUnlock, bool makeNoise, string barType)

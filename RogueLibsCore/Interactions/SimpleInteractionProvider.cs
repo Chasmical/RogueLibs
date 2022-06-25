@@ -19,6 +19,16 @@ namespace RogueLibsCore
                 + " In button callbacks use the passed parameter to access associated properties.");
         }
 
+        public bool RemoveButton(string buttonName)
+            => Model.RemoveInteraction(buttonName);
+        public bool RemoveButton(Predicate<Interaction> predicate)
+            => Model.RemoveInteraction(predicate);
+
+        public bool HasButton(string buttonName)
+            => Model.HasInteraction(buttonName);
+        public bool HasButton(Predicate<Interaction> predicate)
+            => Model.HasInteraction(predicate);
+
         public SimpleInteraction AddButton(string buttonName, Action<InteractionModel> action)
             => AddButton(buttonName, null, null, action);
         public SimpleInteraction AddButton(string buttonName, string? buttonExtra, Action<InteractionModel> action)
@@ -115,6 +125,16 @@ namespace RogueLibsCore
                 "SimpleInteractionProvider<T> instance must only be accessed in the handler delegate."
                 + " In button callbacks use the passed parameter to access associated properties.");
         }
+
+        public bool RemoveButton(string buttonName)
+            => Model.RemoveInteraction(buttonName);
+        public bool RemoveButton(Predicate<Interaction> predicate)
+            => Model.RemoveInteraction(predicate);
+
+        public bool HasButton(string buttonName)
+            => Model.HasInteraction(buttonName);
+        public bool HasButton(Predicate<Interaction> predicate)
+            => Model.HasInteraction(predicate);
 
         public SimpleInteraction<T> AddButton(string buttonName, Action<InteractionModel<T>> action)
             => AddButton(buttonName, null, null, action);
