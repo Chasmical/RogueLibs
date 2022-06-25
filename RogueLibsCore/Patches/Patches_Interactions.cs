@@ -189,7 +189,11 @@ namespace RogueLibsCore
             return false;
         }
 
-        public static bool InteractionHelper_canInteractCounter() => true;
+        public static bool InteractionHelper_canInteractCounter(out bool __result)
+        {
+            __result = true;
+            return false;
+        }
 
     }
 }
