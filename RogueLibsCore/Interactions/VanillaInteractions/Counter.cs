@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -22,6 +23,7 @@ namespace RogueLibsCore
                         Agent agent = m.Agent;
                         Agent counterAgent = m.Object.counterAgent;
                         m.StopInteraction(true);
+                        m.Object.mainGUI.SetInterfaceActive("ObjectButtons", false);
                         InteractionHelper helper = agent.interactionHelper;
 
                         if (helper.CanInteractWithAgent(counterAgent))
