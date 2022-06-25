@@ -123,13 +123,13 @@ namespace RogueLibsCore
             SideEffect?.Invoke();
 
             // if there are no buttons, or one of them cancelled the entire interaction
-            if (interactions.Count is 0 || shouldStop)
+            if (interactions.Count is 0 || shouldStop || forcedStop)
             {
                 StopCallback?.Invoke(); // TODO: try-catch
-                OriginalStopInteraction(Instance);
+                if (!forcedStop)
+                    OriginalStopInteraction(Instance);
                 return;
             }
-            if (forcedStop) return;
             // if there's only one button and its action is implicit
             if (interactions.Count is 1 && interactions[0].ImplicitAction) // TODO: try-catch
             {
@@ -272,8 +272,15 @@ namespace RogueLibsCore
 
         private static void OriginalStopInteraction(PlayfieldObject obj)
         {
-            RogueLibsPlugin.useModelStopInteraction = false;
-            obj.StopInteraction();
+            try
+            {
+                RogueLibsPlugin.useModelStopInteraction = false;
+                obj.StopInteraction();
+            }
+            finally
+            {
+                RogueLibsPlugin.useModelStopInteraction = true;
+            }
         }
 
     }
