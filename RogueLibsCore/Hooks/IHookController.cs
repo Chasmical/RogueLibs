@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace RogueLibsCore
+﻿namespace RogueLibsCore
 {
     /// <summary>
     ///   <para>Represents a collection of hooks, attached to a single object.</para>

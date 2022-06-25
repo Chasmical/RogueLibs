@@ -54,7 +54,7 @@ namespace RogueLibsCore
                     RogueFramework.LogError($"Error patching {__instance.GetType()}. Constructor is null for some reason.");
                     return null!;
                 }
-                __instance.AddHook(model = (InteractionModel)ctor.Invoke(new object[0]));
+                __instance.AddHook(model = (InteractionModel)ctor.Invoke(Array.Empty<object>()));
             }
             return model;
         }

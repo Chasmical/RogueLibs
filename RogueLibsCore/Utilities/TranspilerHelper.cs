@@ -13,7 +13,7 @@ namespace RogueLibsCore
             Func<CodeInstruction, bool> end)
             => RemoveRegion(code, new Func<CodeInstruction, bool>[] { begin }, new Func<CodeInstruction, bool>[] { end });
         public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] region)
-            => RemoveRegion(code, region, new Func<CodeInstruction, bool>[0]);
+            => RemoveRegion(code, region, Array.Empty<Func<CodeInstruction, bool>>());
 
         public static IEnumerable<CodeInstruction> RemoveRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] begin,
             Func<CodeInstruction, bool>[] end)
@@ -207,9 +207,9 @@ namespace RogueLibsCore
             => ReplaceRegion(code, begin, end, (a, b) => replacer.Select(r => r(a, b)));
 
         public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] region, IEnumerable<CodeInstruction> replacer)
-            => ReplaceRegion(code, region, new Func<CodeInstruction, bool>[0], (_, _) => replacer);
+            => ReplaceRegion(code, region, Array.Empty<Func<CodeInstruction, bool>>(), (_, _) => replacer);
         public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] region, IEnumerable<Func<CodeInstruction[], CodeInstruction>> replacer)
-            => ReplaceRegion(code, region, new Func<CodeInstruction, bool>[0], (replaced, _) => replacer.Select(r => r(replaced)));
+            => ReplaceRegion(code, region, Array.Empty<Func<CodeInstruction, bool>>(), (replaced, _) => replacer.Select(r => r(replaced)));
 
         public static IEnumerable<CodeInstruction> ReplaceRegion(this IEnumerable<CodeInstruction> code, Func<CodeInstruction, bool>[] begin, Func<CodeInstruction, bool>[] end, Func<CodeInstruction[], CodeInstruction[], IEnumerable<CodeInstruction>> replacer)
         {

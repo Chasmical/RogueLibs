@@ -18,7 +18,7 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>The empty read-only string collection.</para>
         /// </summary>
-        public static readonly ReadOnlyCollection<string> Empty = new ReadOnlyCollection<string>(new string[0]);
+        public static readonly ReadOnlyCollection<string> Empty = new ReadOnlyCollection<string>(Array.Empty<string>());
 
         /// <summary>
         ///   <para>Creates a readable copy of the specified <paramref name="texture"/>.</para>

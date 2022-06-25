@@ -358,8 +358,8 @@ namespace RogueLibsCore
                 name = texture.name,
                 material = mat,
                 materialInst = mat,
-                normals = new Vector3[0],
-                tangents = new Vector4[0],
+                normals = Array.Empty<Vector3>(),
+                tangents = Array.Empty<Vector4>(),
                 indices = new int[6] { 0, 3, 1, 2, 3, 0 },
                 positions = new Vector3[]
                 {

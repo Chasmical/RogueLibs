@@ -47,7 +47,7 @@ namespace RogueLibsCore.Test
 
             int amountToRefill = other.maxAmmo - other.invItemCount;
             float singleCost = (float)other.itemValue / other.maxAmmo;
-            if (Owner.oma.superSpecialAbility && (Owner.agentName == VanillaAgents.Soldier || Owner.agentName == VanillaAgents.Doctor))
+            if (Owner.oma.superSpecialAbility && Owner.agentName is VanillaAgents.Soldier or VanillaAgents.Doctor)
                 singleCost = 0f;
 
             int affordableAmount = (int)Mathf.Ceil(Count / singleCost);
@@ -69,7 +69,7 @@ namespace RogueLibsCore.Test
             if (amountToRefill == 0) return default;
 
             float singleCost = (float)other.itemValue / other.maxAmmo;
-            if (Owner.oma.superSpecialAbility && (Owner.agentName == VanillaAgents.Soldier || Owner.agentName == VanillaAgents.Doctor))
+            if (Owner.oma.superSpecialAbility && Owner.agentName is VanillaAgents.Soldier or VanillaAgents.Doctor)
                 singleCost = 0f;
             int cost = (int)Mathf.Floor(amountToRefill * singleCost);
             int canAfford = (int)Mathf.Ceil(Count / singleCost);

@@ -305,7 +305,7 @@ namespace RogueLibsCore
         public static THook? GetHook<THook>(this Unlock instance) where THook : UnlockWrapper
         {
             if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return instance.__RogueLibsCustom is THook tHook ? tHook : null;
+            return instance.__RogueLibsCustom as THook ?? null;
         }
 
         public static THook GetOrAddHook<THook>(this InvItem instance) where THook : IHook<InvItem>, new()

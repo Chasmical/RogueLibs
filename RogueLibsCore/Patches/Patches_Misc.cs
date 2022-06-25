@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -98,7 +97,6 @@ namespace RogueLibsCore
         }
         public static void Updater_Update()
         {
-            GameController gc = GameController.gameController;
             for (int i = 0, count = updateList.Count; i < count; i++)
             {
                 IHook hook = updateList[i];
@@ -113,7 +111,6 @@ namespace RogueLibsCore
         }
         public static void Updater_FixedUpdate()
         {
-            GameController gc = GameController.gameController;
             for (int i = 0, count = fixedUpdateList.Count; i < count; i++)
             {
                 IHook hook = fixedUpdateList[i];

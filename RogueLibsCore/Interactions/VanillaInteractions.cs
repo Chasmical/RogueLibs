@@ -16,7 +16,7 @@ namespace RogueLibsCore
             PatchInteract<PlayfieldObject>();
             PatchInteractFar<PlayfieldObject>();
 
-            object[] empty = new object[0];
+            object[] empty = Array.Empty<object>();
             foreach (MethodInfo method in typeof(VanillaInteractions).GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static))
             {
                 if (method.GetCustomAttribute<IncludeAttribute>() is not null)
