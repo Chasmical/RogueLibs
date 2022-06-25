@@ -25,7 +25,7 @@ namespace RogueLibsCore
 
                 if (h.Object.justInteractedImmediate)
                 {
-                    h.StopInteraction();
+                    h.Model.StopInteraction(true);
                     h.Object.justInteractedImmediate = false;
                     return;
                 }

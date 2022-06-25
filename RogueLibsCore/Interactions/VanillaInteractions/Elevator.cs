@@ -81,8 +81,7 @@ namespace RogueLibsCore
                     {
                         if (!h.gc.exitPoint.DetermineIfCanBodyguardExit(h.Agent))
                         {
-                            h.Agent.SayDialogue("ElevatorWontGoUpBodyguard");
-                            h.StopInteraction();
+                            h.SetStopCallback(static m => m.Agent.SayDialogue("ElevatorWontGoUpBodyguard"));
                             return;
                         }
                         if (!h.gc.exitPoint.DetermineIfCanExit())
