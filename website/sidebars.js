@@ -40,7 +40,7 @@ module.exports = {
             'dev/traits/create-trait',
             'dev/traits/create-effect',
           ],
-          'Custom Interactions (beta!)': [
+          'Custom Interactions': [
             'dev/interactions/create-interaction',
           ],
           'Custom Unlocks': [

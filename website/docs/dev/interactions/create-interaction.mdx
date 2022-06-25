@@ -32,7 +32,9 @@ RogueLibs.CreateCustomName("UseCrateOpener", NameTypes.Interface,
 ```
 
 :::caution Handler purity
-Handler methods must be pure, that is, they shouldn't make any visible changes. All of the logic must be contained in buttons, [stop callbacks](#stop-callbacks) and [side effects](#side-effects).
+Handler methods must be pure, that is, they shouldn't make any observable changes. All of the logic must be contained in buttons, [stop callbacks](#stop-callbacks) and [side effects](#side-effects).
+
+If you need something to happen immediately after interacting with something, use [side effects](#side-effects). **DO NOT** write that kind of logic in the interaction provider, because it's also used to determine whether an object is interactable and gets called a lot.
 :::
 
 If you have complicated logic with buttons, you can delegate their actions to local or declared methods:
@@ -93,9 +95,38 @@ RogueInteractions.CreateProvider<Crate>(static h =>
 
 If the player doesn't have a Crate Opener, the `"InspectWeirdCrate"` button will be pressed immediately, without even showing the buttons. If the player has a Crate Opener though, a menu with 2 buttons will pop up (2, not counting the `"Done"` button).
 
+## Stopping the interaction {#stopping-interaction}
+
+If your interaction failed miserably, not allowing the player to press any other buttons, or if you just want the player to go do something else right after this interaction, use `m.StopInteraction()`.
+
+```cs
+RogueInteractions.CreateProvider<Crate>(static h =>
+{
+    if (h.Helper.interactingFar) return;
+
+    if (h.Agent.HasTrait("CrateBomber"))
+    {
+        h.AddButton("TriggerBomb", static m =>
+        {
+            m.gc.spawnerMain.SpawnExplosion(m.Object, m.Object.tr.position, "Big");
+            // highlight-next-line
+            m.StopInteraction();
+        });
+    }
+});
+```
+
+:::note Forcibly stopping the interaction
+There's also an overload accepting a `forced: bool` parameter. By default, the interaction stop is delayed until after all of the interactions and side effects are executed. If you pass `true` as the argument, the interaction will be stopped by the time `StopInteraction(true)` returns.
+
+Use it when opening another menu or redirecting the interaction to a different object.
+:::
+
 ## Stop Callbacks {#stop-callbacks}
 
 If your specific interaction failed, but some other interactions from other mods might still work, use **stop callbacks**. They are called only if there are no other buttons in the menu, or if the interaction is stopped using `StopInteraction`.
+
+Stop callbacks are usually used to relay information as to why the interaction was unsuccessful.
 
 ```cs
 RogueInteractions.CreateProvider<Crate>(static h =>
@@ -117,40 +148,20 @@ RogueInteractions.CreateProvider<Crate>(static h =>
 ```
 
 :::note Overriding stop callbacks
-By default, `SetStopCallback` doesn't override any previously defined stop callbacks, so if you want to override them, add `true` as a second parameter.
+By default, `SetStopCallback` overrides any previously defined stop callbacks. If you want to combine your stop callback with any previously defined ones, use `CombineStopCallback`.
 :::
 
-If your interaction failed miserably, not allowing the player to press any other buttons, or if you just want the player to go do something else right after this interaction, use `m.StopInteraction()`.
+## Side Effects {#side-effects}
 
-```cs
-RogueInteractions.CreateProvider<Crate>(static h =>
-{
-    if (h.Helper.interactingFar) return;
-
-    if (h.Agent.HasTrait("CrateBomber"))
-    {
-        h.AddButton("TriggerBomb", static m =>
-        {
-            m.gc.spawnerMain.SpawnExplosion(m.Object, m.Object.tr.position, "Big");
-            // highlight-next-line
-            m.StopInteraction();
-        })
-    }
-});
-```
-
-## Side Effects (?) {#side-effects}
-
-Sometimes you might need to do some stuff right after the button setup. For example, make the interacted agent react to you interacting with them. **Side effects** are called right after the buttons are set up, but before stop callbacks. So, side effects might get called even if the interaction failed or if there are no available buttons.
+Sometimes you want something to happen right after interacting with the object. For example, make the interacted agent react to you interacting with them, or make a bomb explode in your face when you touch it. **Side effects** are called right after the buttons are set up, but before stop callbacks. So, side effects get called even if the interaction failed or if there are no available buttons.
 
 ```cs
 RogueInteractions.CreateProvider<Crate>(static h =>
 {
     // Make the interacting agent say something right after interacting
     // with the crate, even if they don't have the Crate Opener.
-    // highlight-start
+    // highlight-next-line
     h.SetSideEffect(static m => m.Agent.SayDialogue("DialogueWeirdCrate"));
-    // highlight-end
     
     if (h.Agent.inventory.HasItem("CrateOpener"))
     {
@@ -163,5 +174,33 @@ RogueInteractions.CreateProvider<Crate>(static h =>
 ```
 
 :::note Overriding side effects
-By default, `SetSideEffect` doesn't override any previously defined side effects, so if you want to override them, add `true` as a second parameter.
+By default, `SetSideEffect` overrides any previously defined side effects. If you want to combine your side effect with any previously defined ones, use `CombineSideEffect`.
 :::
+
+## Manipulating buttons {#manipulating-buttons}
+
+The `SimpleInteractionProvider` class contains `HasButton` and `RemoveButton` methods.  
+Use them to augment or modify vanilla or other mods' interactions.
+
+```cs
+RogueInteractions.CreateProvider<Door>(static h =>
+{
+    if (h.Agent.HasTrait("KeyIlliterate"))
+    {
+        if (h.HasButton("UseKey"))
+        {
+            h.RemoveButton("UseKey");
+            h.SetStopCallback(static m => m.Agent.SayDialogue("IlliterateCantUseKeys"));
+        }
+        if (h.HasButton("UseSkeletonKey"))
+        {
+            h.RemoveButton("UseSkeletonKey");
+            h.SetStopCallback(static m => m.Agent.SayDialogue("IlliterateCantUseKeys"));
+        }
+    }
+});
+```
+
+## Examples {#examples}
+
+You can find a ton of examples [here](https://github.com/SugarBarrel/RogueLibs/tree/main/RogueLibsCore/Interactions/VanillaInteractions) (RogueLibs' source code, reimplementing the vanilla interactions).
