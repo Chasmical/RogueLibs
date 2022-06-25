@@ -23,7 +23,11 @@ module.exports = {
   },
   plugins: ['docusaurus-plugin-sass'],
   themeConfig: {
-    hideableSidebar: true,
+    docs: {
+      sidebar: {
+        hideable: true,
+      },
+    },
     prism: {
       theme: require('prism-react-renderer/themes/dracula'),
       additionalLanguages: ['clike', 'csharp', 'bash'],
