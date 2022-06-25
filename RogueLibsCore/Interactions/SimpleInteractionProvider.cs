@@ -64,11 +64,35 @@ namespace RogueLibsCore
             void Callback() => callback(model);
             _model!.StopCallback = Callback;
         }
+        public void CombineStopCallback(Action<InteractionModel> callback)
+        {
+            EnsureModel();
+            InteractionModel model = _model!;
+            Action? previousCallback = model.StopCallback;
+            void Callback()
+            {
+                callback(model);
+                previousCallback?.Invoke();
+            }
+            model.StopCallback = Callback;
+        }
         public void SetSideEffect(Action<InteractionModel> sideEffect)
         {
             EnsureModel();
             InteractionModel model = _model!;
             void SideEffect() => sideEffect(model);
+            _model!.SideEffect = SideEffect;
+        }
+        public void CombineSideEffect(Action<InteractionModel> sideEffect)
+        {
+            EnsureModel();
+            InteractionModel model = _model!;
+            Action? previousCallback = model.StopCallback;
+            void SideEffect()
+            {
+                sideEffect(model);
+                previousCallback?.Invoke();
+            }
             _model!.SideEffect = SideEffect;
         }
         public void StopInteraction() => Model.StopInteraction();
@@ -171,11 +195,35 @@ namespace RogueLibsCore
             void Callback() => callback(model);
             _model!.StopCallback = Callback;
         }
+        public void CombineStopCallback(Action<InteractionModel<T>> callback)
+        {
+            EnsureModel();
+            InteractionModel<T> model = _model!;
+            Action? previousCallback = model.StopCallback;
+            void Callback()
+            {
+                callback(model);
+                previousCallback?.Invoke();
+            }
+            model.StopCallback = Callback;
+        }
         public void SetSideEffect(Action<InteractionModel<T>> sideEffect)
         {
             EnsureModel();
             InteractionModel<T> model = _model!;
             void SideEffect() => sideEffect(model);
+            _model!.SideEffect = SideEffect;
+        }
+        public void CombineSideEffect(Action<InteractionModel<T>> sideEffect)
+        {
+            EnsureModel();
+            InteractionModel<T> model = _model!;
+            Action? previousCallback = model.StopCallback;
+            void SideEffect()
+            {
+                sideEffect(model);
+                previousCallback?.Invoke();
+            }
             _model!.SideEffect = SideEffect;
         }
         public void StopInteraction() => Model.StopInteraction();
