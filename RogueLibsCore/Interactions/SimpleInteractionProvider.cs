@@ -95,7 +95,6 @@ namespace RogueLibsCore
             }
             _model!.SideEffect = SideEffect;
         }
-        public void StopInteraction() => Model.StopInteraction();
 
         private InteractionModel? _model;
         public InteractionModel Model
@@ -226,7 +225,6 @@ namespace RogueLibsCore
             }
             _model!.SideEffect = SideEffect;
         }
-        public void StopInteraction() => Model.StopInteraction();
 
         private InteractionModel<T>? _model;
         public InteractionModel<T> Model
