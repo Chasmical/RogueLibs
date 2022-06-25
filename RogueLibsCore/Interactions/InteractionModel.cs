@@ -44,7 +44,7 @@ namespace RogueLibsCore
         private readonly List<Interaction> interactions = new List<Interaction>();
         public ReadOnlyCollection<Interaction> Interactions { get; }
 
-        public Action? CancelCallback { get; set; }
+        public Action? StopCallback { get; set; }
         public Action? SideEffect { get; set; }
 
         public bool RemoveInteraction(Interaction interaction)
@@ -91,7 +91,7 @@ namespace RogueLibsCore
             interactions.Clear();
             shouldStop = false;
             forcedStop = false;
-            CancelCallback = null;
+            StopCallback = null;
             SideEffect = null;
 
             // repopulate the interactions
@@ -125,7 +125,7 @@ namespace RogueLibsCore
             // if there are no buttons, or one of them cancelled the entire interaction
             if (interactions.Count is 0 || shouldStop)
             {
-                CancelCallback?.Invoke(); // TODO: try-catch
+                StopCallback?.Invoke(); // TODO: try-catch
                 OriginalStopInteraction(Instance);
                 return;
             }
@@ -165,7 +165,7 @@ namespace RogueLibsCore
             // reset state
             shouldStop = false;
             forcedStop = false;
-            CancelCallback = null;
+            StopCallback = null;
 
             // handle the default "Done" button
             if (buttonName is "Done")
@@ -186,7 +186,7 @@ namespace RogueLibsCore
             // if the button's action is 'final' or was unsuccessful
             if (shouldStop)
             {
-                CancelCallback?.Invoke(); // TODO: try-catch
+                StopCallback?.Invoke(); // TODO: try-catch
                 OriginalStopInteraction(Instance);
                 return;
             }
@@ -220,7 +220,7 @@ namespace RogueLibsCore
             interactions.Clear();
             shouldStop = false;
             forcedStop = false;
-            CancelCallback = null;
+            StopCallback = null;
             SideEffect = null;
 
             // repopulate the interactions
@@ -246,7 +246,7 @@ namespace RogueLibsCore
                 RogueFramework.LogError(e.ToString());
             }
 
-            return interactions.Count > 0 || CancelCallback is not null || SideEffect is not null;
+            return interactions.Count > 0 || StopCallback is not null || SideEffect is not null;
         }
 
         public bool IsControlIntercepted()

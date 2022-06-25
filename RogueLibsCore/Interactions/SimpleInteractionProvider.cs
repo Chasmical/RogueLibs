@@ -62,7 +62,7 @@ namespace RogueLibsCore
             EnsureModel();
             InteractionModel model = _model!;
             void Callback() => callback(model);
-            _model!.CancelCallback = Callback;
+            _model!.StopCallback = Callback;
         }
         public void SetSideEffect(Action<InteractionModel> sideEffect)
         {
@@ -169,7 +169,7 @@ namespace RogueLibsCore
             EnsureModel();
             InteractionModel<T> model = _model!;
             void Callback() => callback(model);
-            _model!.CancelCallback = Callback;
+            _model!.StopCallback = Callback;
         }
         public void SetSideEffect(Action<InteractionModel<T>> sideEffect)
         {
