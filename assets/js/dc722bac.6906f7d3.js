@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[5457],{764:s=>{s.exports=JSON.parse('{"label":"sor2","permalink":"/RogueLibs/blog/tags/sor-2","allTagsPath":"/RogueLibs/blog/tags","count":1}')}}]);

@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[6587],{508:function(s){s.exports=JSON.parse('{"allTagsPath":"/RogueLibs/blog/tags","slug":"/RogueLibs/blog/tags/roguelibs","name":"roguelibs","count":2,"permalink":"/RogueLibs/blog/tags/roguelibs"}')}}]);

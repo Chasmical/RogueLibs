@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkwebsite=self.webpackChunkwebsite||[]).push([[477],{8084:e=>{e.exports=JSON.parse('{"label":"release","permalink":"/RogueLibs/ru/blog/tags/release","allTagsPath":"/RogueLibs/ru/blog/tags","count":1}')}}]);
