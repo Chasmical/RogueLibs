@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization.Formatters;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -69,10 +70,14 @@ namespace RogueLibsCore
             return __result is null;
         }
 
+        internal static bool updatingHooks;
         internal static readonly List<IHook> updateList = new List<IHook>();
+        internal static readonly List<IHook> removeFromUpdateList = new List<IHook>();
+        internal static bool fixedUpdatingHooks;
         internal static readonly List<IHook> fixedUpdateList = new List<IHook>();
+        internal static readonly List<IHook> removeFromFixedUpdateList = new List<IHook>();
 
-        private static bool IsUpdateHookValid(IHook hook)
+        private static bool IsUpdateHookInvalid(IHook hook)
         {
             static bool IsInvalid(InvItem item)
             {
@@ -97,30 +102,48 @@ namespace RogueLibsCore
         }
         public static void Updater_Update()
         {
-            for (int i = 0, count = updateList.Count; i < count; i++)
+            try
             {
-                IHook hook = updateList[i];
-                if (IsUpdateHookValid(hook))
+                updatingHooks = true;
+                for (int i = 0, count = updateList.Count; i < count; i++)
                 {
-                    updateList.Remove(hook);
-                    i--;
-                    continue;
+                    IHook hook = updateList[i];
+                    if (IsUpdateHookInvalid(hook))
+                        removeFromUpdateList.Add(hook);
+                    else ((IDoUpdate)hook).Update();
                 }
-                ((IDoUpdate)hook).Update();
+            }
+            finally
+            {
+                updatingHooks = false;
+                if (removeFromUpdateList.Count > 0)
+                {
+                    updateList.RemoveAll(removeFromUpdateList.Contains);
+                    removeFromUpdateList.Clear();
+                }
             }
         }
         public static void Updater_FixedUpdate()
         {
-            for (int i = 0, count = fixedUpdateList.Count; i < count; i++)
+            try
             {
-                IHook hook = fixedUpdateList[i];
-                if (IsUpdateHookValid(hook))
+                fixedUpdatingHooks = true;
+                for (int i = 0, count = fixedUpdateList.Count; i < count; i++)
                 {
-                    fixedUpdateList.Remove(hook);
-                    i--;
-                    continue;
+                    IHook hook = fixedUpdateList[i];
+                    if (IsUpdateHookInvalid(hook))
+                        removeFromFixedUpdateList.Add(hook);
+                    else ((IDoFixedUpdate)hook).FixedUpdate();
                 }
-                ((IDoFixedUpdate)hook).FixedUpdate();
+            }
+            finally
+            {
+                fixedUpdatingHooks = false;
+                if (removeFromFixedUpdateList.Count > 0)
+                {
+                    fixedUpdateList.RemoveAll(removeFromFixedUpdateList.Contains);
+                    removeFromFixedUpdateList.Clear();
+                }
             }
         }
 

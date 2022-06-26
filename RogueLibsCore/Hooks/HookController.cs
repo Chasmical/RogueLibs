@@ -26,8 +26,7 @@ namespace RogueLibsCore
             if (hook is null) throw new ArgumentNullException(nameof(hook));
             hook.Instance = Instance;
             hooks.Add(hook);
-            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Add(hook);
-            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Add(hook);
+            HandleHookAddition(hook);
             hook.Initialize();
         }
         /// <summary>
@@ -40,8 +39,7 @@ namespace RogueLibsCore
         {
             THook hook = new THook { Instance = Instance };
             hooks.Add(hook);
-            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Add(hook);
-            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Add(hook);
+            HandleHookAddition(hook);
             hook.Initialize();
             return hook;
         }
@@ -52,13 +50,33 @@ namespace RogueLibsCore
             else throw new ArgumentException("Invalid type!", nameof(hook));
         }
 
+        private static void HandleHookAddition(IHook hook)
+        {
+            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Add(hook);
+            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Add(hook);
+        }
+        private static void HandleHookRemoval(IHook hook)
+        {
+            if (hook is IDoUpdate)
+            {
+                if (RogueLibsPlugin.updatingHooks)
+                    RogueLibsPlugin.removeFromUpdateList.Add(hook);
+                else RogueLibsPlugin.updateList.Remove(hook);
+            }
+            if (hook is IDoFixedUpdate)
+            {
+                if (RogueLibsPlugin.fixedUpdatingHooks)
+                    RogueLibsPlugin.removeFromFixedUpdateList.Add(hook);
+                else RogueLibsPlugin.fixedUpdateList.Remove(hook);
+            }
+        }
+
         /// <inheritdoc/>
         public bool RemoveHook(IHook<T> hook)
         {
             if (hooks.Remove(hook))
             {
-                if (hook is IDoUpdate) RogueLibsPlugin.updateList.Remove(hook);
-                if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Remove(hook);
+                HandleHookRemoval(hook);
                 return true;
             }
             return false;
@@ -74,8 +92,7 @@ namespace RogueLibsCore
             if (index is -1) return false;
             IHook hook = hooks[index];
             hooks.RemoveAt(index);
-            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Remove(hook);
-            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Remove(hook);
+            HandleHookRemoval(hook);
             return true;
         }
         bool IHookController.RemoveHook(IHook hook)
@@ -83,8 +100,7 @@ namespace RogueLibsCore
             int index = hooks.FindIndex(h => h == hook);
             if (index is -1) return false;
             hooks.RemoveAt(index);
-            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Remove(hook);
-            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Remove(hook);
+            HandleHookRemoval(hook);
             return true;
         }
 
@@ -109,18 +125,18 @@ namespace RogueLibsCore
 
         public void Dispose()
         {
-            for (int i = 0, count = hooks.Count; i < count; i++)
+            try
             {
-                IHook<T> hook = hooks[i];
-                try
+                for (int i = 0, count = hooks.Count; i < count; i++)
                 {
-                    // ReSharper disable once SuspiciousTypeConversion.Global
+                    IHook<T> hook = hooks[i];
+                    HandleHookRemoval(hook);
                     (hook as IDisposable)?.Dispose();
                 }
-                catch (Exception e)
-                {
-                    RogueFramework.LogError(e, nameof(IDisposable.Dispose), hook, Instance);
-                }
+            }
+            finally
+            {
+                hooks.Clear();
             }
         }
 
