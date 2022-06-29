@@ -71,55 +71,32 @@ namespace RogueLibsCore
         }
 
         internal static bool updatingHooks;
-        internal static readonly List<IHook> updateList = new List<IHook>();
-        internal static readonly List<IHook> removeFromUpdateList = new List<IHook>();
         internal static bool fixedUpdatingHooks;
-        internal static readonly List<IHook> fixedUpdateList = new List<IHook>();
-        internal static readonly List<IHook> removeFromFixedUpdateList = new List<IHook>();
+        internal static readonly List<WeakReference<IHook>> doUpdateHooks = new List<WeakReference<IHook>>();
+        internal static readonly List<WeakReference<IHook>> doFixedUpdateHooks = new List<WeakReference<IHook>>();
+        internal static readonly List<WeakReference<IHook>> removeDoUpdateHooks = new List<WeakReference<IHook>>();
+        internal static readonly List<WeakReference<IHook>> removeDoFixedUpdateHooks = new List<WeakReference<IHook>>();
 
-        private static bool IsUpdateHookInvalid(IHook hook)
-        {
-            static bool IsInvalid(InvItem item)
-            {
-                InvDatabase? inventory = item.database;
-                if (item.slotNum is -1) return !GameController.gameController.itemList.Exists(i => i.invItem == item);
-                if (inventory is null) return true;
-
-                return inventory.InvItemList?.Contains(item) is true
-                       || inventory.tempSlot == item || inventory.fist == item
-                       || inventory.equippedSpecialAbility == item;
-            }
-
-            return hook.Instance switch
-            {
-                InvItem item => IsInvalid(item),
-                ObjectReal objectReal => !GameController.gameController.objectRealListUpdate.Contains(objectReal),
-                Agent agent => !GameController.gameController.agentList.Contains(agent),
-                StatusEffect statusEffect => !statusEffect.GetStatusEffects().StatusEffectList.Contains(statusEffect),
-                Trait trait => !trait.GetStatusEffects().TraitList.Contains(trait),
-                _ => true,
-            };
-        }
         public static void Updater_Update()
         {
             try
             {
                 updatingHooks = true;
-                for (int i = 0, count = updateList.Count; i < count; i++)
+                for (int i = 0, count = doUpdateHooks.Count; i < count; i++)
                 {
-                    IHook hook = updateList[i];
-                    if (IsUpdateHookInvalid(hook))
-                        removeFromUpdateList.Add(hook);
+                    WeakReference<IHook> hookRef = doUpdateHooks[i];
+                    if (!hookRef.TryGetTarget(out IHook? hook))
+                        removeDoUpdateHooks.Add(hookRef);
                     else ((IDoUpdate)hook).Update();
                 }
             }
             finally
             {
                 updatingHooks = false;
-                if (removeFromUpdateList.Count > 0)
+                if (removeDoUpdateHooks.Count > 0)
                 {
-                    updateList.RemoveAll(removeFromUpdateList.Contains);
-                    removeFromUpdateList.Clear();
+                    doUpdateHooks.RemoveAll(removeDoUpdateHooks.Contains);
+                    removeDoUpdateHooks.Clear();
                 }
             }
         }
@@ -128,21 +105,21 @@ namespace RogueLibsCore
             try
             {
                 fixedUpdatingHooks = true;
-                for (int i = 0, count = fixedUpdateList.Count; i < count; i++)
+                for (int i = 0, count = doFixedUpdateHooks.Count; i < count; i++)
                 {
-                    IHook hook = fixedUpdateList[i];
-                    if (IsUpdateHookInvalid(hook))
-                        removeFromFixedUpdateList.Add(hook);
+                    WeakReference<IHook> hookRef = doFixedUpdateHooks[i];
+                    if (!hookRef.TryGetTarget(out IHook? hook))
+                        removeDoFixedUpdateHooks.Add(hookRef);
                     else ((IDoFixedUpdate)hook).FixedUpdate();
                 }
             }
             finally
             {
                 fixedUpdatingHooks = false;
-                if (removeFromFixedUpdateList.Count > 0)
+                if (removeDoFixedUpdateHooks.Count > 0)
                 {
-                    fixedUpdateList.RemoveAll(removeFromFixedUpdateList.Contains);
-                    removeFromFixedUpdateList.Clear();
+                    doFixedUpdateHooks.RemoveAll(removeDoFixedUpdateHooks.Contains);
+                    removeDoFixedUpdateHooks.Clear();
                 }
             }
         }

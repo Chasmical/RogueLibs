@@ -52,22 +52,28 @@ namespace RogueLibsCore
 
         private static void HandleHookAddition(IHook hook)
         {
-            if (hook is IDoUpdate) RogueLibsPlugin.updateList.Add(hook);
-            if (hook is IDoFixedUpdate) RogueLibsPlugin.fixedUpdateList.Add(hook);
+            if (hook is IDoUpdate) RogueLibsPlugin.doUpdateHooks.Add(new WeakReference<IHook>(hook));
+            if (hook is IDoFixedUpdate) RogueLibsPlugin.doFixedUpdateHooks.Add(new WeakReference<IHook>(hook));
         }
         private static void HandleHookRemoval(IHook hook)
         {
             if (hook is IDoUpdate)
             {
+                WeakReference<IHook>? found = RogueLibsPlugin.doUpdateHooks.Find(r => r.TryGetTarget(out IHook? target) && target == hook);
+                if (found is null) return;
+
                 if (RogueLibsPlugin.updatingHooks)
-                    RogueLibsPlugin.removeFromUpdateList.Add(hook);
-                else RogueLibsPlugin.updateList.Remove(hook);
+                    RogueLibsPlugin.removeDoUpdateHooks.Add(found);
+                else RogueLibsPlugin.doUpdateHooks.Remove(found);
             }
             if (hook is IDoFixedUpdate)
             {
+                WeakReference<IHook>? found = RogueLibsPlugin.doFixedUpdateHooks.Find(r => r.TryGetTarget(out IHook? target) && target == hook);
+                if (found is null) return;
+
                 if (RogueLibsPlugin.fixedUpdatingHooks)
-                    RogueLibsPlugin.removeFromFixedUpdateList.Add(hook);
-                else RogueLibsPlugin.fixedUpdateList.Remove(hook);
+                    RogueLibsPlugin.removeDoFixedUpdateHooks.Add(found);
+                else RogueLibsPlugin.doFixedUpdateHooks.Remove(found);
             }
         }
 
@@ -123,9 +129,13 @@ namespace RogueLibsCore
         /// <returns>A collection of hooks attached to the current instance.</returns>
         public IEnumerable<IHook<T>> GetHooks() => hooks.ToArray();
 
-        public void Dispose()
+        private bool disposed;
+        private void Dispose(bool disposing)
         {
-            try
+            if (disposed) return;
+            disposed = true;
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract
+            if (hooks is not null)
             {
                 for (int i = 0, count = hooks.Count; i < count; i++)
                 {
@@ -134,11 +144,13 @@ namespace RogueLibsCore
                     (hook as IDisposable)?.Dispose();
                 }
             }
-            finally
-            {
-                hooks.Clear();
-            }
         }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+        ~HookController() => Dispose(false);
 
     }
 }
