@@ -10,5 +10,9 @@
   "item.label.Components": {
     "message": "Компоненты",
     "description": "Navbar item with label Components"
+  },
+  "item.label.Blog": {
+    "message": "Блог",
+    "description": "Navbar item with label Blog"
   }
 }

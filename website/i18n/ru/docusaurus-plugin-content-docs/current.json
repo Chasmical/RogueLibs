@@ -1,6 +1,6 @@
 {
   "version.label": {
-    "message": "Next",
+    "message": "Следующее",
     "description": "The label for version current"
   },
   "sidebar.documentationSidebar.category.User's Guide": {
@@ -28,8 +28,12 @@
     "description": "The label for category Custom Abilities in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Custom Traits and Effects": {
-    "message": "Кастомные особенности и эффекты",
+    "message": "Кастомные трейты и эффекты",
     "description": "The label for category Custom Traits and Effects in sidebar documentationSidebar"
+  },
+  "sidebar.documentationSidebar.category.Custom Interactions": {
+    "message": "Кастомные взаимодействия",
+    "description": "The label for category Custom Interactions in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Custom Unlocks": {
     "message": "Кастомные разблокировки",
@@ -44,11 +48,11 @@
     "description": "The label for category Hooks in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Site Stuff": {
-    "message": "Site Stuff",
+    "message": "Для сайта",
     "description": "The label for category Site Stuff in sidebar documentationSidebar"
   },
   "sidebar.documentationSidebar.category.Components": {
-    "message": "Components",
+    "message": "Компоненты",
     "description": "The label for category Components in sidebar documentationSidebar"
   }
 }
