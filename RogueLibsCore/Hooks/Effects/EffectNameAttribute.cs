@@ -3,7 +3,7 @@
 namespace RogueLibsCore
 {
     /// <summary>
-    ///   <para>Specifies a different name for the custom item to use.</para>
+    ///   <para>Specifies a different name for the custom effect to use.</para>
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class EffectNameAttribute : Attribute
