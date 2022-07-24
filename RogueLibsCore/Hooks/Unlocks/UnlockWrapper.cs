@@ -130,7 +130,10 @@ namespace RogueLibsCore
         // ReSharper disable once InconsistentNaming
         public static GameController gc => GameController.gameController;
 
-        public virtual bool ShowInPrerequisites => false;
+        public bool DisplayNameInPrerequisites { get; set; }
+        public bool DisplayNameInCancellations { get; set; }
+        public bool ShowInPrerequisites { get; set; } = true;
+        public bool ShowInCancellations { get; set; } = true;
 
     }
 }

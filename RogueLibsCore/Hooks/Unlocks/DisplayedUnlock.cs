@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace RogueLibsCore
 {
@@ -222,13 +223,16 @@ namespace RogueLibsCore
                 else description += "\n\n";
 
                 description += $"<color=orange>{gc.nameDB.GetName("Cancels", NameTypes.Interface)}:</color>\n" +
-                    string.Join(", ", Unlock.cancellations.ConvertAll(static unlockName =>
+                    string.Join(", ", Unlock.cancellations.Select(static unlockName =>
                     {
                         UnlockWrapper? unlock = (UnlockWrapper?)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
-                        if (unlock != null)
-                            return unlock.IsUnlocked || unlock.Unlock.nowAvailable ? unlock.GetName() : "?????";
-                        return unlockName;
-                    }));
+                        if (unlock is { ShowInCancellations: true })
+                        {
+                            bool nameIsKnown = unlock.IsUnlocked || unlock.Unlock.nowAvailable || unlock.DisplayNameInCancellations;
+                            return nameIsKnown ? unlock.GetName() : "?????";
+                        }
+                        return null;
+                    }).Where(static u => u is not null));
             }
         }
         /// <summary>
@@ -261,17 +265,17 @@ namespace RogueLibsCore
             List<string> prerequisites = new List<string>();
             if (Unlock.prerequisites.Count > 0)
             {
-                prerequisites.Add(string.Join(", ", Unlock.prerequisites.ConvertAll(static unlockName =>
+                prerequisites.Add(string.Join(", ", Unlock.prerequisites.Select(static unlockName =>
                 {
                     UnlockWrapper? unlock = (UnlockWrapper?)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
-                    if (unlock != null)
+                    if (unlock is { ShowInPrerequisites: true })
                     {
-                        string name = unlock.IsUnlocked || unlock.Unlock.nowAvailable || unlock.ShowInPrerequisites ? unlock.GetName() : "?????";
-                        if (unlock.IsUnlocked) name = @$"<color=#EEEEEE55>{name}</color>";
-                        return name;
+                        bool nameIsKnown = unlock.IsUnlocked || unlock.Unlock.nowAvailable || unlock.DisplayNameInPrerequisites;
+                        string name = nameIsKnown ? unlock.GetName() : "?????";
+                        return unlock.IsUnlocked ? @$"<color=#EEEEEE55>{name}</color>" : name;
                     }
-                    return unlockName;
-                })));
+                    return null;
+                }).Where(static u => u is not null)));
             }
             if (Unlock.cost is -2)
             {

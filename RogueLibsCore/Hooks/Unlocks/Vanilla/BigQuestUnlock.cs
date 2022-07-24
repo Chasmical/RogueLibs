@@ -26,7 +26,11 @@ namespace RogueLibsCore
         /// </summary>
         /// <param name="name">The name of the unlock. Must be of format: "&lt;AgentUnlock&gt;_BQ".</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public BigQuestUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.BigQuest, unlockedFromStart) => IsAvailableInCC = true;
+        public BigQuestUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.BigQuest, unlockedFromStart)
+        {
+            IsAvailableInCC = true;
+            DisplayNameInPrerequisites = true;
+        }
         internal BigQuestUnlock(Unlock unlock) : base(unlock) { }
 
         /// <inheritdoc/>
@@ -177,6 +181,5 @@ namespace RogueLibsCore
             }
         }
 
-        public override bool ShowInPrerequisites => true;
     }
 }

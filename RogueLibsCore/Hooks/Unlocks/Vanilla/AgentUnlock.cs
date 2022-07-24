@@ -24,7 +24,8 @@
         /// </summary>
         /// <param name="name">The name of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        public AgentUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Agent, unlockedFromStart) { }
+        public AgentUnlock(string name, bool unlockedFromStart) : base(name, UnlockTypes.Agent, unlockedFromStart)
+            => DisplayNameInPrerequisites = true;
         internal AgentUnlock(Unlock unlock) : base(unlock) { }
 
         /// <summary>
@@ -75,6 +76,5 @@
             }
         }
 
-        public override bool ShowInPrerequisites => true;
     }
 }
