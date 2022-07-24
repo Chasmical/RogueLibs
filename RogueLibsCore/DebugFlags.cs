@@ -49,6 +49,7 @@ namespace RogueLibsCore
         ///   <para>Specifies that interactions stuff should be logged.</para>
         /// </summary>
         Interactions = 1 << 8,
+        Disasters    = 1 << 9,
 
         EnableHints  = 1 << 30,
         /// <summary>
