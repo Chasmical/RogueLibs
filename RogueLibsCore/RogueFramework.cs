@@ -96,6 +96,9 @@ namespace RogueLibsCore
         public static readonly List<UnlockWrapper> Unlocks = new List<UnlockWrapper>();
         internal static readonly List<UnlockWrapper> CustomUnlocks = new List<UnlockWrapper>();
 
+        public static readonly List<CustomDisaster> CustomDisasters = new List<CustomDisaster>();
+        public static CustomDisaster? GetActiveDisaster() => CustomDisasters.Find(static d => d.IsActive);
+
         /// <summary>
         ///   <para>The list of extra sprites, that will be used if a sprite is not found in the appropriate collection.</para>
         /// </summary>

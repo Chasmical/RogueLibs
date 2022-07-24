@@ -93,6 +93,7 @@ namespace RogueLibsCore
             PatchSprites();
             PatchTraitsAndStatusEffects();
             PatchUnlocks();
+            PatchDisasters();
             PatchAgents();
             PatchInteractions();
             PatchAgentInteractions();

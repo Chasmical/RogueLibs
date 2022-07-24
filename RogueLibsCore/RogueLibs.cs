@@ -96,6 +96,17 @@ namespace RogueLibsCore
             EffectInfo info = EffectFactory.AddEffect<TEffect>();
             return new EffectBuilder(info);
         }
+        /// <summary>
+        ///   <para>Creates a <typeparamref name="TDisaster"/> custom disaster. Chain "With" methods to attach extra information.</para>
+        /// </summary>
+        /// <typeparam name="TDisaster">The <see cref="CustomDisaster"/> type. Must have a parameterless constructor.</typeparam>
+        /// <returns>An <see cref="DisasterBuilder"/> with the specified disaster's metadata.</returns>
+        public static DisasterBuilder CreateCustomDisaster<TDisaster>() where TDisaster : CustomDisaster, new()
+        {
+            DisasterInfo info = DisasterInfo.Get<TDisaster>();
+            RogueFramework.CustomDisasters.Add(new TDisaster());
+            return new DisasterBuilder(info);
+        }
 
         /// <summary>
         ///   <para>Creates a <see cref="RogueSprite"/> with the specified <paramref name="name"/>, <paramref name="scope"/>, with a texture from <paramref name="rawData"/> with the specified <paramref name="ppu"/>.</para>
