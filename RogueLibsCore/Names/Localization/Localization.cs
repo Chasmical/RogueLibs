@@ -172,10 +172,7 @@ namespace RogueLibsCore
         }
 
         private static LocaleLanguage? ReloadLanguage(FileSystemWatcher? watcher)
-        {
-            if (watcher is null) return null;
-            return ReloadLanguage(watcher.Path, watcher.Filter);
-        }
+            => watcher is null ? null : ReloadLanguage(watcher.Path, watcher.Filter);
         private static LocaleLanguage? ReloadLanguage(string directory, string name)
         {
             if (RogueFramework.IsDebugEnabled(DebugFlags.Names)) RogueFramework.LogDebug($"Live-reloading {name}");

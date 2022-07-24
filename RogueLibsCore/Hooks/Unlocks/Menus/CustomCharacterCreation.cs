@@ -30,12 +30,15 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public override void UpdateMenu()
         {
-            (CC.selectedSpace == "Items" ? CC.scrollerControllerItems
-            : CC.selectedSpace == "Traits" ? CC.scrollerControllerTraits
-            : CC.selectedSpace == "Abilities" ? CC.scrollerControllerAbilities
-            : CC.selectedSpace == "BigQuest" ? CC.scrollerControllerBigQuests
-            : CC.selectedSpace == "Load" ? CC.scrollerControllerLoad
-            : null)?.myScroller.RefreshActiveCellViews();
+            (CC.selectedSpace switch
+            {
+                "Items" => CC.scrollerControllerItems,
+                "Traits" => CC.scrollerControllerTraits,
+                "Abilities" => CC.scrollerControllerAbilities,
+                "BigQuest" => CC.scrollerControllerBigQuests,
+                "Load" => CC.scrollerControllerLoad,
+                _ => null,
+            })?.myScroller.RefreshActiveCellViews();
 
             CC.CreatePointTallyText();
         }

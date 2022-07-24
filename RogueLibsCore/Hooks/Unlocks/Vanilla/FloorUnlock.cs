@@ -61,11 +61,14 @@
                 Menu!.Agent.mainGUI.HideScrollingMenu();
                 gc.mainGUI.ShowCharacterSelect();
                 bool quick = gc.challenges.Contains(VanillaMutators.QuickGame);
-                gc.sessionDataBig.elevatorLevel = Name == "Floor5" ? quick ? 9 : 13
-                    : Name == "Floor4" ? quick ? 7 : 10
-                    : Name == "Floor3" ? quick ? 5 : 7
-                    : Name == "Floor2" ? quick ? 3 : 4
-                    : 1;
+                gc.sessionDataBig.elevatorLevel = Name switch
+                {
+                    "Floor5" => quick ? 9 : 13,
+                    "Floor4" => quick ? 7 : 10,
+                    "Floor3" => quick ? 5 : 7,
+                    "Floor2" => quick ? 3 : 4,
+                    _ => 1,
+                };
                 if (gc.multiplayerMode)
                 {
                     if (gc.serverPlayer)

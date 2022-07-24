@@ -17,25 +17,28 @@ namespace RogueLibsCore
         {
             Menu = menu;
             string type = menu.menuType;
-            Type = type == "Challenges" ? UnlocksMenuType.MutatorMenu
-                : type == "Floors" ? UnlocksMenuType.FloorsMenu
-                : type == "Traits" ? UnlocksMenuType.NewLevelTraits
-                : type == "Items" ? UnlocksMenuType.RewardsMenu
-                : type == "FreeItems" ? UnlocksMenuType.ItemTeleporter
-#pragma warning disable CS0618 // Type or member is obsolete
-                : type == "CharacterSelect" ? UnlocksMenuType.CharacterSelect
-#pragma warning restore CS0618 // Type or member is obsolete
-                : type == "Loadouts" ? UnlocksMenuType.Loadouts
-                : type == "TraitUnlocks" ? UnlocksMenuType.TraitsMenu
-                : type == "Rewards" ? UnlocksMenuType.TwitchRewards
-                : type == "LevelFeelings" ? UnlocksMenuType.TwitchDisasters
-                : type == "UpgradeTrait" ? UnlocksMenuType.AB_UpgradeTrait
-                : type == "RemoveTrait" ? UnlocksMenuType.AB_RemoveTrait
-                : type == "ChangeTraitRandom" ? UnlocksMenuType.AB_SwapTrait
-                : type == "RewardConfigs" ? UnlocksMenuType.RewardConfigs
-                : type == "TraitConfigs" ? UnlocksMenuType.TraitConfigs
-                : type == "MutatorConfigs" ? UnlocksMenuType.MutatorConfigs
-                : UnlocksMenuType.Unknown;
+            Type = type switch
+            {
+                "Challenges" => UnlocksMenuType.MutatorMenu,
+                "Floors" => UnlocksMenuType.FloorsMenu,
+                "Traits" => UnlocksMenuType.NewLevelTraits,
+                "Items" => UnlocksMenuType.RewardsMenu,
+                "FreeItems" => UnlocksMenuType.ItemTeleporter,
+#pragma warning disable CS0618
+                "CharacterSelect" => UnlocksMenuType.CharacterSelect,
+#pragma warning restore CS0618
+                "Loadouts" => UnlocksMenuType.Loadouts,
+                "TraitUnlocks" => UnlocksMenuType.TraitsMenu,
+                "Rewards" => UnlocksMenuType.TwitchRewards,
+                "LevelFeelings" => UnlocksMenuType.TwitchDisasters,
+                "UpgradeTrait" => UnlocksMenuType.AB_UpgradeTrait,
+                "RemoveTrait" => UnlocksMenuType.AB_RemoveTrait,
+                "ChangeTraitRandom" => UnlocksMenuType.AB_SwapTrait,
+                "RewardConfigs" => UnlocksMenuType.RewardConfigs,
+                "TraitConfigs" => UnlocksMenuType.TraitConfigs,
+                "MutatorConfigs" => UnlocksMenuType.MutatorConfigs,
+                _ => UnlocksMenuType.Unknown,
+            };
             if (Type == UnlocksMenuType.Unknown)
                 RogueFramework.LogWarning($"Unknown ScrollingMenu type: \"{type}\"!");
         }

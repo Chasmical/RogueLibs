@@ -53,6 +53,7 @@ namespace RogueLibsCore
         private static void HandleHookAddition(IHook hook)
         {
             if (hook is IDoUpdate) RogueLibsPlugin.doUpdateHooks.Add(new WeakReference<IHook>(hook));
+            // ReSharper disable once SuspiciousTypeConversion.Global
             if (hook is IDoFixedUpdate) RogueLibsPlugin.doFixedUpdateHooks.Add(new WeakReference<IHook>(hook));
         }
         private static void HandleHookRemoval(IHook hook)
@@ -66,6 +67,7 @@ namespace RogueLibsCore
                     RogueLibsPlugin.removeDoUpdateHooks.Add(found);
                 else RogueLibsPlugin.doUpdateHooks.Remove(found);
             }
+            // ReSharper disable once SuspiciousTypeConversion.Global
             if (hook is IDoFixedUpdate)
             {
                 WeakReference<IHook>? found = RogueLibsPlugin.doFixedUpdateHooks.Find(r => r.TryGetTarget(out IHook? target) && target == hook);
@@ -141,6 +143,7 @@ namespace RogueLibsCore
                 {
                     IHook<T> hook = hooks[i];
                     HandleHookRemoval(hook);
+                    // ReSharper disable once SuspiciousTypeConversion.Global
                     (hook as IDisposable)?.Dispose();
                 }
             }

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization.Formatters;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -110,6 +109,7 @@ namespace RogueLibsCore
                     WeakReference<IHook> hookRef = doFixedUpdateHooks[i];
                     if (!hookRef.TryGetTarget(out IHook? hook))
                         removeDoFixedUpdateHooks.Add(hookRef);
+                    // ReSharper disable once SuspiciousTypeConversion.Global
                     else ((IDoFixedUpdate)hook).FixedUpdate();
                 }
             }
@@ -127,7 +127,7 @@ namespace RogueLibsCore
         // ReSharper disable once IdentifierTypo
         public static void AudioHandler_SetupDics_Prefix(AudioHandler __instance, out bool __state)
             => __state = __instance.loadedDics;
-        internal static List<AudioClip> preparedClips = new List<AudioClip>();
+        internal static readonly List<AudioClip> preparedClips = new List<AudioClip>();
         // ReSharper disable once IdentifierTypo
         public static void AudioHandler_SetupDics(AudioHandler __instance, ref bool __state)
         {

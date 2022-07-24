@@ -476,8 +476,8 @@ namespace RogueLibsCore
                 OriginalAgent = item.agent;
                 item.agent = targetAgent;
             }
-            public readonly InvItem Item;
-            public readonly Agent OriginalAgent;
+            private readonly InvItem Item;
+            private readonly Agent OriginalAgent;
             public void Dispose() => Item.agent = OriginalAgent;
         }
     }

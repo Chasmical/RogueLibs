@@ -114,7 +114,7 @@ namespace RogueLibsCore
                 InvItem item = __instance.agent.inventory.equippedSpecialAbility;
                 if (item.invItemCount > 0)
                 {
-                    AbilityRechargingArgs args = new AbilityRechargingArgs() { UpdateDelay = countSpeed, ShowRechargedText = showBuffText };
+                    AbilityRechargingArgs args = new AbilityRechargingArgs { UpdateDelay = countSpeed, ShowRechargedText = showBuffText };
                     ((IAbilityRechargeable)ability).OnRecharging(args);
                     countSpeed = args.UpdateDelay;
                     showBuffText = args.ShowRechargedText;

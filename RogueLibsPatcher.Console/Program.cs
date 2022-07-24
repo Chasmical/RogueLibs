@@ -10,7 +10,7 @@ namespace RogueLibsPatcher.Console
             string path = System.Console.ReadLine()!;
             path = path.Trim('"');
             string newPath = path + "2";
-            AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters()
+            AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(path, new ReaderParameters
             {
                 AssemblyResolver = new CustomResolver(),
             });
@@ -23,11 +23,7 @@ namespace RogueLibsPatcher.Console
         private class CustomResolver : BaseAssemblyResolver
         {
             private readonly DefaultAssemblyResolver _defaultResolver;
-
-            public CustomResolver()
-            {
-                _defaultResolver = new DefaultAssemblyResolver();
-            }
+            public CustomResolver() => _defaultResolver = new DefaultAssemblyResolver();
 
             public override AssemblyDefinition Resolve(AssemblyNameReference name)
             {

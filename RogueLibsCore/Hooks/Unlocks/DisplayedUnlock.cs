@@ -134,10 +134,13 @@ namespace RogueLibsCore
                 if (gc.twitchMode || gc.sessionDataBig.twitchOn && gc.sessionDataBig.twitchTraits)
                 {
                     int num = Menu.Unlocks.IndexOf(this);
-                    int votes = Menu.Agent.isPlayer is 2 ? gc.twitchFunctions.voteCount[num + 5]
-                        : Menu.Agent.isPlayer is 3 ? gc.twitchFunctions.voteCount[num + 10]
-                        : Menu.Agent.isPlayer is 4 ? gc.twitchFunctions.voteCount[num + 15]
-                        : gc.twitchFunctions.voteCount[num];
+                    int votes = Menu.Agent.isPlayer switch
+                    {
+                        2 => gc.twitchFunctions.voteCount[num + 5],
+                        3 => gc.twitchFunctions.voteCount[num + 10],
+                        4 => gc.twitchFunctions.voteCount[num + 15],
+                        _ => gc.twitchFunctions.voteCount[num],
+                    };
                     name = $"{name} <color=yellow>#{num + 1 + (Menu.Agent.isPlayer - 1) * 5}</color> <color=cyan>({votes})</color>";
                 }
             }

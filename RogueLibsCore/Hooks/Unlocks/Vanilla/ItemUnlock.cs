@@ -202,7 +202,7 @@ namespace RogueLibsCore
                 else if (Menu.Type == UnlocksMenuType.ItemTeleporter)
                 {
                     PlaySound(VanillaAudio.UseItemTeleporter);
-                    InvItem invItem = new InvItem() { invItemName = Name };
+                    InvItem invItem = new InvItem { invItemName = Name };
                     invItem.SetupDetails(false);
                     invItem.invItemCount = invItem.initCount;
                     Menu.Agent.inventory.DontPlayPickupSounds(true);
@@ -210,7 +210,7 @@ namespace RogueLibsCore
                     Menu.Agent.inventory.DontPlayPickupSounds(false);
                     if (invItem.invItemName == VanillaItems.BombProcessor && !Menu.Agent.inventory.HasItem(VanillaItems.RemoteBombTrigger))
                     {
-                        invItem = new InvItem() { invItemName = VanillaItems.RemoteBombTrigger };
+                        invItem = new InvItem { invItemName = VanillaItems.RemoteBombTrigger };
                         invItem.SetupDetails(false);
                         invItem.invItemCount = invItem.initCount;
                         Menu.Agent.inventory.DontPlayPickupSounds(true);

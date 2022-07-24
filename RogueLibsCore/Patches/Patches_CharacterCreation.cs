@@ -46,11 +46,14 @@ namespace RogueLibsCore
             menu.Unlocks.ForEach(static du => du.UpdateUnlock());
             menu.Unlocks.Sort();
 
-            List<Unlock> listUnlocks = unlockType == UnlockTypes.Item ? __instance.listUnlocksItems
-                : unlockType == UnlockTypes.Trait ? __instance.listUnlocksTraits
-                : unlockType == UnlockTypes.Ability ? __instance.listUnlocksAbilities
-                : unlockType == UnlockTypes.BigQuest ? __instance.listUnlocksBigQuests
-                : throw new InvalidOperationException("Unknown character creation menu type.");
+            List<Unlock> listUnlocks = unlockType switch
+            {
+                UnlockTypes.Item => __instance.listUnlocksItems,
+                UnlockTypes.Trait => __instance.listUnlocksTraits,
+                UnlockTypes.Ability => __instance.listUnlocksAbilities,
+                UnlockTypes.BigQuest => __instance.listUnlocksBigQuests,
+                _ => throw new InvalidOperationException("Unknown character creation menu type."),
+            };
             listUnlocks.Clear();
             listUnlocks.AddRange(menu.Unlocks.Select(static du => du.Unlock));
 
@@ -84,11 +87,14 @@ namespace RogueLibsCore
             if (debug) RogueFramework.LogDebug($"Pressing \"{myButton.myText.text}\" ({myButton.scrollingButtonNum}, {myButton.scrollingButtonType}) button.");
 
             string type = myButton.scrollingButtonUnlock.unlockType;
-            List<ButtonData> buttonsData = type == UnlockTypes.Item ? __instance.buttonsDataItems
-                : type == UnlockTypes.Trait ? __instance.buttonsDataTraits
-                : type == UnlockTypes.Ability ? __instance.buttonsDataAbilities
-                : type == UnlockTypes.BigQuest ? __instance.buttonsDataBigQuests
-                : throw new InvalidOperationException("Unknown character creation menu type.");
+            List<ButtonData> buttonsData = type switch
+            {
+                UnlockTypes.Item => __instance.buttonsDataItems,
+                UnlockTypes.Trait => __instance.buttonsDataTraits,
+                UnlockTypes.Ability => __instance.buttonsDataAbilities,
+                UnlockTypes.BigQuest => __instance.buttonsDataBigQuests,
+                _ => throw new InvalidOperationException("Unknown character creation menu type."),
+            };
 
             ButtonData buttonData = buttonsData[myButton.scrollingButtonNum];
             DisplayedUnlock du = (DisplayedUnlock)buttonData.__RogueLibsCustom;

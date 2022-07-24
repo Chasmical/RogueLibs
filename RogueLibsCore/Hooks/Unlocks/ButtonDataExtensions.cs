@@ -35,14 +35,17 @@ namespace RogueLibsCore
             buttonData.scrollingHighlighted2 = value == UnlockButtonState.Purchasable;
             buttonData.scrollingHighlighted3 = value == UnlockButtonState.Locked;
             buttonData.scrollingHighlighted4 = value == UnlockButtonState.Disabled;
-            buttonData.highlightedSprite
-                = value == UnlockButtonState.Selected
-                    ? buttonData.scrollingMenu?.solidObjectButtonSelected ?? buttonData.characterCreation.solidObjectButtonSelected
-                : value == UnlockButtonState.Purchasable
-                    ? buttonData.scrollingMenu?.solidObjectButtonLocked ?? buttonData.characterCreation.solidObjectButtonLocked
-                : value == UnlockButtonState.Locked
-                    ? buttonData.scrollingMenu?.solidObjectButtonRed ?? buttonData.characterCreation.solidObjectButtonRed
-                : buttonData.scrollingMenu?.solidObjectButton ?? buttonData.characterCreation.solidObjectButton;
+            buttonData.highlightedSprite = value switch
+            {
+                UnlockButtonState.Selected => buttonData.scrollingMenu?.solidObjectButtonSelected
+                                              ?? buttonData.characterCreation.solidObjectButtonSelected,
+                UnlockButtonState.Purchasable => buttonData.scrollingMenu?.solidObjectButtonLocked
+                                                 ?? buttonData.characterCreation.solidObjectButtonLocked,
+                UnlockButtonState.Locked => buttonData.scrollingMenu?.solidObjectButtonRed
+                                            ?? buttonData.characterCreation.solidObjectButtonRed,
+                _ => buttonData.scrollingMenu?.solidObjectButton
+                     ?? buttonData.characterCreation.solidObjectButton,
+            };
         }
     }
 }

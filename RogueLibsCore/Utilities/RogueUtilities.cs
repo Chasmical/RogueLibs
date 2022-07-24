@@ -211,8 +211,7 @@ namespace RogueLibsCore
             InterfaceMapping mapping = type.GetInterfaceMap(implementedInterface);
 
             int index = Array.FindIndex(mapping.InterfaceMethods, m => m.Name == methodName);
-            if (index is -1) return null;
-            return mapping.TargetMethods[index];
+            return index is -1 ? null : mapping.TargetMethods[index];
         }
         /// <summary>
         ///   <para>Returns the <paramref name="interfaceType"/> <paramref name="methodNames"/>, implemented by the specified <paramref name="type"/>.</para>
