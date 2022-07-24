@@ -31,6 +31,11 @@ namespace RogueLibsCore
         /// </summary>
         public bool RemoveOnNextLevel { get; }
 
+        public CustomName? GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.StatusEffect);
+        public CustomName? GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
+        internal RogueSprite? sprite;
+        public RogueSprite? GetSprite() => sprite;
+
         private static readonly Dictionary<Type, EffectInfo> infos = new Dictionary<Type, EffectInfo>();
         /// <summary>
         ///   <para>Gets the specified <see cref="CustomEffect"/> <paramref name="type"/>'s metadata.</para>
