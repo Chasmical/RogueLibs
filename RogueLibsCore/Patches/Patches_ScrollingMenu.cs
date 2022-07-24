@@ -286,15 +286,15 @@ namespace RogueLibsCore
             bool debug = RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus);
             if (debug) RogueFramework.LogDebug("Refreshing the loadouts.");
             ___loadoutList.RemoveAt(0);
-            foreach (Unlock unlock in ___loadoutList)
+            foreach (Unlock unlock in ___loadoutList.ToArray())
             {
                 if (unlock.__RogueLibsCustom is null)
                 {
                     if (debug) RogueFramework.LogDebug("Hooking up an unhooked unlock.");
-                    Unlock unlock1 = unlock;
-                    Unlock normalized = GameController.gameController.sessionDataBig.unlocks
-                                                      .Find(u => u.unlockName == unlock1.unlockName && u.unlockType == unlock1.unlockType);
-                    unlock.__RogueLibsCustom = normalized.__RogueLibsCustom;
+                    Unlock? normalized = GameController.gameController.sessionDataBig.unlocks
+                                                       .Find(u => u.unlockName == unlock.unlockName && u.unlockType == unlock.unlockType);
+                    if (normalized is null) ___loadoutList.Remove(unlock);
+                    else unlock.__RogueLibsCustom = normalized.__RogueLibsCustom;
                 }
             }
         }
