@@ -132,7 +132,7 @@ namespace RogueLibsCore
         public IEnumerable<IHook<T>> GetHooks() => hooks.ToArray();
 
         private bool disposed;
-        private void Dispose(bool disposing)
+        private void DisposeHooks()
         {
             if (disposed) return;
             disposed = true;
@@ -150,10 +150,10 @@ namespace RogueLibsCore
         }
         public void Dispose()
         {
-            Dispose(true);
+            DisposeHooks();
             GC.SuppressFinalize(this);
         }
-        ~HookController() => Dispose(false);
+        ~HookController() => DisposeHooks();
 
     }
 }
