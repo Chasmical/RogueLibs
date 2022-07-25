@@ -91,8 +91,10 @@ namespace PluginBuildEvents
             // ReSharper disable once InconsistentNaming
             string pdb2mdb = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "pdb2mdb.exe");
 
+            bool skipPdb = File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, ".no-pdb"));
+
             File.Copy(origDll, newDll, true);
-            if (File.Exists(origPdb)) File.Copy(origPdb, newPdb, true);
+            if (File.Exists(origPdb) && !skipPdb) File.Copy(origPdb, newPdb, true);
 
             if (File.Exists(pdb2mdb))
             {
