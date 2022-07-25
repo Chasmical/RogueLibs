@@ -13,6 +13,12 @@ namespace RogueLibsCore
         /// </summary>
         public readonly Dictionary<string, Dictionary<string, CustomName>> CustomNames = new Dictionary<string, Dictionary<string, CustomName>>();
 
+        /// <summary>
+        ///   <para>Returns an entry with the specified <paramref name="name"/> and <paramref name="type"/>.</para>
+        /// </summary>
+        /// <param name="name">The name of the entry to look for.</param>
+        /// <param name="type">The type of the entry to look for.</param>
+        /// <returns>An entry with the specified <paramref name="name"/> and <paramref name="type"/>, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? FindEntry(string name, string type)
             => CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category)
                && category.TryGetValue(name, out CustomName customName) ? customName : null;

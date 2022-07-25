@@ -115,7 +115,7 @@ namespace RogueLibsCore
             }
         }
         /// <summary>
-        ///   <para>Gets or sets whether the item is available in the Item Teleporter menu.</para>
+        ///   <para>Gets or sets whether the item is available in the Item Teleporter menu. Default value: <see langword="true"/>.</para>
         /// </summary>
         public bool IsAvailableInItemTeleporter
         {

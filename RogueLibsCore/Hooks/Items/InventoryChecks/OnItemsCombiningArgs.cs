@@ -3,7 +3,7 @@
 namespace RogueLibsCore
 {
     /// <summary>
-    ///   <para>Represents the item combining inventory check args.</para>
+    ///   <para>Provides data for the <see cref="InventoryChecks.AddItemsCombiningCheck"/> event.</para>
     /// </summary>
     public class OnItemsCombiningArgs : RogueEventArgs
     {

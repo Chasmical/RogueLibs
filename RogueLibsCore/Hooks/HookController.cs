@@ -148,11 +148,15 @@ namespace RogueLibsCore
                 }
             }
         }
+        /// <inheritdoc/>
         public void Dispose()
         {
             DisposeHooks();
             GC.SuppressFinalize(this);
         }
+        /// <summary>
+        ///   <para>Finalizes the <see cref="HookController{T}"/> and disposes of all its hooks.</para>
+        /// </summary>
         ~HookController() => DisposeHooks();
 
     }

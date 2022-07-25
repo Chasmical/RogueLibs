@@ -44,7 +44,13 @@ namespace RogueLibsCore
                 OnFallBackChanged?.Invoke(new OnLanguageChangedArgs(prev, value));
             }
         }
+        /// <summary>
+        ///   <para>Occurs when the current language is changed.</para>
+        /// </summary>
         public static event Action<OnLanguageChangedArgs>? OnCurrentChanged;
+        /// <summary>
+        ///   <para>Occurs when the fall back language is changed.</para>
+        /// </summary>
         public static event Action<OnLanguageChangedArgs>? OnFallBackChanged;
 
         private static readonly Dictionary<string, LanguageCode> languages = new Dictionary<string, LanguageCode>

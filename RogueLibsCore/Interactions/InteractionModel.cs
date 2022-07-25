@@ -1,26 +1,53 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 namespace RogueLibsCore
 {
+    /// <summary>
+    ///   <para>Represents an object in terms of interactivity and handles its interactions.</para>
+    /// </summary>
     public abstract class InteractionModel : HookBase<PlayfieldObject>
     {
+        /// <summary>
+        ///   <para>Initializes a new instance of the <see cref="InteractionModel"/> class.</para>
+        /// </summary>
         protected InteractionModel() => Interactions = new ReadOnlyCollection<Interaction>(interactions);
 
+        /// <summary>
+        ///   <para>Gets the object that the interaction model is attached to.</para>
+        /// </summary>
         public new PlayfieldObject Instance => base.Instance;
+        /// <summary>
+        ///   <para>Gets the object that the interaction model is attached to.</para>
+        /// </summary>
         public PlayfieldObject Object => base.Instance;
-        public Agent Agent => base.Instance.interactingAgent;
-        public InteractionHelper Helper => base.Instance.interactingAgent.interactionHelper;
+        /// <summary>
+        ///   <para>Gets the agent that is currently interacting with the object.</para>
+        /// </summary>
+        public Agent Agent => base.Instance.interactingAgent!;
+        /// <summary>
+        ///   <para>Gets the <see cref="InteractionHelper"/> of the current interaction.</para>
+        /// </summary>
+        public InteractionHelper Helper => base.Instance.interactingAgent.interactionHelper!;
+
+        /// <summary>
+        ///   <para>Gets the currently used instance of <see cref="GameController"/>.</para>
+        /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]
         // ReSharper disable once InconsistentNaming
-        [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "That's how it's called in the original code")]
         public GameController gc => GameController.gameController;
 
         internal bool shouldStop;
         internal bool forcedStop;
+        /// <summary>
+        ///   <para>Stops the current interaction completely.</para>
+        /// </summary>
         public void StopInteraction() => StopInteraction(false);
+        /// <summary>
+        ///   <para>Stops the current interaction completely. If <paramref name="forced"/> is <see langword="true"/>, forces the model to end the interaction right now, instead of postponing it to after the interaction handlers are processed.</para>
+        /// </summary>
         public void StopInteraction(bool forced)
         {
             if (forcedStop) return;
@@ -34,16 +61,36 @@ namespace RogueLibsCore
             if (!fakingInteraction) OriginalStopInteraction(Instance);
         }
 
+        /// <inheritdoc/>
         protected override void Initialize() { }
 
         private readonly List<Interaction> interactions = new List<Interaction>();
+        /// <summary>
+        ///   <para>Gets the read-only collection of interactions currently initialized.</para>
+        /// </summary>
         public ReadOnlyCollection<Interaction> Interactions { get; }
 
+        /// <summary>
+        ///   <para>Gets or sets the stop callback, that gets called if the interaction fails, is stopped or is interrupted.</para>
+        /// </summary>
         public Action? StopCallback { get; set; }
+        /// <summary>
+        ///   <para>Gets or sets the side effect, that gets called after the interactions are set up, regardless of whether it was successful.</para>
+        /// </summary>
         public Action? SideEffect { get; set; }
 
+        /// <summary>
+        ///   <para>Removes the specified <paramref name="interaction"/> from the model.</para>
+        /// </summary>
+        /// <param name="interaction">The interaction to remove.</param>
+        /// <returns><see langword="true"/>, if the interaction was removed successfully; otherwise, <see langword="false"/>.</returns>
         public bool RemoveInteraction(Interaction interaction)
             => interactions.Remove(interaction);
+        /// <summary>
+        ///   <para>Removes an interaction that satisfies the specified <paramref name="predicate"/> from the model.</para>
+        /// </summary>
+        /// <param name="predicate">The predicate that matches the interaction to remove.</param>
+        /// <returns><see langword="true"/>, if the interaction was removed successfully; otherwise, <see langword="false"/>.</returns>
         public bool RemoveInteraction(Predicate<Interaction> predicate)
         {
             int index = interactions.FindIndex(predicate);
@@ -51,24 +98,67 @@ namespace RogueLibsCore
             interactions.RemoveAt(index);
             return true;
         }
+        /// <summary>
+        ///   <para>Removes an interaction with the specified <paramref name="buttonName"/> from the model.</para>
+        /// </summary>
+        /// <param name="buttonName">The name of the interaction to remove.</param>
+        /// <returns><see langword="true"/>, if the interaction was removed successfully; otherwise, <see langword="false"/>.</returns>
         public bool RemoveInteraction(string buttonName)
             => RemoveInteraction(i => i.ButtonName == buttonName);
 
+        /// <summary>
+        ///   <para>Determines whether there's a specified <paramref name="interaction"/> in the model.</para>
+        /// </summary>
+        /// <param name="interaction">The interaction to look for in the model.</param>
+        /// <returns><see langword="true"/>, if the specified <paramref name="interaction"/> exists in the model; otherwise, <see langword="false"/>.</returns>
         public bool HasInteraction(Interaction interaction)
             => interactions.Contains(interaction);
-        public bool HasInteraction(Predicate<Interaction> interaction)
-            => interactions.Exists(interaction);
+        /// <summary>
+        ///   <para>Determines whether there is an interaction that satisfies the specified <paramref name="predicate"/> in the model.</para>
+        /// </summary>
+        /// <param name="predicate">The predicate that matches the interaction to look for.</param>
+        /// <returns><see langword="true"/>, if an interaction that satisfies the specified <paramref name="predicate"/> exists in the model; otherwise, <see langword="false"/>.</returns>
+        public bool HasInteraction(Predicate<Interaction> predicate)
+            => interactions.Exists(predicate);
+        /// <summary>
+        ///   <para>Determines whether there is an interaction with the specified <paramref name="buttonName"/> in the model.</para>
+        /// </summary>
+        /// <param name="buttonName">The name of the interaction to look for.</param>
+        /// <returns><see langword="true"/>, if an interaction with the specified <paramref name="buttonName"/> exists in the model; otherwise, <see langword="false"/>.</returns>
         public bool HasInteraction(string buttonName)
             => interactions.Exists(i => i.ButtonName == buttonName);
 
-        public Coroutine StartOperating(float timeToUnlock, bool makeNoise, string barType)
-            => StartOperating((InvItem?)null, timeToUnlock, makeNoise, barType);
-        public Coroutine StartOperating(string itemName, float timeToUnlock, bool makeNoise, string barType)
-            => StartOperating(Agent.inventory.FindItem(itemName), timeToUnlock, makeNoise, barType);
-        public Coroutine StartOperating(InvItem? item, float timeToUnlock, bool makeNoise, string barType)
-            => Object.StartCoroutine(Object.Operating(Agent, item, timeToUnlock, makeNoise, barType));
+        /// <summary>
+        ///   <para>Makes the current interacting agent to start operating on the object with the specified parameters.</para>
+        /// </summary>
+        /// <param name="timeToOperate">The amount of time it takes to finish the operation.</param>
+        /// <param name="makeNoise">Determines whether the operation makes noise.</param>
+        /// <param name="barType">The type of the operating bar.</param>
+        /// <returns>The <see cref="Coroutine"/> representing the operation.</returns>
+        public Coroutine StartOperating(float timeToOperate, bool makeNoise, string barType)
+            => StartOperating((InvItem?)null, timeToOperate, makeNoise, barType);
+        /// <summary>
+        ///   <para>Makes the current interacting agent to start operating on the object using an item with the specified <paramref name="itemName"/> with the specified parameters.</para>
+        /// </summary>
+        /// <param name="itemName">The name of the item to operate with.</param>
+        /// <param name="timeToOperate">The amount of time it takes to finish the operation.</param>
+        /// <param name="makeNoise">Determines whether the operation makes noise.</param>
+        /// <param name="barType">The type of the operating bar.</param>
+        /// <returns>The <see cref="Coroutine"/> representing the operation.</returns>
+        public Coroutine StartOperating(string itemName, float timeToOperate, bool makeNoise, string barType)
+            => StartOperating(Agent.inventory.FindItem(itemName), timeToOperate, makeNoise, barType);
+        /// <summary>
+        ///   <para>Makes the current interacting agent to start operating on the object using the specified <paramref name="item"/> with the specified parameters.</para>
+        /// </summary>
+        /// <param name="item">The item to operate with.</param>
+        /// <param name="timeToOperate">The amount of time it takes to finish the operation.</param>
+        /// <param name="makeNoise">Determines whether the operation makes noise.</param>
+        /// <param name="barType">The type of the operating bar.</param>
+        /// <returns>The <see cref="Coroutine"/> representing the operation.</returns>
+        public Coroutine StartOperating(InvItem? item, float timeToOperate, bool makeNoise, string barType)
+            => Object.StartCoroutine(Object.Operating(Agent, item, timeToOperate, makeNoise, barType));
 
-        public void OnDetermineButtons()
+        internal void OnDetermineButtons()
         {
             try
             {
@@ -143,7 +233,7 @@ namespace RogueLibsCore
             }
 
         }
-        public void OnPressedButton(string buttonName)
+        internal void OnPressedButton(string buttonName)
         {
             try
             {
@@ -192,6 +282,11 @@ namespace RogueLibsCore
         }
 
         private bool fakingInteraction;
+        /// <summary>
+        ///   <para>Determines whether the current object can be interacted by the specified <paramref name="agent"/>.</para>
+        /// </summary>
+        /// <param name="agent">The agent to determine whether the object is interactable to.</param>
+        /// <returns><see langword="true"/>, if the current object is interactable; otherwise, <see langword="false"/>.</returns>
         public bool IsInteractable(Agent agent)
         {
             Agent? prevAgent = Instance.interactingAgent;
@@ -244,9 +339,9 @@ namespace RogueLibsCore
             return interactions.Count > 0 || StopCallback is not null || SideEffect is not null;
         }
 
-        public bool IsControlIntercepted()
+        private bool IsControlIntercepted()
         {
-            if (forcedStop || Instance.interactingAgent is null) return true;
+            if (forcedStop || Object.interactingAgent is null) return true;
 
             WorldSpaceGUI? ws = Agent.worldSpaceGUI;
             if (ws is not null)
@@ -279,9 +374,17 @@ namespace RogueLibsCore
         }
 
     }
+    /// <typeparam name="T">The type of the object that the model represents.</typeparam>
+    /// <inheritdoc/>
     public class InteractionModel<T> : InteractionModel where T : PlayfieldObject
     {
+        /// <summary>
+        ///   <para>Gets the object that the interaction model is attached to.</para>
+        /// </summary>
         public new T Instance => (T)base.Instance;
+        /// <summary>
+        ///   <para>Gets the object that the interaction model is attached to.</para>
+        /// </summary>
         public new T Object => (T)base.Instance;
     }
 }

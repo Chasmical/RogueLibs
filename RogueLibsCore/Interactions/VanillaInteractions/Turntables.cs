@@ -4,7 +4,7 @@ using HarmonyLib;
 
 namespace RogueLibsCore
 {
-    public static partial class VanillaInteractions
+    internal static partial class VanillaInteractions
     {
         [Include]
         private static void Patch_Turntables()

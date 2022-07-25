@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -25,10 +26,26 @@ namespace RogueLibsCore
         /// </summary>
         public ReadOnlyCollection<string> IgnoredChecks { get; } = RogueUtilities.Empty;
 
+        /// <summary>
+        ///   <para>Returns a <see cref="CustomName"/> associated with this item's name.</para>
+        /// </summary>
+        /// <returns>The <see cref="CustomName"/> associated with this item's name, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Item);
+        /// <summary>
+        ///   <para>Returns a <see cref="CustomName"/> associated with this item's description.</para>
+        /// </summary>
+        /// <returns>The <see cref="CustomName"/> associated with this item's description, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
+        /// <summary>
+        ///   <para>Returns an <see cref="ItemUnlock"/> associated with this item.</para>
+        /// </summary>
+        /// <returns>The <see cref="ItemUnlock"/> associated with this item, if found; otherwise, <see langword="null"/>.</returns>
         public ItemUnlock? GetUnlock() => RogueLibs.GetUnlock<ItemUnlock>(Name);
         internal RogueSprite? sprite;
+        /// <summary>
+        ///   <para>Returns a <see cref="RogueSprite"/> that represents this item. Note that it works only on sprites initialized with <see cref="ItemBuilder.WithSprite(byte[], Rect, float)"/> or one of its overloads.</para>
+        /// </summary>
+        /// <returns>The <see cref="RogueSprite"/> that represents this item, if found; otherwise, <see langword="null"/>.</returns>
         public RogueSprite? GetSprite() => sprite;
 
         private static readonly Dictionary<Type, ItemInfo> infos = new Dictionary<Type, ItemInfo>();

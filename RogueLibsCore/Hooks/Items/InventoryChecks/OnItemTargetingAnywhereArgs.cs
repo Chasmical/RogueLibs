@@ -4,7 +4,7 @@ using UnityEngine;
 namespace RogueLibsCore
 {
     /// <summary>
-    ///   <para>Represents the item targeting anywhere inventory check args.</para>
+    ///   <para>Provides data for the <see cref="InventoryChecks.AddItemTargetingAnywhereCheck"/> event.</para>
     /// </summary>
     public class OnItemTargetingAnywhereArgs : RogueEventArgs
     {

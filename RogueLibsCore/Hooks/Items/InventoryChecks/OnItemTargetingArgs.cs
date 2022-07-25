@@ -3,7 +3,7 @@
 namespace RogueLibsCore
 {
     /// <summary>
-    ///   <para>Represents the item targeting inventory check args.</para>
+    ///   <para>Provides data for the <see cref="InventoryChecks.AddItemTargetingCheck"/> event.</para>
     /// </summary>
     public class OnItemTargetingArgs : RogueEventArgs
     {

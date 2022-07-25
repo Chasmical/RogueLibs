@@ -10,10 +10,13 @@ using BepInEx;
 
 namespace RogueLibsCore
 {
+    /// <summary>
+    ///   <para>Provides information about, and means to manipulate in-game localization.</para>
+    /// </summary>
     public static class Localization
     {
         private static int init;
-        public static void Init()
+        internal static void Init()
         {
             if (Interlocked.Exchange(ref init, 1) == 1) return;
             localePath = Path.Combine(Paths.BepInExRootPath, "locale");
@@ -141,7 +144,7 @@ namespace RogueLibsCore
             LanguageService.OnCurrentChanged += static e => Current = ReloadLanguage(CurrentWatcher = SetupWatcher(e.Value));
             LanguageService.OnFallBackChanged += static e => FallBack = ReloadLanguage(FallBackWatcher = SetupWatcher(e.Value));
         }
-        public static void ReInitializeLanguages()
+        private static void ReInitializeLanguages()
         {
             CurrentWatcher = SetupWatcher(LanguageService.Current);
             FallBackWatcher = SetupWatcher(LanguageService.FallBack);
@@ -196,7 +199,7 @@ namespace RogueLibsCore
         }
 
         private static FileSystemWatcher? currentWatcher;
-        public static FileSystemWatcher? CurrentWatcher
+        private static FileSystemWatcher? CurrentWatcher
         {
             get => currentWatcher;
             set
@@ -222,7 +225,7 @@ namespace RogueLibsCore
         private static void ReloadCurrent(object? _, object? __) => Current = ReloadLanguage(CurrentWatcher);
 
         private static FileSystemWatcher? fallBackWatcher;
-        public static FileSystemWatcher? FallBackWatcher
+        private static FileSystemWatcher? FallBackWatcher
         {
             get => fallBackWatcher;
             set
@@ -247,9 +250,21 @@ namespace RogueLibsCore
         }
         private static void ReloadFallBack(object? _, object? __) => FallBack = ReloadLanguage(FallBackWatcher);
 
+        /// <summary>
+        ///   <para>Gets the current language's information.</para>
+        /// </summary>
         public static LocaleLanguage? Current { get; private set; }
+        /// <summary>
+        ///   <para>Gets the fall-back language's information.</para>
+        /// </summary>
         public static LocaleLanguage? FallBack { get; private set; }
 
+        /// <summary>
+        ///   <para>Returns the value of an entry with the specified <paramref name="name"/> and <paramref name="type"/> in the current or fall-back language.</para>
+        /// </summary>
+        /// <param name="name">The name of the entry to look for.</param>
+        /// <param name="type">The type of the entry to look for.</param>
+        /// <returns>The value of an entry with the specified <paramref name="name"/> and <paramref name="type"/> in the current or fall-back language, if found; otherwise, <see langword="null"/>.</returns>
         public static string? GetName(string? name, string type)
         {
             if (name is null) return null;

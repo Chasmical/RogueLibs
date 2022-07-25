@@ -99,6 +99,9 @@ namespace RogueLibsCore
         ///   <para>Gets the <see cref="AgentUnlock"/> associated with this Big Quest.</para>
         /// </summary>
         public AgentUnlock? Agent { get; internal set; }
+        /// <summary>
+        ///   <para>Gets the name of the agent associated with this Big Quest.</para>
+        /// </summary>
         public string AgentName => Name.Substring(0, Name.Length - 3);
 
         /// <summary>
@@ -160,7 +163,7 @@ namespace RogueLibsCore
         }
         /// <inheritdoc/>
         public override string GetDescription() => gc.nameDB.GetName("D_" + Name, NameTypes.Unlock);
-
+        /// <inheritdoc/>
         public override string GetFancyDescription()
         {
             if (Menu is null) throw new InvalidOperationException("The fancy description of the unlock cannot be accessed outside of the menu.");

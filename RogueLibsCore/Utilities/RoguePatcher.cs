@@ -37,6 +37,10 @@ namespace RogueLibsCore
 
         private static readonly PropertyInfo loggerProperty = AccessTools.Property(typeof(BaseUnityPlugin), "Logger");
         private readonly Harmony harmony;
+        /// <summary>
+        ///   <para>Returns the underling <see cref="Harmony"/> instance, used by the patcher.</para>
+        /// </summary>
+        /// <returns>The underlying <see cref="Harmony"/> instance, used by the patcher.</returns>
         public Harmony GetHarmony() => harmony;
         private readonly ManualLogSource log;
         private Type _typeWithPatches;

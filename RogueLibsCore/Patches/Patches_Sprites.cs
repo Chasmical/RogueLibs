@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace RogueLibsCore
 {
-    public sealed partial class RogueLibsPlugin
+    internal sealed partial class RogueLibsPlugin
     {
         public void PatchSprites()
         {

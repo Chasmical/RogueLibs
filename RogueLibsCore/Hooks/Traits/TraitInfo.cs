@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -15,10 +16,26 @@ namespace RogueLibsCore
         /// </summary>
         public string Name { get; }
 
+        /// <summary>
+        ///   <para>Returns a <see cref="CustomName"/> associated with this trait's name.</para>
+        /// </summary>
+        /// <returns>The <see cref="CustomName"/> associated with this trait's name, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.StatusEffect);
+        /// <summary>
+        ///   <para>Returns a <see cref="CustomName"/> associated with this trait's description.</para>
+        /// </summary>
+        /// <returns>The <see cref="CustomName"/> associated with this trait's description, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
+        /// <summary>
+        ///   <para>Returns an <see cref="TraitUnlock"/> associated with this trait.</para>
+        /// </summary>
+        /// <returns>The <see cref="TraitUnlock"/> associated with this trait, if found; otherwise, <see langword="null"/>.</returns>
         public TraitUnlock? GetUnlock() => RogueLibs.GetUnlock<TraitUnlock>(Name);
         internal RogueSprite? sprite;
+        /// <summary>
+        ///   <para>Returns a <see cref="RogueSprite"/> that represents this trait. Note that it works only on sprites initialized with <see cref="TraitBuilder.WithSprite(byte[], Rect, float)"/> or one of its overloads.</para>
+        /// </summary>
+        /// <returns>The <see cref="RogueSprite"/> that represents this trait, if found; otherwise, <see langword="null"/>.</returns>
         public RogueSprite? GetSprite() => sprite;
 
         private static readonly Dictionary<Type, TraitInfo> infos = new Dictionary<Type, TraitInfo>();

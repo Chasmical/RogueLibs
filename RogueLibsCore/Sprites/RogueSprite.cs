@@ -478,6 +478,10 @@ namespace RogueLibsCore
             public SpriteScope Scope { get; }
         }
 
+        /// <summary>
+        ///   <para>Dumps all tk2d sprites from the specified <paramref name="collection"/> into a "tk2d_{CollectionName}" folder in the game's root directory.</para>
+        /// </summary>
+        /// <param name="collection">The collection whose sprites to dump.</param>
         public static void Dump(tk2dSpriteCollectionData collection)
         {
             Dictionary<Texture, Texture2D> cache = new Dictionary<Texture, Texture2D>();

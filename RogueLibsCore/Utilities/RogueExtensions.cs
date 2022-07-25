@@ -198,6 +198,13 @@ namespace RogueLibsCore
             InvItem item = agent.inventory.equippedSpecialAbility;
             return item != null ? item.GetHook<TAbility>() : default;
         }
+        /// <summary>
+        ///   <para>Determines whether the current agent has an item hook assignable to a variable of the specified <typeparamref name="TAbility"/> type associated with the current <paramref name="agent"/>'s special ability.</para>
+        /// </summary>
+        /// <typeparam name="TAbility">The type of the item hook to search for.</typeparam>
+        /// <param name="agent">The current agent.</param>
+        /// <returns><see langword="true"/>, if the current agent's special ability contains an item hook that is assignable to a variable of the <typeparamref name="TAbility"/> type.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
         public static bool HasAbility<TAbility>(this Agent agent)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
@@ -223,7 +230,7 @@ namespace RogueLibsCore
         ///   <para>Finds an item hook assignable to a variable of the specified <paramref name="abilityType"/> associated with the current <paramref name="agent"/>'s special ability.</para>
         /// </summary>
         /// <param name="agent">The current agent.</param>
-        /// <param name="abilityType">Type of the ability to give to the <paramref name="agent"/>.</param>
+        /// <param name="abilityType">Type of the ability to search for.</param>
         /// <returns>The item hook assignable to a variable of the specified <paramref name="abilityType"/> associated with the <paramref name="agent"/>'s special ability, if found; otherwise, <see langword="default"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
         public static IHook<InvItem>? GetAbility(this Agent agent, Type abilityType)
@@ -231,6 +238,13 @@ namespace RogueLibsCore
             if (agent is null) throw new ArgumentNullException(nameof(agent));
             return agent.inventory.equippedSpecialAbility?.GetHooks<IHook<InvItem>>().FirstOrDefault(abilityType.IsInstanceOfType);
         }
+        /// <summary>
+        ///   <para>Determines whether the current agent has an item hook assignable to a variable of the specified <paramref name="abilityType"/> associated with the current <paramref name="agent"/>'s special ability.</para>
+        /// </summary>
+        /// <param name="abilityType">Type of the ability to search for.</param>
+        /// <param name="agent">The current agent.</param>
+        /// <returns><see langword="true"/>, if the current agent's special ability contains an item hook that is assignable to a variable of the <paramref name="abilityType"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
         public static bool HasAbility(this Agent agent, Type abilityType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));

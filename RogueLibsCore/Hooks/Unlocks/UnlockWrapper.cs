@@ -69,7 +69,7 @@ namespace RogueLibsCore
         /// </summary>
         public abstract bool IsEnabled { get; set; }
         /// <summary>
-        ///   <para>Gets or sets whether the unlock is available in the primary menus.</para>
+        ///   <para>Gets or sets whether the unlock is available in the primary menus. Default value: <see langword="true"/>.</para>
         /// </summary>
         public abstract bool IsAvailable { get; set; }
 
@@ -130,9 +130,21 @@ namespace RogueLibsCore
         // ReSharper disable once InconsistentNaming
         public static GameController gc => GameController.gameController;
 
+        /// <summary>
+        ///   <para>Gets or sets whether the name of the unlock should not be hidden in other unlocks' prerequisites.</para>
+        /// </summary>
         public bool DisplayNameInPrerequisites { get; set; }
+        /// <summary>
+        ///   <para>Gets or sets whether the name of the unlock should not be hidden in other unlocks' cancellations.</para>
+        /// </summary>
         public bool DisplayNameInCancellations { get; set; }
+        /// <summary>
+        ///   <para>Gets or sets whether the name of the unlock should be displayed in other unlocks' prerequisites.</para>
+        /// </summary>
         public bool ShowInPrerequisites { get; set; } = true;
+        /// <summary>
+        ///   <para>Gets or sets whether the name of the unlock should be displayed in other unlocks' cancellations.</para>
+        /// </summary>
         public bool ShowInCancellations { get; set; } = true;
 
     }

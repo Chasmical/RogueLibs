@@ -10,7 +10,7 @@
         /// </summary>
         bool IsAddedToCC { get; set; }
         /// <summary>
-        ///   <para>Gets or sets whether the unlock is available in the Character Creation menu.</para>
+        ///   <para>Gets or sets whether the unlock is available in the Character Creation menu. Default value: <see langword="true"/>.</para>
         /// </summary>
         bool IsAvailableInCC { get; set; }
     }

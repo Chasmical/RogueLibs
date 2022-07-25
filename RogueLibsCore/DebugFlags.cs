@@ -49,8 +49,14 @@ namespace RogueLibsCore
         ///   <para>Specifies that interactions stuff should be logged.</para>
         /// </summary>
         Interactions = 1 << 8,
+        /// <summary>
+        ///   <para>Specifies that disasters stuff should be logged.</para>
+        /// </summary>
         Disasters    = 1 << 9,
 
+        /// <summary>
+        ///   <para>Specifies that various potentially annoying debug hints should be enabled, such as "I am patched!" buttons in the interactions.</para>
+        /// </summary>
         EnableHints  = 1 << 30,
         /// <summary>
         ///   <para>Specifies that various debug tools should be enabled.</para>

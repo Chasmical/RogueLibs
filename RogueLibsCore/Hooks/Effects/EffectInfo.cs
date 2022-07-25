@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -31,9 +32,21 @@ namespace RogueLibsCore
         /// </summary>
         public bool RemoveOnNextLevel { get; }
 
+		/// <summary>
+		///   <para>Returns a <see cref="CustomName"/> associated with this effect's name.</para>
+		/// </summary>
+		/// <returns>The <see cref="CustomName"/> associated with this effect's name, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.StatusEffect);
+        /// <summary>
+        ///   <para>Returns a <see cref="CustomName"/> associated with this effect's description.</para>
+        /// </summary>
+        /// <returns>The <see cref="CustomName"/> associated with this effect's description, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetDescription() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Description);
         internal RogueSprite? sprite;
+		/// <summary>
+		///   <para>Returns a <see cref="RogueSprite"/> that represents this effect. Note that it works only on sprites initialized with <see cref="EffectBuilder.WithSprite(byte[], Rect, float)"/> or one of its overloads.</para>
+		/// </summary>
+		/// <returns>The <see cref="RogueSprite"/> that represents this effect, if found; otherwise, <see langword="null"/>.</returns>
         public RogueSprite? GetSprite() => sprite;
 
         private static readonly Dictionary<Type, EffectInfo> infos = new Dictionary<Type, EffectInfo>();

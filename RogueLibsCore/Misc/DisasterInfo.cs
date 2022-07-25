@@ -15,9 +15,25 @@ namespace RogueLibsCore
         /// </summary>
         public string Name { get; }
 
+        /// <summary>
+        ///   <para>Returns a <see cref="CustomName"/> associated with this disaster's name.</para>
+        /// </summary>
+        /// <returns>The <see cref="CustomName"/> associated with this disaster's name, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetName() => RogueLibs.NameProvider.FindEntry($"LevelFeeling{Name}_Name", NameTypes.Interface);
+        /// <summary>
+        ///   <para>Returns a <see cref="CustomName"/> associated with this disaster's description.</para>
+        /// </summary>
+        /// <returns>The <see cref="CustomName"/> associated with this disaster's description, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetDescription() => RogueLibs.NameProvider.FindEntry($"LevelFeeling{Name}_Desc", NameTypes.Description);
+        /// <summary>
+        ///   <para>Returns a <see cref="CustomName"/> associated with this disaster's first message.</para>
+        /// </summary>
+        /// <returns>The <see cref="CustomName"/> associated with this disaster's first message, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetMessage1() => RogueLibs.NameProvider.FindEntry($"LevelFeeling{Name}1", NameTypes.Description);
+        /// <summary>
+        ///   <para>Returns a <see cref="CustomName"/> associated with this disaster's second message.</para>
+        /// </summary>
+        /// <returns>The <see cref="CustomName"/> associated with this disaster's second message, if found; otherwise, <see langword="null"/>.</returns>
         public CustomName? GetMessage2() => RogueLibs.NameProvider.FindEntry($"LevelFeeling{Name}2", NameTypes.Description);
 
         private static readonly Dictionary<Type, DisasterInfo> infos = new Dictionary<Type, DisasterInfo>();

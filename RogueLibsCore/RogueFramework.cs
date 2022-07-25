@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using BepInEx;
 using BepInEx.Logging;
 using UnityEngine;
 
@@ -14,7 +15,7 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>The RogueLibs' plugin instance.</para>
         /// </summary>
-        public static RogueLibsPlugin Plugin { get; internal set; } = null!; // set in RogueLibsPlugin.Awake()
+        public static BaseUnityPlugin Plugin { get; internal set; } = null!; // set in RogueLibsPlugin.Awake()
         internal static ManualLogSource Logger { get; set; } = null!; // set in RogueLibsPlugin.Awake()
 
         /// <summary>
@@ -46,13 +47,16 @@ namespace RogueLibsCore
         {
             object? instance = hookObj is IHook hook ? hook.Instance : string.Empty;
 
-            string instanceName = instance is InvItem item ? item.invItemName
-                : instance is StatusEffect effect ? effect.statusEffectName
-                : instance is Trait trait ? trait.traitName
-                : instance is Agent agent ? agent.agentName
-                : instance is ObjectReal objectReal ? objectReal.objectName
-                : instance is UnlockWrapper wrapper ? $"{wrapper.Name} ({wrapper.Type})"
-                : instance?.ToString() ?? string.Empty;
+            string instanceName = instance switch
+            {
+                InvItem item => item.invItemName,
+                StatusEffect effect => effect.statusEffectName,
+                Trait trait => trait.traitName,
+                Agent agent => agent.agentName,
+                ObjectReal objectReal => objectReal.objectName,
+                UnlockWrapper wrapper => $"{wrapper.Name} ({wrapper.Type})",
+                _ => instance?.ToString() ?? string.Empty,
+            };
 
             string containerName = container is null ? string.Empty
                 : (instanceName.Length > 0 ? ", " : string.Empty) + (
@@ -91,12 +95,19 @@ namespace RogueLibsCore
         public static readonly List<INameProvider> NameProviders = new List<INameProvider>();
 
         /// <summary>
-        ///   <para>The list of all unlocks in the game, including original ones too.</para>
+        ///   <para>The list of all unlocks in the game, including the vanilla ones too.</para>
         /// </summary>
         public static readonly List<UnlockWrapper> Unlocks = new List<UnlockWrapper>();
         internal static readonly List<UnlockWrapper> CustomUnlocks = new List<UnlockWrapper>();
 
+        /// <summary>
+        ///   <para>The list of all custom disasters, that will be used in the game.</para>
+        /// </summary>
         public static readonly List<CustomDisaster> CustomDisasters = new List<CustomDisaster>();
+        /// <summary>
+        ///   <para>Returns the currently active custom disaster.</para>
+        /// </summary>
+        /// <returns>The currently active instance of <see cref="CustomDisaster"/>, if there is one; otherwise, <see langword="null"/>.</returns>
         public static CustomDisaster? GetActiveDisaster() => CustomDisasters.Find(static d => d.IsActive);
 
         /// <summary>
@@ -104,20 +115,65 @@ namespace RogueLibsCore
         /// </summary>
         public static readonly Dictionary<string, Sprite> ExtraSprites = new Dictionary<string, Sprite>();
 
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the item sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? ItemSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the object sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? ObjectSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the floor sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? FloorSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the projectile sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? BulletSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the hair sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? HairSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the facial hair sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? FacialHairSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the head piece sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? HeadPieceSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the agent sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? AgentSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the agent body sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? BodySprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the wreckage sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? WreckageSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the interface sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? InterfaceSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the decal sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? DecalSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the wall top sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? WallTopSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the wall sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? WallSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the spawner sprites, used in the Level Editor, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
         public static tk2dSpriteCollectionData? SpawnerSprites { get; internal set; }
 
 

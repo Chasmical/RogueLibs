@@ -308,30 +308,82 @@ namespace RogueLibsCore
             return instance.__RogueLibsCustom as THook ?? null;
         }
 
+        /// <summary>
+        ///   <para>Returns a hook attached to the current instance, that is assignable to a variable of the <typeparamref name="THook"/> type, or creates one if it doesn't exist.</para>
+        /// </summary>
+        /// <typeparam name="THook">The type of a hook to search for.</typeparam>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns>The hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="default"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook GetOrAddHook<THook>(this InvItem instance) where THook : IHook<InvItem>, new()
         {
             THook? hook = instance.GetHook<THook>();
             return hook.IsDefault() ? instance.AddHook<THook>() : hook;
         }
+        /// <summary>
+        ///   <para>Returns a hook attached to the current instance, that is assignable to a variable of the <typeparamref name="THook"/> type, or creates one if it doesn't exist.</para>
+        /// </summary>
+        /// <typeparam name="THook">The type of a hook to search for.</typeparam>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns>The hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="default"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook GetOrAddHook<THook>(this PlayfieldObject instance) where THook : IHook<PlayfieldObject>, new()
         {
             THook? hook = instance.GetHook<THook>();
             return hook.IsDefault() ? instance.AddHook<THook>() : hook;
         }
+        /// <summary>
+        ///   <para>Returns a hook attached to the current instance, that is assignable to a variable of the <typeparamref name="THook"/> type, or creates one if it doesn't exist.</para>
+        /// </summary>
+        /// <typeparam name="THook">The type of a hook to search for.</typeparam>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns>The hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="default"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook GetOrAddHook<THook>(this StatusEffect instance) where THook : IHook<StatusEffect>, new()
         {
             THook? hook = instance.GetHook<THook>();
             return hook.IsDefault() ? instance.AddHook<THook>() : hook;
         }
+        /// <summary>
+        ///   <para>Returns a hook attached to the current instance, that is assignable to a variable of the <typeparamref name="THook"/> type, or creates one if it doesn't exist.</para>
+        /// </summary>
+        /// <typeparam name="THook">The type of a hook to search for.</typeparam>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns>The hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="default"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook GetOrAddHook<THook>(this Trait instance) where THook : IHook<Trait>, new()
         {
             THook? hook = instance.GetHook<THook>();
             return hook.IsDefault() ? instance.AddHook<THook>() : hook;
         }
 
+        /// <summary>
+        ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
+        /// </summary>
+        /// <typeparam name="THook">The type of a hook to search for.</typeparam>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
         public static bool HasHook<THook>(this InvItem instance) => !GetHook<THook>(instance).IsDefault();
+        /// <summary>
+        ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
+        /// </summary>
+        /// <typeparam name="THook">The type of a hook to search for.</typeparam>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
         public static bool HasHook<THook>(this PlayfieldObject instance) => !GetHook<THook>(instance).IsDefault();
+        /// <summary>
+        ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
+        /// </summary>
+        /// <typeparam name="THook">The type of a hook to search for.</typeparam>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
         public static bool HasHook<THook>(this StatusEffect instance) => !GetHook<THook>(instance).IsDefault();
+        /// <summary>
+        ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
+        /// </summary>
+        /// <typeparam name="THook">The type of a hook to search for.</typeparam>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
         public static bool HasHook<THook>(this Trait instance) => !GetHook<THook>(instance).IsDefault();
 
         /// <summary>

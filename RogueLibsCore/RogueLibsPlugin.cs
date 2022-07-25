@@ -12,9 +12,10 @@ namespace RogueLibsCore
     [BepInPlugin(RogueLibs.GUID, RogueLibs.Name, RogueLibs.CompiledVersion)]
     [BepInIncompatibility(@"abbysssal.streetsofrogue.ectd")]
     [BepInIncompatibility(@"abbysssal.streetsofrogue.roguelibs")]
-    public sealed partial class RogueLibsPlugin : BaseUnityPlugin
+    internal sealed partial class RogueLibsPlugin : BaseUnityPlugin
     {
         public RoguePatcher Patcher = null!; // initialized in Awake()
+        public static RogueLibsPlugin Instance = null!;
 
         private static int awoken;
         public void Awake()
@@ -78,6 +79,7 @@ namespace RogueLibsCore
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
+            Instance = this;
             RogueFramework.Plugin = this;
             RogueFramework.Logger = Logger;
 

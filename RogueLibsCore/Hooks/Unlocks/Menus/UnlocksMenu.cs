@@ -36,6 +36,9 @@ namespace RogueLibsCore
         /// </summary>
         public abstract void UpdateMenu();
 
+        /// <summary>
+        ///   <para>Determines whether the unlocks should be displayed in the menu even if they're locked.</para>
+        /// </summary>
         public virtual bool ShowLockedUnlocks => Type is UnlocksMenuType.Loadouts or UnlocksMenuType.NewLevelTraits
             or UnlocksMenuType.AB_RemoveTrait or UnlocksMenuType.AB_SwapTrait or UnlocksMenuType.AB_UpgradeTrait
             or UnlocksMenuType.TwitchRewards or UnlocksMenuType.TwitchDisasters;

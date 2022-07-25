@@ -80,7 +80,6 @@
                 e.Cancel = e.Handled = true;
             }
         }
-        // ReSharper disable once CommentTypo
         /// <summary>
         ///   <para>Prevents "Jugularious" agents from consuming food.</para>
         /// </summary>
@@ -97,7 +96,6 @@
                 e.Cancel = e.Handled = true;
             }
         }
-        // ReSharper disable once CommentTypo
         /// <summary>
         ///   <para>Prevents "Jugularious" agents from using medicine.</para>
         /// </summary>
