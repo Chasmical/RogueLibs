@@ -28,6 +28,7 @@ namespace RogueLibsCore
             AllowUnlocksAnyway = true;
             unlocks.DoUnlock(unlockName, unlockType);
             AllowUnlocksAnyway = prev;
+            unlocks.SaveUnlockData(true);
         }
     }
 }

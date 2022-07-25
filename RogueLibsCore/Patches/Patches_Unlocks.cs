@@ -8,6 +8,7 @@ using UnityEngine;
 using HarmonyLib;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml;
 using static RogueLibsCore.VanillaItems;
 
 namespace RogueLibsCore
@@ -54,6 +55,56 @@ namespace RogueLibsCore
             });
         }
 
+        private static string GetBackupUnlocksPath()
+        {
+            GameController gc = GameController.gameController;
+            string storageDir = !gc.usingMyDocuments || gc.macVersion || gc.linuxVersion || gc.usingUWP
+                ? Application.persistentDataPath : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/" + gc.dataFolder;
+            string slotText = gc.sessionDataBig.GetSaveSlotText();
+            return storageDir + "/CloudData/" + slotText + "RLUnlocks.dat";
+        }
+        private static BackupUnlocks? unlocksBackup;
+        public static BackupUnlocks LoadBackupUnlocks()
+        {
+            if (unlocksBackup is null)
+            {
+                BackupUnlocks backup = new BackupUnlocks();
+                string path = GetBackupUnlocksPath();
+                if (File.Exists(path))
+                {
+                    using (XmlReader reader = XmlReader.Create(path))
+                        backup.ReadXml(reader);
+                }
+                unlocksBackup = backup;
+            }
+            return unlocksBackup;
+        }
+        public static void SaveBackupUnlocks()
+        {
+            SessionDataBig sdb = GameController.gameController.sessionDataBig;
+            string path = GetBackupUnlocksPath();
+
+            unlocksBackup = null;
+            BackupUnlocks backupUnlocks = LoadBackupUnlocks();
+            backupUnlocks.Nuggets = sdb.nuggets;
+
+            foreach (UnlockWrapper custom in RogueFramework.CustomUnlocks)
+            {
+                BackupUnlock? backup = backupUnlocks.Find(custom.Unlock);
+                if (backup is null) backupUnlocks.Unlocks.Add(backup = new BackupUnlock());
+                backup.Store(custom.Unlock);
+            }
+
+            using (XmlWriter writer = XmlWriter.Create(path))
+            {
+                writer.WriteStartElement("BackupUnlocks");
+                backupUnlocks.WriteXml(writer);
+                writer.WriteEndElement();
+            }
+
+            unlocksBackup = backupUnlocks;
+        }
+
         public static void Unlocks_AddUnlock(Unlock? createdUnlock, Unlock __result)
         {
             if (createdUnlock != null)
@@ -61,6 +112,11 @@ namespace RogueLibsCore
                 __result.unavailable = createdUnlock.unavailable;
                 __result.onlyInCharacterCreation = createdUnlock.onlyInCharacterCreation;
                 __result.freeItem = createdUnlock.freeItem;
+                if (createdUnlock == __result) // if the unlock-"definition" could not find a match in the tempUnlocks from the save file
+                {
+                    BackupUnlock? backup = LoadBackupUnlocks().Find(createdUnlock);
+                    backup?.Restore(createdUnlock);
+                }
             }
         }
 
@@ -69,6 +125,7 @@ namespace RogueLibsCore
             if (cancel) return;
             if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
                 RogueFramework.LogDebug("Reloading unlocks.");
+            unlocksBackup = null;
             RogueFramework.Unlocks.Clear();
         }
         public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
@@ -172,6 +229,7 @@ namespace RogueLibsCore
                 RogueFramework.Unlocks.Add(wrapper);
                 AddUnlockFull(wrapper);
             }
+            SaveBackupUnlocks(); // make sure the latest data is stored in here
         }
 #pragma warning restore CS0618 // Type or member is obsolete
         private static void ReverseRogueLibsEffects(Unlock unlock)
@@ -198,19 +256,19 @@ namespace RogueLibsCore
             try
             {
                 // integrating custom unlocks
-                Unlock result = alreadyLoaded ? wrapper.Unlock : GameController.gameController.unlocks.AddUnlock(wrapper.Unlock);
-                if (wrapper.Unlock != result)
+                Unlock fromSaveFile = alreadyLoaded ? wrapper.Unlock : GameController.gameController.unlocks.AddUnlock(wrapper.Unlock);
+                if (wrapper.Unlock != fromSaveFile)
                 {
                     if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
-                        RogueFramework.LogDebug($"Loaded state for \"{wrapper.Name}\" ({wrapper.Type}): unlocked - {result.unlocked}, enabled - {!result.notActive}");
+                        RogueFramework.LogDebug($"Loaded state for \"{wrapper.Name}\" ({wrapper.Type}): unlocked - {fromSaveFile.unlocked}, enabled - {!fromSaveFile.notActive}");
 
                     List<Unlock> list = GameController.gameController.sessionDataBig.unlocks;
-                    list.Remove(result);
+                    list.Remove(fromSaveFile);
                     list.Add(wrapper.Unlock);
 
-                    wrapper.IsUnlocked = result.unlocked;
+                    wrapper.IsUnlocked = fromSaveFile.unlocked;
                     if (wrapper is not MutatorUnlock)
-                        wrapper.IsEnabled = !result.notActive;
+                        wrapper.IsEnabled = !fromSaveFile.notActive;
                 }
                 wrapper.IsAvailable = wrapper.IsAvailable;
                 if (wrapper is IUnlockInCC inCC) inCC.IsAvailableInCC = inCC.IsAvailableInCC;
@@ -291,6 +349,8 @@ namespace RogueLibsCore
                 yield break;
             }
             curSaving = true;
+
+            SaveBackupUnlocks(); // save the backup data
             try
             {
                 string text = Application.persistentDataPath;
