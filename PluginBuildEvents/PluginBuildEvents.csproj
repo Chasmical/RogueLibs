@@ -4,12 +4,11 @@
 
     <!-- Project Properties -->
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
 
     <!-- Header -->
-    <AssemblyName>RogueLibsCore</AssemblyName>
+    <AssemblyName>PluginBuildEvents</AssemblyName>
     <PackageId>$(AssemblyName)</PackageId>
-    <Version>3.5.0-beta.2</Version>
     <Authors>Abbysssal</Authors>
     <Company>$(Authors)</Company>
     <Copyright></Copyright>
