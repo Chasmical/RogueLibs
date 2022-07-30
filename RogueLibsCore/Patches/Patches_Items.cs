@@ -36,6 +36,9 @@ namespace RogueLibsCore
             // CustomItem, IItemTargetableAnywhere patches
             Patcher.Postfix(typeof(InvInterface), nameof(InvInterface.TargetAnywhere));
 
+            Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.SortItems));
+            Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.SortUseItems));
+
             Patcher.AnyErrors();
 
             DefaultInventoryChecks.SubscribeChecks();
@@ -480,5 +483,21 @@ namespace RogueLibsCore
             private readonly Agent OriginalAgent;
             public void Dispose() => Item.agent = OriginalAgent;
         }
+
+        public static void InvSlot_SortItems(InvSlot __instance)
+        {
+            InvDatabase inventory = __instance.database;
+            foreach (InvItem item in inventory.InvItemList)
+                if (!inventory.sortedItemList.Contains(item))
+                    inventory.sortedItemList.Add(item);
+        }
+        public static void InvSlot_SortUseItems(InvSlot __instance)
+        {
+            InvDatabase inventory = __instance.database;
+            foreach (InvItem item in inventory.InvItemList)
+                if (!inventory.sortedUseItemList.Contains(item))
+                    inventory.sortedUseItemList.Add(item);
+        }
+
     }
 }
