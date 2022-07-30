@@ -88,6 +88,10 @@ namespace RogueLibsCore
         ///   <para>The list of effect hook factories, used by RogueLibs.</para>
         /// </summary>
         public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new List<IHookFactory<StatusEffect>>();
+        /// <summary>
+        ///   <para>The list of object hook factories, used by RogueLibs.</para>
+        /// </summary>
+        public static readonly List<IHookFactory<PlayfieldObject>> ObjectFactories = new List<IHookFactory<PlayfieldObject>>();
 
         /// <summary>
         ///   <para>The list of name providers, used by RogueLibs.</para>

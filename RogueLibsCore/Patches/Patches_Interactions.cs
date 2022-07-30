@@ -67,7 +67,7 @@ namespace RogueLibsCore
         private static readonly Dictionary<Type, ConstructorInfo> interactionModelConstructors = new Dictionary<Type, ConstructorInfo>();
         public static void PlayfieldObject_Awake(PlayfieldObject __instance)
         {
-            GetOrCreateModel(__instance);
+            PlayfieldObject_RecycleAwake(__instance);
         }
         public static bool DetermineButtonsHook(PlayfieldObject __instance)
         {

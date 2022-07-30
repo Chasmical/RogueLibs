@@ -230,6 +230,16 @@ namespace RogueLibsCore
         {
             (__instance.__RogueLibsHooks as IDisposable)?.Dispose();
             __instance.__RogueLibsHooks = null;
+
+            GetOrCreateModel(__instance);
+
+            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Effects);
+            foreach (IHookFactory<PlayfieldObject> factory in RogueFramework.ObjectFactories)
+                if (factory.TryCreate(__instance, out IHook<PlayfieldObject>? hook))
+                {
+                    if (debug) RogueFramework.LogDebug($"Initializing object hook {hook} ({__instance.objectName}.");
+                    __instance.AddHook(hook!);
+                }
         }
     }
 }

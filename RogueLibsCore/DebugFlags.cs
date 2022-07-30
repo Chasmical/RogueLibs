@@ -53,6 +53,10 @@ namespace RogueLibsCore
         ///   <para>Specifies that disasters stuff should be logged.</para>
         /// </summary>
         Disasters    = 1 << 9,
+        /// <summary>
+        ///   <para>Specifies that objects stuff should be logged.</para>
+        /// </summary>
+        Objects      = 1 << 10,
 
         /// <summary>
         ///   <para>Specifies that various potentially annoying debug hints should be enabled, such as "I am patched!" buttons in the interactions.</para>
