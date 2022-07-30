@@ -55,6 +55,8 @@ namespace RogueLibsCore
             if (hook is IDoUpdate) RogueLibsPlugin.doUpdateHooks.Add(new WeakReference<IHook>(hook));
             // ReSharper disable once SuspiciousTypeConversion.Global
             if (hook is IDoFixedUpdate) RogueLibsPlugin.doFixedUpdateHooks.Add(new WeakReference<IHook>(hook));
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            if (hook is IDoLateUpdate) RogueLibsPlugin.doLateUpdateHooks.Add(new WeakReference<IHook>(hook));
         }
         private static void HandleHookRemoval(IHook hook)
         {
@@ -76,6 +78,16 @@ namespace RogueLibsCore
                 if (RogueLibsPlugin.fixedUpdatingHooks)
                     RogueLibsPlugin.removeDoFixedUpdateHooks.Add(found);
                 else RogueLibsPlugin.doFixedUpdateHooks.Remove(found);
+            }
+            // ReSharper disable once SuspiciousTypeConversion.Global
+            if (hook is IDoLateUpdate)
+            {
+                WeakReference<IHook>? found = RogueLibsPlugin.doLateUpdateHooks.Find(r => r.TryGetTarget(out IHook? target) && target == hook);
+                if (found is null) return;
+
+                if (RogueLibsPlugin.lateUpdatingHooks)
+                    RogueLibsPlugin.removeDoLateUpdateHooks.Add(found);
+                else RogueLibsPlugin.doLateUpdateHooks.Remove(found);
             }
         }
 

@@ -18,6 +18,8 @@ namespace RogueLibsCore
             Patcher.Postfix(typeof(Updater), "Update");
             // IDoFixedUpdate.FixedUpdate
             Patcher.Postfix(typeof(Updater), nameof(Updater.FixedUpdate));
+            // IDoLateUpdate.LateUpdate
+            Patcher.Postfix(typeof(Updater), "LateUpdate");
 
             // load prepared AudioClips
             Patcher.Prefix(typeof(AudioHandler), nameof(AudioHandler.SetupDics), nameof(AudioHandler_SetupDics_Prefix));
@@ -71,13 +73,18 @@ namespace RogueLibsCore
 
         internal static bool updatingHooks;
         internal static bool fixedUpdatingHooks;
+        internal static bool lateUpdatingHooks;
         internal static readonly List<WeakReference<IHook>> doUpdateHooks = new List<WeakReference<IHook>>();
         internal static readonly List<WeakReference<IHook>> doFixedUpdateHooks = new List<WeakReference<IHook>>();
+        internal static readonly List<WeakReference<IHook>> doLateUpdateHooks = new List<WeakReference<IHook>>();
         internal static readonly List<WeakReference<IHook>> removeDoUpdateHooks = new List<WeakReference<IHook>>();
         internal static readonly List<WeakReference<IHook>> removeDoFixedUpdateHooks = new List<WeakReference<IHook>>();
+        internal static readonly List<WeakReference<IHook>> removeDoLateUpdateHooks = new List<WeakReference<IHook>>();
 
         public static void Updater_Update()
         {
+            GameController gc = GameController.gameController;
+            if (gc.levelTransitioning || gc.offlineGameStarting) return;
             try
             {
                 updatingHooks = true;
@@ -101,6 +108,7 @@ namespace RogueLibsCore
         }
         public static void Updater_FixedUpdate()
         {
+            if (GameController.gameController.levelTransitioning) return;
             try
             {
                 fixedUpdatingHooks = true;
@@ -120,6 +128,32 @@ namespace RogueLibsCore
                 {
                     doFixedUpdateHooks.RemoveAll(removeDoFixedUpdateHooks.Contains);
                     removeDoFixedUpdateHooks.Clear();
+                }
+            }
+        }
+        public static void Updater_LateUpdate()
+        {
+            GameController gc = GameController.gameController;
+            if (gc.levelTransitioning || gc.offlineGameStarting) return;
+            try
+            {
+                lateUpdatingHooks = true;
+                for (int i = 0, count = doLateUpdateHooks.Count; i < count; i++)
+                {
+                    WeakReference<IHook> hookRef = doLateUpdateHooks[i];
+                    if (!hookRef.TryGetTarget(out IHook? hook))
+                        removeDoLateUpdateHooks.Add(hookRef);
+                    // ReSharper disable once SuspiciousTypeConversion.Global
+                    else ((IDoLateUpdate)hook).LateUpdate();
+                }
+            }
+            finally
+            {
+                lateUpdatingHooks = false;
+                if (removeDoLateUpdateHooks.Count > 0)
+                {
+                    doLateUpdateHooks.RemoveAll(removeDoLateUpdateHooks.Contains);
+                    removeDoLateUpdateHooks.Clear();
                 }
             }
         }
