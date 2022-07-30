@@ -175,6 +175,14 @@ namespace RogueLibsCore
         ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the spawner sprites, used in the Level Editor, or <see langword="null"/>, if it's not initialized yet.</para>
         /// </summary>
         public static tk2dSpriteCollectionData? SpawnerSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the shadow sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
+        public static tk2dSpriteCollectionData? ShadowSprites { get; internal set; }
+        /// <summary>
+        ///   <para>The <see cref="tk2dSpriteCollectionData"/> that contains the tile shadow sprites, or <see langword="null"/>, if it's not initialized yet.</para>
+        /// </summary>
+        public static tk2dSpriteCollectionData? TileShadowSprites { get; internal set; }
 
 
     }

@@ -78,7 +78,14 @@ namespace RogueLibsCore
         ///   <para>The spawner sprites, used in the Level Editor.</para>
         /// </summary>
         Spawners = 1 << 14,
-
+        /// <summary>
+        ///   <para>The shadow sprites.</para>
+        /// </summary>
+        Shadows = 1 << 15,
+        /// <summary>
+        ///   <para>The tile shadow sprites.</para>
+        /// </summary>
+        TileShadows = 1 << 16,
 
     }
 }
