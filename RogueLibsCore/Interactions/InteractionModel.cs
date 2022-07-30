@@ -282,24 +282,44 @@ namespace RogueLibsCore
         }
 
         private bool fakingInteraction;
+        private bool lastCheckedInteractable;
+        private float lastCheckedInteractableAt;
         /// <summary>
         ///   <para>Determines whether the current object can be interacted by the specified <paramref name="agent"/>.</para>
         /// </summary>
         /// <param name="agent">The agent to determine whether the object is interactable to.</param>
         /// <returns><see langword="true"/>, if the current object is interactable; otherwise, <see langword="false"/>.</returns>
         public bool IsInteractable(Agent agent)
+            => IsInteractable(agent, true);
+        /// <summary>
+        ///   <para>Determines whether the current object can be interacted by the specified <paramref name="agent"/>.</para>
+        /// </summary>
+        /// <param name="agent">The agent to determine whether the object is interactable to.</param>
+        /// <param name="canUseCachedResult">Determines whether a cached result from less than 0.1s before can be used.</param>
+        /// <returns><see langword="true"/>, if the current object is interactable; otherwise, <see langword="false"/>.</returns>
+        public bool IsInteractable(Agent agent, bool canUseCachedResult)
         {
+            if (canUseCachedResult && Time.unscaledTime - lastCheckedInteractableAt < 0.1f) return lastCheckedInteractable;
+
             Agent? prevAgent = Instance.interactingAgent;
             try
             {
                 fakingInteraction = true;
                 RogueLibsPlugin.useModelStopInteraction = true;
                 Instance.interactingAgent = agent;
-                return IsInteractable2();
+                bool res = IsInteractable2();
+                lastCheckedInteractable = res;
+                return res;
+            }
+            catch
+            {
+                lastCheckedInteractable = false;
+                throw;
             }
             finally
             {
                 fakingInteraction = false;
+                lastCheckedInteractableAt = Time.unscaledTime;
                 RogueLibsPlugin.useModelStopInteraction = false;
                 Instance.interactingAgent = prevAgent;
             }
