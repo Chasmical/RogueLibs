@@ -70,6 +70,15 @@ namespace RogueLibsCore
             else throw new InvalidOperationException("You can't specify more than two messages for a custom disaster!");
             return this;
         }
+        /// <summary>
+        ///   <para>Creates a removal mutator for this disaster.</para>
+        /// </summary>
+        /// <returns>The current instance of <see cref="DisasterBuilder"/>, for chaining purposes.</returns>
+        public DisasterBuilder WithRemovalMutator()
+        {
+            RogueLibs.CreateCustomUnlock(new MutatorUnlock("NoD_" + Info.Name, true));
+            return this;
+        }
 
     }
 }
