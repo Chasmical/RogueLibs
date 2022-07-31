@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RogueLibsCore
 {
@@ -10,7 +11,7 @@ namespace RogueLibsCore
     {
         private readonly Dictionary<string, EffectEntry> effectsDict = new Dictionary<string, EffectEntry>();
         /// <inheritdoc/>
-        public override bool TryCreate(StatusEffect? instance, out IHook<StatusEffect>? hook)
+        public override bool TryCreate(StatusEffect? instance, [NotNullWhen(true)] out IHook<StatusEffect>? hook)
         {
             if (instance is not null && effectsDict.TryGetValue(instance.statusEffectName, out EffectEntry entry))
             {

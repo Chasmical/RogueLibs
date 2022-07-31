@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RogueLibsCore
 {
@@ -10,7 +11,7 @@ namespace RogueLibsCore
     {
         private readonly Dictionary<string, ItemEntry> itemsDict = new Dictionary<string, ItemEntry>();
         /// <inheritdoc/>
-        public override bool TryCreate(InvItem? instance, out IHook<InvItem>? hook)
+        public override bool TryCreate(InvItem? instance, [NotNullWhen(true)] out IHook<InvItem>? hook)
         {
             if (instance?.invItemName != null && itemsDict.TryGetValue(instance.invItemName, out ItemEntry entry))
             {

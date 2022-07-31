@@ -69,7 +69,7 @@ namespace RogueLibsCore
                                                     ? $"Initializing custom item {hook} ({__instance.invItemName})."
                                                     : $"Initializing item hook {hook} for \"{__instance.invItemName}\".");
                     }
-                    __instance.AddHook(hook!);
+                    __instance.AddHook(hook);
                 }
         }
 

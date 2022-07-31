@@ -238,7 +238,7 @@ namespace RogueLibsCore
                 if (factory.TryCreate(__instance, out IHook<PlayfieldObject>? hook))
                 {
                     if (debug) RogueFramework.LogDebug($"Initializing object hook {hook} ({__instance.objectName}.");
-                    __instance.AddHook(hook!);
+                    __instance.AddHook(hook);
                 }
         }
     }

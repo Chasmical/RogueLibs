@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RogueLibsCore
 {
@@ -10,7 +11,7 @@ namespace RogueLibsCore
     {
         private readonly Dictionary<string, TraitEntry> traitsDict = new Dictionary<string, TraitEntry>();
         /// <inheritdoc/>
-        public override bool TryCreate(Trait? instance, out IHook<Trait>? hook)
+        public override bool TryCreate(Trait? instance, [NotNullWhen(true)] out IHook<Trait>? hook)
         {
             if (instance != null && traitsDict.TryGetValue(instance.traitName, out TraitEntry entry))
             {
