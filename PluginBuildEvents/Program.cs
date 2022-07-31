@@ -20,14 +20,14 @@ namespace PluginBuildEvents
             steamPath = FindSteam();
             if (steamPath != null)
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(steamPathFile));
+                Directory.CreateDirectory(Path.GetDirectoryName(steamPathFile)!);
                 File.WriteAllText(steamPathFile, steamPath);
             }
             return steamPath;
         }
         private static string? FindSteam()
         {
-            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            if (OperatingSystem.IsWindows())
             {
                 RegistryKey? steam = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Valve\Steam");
                 return (string?)steam?.GetValue("SteamPath");
@@ -89,9 +89,9 @@ namespace PluginBuildEvents
             string newPdb = Path.Combine(plugins, Path.GetFileName(origPdb));
 
             // ReSharper disable once InconsistentNaming
-            string pdb2mdb = Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, "pdb2mdb.exe");
+            string pdb2mdb = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "pdb2mdb.exe");
 
-            bool skipPdb = File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory!, ".no-pdb"));
+            bool skipPdb = File.Exists(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".no-pdb"));
 
             File.Copy(origDll, newDll, true);
             if (File.Exists(origPdb) && !skipPdb) File.Copy(origPdb, newPdb, true);
