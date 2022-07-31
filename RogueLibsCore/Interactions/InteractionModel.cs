@@ -37,6 +37,7 @@ namespace RogueLibsCore
         /// </summary>
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]
         // ReSharper disable once InconsistentNaming
+        // ReSharper disable once MemberCanBeMadeStatic.Global
         public GameController gc => GameController.gameController;
 
         internal bool shouldStop;

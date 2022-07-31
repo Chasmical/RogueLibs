@@ -1,4 +1,6 @@
 ﻿// ReSharper disable IdentifierTypo InconsistentNaming
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedType.Global
 namespace RogueLibsCore
 {
 #pragma warning disable IDE0079 // Remove unnecessary suppression
