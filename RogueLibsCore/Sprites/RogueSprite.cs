@@ -283,10 +283,22 @@ namespace RogueLibsCore
                 gr = gc.gameResources;
             }
 
-            if (targetScope == SpriteScope.Items) { gr.itemDic[Name] = Sprite; gr.itemList.Add(Sprite); }
-            else if (targetScope == SpriteScope.Objects) { gr.objectDic[Name] = Sprite; gr.objectList.Add(Sprite); }
-            else if (targetScope == SpriteScope.Floors) { gr.floorDic[Name] = Sprite; gr.floorList.Add(Sprite); }
-            else if (targetScope == SpriteScope.Extra) RogueFramework.ExtraSprites[Name] = Sprite!;
+            switch (targetScope)
+            {
+                case SpriteScope.Items: gr.itemDic[Name] = Sprite; gr.itemList.Add(Sprite); break;
+                case SpriteScope.Objects: gr.objectDic[Name] = Sprite; gr.objectList.Add(Sprite); break;
+                case SpriteScope.Floors: gr.floorDic[Name] = Sprite; gr.floorList.Add(Sprite); break;
+                case SpriteScope.Hair: gr.hairDic[Name] = Sprite; gr.hairList.Add(Sprite); break;
+                case SpriteScope.FacialHair: gr.facialHairDic[Name] = Sprite; gr.facialHairList.Add(Sprite); break;
+                case SpriteScope.HeadPieces: gr.headPiecesDic[Name] = Sprite; gr.headPiecesList.Add(Sprite); break;
+                case SpriteScope.Agents:
+                    gr.headDic[Name] = Sprite; gr.headList.Add(Sprite);
+                    gr.eyesDic[Name] = Sprite; gr.eyesList.Add(Sprite);
+                    break;
+                case SpriteScope.Bodies: gr.bodyDic[Name] = Sprite; gr.bodyList.Add(Sprite); break;
+                case SpriteScope.Walls: gr.wallDic[Name] = Sprite; gr.wallList.Add(Sprite); break;
+                case SpriteScope.Extra: RogueFramework.ExtraSprites[Name] = Sprite!; break;
+            }
         }
         /// <summary>
         ///   <para>Undefines the current sprite and disintegrates it from the game.</para>
@@ -317,10 +329,22 @@ namespace RogueLibsCore
                 RemoveDefinition(def.Collection, def.Definition!);
 
             GameResources gr = GameResources.gameResources;
-            if (Scope == SpriteScope.Items) { gr.itemDic.Remove(Name); gr.itemList.Remove(Sprite); }
-            if (Scope == SpriteScope.Objects) { gr.objectDic.Remove(Name); gr.objectList.Remove(Sprite); }
-            if (Scope == SpriteScope.Floors) { gr.floorDic.Remove(Name); gr.floorList.Remove(Sprite); }
-            if (Scope == SpriteScope.Extra) RogueFramework.ExtraSprites.Remove(Name);
+            switch (def.Scope)
+            {
+                case SpriteScope.Items: gr.itemDic.Remove(Name); gr.itemList.Remove(Sprite); break;
+                case SpriteScope.Objects: gr.objectDic.Remove(Name); gr.objectList.Remove(Sprite); break;
+                case SpriteScope.Floors: gr.floorDic.Remove(Name); gr.floorList.Remove(Sprite); break;
+                case SpriteScope.Hair: gr.hairDic.Remove(Name); gr.hairList.Remove(Sprite); break;
+                case SpriteScope.FacialHair: gr.facialHairDic.Remove(Name); gr.facialHairList.Remove(Sprite); break;
+                case SpriteScope.HeadPieces: gr.headPiecesDic.Remove(Name); gr.headPiecesList.Remove(Sprite); break;
+                case SpriteScope.Agents:
+                    gr.headDic.Remove(Name); gr.headList.Remove(Sprite);
+                    gr.eyesDic.Remove(Name); gr.eyesList.Remove(Sprite);
+                    break;
+                case SpriteScope.Bodies: gr.bodyDic.Remove(Name); gr.bodyList.Remove(Sprite); break;
+                case SpriteScope.Walls: gr.wallDic.Remove(Name); gr.wallList.Remove(Sprite); break;
+                case SpriteScope.Extra: RogueFramework.ExtraSprites.Remove(Name); break;
+            }
         }
 
         /// <summary>
