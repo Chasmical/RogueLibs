@@ -95,6 +95,8 @@ namespace RogueLibsCore
 
         public static bool InteractHook(PlayfieldObject __instance, Agent agent)
         {
+            GetOrCreateModel(__instance).initialInteract = true;
+
             #region Re-implementing base.Interact(agent)
             // PlayfieldObject.Interact
             __instance.interactingAgent = agent;
@@ -129,6 +131,8 @@ namespace RogueLibsCore
         }
         public static bool InteractFarHook(PlayfieldObject __instance, Agent agent)
         {
+            GetOrCreateModel(__instance).initialInteract = true;
+
             #region Re-implementing base.InteractFar(agent)
             // PlayfieldObject.InteractFar
             __instance.interactingAgent = agent;
@@ -169,9 +173,11 @@ namespace RogueLibsCore
         internal static bool useModelStopInteraction;
         public static bool PlayfieldObject_StopInteraction(PlayfieldObject __instance)
         {
+            InteractionModel model = GetOrCreateModel(__instance);
+            model.initialInteract = true;
             if (useModelStopInteraction)
             {
-                GetOrCreateModel(__instance).shouldStop = true;
+                model.shouldStop = true;
                 return false;
             }
             return true;

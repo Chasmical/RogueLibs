@@ -40,6 +40,7 @@ namespace RogueLibsCore
         // ReSharper disable once MemberCanBeMadeStatic.Global
         public GameController gc => GameController.gameController;
 
+        internal bool initialInteract;
         internal bool shouldStop;
         internal bool forcedStop;
         /// <summary>
@@ -217,7 +218,7 @@ namespace RogueLibsCore
                 return;
             }
             // if there's only one button and its action is implicit
-            if (interactions.Count is 1 && interactions[0].ImplicitAction) // TODO: try-catch
+            if (interactions.Count is 1 && interactions[0].ImplicitAction && initialInteract) // TODO: try-catch
             {
                 interactions[0].OnPressedImplicitly(); // TODO: try-catch
                 if (IsControlIntercepted()) return;
@@ -270,16 +271,18 @@ namespace RogueLibsCore
             // press the button
             pressed.OnPressed(); // TODO: try-catch
             // if the button's action is 'final' or was unsuccessful
-            if (shouldStop)
+            if (shouldStop || forcedStop)
             {
                 StopCallback?.Invoke(); // TODO: try-catch
-                OriginalStopInteraction(Instance);
+                if (!forcedStop)
+                    OriginalStopInteraction(Instance);
                 return;
             }
             if (IsControlIntercepted()) return;
 
+            initialInteract = false; // make subsequent interaction ignore the implicit button
             // refresh the buttons (restarts the cycle)
-            Agent.worldSpaceGUI?.StartCoroutine(Agent.worldSpaceGUI.RefreshObjectButtons2(Object));
+            Agent.worldSpaceGUI?.RefreshObjectButtons(Object);
         }
 
         private bool fakingInteraction;
