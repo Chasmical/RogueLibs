@@ -26,6 +26,7 @@
   </Target>
 
   <ItemGroup>
+    <None Remove="RogueLibsCore.csproj.DotSettings" />
     <InternalsVisibleTo Include="RogueLibsCore.Test" />
 
     <Reference Include="0Harmony">

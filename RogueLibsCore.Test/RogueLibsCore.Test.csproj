@@ -25,6 +25,7 @@
   </Target>
 
   <ItemGroup>
+    <None Remove="RogueLibsCore.Test.csproj.DotSettings" />
     <ProjectReference Include="..\RogueLibsCore\RogueLibsCore.csproj" />
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\.ref\Assembly-CSharp.dll</HintPath>
