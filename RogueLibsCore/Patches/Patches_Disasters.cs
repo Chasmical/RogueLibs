@@ -18,6 +18,8 @@ namespace RogueLibsCore
             Patcher.Transpiler(typeof(LevelFeelings), nameof(LevelFeelings.GetLevelFeeling));
             Patcher.Prefix(typeof(RandomSelection), nameof(RandomSelection.RandomSelect));
 
+            // starting the custom disaster updates
+            Patcher.Postfix(typeof(LevelFeelings), "StartAfterNotification");
             // starting the custom disaster
             Patcher.Postfix(typeof(LevelFeelings), nameof(LevelFeelings.StartLevelFeelings));
             // finishing the custom disaster
@@ -103,18 +105,28 @@ namespace RogueLibsCore
             return false;
         }
 
-        public static void LevelFeelings_StartLevelFeelings(LevelFeelings __instance)
+        public static void LevelFeelings_StartAfterNotification(LevelFeelings __instance, ref IEnumerator __result)
+        {
+            __result = NewEnumerator(__instance, __result);
+
+            static IEnumerator NewEnumerator(LevelFeelings __instance, IEnumerator __result)
+            {
+                // execute the entirety of the original enumerator
+                while (__result.MoveNext()) yield return __result.Current;
+
+                CustomDisaster? custom = RogueFramework.GetActiveDisaster();
+                if (custom is not null && GameController.gameController.serverPlayer)
+                {
+                    IEnumerator? updating = (IEnumerator?)custom.Updating();
+                    if (updating is not null)
+                        custom.updatingCoroutine = __instance.StartCoroutine(updating);
+                }
+            }
+        }
+        public static void LevelFeelings_StartLevelFeelings()
         {
             CustomDisaster? custom = RogueFramework.GetActiveDisaster();
-            // ReSharper disable once UseNullPropagationWhenPossible
-            if (custom is not null)
-            {
-                custom.Start();
-                IEnumerator? updating = (IEnumerator?)custom.Updating();
-                if (updating is not null)
-                    custom.updatingCoroutine = __instance.StartCoroutine(updating);
-
-            }
+            custom?.Start();
         }
         public static void LevelFeelings_EndLevelFeeling(LevelFeelings __instance)
         {

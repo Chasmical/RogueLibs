@@ -64,7 +64,7 @@ namespace RogueLibsCore
         /// </summary>
         public abstract void Finish();
         /// <summary>
-        ///   <para>Updates the custom disaster using a <see cref="Coroutine"/>.</para>
+        ///   <para>Updates the custom disaster using a <see cref="Coroutine"/>; starts after the notification is displayed.</para>
         /// </summary>
         /// <returns>The enumerator representing the custom disaster's updating coroutine.</returns>
         public virtual IEnumerator Updating() => null!;
