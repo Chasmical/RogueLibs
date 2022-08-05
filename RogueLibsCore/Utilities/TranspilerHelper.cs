@@ -194,6 +194,7 @@ namespace RogueLibsCore
                         }
                     }
                 }
+                if (state == SearchState.Searching) throw new InvalidOperationException("Could not match the before region.");
             }
         }
 
@@ -284,6 +285,8 @@ namespace RogueLibsCore
                         else current = 0;
                     }
                 }
+                if (state == SearchState.Searching) throw new InvalidOperationException("Could not match the beginning of the region to replace.");
+                if (state == SearchState.Found) throw new InvalidOperationException("Could not match the end of the region to replace.");
             }
         }
 
