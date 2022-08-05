@@ -48,19 +48,19 @@ namespace RogueLibsCore
         public Unlock Unlock => Instance;
 
         /// <summary>
-        ///   <para>Gets or sets whether the unlock is unlocked.</para>
+        ///   <para>Gets or sets whether the unlock is unlocked. Default value: <see langword="false"/>.</para>
         /// </summary>
         public virtual bool IsUnlocked { get => Unlock.unlocked; set => Unlock.unlocked = value; }
         /// <summary>
-        ///   <para>Gets or sets the unlock cost of the unlock, in nuggets.</para>
+        ///   <para>Gets or sets the unlock cost of the unlock, in nuggets. Default value: 0 (automatically unlocks once all prerequisites are obtained).</para>
         /// </summary>
         public int UnlockCost { get => Unlock.cost; set => Unlock.cost = value; }
         /// <summary>
-        ///   <para>Gets or sets the loadout cost of the unlock, in nuggets.</para>
+        ///   <para>Gets or sets the loadout cost of the unlock, in nuggets. Default value: 1.</para>
         /// </summary>
         public int LoadoutCost { get => Unlock.cost2; set => Unlock.cost2 = value; }
         /// <summary>
-        ///   <para>Gets or sets the character creation cost of the unlock, in points.</para>
+        ///   <para>Gets or sets the character creation cost of the unlock, in points. Default value: 1.</para>
         /// </summary>
         public int CharacterCreationCost { get => Unlock.cost3; set => Unlock.cost3 = value; }
 
