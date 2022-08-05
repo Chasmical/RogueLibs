@@ -104,6 +104,11 @@ namespace RogueLibsCore
         }
 
         /// <summary>
+        ///   <para>Gets or sets the trait's upgrade.</para>
+        /// </summary>
+        public string? Upgrade { get => Unlock.upgrade; set => Unlock.upgrade = value; }
+
+        /// <summary>
         ///   <para>Gets the trait's upgrade cost, in money.</para>
         /// </summary>
         /// <returns>The trait's upgrade cost, in money.</returns>
