@@ -151,26 +151,28 @@ namespace RogueLibsCore
             return sprite;
         }
 
+        public static readonly SpriteScope[] AllScopes;
+
+        static RogueSprite()
+        {
+            Array array = Enum.GetValues(typeof(SpriteScope));
+            int length = array.Length;
+            SpriteScope[] allScopes = new SpriteScope[length];
+            for (int i = 0; i < length; i++)
+            {
+                SpriteScope scope = (SpriteScope)array.GetValue(i);
+                prepared.Add(scope, new List<RogueSprite>());
+                allScopes[i] = scope;
+            }
+            AllScopes = allScopes;
+
+
+
+        }
+
         internal static readonly Dictionary<SpriteScope, tk2dSpriteCollectionData> registered
             = new Dictionary<SpriteScope, tk2dSpriteCollectionData>();
-        internal static readonly Dictionary<SpriteScope, List<RogueSprite>> prepared = new Dictionary<SpriteScope, List<RogueSprite>>
-        {
-            [SpriteScope.Items] = new List<RogueSprite>(),
-            [SpriteScope.Objects] = new List<RogueSprite>(),
-            [SpriteScope.Floors] = new List<RogueSprite>(),
-            [SpriteScope.Bullets] = new List<RogueSprite>(),
-            [SpriteScope.Hair] = new List<RogueSprite>(),
-            [SpriteScope.FacialHair] = new List<RogueSprite>(),
-            [SpriteScope.HeadPieces] = new List<RogueSprite>(),
-            [SpriteScope.Agents] = new List<RogueSprite>(),
-            [SpriteScope.Bodies] = new List<RogueSprite>(),
-            [SpriteScope.Wreckage] = new List<RogueSprite>(),
-            [SpriteScope.Interface] = new List<RogueSprite>(),
-            [SpriteScope.Decals] = new List<RogueSprite>(),
-            [SpriteScope.WallTops] = new List<RogueSprite>(),
-            [SpriteScope.Walls] = new List<RogueSprite>(),
-            [SpriteScope.Spawners] = new List<RogueSprite>(),
-        };
+        internal static readonly Dictionary<SpriteScope, List<RogueSprite>> prepared = new Dictionary<SpriteScope, List<RogueSprite>>();
         internal bool isPrepared;
         internal static void DefinePrepared(tk2dSpriteCollectionData collection, SpriteScope scope)
         {
@@ -213,21 +215,11 @@ namespace RogueLibsCore
 
             definitions = new List<CustomTk2dDefinition>();
             Definitions = new ReadOnlyCollection<CustomTk2dDefinition>(definitions);
-            DefineScope(Scope & SpriteScope.Items);
-            DefineScope(Scope & SpriteScope.Objects);
-            DefineScope(Scope & SpriteScope.Floors);
-            DefineScope(Scope & SpriteScope.Bullets);
-            DefineScope(Scope & SpriteScope.Hair);
-            DefineScope(Scope & SpriteScope.FacialHair);
-            DefineScope(Scope & SpriteScope.HeadPieces);
-            DefineScope(Scope & SpriteScope.Agents);
-            DefineScope(Scope & SpriteScope.Bodies);
-            DefineScope(Scope & SpriteScope.Wreckage);
-            DefineScope(Scope & SpriteScope.Interface);
-            DefineScope(Scope & SpriteScope.Decals);
-            DefineScope(Scope & SpriteScope.WallTops);
-            DefineScope(Scope & SpriteScope.Walls);
-            DefineScope(Scope & SpriteScope.Spawners);
+            for (int i = 0, length = AllScopes.Length; i < length; i++)
+            {
+                SpriteScope mask = AllScopes[i];
+                DefineScope(Scope & mask);
+            }
         }
         private void DefineScope(SpriteScope targetScope)
         {

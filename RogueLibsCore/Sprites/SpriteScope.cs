@@ -87,5 +87,9 @@ namespace RogueLibsCore
         /// </summary>
         TileShadows = 1 << 16,
 
+        // ReSharper disable once CommentTypo
+        // see RogueLibsPlugin.tk2dEditorSpriteDataUnloader_Register
+        // when adding new values to the SpriteScope
+
     }
 }
