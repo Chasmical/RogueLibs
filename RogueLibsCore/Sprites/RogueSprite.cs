@@ -138,9 +138,15 @@ namespace RogueLibsCore
         public Sprite? Sprite { get; private set; }
         private Sprite? CreateSprite()
         {
-            if (Texture is null || PixelsPerUnit <= 0f) return null;
-            Rect reg = Region ?? new Rect(0, 0, Texture.width, Texture.height);
-            Sprite sprite = Sprite.Create(Texture, reg, new Vector2(0.5f, 0.5f), PixelsPerUnit);
+            if (texture is null || pixelsPerUnit <= 0f) return null;
+
+            static Rect FlipRegion(Rect reg, float height)
+                => Rect.MinMaxRect(reg.xMin, height - reg.yMax, reg.xMax, height - reg.yMin);
+
+            Rect spriteRegion = region is not null
+                ? FlipRegion(region.Value, texture.height)
+                : new Rect(0, 0, texture.width, texture.height);
+            Sprite sprite = Sprite.Create(texture, spriteRegion, new Vector2(0.5f, 0.5f), pixelsPerUnit);
             sprite.name = Name;
             return sprite;
         }
@@ -326,55 +332,59 @@ namespace RogueLibsCore
         }
 
         /// <summary>
-        ///   <para>Creates a <see cref="tk2dSpriteDefinition"/> from the specified <paramref name="texture"/> using the specified <paramref name="region"/> and <paramref name="scale"/>.</para>
+        ///   <para>Creates a <see cref="tk2dSpriteDefinition"/> from the specified <paramref name="texture"/> using the specified <paramref name="uvRegion"/> and <paramref name="scale"/>.</para>
         /// </summary>
         /// <param name="texture">The texture to create a <see cref="tk2dSpriteDefinition"/> with.</param>
-        /// <param name="region">The region of the texture to use. Use <see langword="null"/> to use the entire texture.</param>
+        /// <param name="uvRegion">The region of the texture to use. Use <see langword="null"/> to use the entire texture.</param>
         /// <param name="scale">The scale to create a <see cref="tk2dSpriteDefinition"/> with.</param>
         /// <returns>The created <see cref="tk2dSpriteDefinition"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="texture"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="scale"/> is less than or equal to 0.</exception>
-        public static tk2dSpriteDefinition CreateDefinition(Texture2D texture, Rect? region, float scale)
+        public static tk2dSpriteDefinition CreateDefinition(Texture2D texture, Rect? uvRegion, float scale)
         {
             if (texture is null) throw new ArgumentNullException(nameof(texture));
             if (scale <= 0f) throw new ArgumentOutOfRangeException(nameof(scale), scale, $"{nameof(scale)} is less than or equal to 0.");
 
-            float x = texture.width;
-            float y = texture.height;
+            Rect region = uvRegion ?? new Rect(0f, 0f, texture.width, texture.height);
+            Vector2 anchor = region.center - region.position;
+            Vector2 texDim = new Vector2(texture.width, texture.height);
 
-            Rect spriteRegion = region ?? new Rect(0f, 0f, x, y);
-            Vector2 spriteCenter = spriteRegion.center;
+            const float epsilon = 0.001f;
+            Vector2 uvTopLeft = new Vector2(region.xMin + epsilon, texDim.y - region.yMax - epsilon) / texDim;
+            Vector2 uvBottomRight = new Vector2(region.xMax - epsilon, texDim.y - region.yMin + epsilon) / texDim;
 
-            Vector2 epsilon = new Vector2(0.001f, 0.001f);
-            Vector2 upperRightUv = new Vector2(spriteRegion.xMax + epsilon.x, spriteRegion.yMax + epsilon.y) / new Vector2(x, y);
-            Vector2 lowerLeftUv = new Vector2(spriteRegion.xMin - epsilon.x, spriteRegion.yMin - epsilon.y) / new Vector2(x, y);
+            Vector3 posBottomLeft = new Vector3(-anchor.x, anchor.y - region.height) * scale;
+            Vector3 posTopRight = new Vector3(region.width - anchor.x, anchor.y) * scale;
 
-            Vector3 b = new Vector3(-spriteCenter.x, spriteCenter.y - spriteRegion.height, 0f) * scale;
-            Vector3 a = new Vector3(spriteRegion.width - spriteCenter.x, spriteCenter.y, 0f) * scale;
+            Vector3 b = new Vector3(-anchor.x, anchor.y - region.height) * scale;
+            Vector3 a = new Vector3(region.width - anchor.x, anchor.y) * scale;
 
             Material mat = new Material(Shader.Find("tk2d/BlendVertexColor")) { name = texture.name, mainTexture = texture };
             return new tk2dSpriteDefinition
             {
-                name = texture.name,
                 material = mat,
                 materialInst = mat,
-                normals = Array.Empty<Vector3>(),
-                tangents = Array.Empty<Vector4>(),
-                indices = new int[6] { 0, 3, 1, 2, 3, 0 },
+                flipped = tk2dSpriteDefinition.FlipMode.None,
+                extractRegion = false,
+                name = texture.name,
+                colliderType = tk2dSpriteDefinition.ColliderType.Unset,
                 positions = new Vector3[]
                 {
-                    new Vector3(spriteRegion.xMin - spriteCenter.x, spriteRegion.yMin - spriteCenter.y, 0f) * scale,
-                    new Vector3(spriteRegion.xMax - spriteCenter.x, spriteRegion.yMin - spriteCenter.y, 0f) * scale,
-                    new Vector3(spriteRegion.xMin - spriteCenter.x, spriteRegion.yMax - spriteCenter.y, 0f) * scale,
-                    new Vector3(spriteRegion.xMax - spriteCenter.x, spriteRegion.yMax - spriteCenter.y, 0f) * scale,
+                    new Vector3(posBottomLeft.x, posBottomLeft.y),
+                    new Vector3(posTopRight.x, posBottomLeft.y),
+                    new Vector3(posBottomLeft.x, posTopRight.y),
+                    new Vector3(posTopRight.x, posTopRight.y),
                 },
                 uvs = new Vector2[]
                 {
-                    new Vector2(lowerLeftUv.x, lowerLeftUv.y),
-                    new Vector2(upperRightUv.x, lowerLeftUv.y),
-                    new Vector2(lowerLeftUv.x, upperRightUv.y),
-                    new Vector2(upperRightUv.x, upperRightUv.y),
+                    new Vector2(uvTopLeft.x, uvTopLeft.y),
+                    new Vector2(uvBottomRight.x, uvTopLeft.y),
+                    new Vector2(uvTopLeft.x, uvBottomRight.y),
+                    new Vector2(uvBottomRight.x, uvBottomRight.y),
                 },
+                normals = Array.Empty<Vector3>(),
+                tangents = Array.Empty<Vector4>(),
+                indices = new int[] { 0, 3, 1, 2, 3, 0 },
                 boundsData = new Vector3[] { (a + b) / 2f, a - b },
                 untrimmedBoundsData = new Vector3[] { (a + b) / 2f, a - b },
                 texelSize = new Vector2(scale, scale),
