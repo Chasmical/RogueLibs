@@ -151,6 +151,9 @@ namespace RogueLibsCore
             return sprite;
         }
 
+        /// <summary>
+        ///   <para>A read-only collection of all values in the <see cref="SpriteScope"/> enumeration, including <see cref="SpriteScope.None"/>.</para>
+        /// </summary>
         public static readonly ReadOnlyCollection<SpriteScope> AllScopes;
 
         static RogueSprite()
