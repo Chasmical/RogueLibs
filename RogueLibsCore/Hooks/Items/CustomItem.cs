@@ -80,6 +80,10 @@ namespace RogueLibsCore
 
             return default;
         }
+        /// <summary>
+        ///   <para>Returns the custom item's sprite name. Can be dynamically changed, for example, based on the item's count.</para>
+        /// </summary>
+        /// <returns>The name of the sprite for the custom item to use.</returns>
         public virtual string GetSprite() => ItemInfo.Name;
 
     }
