@@ -45,15 +45,15 @@ namespace RogueLibsCore
         public virtual bool AllowTeleport => false;
 
         /// <summary>
-        ///   <para>Determines if the disaster <b>must</b> be applied to the current level. Default return value: <see langword="false"/>.</para>
+        ///   <para>Determines if the disaster <u>must</u> be applied to the current level. Default return value: <see langword="false"/>.</para>
         /// </summary>
-        /// <returns><see langword="true"/>, if the disaster <b>must</b> be applied to the current level; otherwise, <see langword="false"/>.</returns>
+        /// <returns><see langword="true"/>, if the disaster must be applied to the current level; otherwise, <see langword="false"/>.</returns>
         public virtual bool TestForced() => false;
         /// <summary>
-        ///   <para>Determines if the disaster can be applied to the current level.</para>
+        ///   <para>Determines if the disaster <u>can</u> be applied to the current level. Default return value: <see langword="true"/>.</para>
         /// </summary>
         /// <returns><see langword="true"/>, if the disaster can be applied to the current level; otherwise, <see langword="false"/>.</returns>
-        public abstract bool Test();
+        public virtual bool Test() => true;
 
         /// <summary>
         ///   <para>Initializes the custom disaster.</para>
@@ -64,11 +64,10 @@ namespace RogueLibsCore
         /// </summary>
         public abstract void Finish();
         /// <summary>
-        ///   <para>Updates the custom disaster using a <see cref="Coroutine"/>; starts after the notification is displayed.</para>
+        ///   <para>Updates the custom disaster using a <see cref="Coroutine"/>; starts after the notification is displayed. Return <see langword="null"/>, if no updating is needed.</para>
         /// </summary>
         /// <returns>The enumerator representing the custom disaster's updating coroutine.</returns>
-        public virtual IEnumerator Updating() => null!;
-        internal Coroutine? updatingCoroutine;
+        public abstract IEnumerator? Updating();
 
     }
 }

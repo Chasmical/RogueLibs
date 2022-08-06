@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using HarmonyLib;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -23,7 +24,9 @@ namespace RogueLibsCore
             // starting the custom disaster
             Patcher.Postfix(typeof(LevelFeelings), nameof(LevelFeelings.StartLevelFeelings));
             // finishing the custom disaster
-            Patcher.Prefix(typeof(LevelFeelings), nameof(LevelFeelings.EndLevelFeeling));
+            Patcher.Transpiler(typeof(LevelTransition), nameof(LevelTransition.ChangeLevel));
+
+            Patcher.Prefix(typeof(LevelFeelings), nameof(LevelFeelings.CanceledAllLevelFeelings));
 
             Patcher.AnyErrors();
         }
@@ -60,6 +63,7 @@ namespace RogueLibsCore
         {
             // returns initial value for the 'flag' variable
             CustomDisaster? custom = RogueFramework.CustomDisasters.Find(d => d.DisasterInfo.Name == disasterName);
+            RogueFramework.LogWarning($"Found custom disaster : {custom} - {disasterName}");
             return custom?.Test() is not false; // not a custom disaster, or the custom disaster passed the check
         }
         public static IEnumerable<CodeInstruction> LevelFeelings_GetLevelFeeling(IEnumerable<CodeInstruction> code)
@@ -98,9 +102,11 @@ namespace RogueLibsCore
             {
                 List<CustomDisaster> custom = RogueFramework.CustomDisasters.FindAll(static d => d.Test());
                 int index = UnityEngine.Random.Range(0, random.elementList.Count + custom.Count);
+                RogueFramework.LogWarning($"Randomizing, {index} index ({random.elementList.Count} vanilla + {custom.Count} custom).");
                 __result = index < random.elementList.Count
                     ? random.elementList[index].rName
                     : custom[index - random.elementList.Count].DisasterInfo.Name;
+                RogueFramework.LogWarning($"Selected {__result}.");
             }
             return false;
         }
@@ -117,9 +123,9 @@ namespace RogueLibsCore
                 CustomDisaster? custom = RogueFramework.GetActiveDisaster();
                 if (custom is not null && GameController.gameController.serverPlayer)
                 {
-                    IEnumerator? updating = (IEnumerator?)custom.Updating();
+                    IEnumerator? updating = custom.Updating();
                     if (updating is not null)
-                        custom.updatingCoroutine = __instance.StartCoroutine(updating);
+                        __instance.StartCoroutine(updating);
                 }
             }
         }
@@ -128,19 +134,32 @@ namespace RogueLibsCore
             CustomDisaster? custom = RogueFramework.GetActiveDisaster();
             custom?.Start();
         }
-        public static void LevelFeelings_EndLevelFeeling(LevelFeelings __instance)
+
+        private static readonly FieldInfo gcLevelFeelingsScriptField
+            = typeof(GameController).GetField(nameof(GameController.levelFeelingsScript));
+        private static readonly MethodInfo monoBehaviourStopAllCoroutines
+            = typeof(MonoBehaviour).GetMethod(nameof(StopAllCoroutines))!;
+
+        public static IEnumerable<CodeInstruction> LevelTransition_ChangeLevel(IEnumerable<CodeInstruction> code)
+            => code.AddRegionAfter(new Func<CodeInstruction, bool>[]
+            {
+                static i0 => i0.LoadsField(gcLevelFeelingsScriptField),
+                static i1 => i1.Calls(monoBehaviourStopAllCoroutines),
+            }, new CodeInstruction[]
+            {
+                new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RogueLibsPlugin), nameof(LevelTransition_ChangeLevel_Helper))),
+            });
+        private static void LevelTransition_ChangeLevel_Helper()
         {
             CustomDisaster? custom = RogueFramework.GetActiveDisaster();
-            // ReSharper disable once UseNullPropagationWhenPossible
-            if (custom is not null)
-            {
-                if (custom.updatingCoroutine is not null)
-                {
-                    __instance.StopCoroutine(custom.updatingCoroutine);
-                    custom.updatingCoroutine = null;
-                }
-                custom.Finish();
-            }
+            custom?.Finish();
+        }
+
+        public static bool LevelFeelings_CanceledAllLevelFeelings(out bool __result)
+        {
+            __result = RogueFramework.Unlocks.TrueForAll(
+                static u => !u.Name.StartsWith("NoD_", StringComparison.Ordinal) || ((MutatorUnlock)u).IsEnabled);
+            return false;
         }
 
     }
