@@ -18,7 +18,7 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Gets the item's owner.</para>
         /// </summary>
-        public Agent Owner => Item.agent;
+        public Agent? Owner => Item.agent;
         /// <summary>
         ///   <para>Gets or sets the item's current count.</para>
         /// </summary>
