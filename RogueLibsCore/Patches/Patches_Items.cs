@@ -401,11 +401,9 @@ namespace RogueLibsCore
             {
                 string spriteName = custom.GetSprite();
                 if (spriteName != custom.Item.spriteName)
-                {
                     custom.Item.LoadItemSprite(spriteName);
-                    __instance.UpdateInvSlot();
-                    return false;
-                }
+                __instance.UpdateInvSlot();
+                return false;
             }
             return true;
         }
