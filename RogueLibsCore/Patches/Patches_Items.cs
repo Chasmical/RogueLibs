@@ -29,8 +29,10 @@ namespace RogueLibsCore
 
             // CustomItem, IItemCombinable.CombineTooltip(.) patch
             Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.SetColor));
+            // CustomItem.GetSprite(.) patch
+            Patcher.Prefix(typeof(InvSlot), "LateUpdate");
             // CustomItem.GetCount(.) patch
-            Patcher.Postfix(typeof(InvSlot), "LateUpdate");
+            Patcher.Postfix(typeof(InvSlot), nameof(InvSlot.UpdateInvSlot));
             Patcher.Postfix(typeof(EquippedItemSlot), nameof(EquippedItemSlot.LateUpdateEquippedItemSlot));
 
             // CustomItem, IItemTargetableAnywhere patches
@@ -392,7 +394,22 @@ namespace RogueLibsCore
             }
         }
 
-        public static void InvSlot_LateUpdate(InvSlot __instance, Text ___itemText)
+        public static bool InvSlot_LateUpdate(InvSlot __instance)
+        {
+            CustomItem? custom = __instance.item?.GetHook<CustomItem>();
+            if (custom is not null)
+            {
+                string spriteName = custom.GetSprite();
+                if (spriteName != custom.Item.spriteName)
+                {
+                    custom.Item.LoadItemSprite(spriteName);
+                    __instance.UpdateInvSlot();
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static void InvSlot_UpdateInvSlot(InvSlot __instance, Text ___itemText)
         {
             CustomItem? custom = __instance.item?.GetHook<CustomItem>();
             if (custom != null)

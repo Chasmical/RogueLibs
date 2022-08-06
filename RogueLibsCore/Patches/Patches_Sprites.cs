@@ -67,6 +67,14 @@ namespace RogueLibsCore
 
         public static bool SpawnerMain_SpawnItemSprite(SpawnerMain __instance, InvItem item, tk2dSprite itemImage, Item newItem)
         {
+            CustomItem? custom = item.GetHook<CustomItem>();
+            if (custom is not null)
+            {
+                string spriteName = custom.GetSprite();
+                item.LoadItemSprite(spriteName);
+                itemImage.SetSprite(spriteName);
+            }
+
             try { itemImage.SetSprite(__instance.gc.spawnerMain.itemSprites, item.spriteName); } catch { /* ??? */ }
             Material mat = itemImage.CurrentSprite.material;
             itemImage.GetComponent<Renderer>().sharedMaterial = mat;

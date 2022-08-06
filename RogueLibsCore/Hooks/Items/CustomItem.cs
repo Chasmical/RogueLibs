@@ -80,5 +80,7 @@ namespace RogueLibsCore
 
             return default;
         }
+        public virtual string GetSprite() => ItemInfo.Name;
+
     }
 }
