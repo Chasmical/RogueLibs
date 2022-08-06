@@ -200,6 +200,7 @@ namespace RogueLibsCore
                     results.Add(new PatchRecord("Prefix", target, patch, sw.Elapsed, false));
                     sw.Reset();
                 }
+                log.LogError($"Could not patch {targetType.Name}.{targetMethod}() with {patchMethod}().");
                 log.LogError(e);
                 hasErrors = true;
                 return false;
@@ -268,6 +269,7 @@ namespace RogueLibsCore
                     results.Add(new PatchRecord("Prefix", target, patch, sw.Elapsed, false));
                     sw.Reset();
                 }
+                log.LogError($"Could not patch {targetType.Name}.{targetMethod}() with {patchMethod}().");
                 log.LogError(e);
                 hasErrors = true;
                 return false;
@@ -336,6 +338,7 @@ namespace RogueLibsCore
                     results.Add(new PatchRecord("Prefix", target, patch, sw.Elapsed, false));
                     sw.Reset();
                 }
+                log.LogError($"Could not patch {targetType.Name}.{targetMethod}() with {patchMethod}().");
                 log.LogError(e);
                 hasErrors = true;
                 return false;
@@ -404,6 +407,7 @@ namespace RogueLibsCore
                     results.Add(new PatchRecord("Prefix", target, patch, sw.Elapsed, false));
                     sw.Reset();
                 }
+                log.LogError($"Could not patch {targetType.Name}.{targetMethod}() with {patchMethod}().");
                 log.LogError(e);
                 hasErrors = true;
                 return false;
