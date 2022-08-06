@@ -174,12 +174,12 @@ namespace RogueLibsCore
         public static bool PlayfieldObject_StopInteraction(PlayfieldObject __instance)
         {
             InteractionModel model = GetOrCreateModel(__instance);
-            model.initialInteract = true;
             if (useModelStopInteraction)
             {
                 model.shouldStop = true;
                 return false;
             }
+            model.initialInteract = true;
             return true;
         }
 
