@@ -151,7 +151,7 @@ namespace RogueLibsCore
             return sprite;
         }
 
-        public static readonly SpriteScope[] AllScopes;
+        public static readonly ReadOnlyCollection<SpriteScope> AllScopes;
 
         static RogueSprite()
         {
@@ -164,10 +164,7 @@ namespace RogueLibsCore
                 prepared.Add(scope, new List<RogueSprite>());
                 allScopes[i] = scope;
             }
-            AllScopes = allScopes;
-
-
-
+            AllScopes = new ReadOnlyCollection<SpriteScope>(allScopes);
         }
 
         internal static readonly Dictionary<SpriteScope, tk2dSpriteCollectionData> registered
@@ -215,7 +212,7 @@ namespace RogueLibsCore
 
             definitions = new List<CustomTk2dDefinition>();
             Definitions = new ReadOnlyCollection<CustomTk2dDefinition>(definitions);
-            for (int i = 0, length = AllScopes.Length; i < length; i++)
+            for (int i = 0, length = AllScopes.Count; i < length; i++)
             {
                 SpriteScope mask = AllScopes[i];
                 DefineScope(Scope & mask);
