@@ -190,11 +190,19 @@ namespace RogueLibsCore
             }
         }
 
+        private static readonly Dictionary<byte[], Texture2D> loadedTextures = new Dictionary<byte[], Texture2D>();
+
         internal RogueSprite(string spriteName, SpriteScope spriteScope, byte[] rawData, Rect? spriteRegion, float ppu = 64f)
         {
-            texture = new Texture2D(13, 6) { name = name = spriteName, filterMode = FilterMode.Point };
+            if (!loadedTextures.TryGetValue(rawData, out Texture2D? tex))
+            {
+                tex = new Texture2D(13, 6) { name = spriteName, filterMode = FilterMode.Point };
+                tex.LoadImage(rawData);
+                loadedTextures.Add(rawData, tex);
+            }
+            texture = tex;
+            name = spriteName;
             scope = spriteScope;
-            texture.LoadImage(rawData);
             pixelsPerUnit = ppu;
             region = spriteRegion;
             Sprite = CreateSprite();
