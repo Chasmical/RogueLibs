@@ -22,7 +22,7 @@ namespace RogueLibsCore.Test
         {
             IsCharging = true;
             gc.audioHandler.Play(Owner, VanillaAudio.GeneratorHiss);
-            Owner.objectMult.chargingSpecialLunge = true;
+            Owner!.objectMult.chargingSpecialLunge = true;
         }
         public override CustomTooltip GetCountString()
         {
@@ -42,13 +42,13 @@ namespace RogueLibsCore.Test
             e.HeldTime = Charge;
             if (Charge > 10f)
             {
-                Owner.objectMult.chargingSpecialLunge = true;
+                Owner!.objectMult.chargingSpecialLunge = true;
             }
         }
         public void OnReleased(AbilityReleasedArgs e)
         {
             IsCharging = false;
-            Owner.objectMult.chargingSpecialLunge = false;
+            Owner!.objectMult.chargingSpecialLunge = false;
             if (e.HeldTime > 10f)
             {
                 Owner.AddEffect(VanillaEffects.Resurrection, new CreateEffectInfo(1) { DontShowText = true, IgnoreElectronic = true });

@@ -35,7 +35,7 @@
         [IgnoreChecks("FullHealth")]
         public bool UseItem()
         {
-            if (Owner.electronic)
+            if (Owner!.electronic)
             {
                 Owner.SayDialogue("AdrenalineElectronic");
                 gc.audioHandler.Play(Owner, VanillaAudio.CantDo);

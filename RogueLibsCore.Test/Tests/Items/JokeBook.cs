@@ -31,7 +31,7 @@
         }
         public bool UseItem()
         {
-            if (Owner.statusEffects.makingJoke) return false;
+            if (Owner!.statusEffects.makingJoke) return false;
 
             string prev = Owner.specialAbility;
             Owner.specialAbility = VanillaAbilities.Joke;

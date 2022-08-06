@@ -38,7 +38,7 @@ namespace RogueLibsCore.Test
             if (Cooldown != 0f) return false;
 
             int heal = new ItemFunctions().DetermineHealthChange(Item, Owner);
-            Owner.statusEffects.ChangeHealth(heal);
+            Owner!.statusEffects.ChangeHealth(heal);
 
             if (Owner.HasTrait(VanillaTraits.ShareTheHealth)
                 || Owner.HasTrait(VanillaTraits.ShareTheHealth2))

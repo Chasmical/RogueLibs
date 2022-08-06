@@ -38,7 +38,7 @@
             if (!TargetFilter(targetObj)) return false;
             Agent target = (Agent)targetObj;
 
-            string prev = Owner.agentName;
+            string prev = Owner!.agentName;
             Owner.agentName = target.agentName;
 
             Owner.relationships.CopyLooks(target);

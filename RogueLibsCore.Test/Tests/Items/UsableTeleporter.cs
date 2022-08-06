@@ -42,7 +42,7 @@ namespace RogueLibsCore.Test
         {
             if (!TargetFilter(position)) return false;
 
-            Owner.SpawnParticleEffect("Spawn", Owner.tr.position);
+            Owner!.SpawnParticleEffect("Spawn", Owner.tr.position);
             Owner.Teleport(position, false, true);
             Owner.rb.velocity = Vector2.zero;
             Owner.SpawnParticleEffect("Spawn", Owner.tr.position, false);

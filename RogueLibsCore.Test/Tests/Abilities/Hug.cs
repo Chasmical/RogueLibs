@@ -31,7 +31,7 @@ namespace RogueLibsCore.Test
         {
             Agent? closest = null;
             float distance = float.MaxValue;
-            foreach (Agent agent in Owner.interactionHelper.TriggerList
+            foreach (Agent agent in Owner!.interactionHelper.TriggerList
                 .Where(static go => go.CompareTag("AgentSprite"))
                 .Select(static go => go.GetComponent<ObjectSprite>().agent))
             {

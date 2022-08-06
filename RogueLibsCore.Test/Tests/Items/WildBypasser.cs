@@ -32,7 +32,7 @@ namespace RogueLibsCore.Test
         }
         public bool UseItem()
         {
-            Vector3 position = Owner.agentHelperTr.localPosition = Vector3.zero;
+            Vector3 position = Owner!.agentHelperTr.localPosition = Vector3.zero;
             TileData tileData;
             int limit = 0;
             do

@@ -25,7 +25,7 @@
                 gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
                 return;
             }
-            Owner.statusEffects.AddStatusEffect(VanillaEffects.Giant, 15);
+            Owner!.statusEffects.AddStatusEffect(VanillaEffects.Giant, 15);
             Count = 30;
         }
         public void OnRecharging(AbilityRechargingArgs e)
