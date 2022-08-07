@@ -3,6 +3,7 @@
   <PropertyGroup>
 
     <!-- Project Properties -->
+    <OutputType>Exe</OutputType>
 
     <!-- Header -->
     <AssemblyName>RogueLibsPatcher.Console</AssemblyName>
