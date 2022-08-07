@@ -33,6 +33,10 @@ namespace RogueLibsCore
         ///   <para>Gets the disaster's localizable second message.</para>
         /// </summary>
         public CustomName? Message2 { get; private set; }
+        /// <summary>
+        ///   <para>Gets the disaster's removal mutator unlock.</para>
+        /// </summary>
+        public MutatorUnlock? RemovalMutator { get; private set; }
 
         /// <summary>
         ///   <para>Creates a localizable string with the specified localization <paramref name="info"/> to act as the disaster's name.</para>
@@ -76,7 +80,7 @@ namespace RogueLibsCore
         /// <returns>The current instance of <see cref="DisasterBuilder"/>, for chaining purposes.</returns>
         public DisasterBuilder WithRemovalMutator()
         {
-            RogueLibs.CreateCustomUnlock(new MutatorUnlock("NoD_" + Info.Name, true));
+            RogueLibs.CreateCustomUnlock(RemovalMutator = new MutatorUnlock("NoD_" + Info.Name, true));
             return this;
         }
 
