@@ -43,6 +43,9 @@ module.exports = {
           'Custom Interactions': [
             'dev/interactions/create-interaction',
           ],
+          'Custom Disasters': [
+            'dev/disasters/create-disaster',
+          ],
           'Custom Unlocks': [
             'dev/unlocks/custom-unlocks',
             'dev/unlocks/overriding-behavior',

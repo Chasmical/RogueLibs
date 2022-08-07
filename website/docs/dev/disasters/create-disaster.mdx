@@ -1,0 +1,201 @@
+# Creating a Custom Disaster
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `CustomDisaster` class {#customdisaster}
+
+To make a custom disaster, you need to create a class deriving from `CustomDisaster`:
+
+```csharp title="MyCustomDisaster.cs"
+// highlight-next-line
+public class MyCustomDisaster : CustomDisaster
+{
+    /* ... */
+}
+```
+
+There are 3 methods that you need to implement:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    // highlight-start
+    public override void Start() { /* ... */ }
+    public override void Finish() { /* ... */ }
+    public override IEnumerator? Updating() { /* ... */ }
+    // highlight-end
+}
+```
+
+`Start` is called when the disaster starts. `Finish` is called when the disaster ends.
+
+:::caution `Start` and `Finish` methods
+These methods are called between levels, so some stuff might not be available at the time they're called.
+:::
+
+`Updating` returns the updating coroutine for the disaster. It starts **after the disaster's notification**. It is stopped automatically, when the disaster ends. If your disaster doesn't need updating, you can just return `null`.
+
+## Disaster Conditions {#disaster-conditions}
+
+If you want your disaster to appear only under certain conditions, override the `Test` method:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    // highlight-start
+    public override bool Test()
+    {
+        // for example, if it's a Park level
+        return CurrentDistrict === 2;
+    }
+    // highlight-end
+}
+```
+
+:::info
+
+`CustomDisaster` exposes several useful properties for that:
+- `CurrentDistrict` - index of the current level's district.  
+  *(`0` - Slums, `1` - Industrial, `2` - Park, `3` - Downtown, `4` - Uptown, `5` - Mayor Village)*
+- `CurrentFloor` - index of the current level's floor of the district.  
+  *(`0`, `1` or `2` in a normal playthrough, and `0` or `1` with "Quick Game" mutator on)*
+- `CurrentLevel` - index of the current level.  
+  *(`0-2` - Slums, `3-5` - Industrial, `6-8` - Park, `9-11` - Downtown, `12-14` - Uptown, `15` - Mayor Village)*  
+  *(or `0-1`, `2-3`, `4-5`, `6-7`, `8-9`, `10` if Quick Game is on), and more in Endless mode)*
+
+:::
+
+And, if you want to force your disaster onto a level, override the `TestForced` method.
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    // highlight-start
+    public override bool TestForced()
+    {
+        // for example, if there's a Mayor on the level
+        return gc.agentList.Exists(a => a.agentName === VanillaAgents.Mayor);
+    }
+    // highlight-end
+}
+```
+
+:::caution Current limitations
+At the moment, `TestForced` cannot force a disaster onto a non-disastrous level. It only works on levels that normally have disasters: \*-3 (or \*-2 with Quick Game on), or every level with the Disasters Every Level mutator.
+:::
+
+## Disaster Settings {#disaster-settings}
+
+Normally, you can't teleport during disasters, but you can change that by overriding the `AllowTeleport` property:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    // highlight-start
+    public override bool AllowTeleport => true;
+    // highlight-end
+}
+```
+
+The property is accessed constantly, so you can change the return value with time.
+
+## Initialization {#initialization}
+
+Just call the `CreateCustomDisaster` method with your disaster's type as a parameter:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomDisaster<MyCustomDisaster>();
+    }
+}
+```
+
+:::note
+See more about the `RLSetup` attribute [here](../patching-utilities#rlsetup).
+:::
+
+You can set your disaster's name and description using `WithName` and `WithDescription` methods:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomDisaster<MyCustomDisaster>()
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Disaster"))
+            .WithDescription(new CustomNameInfo("My Custom Disaster is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
+}
+```
+
+Plus, you can add two messages (they are displayed at the same time, on two lines):
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomDisaster<MyCustomDisaster>()
+            .WithName(new CustomNameInfo("My Custom Disaster"))
+            .WithDescription(new CustomNameInfo("My Custom Disaster is very cool and does a lot of great stuff"))
+            // highlight-start
+            .WithMessage(new CustomNameInfo("My Custom Disaster!"))
+            .WithMessage(new CustomNameInfo("Watch out for... uh, something dangerous!"));
+            // highlight-end
+    }
+}
+```
+
+:::info
+See [Custom Names](../names/custom-names) for more info.
+:::
+
+You can also create a removal mutator automatically:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomDisaster<MyCustomDisaster>()
+            .WithName(new CustomNameInfo("My Custom Disaster"))
+            .WithDescription(new CustomNameInfo("My Custom Disaster is very cool and does a lot of great stuff"))
+            .WithMessage(new CustomNameInfo("My Custom Disaster!"))
+            .WithMessage(new CustomNameInfo("Watch out for... uh, something dangerous!"))
+            // highlight-next-line
+            .WithRemovalMutator();
+    }
+}
+```
+
+## Examples {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import NewHealthOrder from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/NewHealthOrder.cs';
+
+<Tabs
+    defaultValue="newhealthorder"
+    values={[
+        {label:'New Health Order', value:'newhealthorder'},
+    ]}>
+<TabItem value="newhealthorder">
+
+A simple disaster that just gives everyone Resurrection after the notification.
+
+<CodeSnippet>{NewHealthOrder}</CodeSnippet>
+
+</TabItem>
+</Tabs>

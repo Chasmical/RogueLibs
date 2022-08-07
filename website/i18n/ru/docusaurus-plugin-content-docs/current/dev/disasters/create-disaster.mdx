@@ -1,0 +1,201 @@
+# Создаём кастомную катастрофу
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Класс `CustomDisaster` {#customdisaster}
+
+Чтобы сделать кастомную катастрофу, создайте класс наследующий от `CustomDisaster`:
+
+```csharp title="MyCustomDisaster.cs"
+// highlight-next-line
+public class MyCustomDisaster : CustomDisaster
+{
+    /* ... */
+}
+```
+
+Вам нужно реализовать 3 метода:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    // highlight-start
+    public override void Start() { /* ... */ }
+    public override void Finish() { /* ... */ }
+    public override IEnumerator? Updating() { /* ... */ }
+    // highlight-end
+}
+```
+
+`Start` вызывается когда катастрофа начинается. `Finish` вызывается когда катастрофа заканчивается.
+
+:::caution Методы `Start` и `Finish`
+Эти методы вызываются между уровнями, так что некоторые штуки могут быть недоступны на момент их вызова.
+:::
+
+`Updating` возвращает корутину обновления катастрофы. Она начинается **после оповещения о катастрофе**. Она останавливается автоматически, когда катастрофа заканчивается. Если вашей катастрофе не надо обновляться, можете просто вернуть `null`.
+
+## Условия катастрофы {#disaster-conditions}
+
+Если вы хотите чтобы ваша катастрофа появлялась только под определёнными условиями, переопределите метод `Test`:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    // highlight-start
+    public override bool Test()
+    {
+        // например, если это уровень Парка
+        return CurrentDistrict === 2;
+    }
+    // highlight-end
+}
+```
+
+:::info
+
+`CustomDisaster` предоставляет несколько полезных свойств для этого:
+- `CurrentDistrict` - индекс района текущего уровня.  
+  *(`0` - Трущобы, `1` - Завод, `2` - Парк, `3` - Деловой центр, `4` - Пригород, `5` - Деревня Мэра)*
+- `CurrentFloor` - индекс этажа текущего уровня в районе.  
+  *(`0`, `1` или `2` в обычном прохождении, и `0` или `1` с мутатором "Быстрая игра")*
+- `CurrentLevel` - индекс текущего уровня.  
+  *(`0-2` - Трущобы, `3-5` - Завод, `6-8` - Парк, `9-11` - Деловой центр, `12-14` - Пригород, `15` - Деревня Мэра)*  
+  *(или `0-1`, `2-3`, `4-5`, `6-7`, `8-9`, `10` с Быстрой игрой), и больше в Бесконечной игре)*
+
+:::
+
+И, если вы хотите чтобы катастрофа точно появилась на уровне, переопределите метод `TestForced`.
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    // highlight-start
+    public override bool TestForced()
+    {
+        // например, если на уровне есть Мэр
+        return gc.agentList.Exists(a => a.agentName === VanillaAgents.Mayor);
+    }
+    // highlight-end
+}
+```
+
+:::caution Текущие ограничения
+На данный момент, `TestForced` не может заставить катастрофу появиться на уровне без катастроф. Он только работает на уровнях, у которых обычно есть катастрофы: \*-3 (или \*-2 с Быстрой игрой), или каждый уровень с мутатором Катастрофы на каждом уровне.
+:::
+
+## Настройки катастрофы {#disaster-settings}
+
+Обычно, игрок не может телепортироваться во время катастроф, но вы можете это изменить, переопределив свойство `AllowTeleport`:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    // highlight-start
+    public override bool AllowTeleport => true;
+    // highlight-end
+}
+```
+
+Свойство вызывается постоянно, так что вы можете изменять возвращаемое значение со временем.
+
+## Инициализация {#initialization}
+
+Просто вызовите метод `CreateCustomDisaster` с типом своей катастрофы в качестве параметра:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomDisaster<MyCustomDisaster>();
+    }
+}
+```
+
+:::note
+Смотрите подробнее об атрибуте `RLSetup` [здесь](../patching-utilities#rlsetup).
+:::
+
+Вы можете выставить название и описание своей катастрофы с помощью методов `WithName` и `WithDescription`:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomDisaster<MyCustomDisaster>()
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Disaster"))
+            .WithDescription(new CustomNameInfo("My Custom Disaster is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
+}
+```
+
+Также, вы можете добавить два сообщения (они отображаются одновременно, на двух строчках):
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomDisaster<MyCustomDisaster>()
+            .WithName(new CustomNameInfo("My Custom Disaster"))
+            .WithDescription(new CustomNameInfo("My Custom Disaster is very cool and does a lot of great stuff"))
+            // highlight-start
+            .WithMessage(new CustomNameInfo("My Custom Disaster!"))
+            .WithMessage(new CustomNameInfo("Watch out for... uh, something dangerous!"));
+            // highlight-end
+    }
+}
+```
+
+:::info
+Смотрите [Кастомные имена](../names/custom-names).
+:::
+
+Вы можете создать мутатор убирающий катастрофу автоматически:
+
+```csharp title="MyCustomDisaster.cs"
+public class MyCustomDisaster : CustomDisaster
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomDisaster<MyCustomDisaster>()
+            .WithName(new CustomNameInfo("My Custom Disaster"))
+            .WithDescription(new CustomNameInfo("My Custom Disaster is very cool and does a lot of great stuff"))
+            .WithMessage(new CustomNameInfo("My Custom Disaster!"))
+            .WithMessage(new CustomNameInfo("Watch out for... uh, something dangerous!"))
+            // highlight-next-line
+            .WithRemovalMutator();
+    }
+}
+```
+
+## Примеры {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import NewHealthOrder from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/NewHealthOrder.cs';
+
+<Tabs
+    defaultValue="newhealthorder"
+    values={[
+        {label:'New Health Order', value:'newhealthorder'},
+    ]}>
+<TabItem value="newhealthorder">
+
+Простая катастрофа, дающая всем Воскрешение сразу после оповещения.
+
+<CodeSnippet>{NewHealthOrder}</CodeSnippet>
+
+</TabItem>
+</Tabs>
