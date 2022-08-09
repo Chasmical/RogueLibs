@@ -4,15 +4,28 @@ using Random = System.Random;
 
 namespace RogueLibsCore
 {
-    public abstract class CustomWeaponMelee : CustomItem
+    public abstract class CustomWeaponMelee : CustomItem, ICustomItemSetupHelper
     {
-
+        void ICustomItemSetupHelper.BeforeSetup()
+        {
+            Item.itemType = ItemTypes.WeaponMelee;
+            Item.weaponCode = weaponType.WeaponMelee;
+            Item.isWeapon = true;
+            Item.meleeDamage = -1;
+        }
+        void ICustomItemSetupHelper.AfterSetup()
+        {
+            if (Item.meleeDamage is -1)
+            {
+                Item.meleeDamage = 0;
+                RogueFramework.LogWarning($"Custom item {GetType()} doesn't set the Item.meleeDamage field!");
+            }
+        }
 
         public abstract MeleeAttackInfo? StartAttack();
         public abstract void EndAttack();
 
         public abstract void Hit(MeleeHitArgs e);
-
 
 
 
@@ -28,7 +41,7 @@ namespace RogueLibsCore
         }
         public PlayfieldObject Target { get; set; }
         public float KnockbackStrength { get; set; }
-        public string HitSound { get; set; }
+        public string? HitSound { get; set; }
         public bool CanHitAgain { get; set; }
     }
     public class MeleeAttackInfo
@@ -89,6 +102,7 @@ namespace RogueLibsCore
         public bool CanBackstab { get; set; } = true;
         public bool CanMoveDuringAttack { get; set; }
         public Rect HitBox { get; set; }
+        public string? HitSound { get; set; } = "Normal";
 
         public AnimationInfo Animation;
         public ParticlesInfo Particles;

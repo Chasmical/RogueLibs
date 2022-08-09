@@ -15,7 +15,7 @@ namespace RogueLibsCore.Test
             RogueLibs.CreateCustomItem<Knocker>()
                      .WithName(new CustomNameInfo("Ultimate Knocker"))
                      .WithDescription(new CustomNameInfo("The weapon that will knock the hell out of you!"))
-                     .WithSprite()
+                     .WithSprite(Properties.Resources.Knocker)
                      .WithUnlock(new ItemUnlock
                      {
                          UnlockCost = 5,
@@ -26,10 +26,10 @@ namespace RogueLibsCore.Test
 
         public override void SetupDetails()
         {
-
+            Item.meleeDamage = 5;
         }
 
-        public override MeleeAttackInfo? StartAttack()
+        public override MeleeAttackInfo StartAttack()
         {
             return new MeleeAttackInfo(MeleeAttackType.Swing, MeleeHands.Both)
             {
