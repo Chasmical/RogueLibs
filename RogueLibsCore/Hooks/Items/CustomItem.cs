@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -49,9 +50,48 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         protected sealed override void Initialize()
         {
+            Item.stackable = true;
             Item.Categories.AddRange(ItemInfo.Categories);
+
+            if (this is CustomWeaponMelee)
+            {
+                Item.itemType = ItemTypes.WeaponMelee;
+                Item.weaponCode = weaponType.WeaponMelee;
+                Item.isWeapon = true;
+            }
+            else if (this is CustomWeaponThrown)
+            {
+                Item.itemType = ItemTypes.WeaponThrown;
+                Item.weaponCode = weaponType.WeaponThrown;
+                Item.isWeapon = true;
+            }
+            else if (this is CustomWeaponProjectile)
+            {
+                Item.itemType = ItemTypes.WeaponProjectile;
+                Item.weaponCode = weaponType.WeaponProjectile;
+                Item.isWeapon = true;
+            }
+            else if (this is IItemCombinable)
+            {
+                Item.itemType = ItemTypes.Combine;
+            }
+
             SetupDetails();
+
             if (Item.itemIcon is null) Item.LoadItemSprite(ItemInfo.Name);
+            if (Item.maxAmmo == 0) Item.maxAmmo = Item.initCount;
+            if (Item.rewardCount == 0) Item.rewardCount = Item.initCount;
+            if (Item.lowCountThreshold == 0)
+            {
+                if (Item.itemType == "WeaponProjectile")
+                    Item.lowCountThreshold = Math.Max(Item.maxAmmo / 4, 3);
+                else if (Item.itemType == "WeaponMelee")
+                    Item.lowCountThreshold = 25;
+                else if (Item.itemType == "WeaponThrown")
+                    Item.lowCountThreshold = 5;
+                else if (Item.isArmor || Item.isArmorHead)
+                    Item.lowCountThreshold = 25;
+            }
         }
         /// <summary>
         ///   <para>The method that is called when the item's details are set up.</para>

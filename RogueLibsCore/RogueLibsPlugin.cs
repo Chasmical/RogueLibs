@@ -99,6 +99,7 @@ namespace RogueLibsCore
             PatchAgents();
             PatchInteractions();
             PatchAgentInteractions();
+            PatchWeapons();
 #if DEBUG
             Patcher.SortResults();
             Patcher.LogResults();
