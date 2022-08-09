@@ -52,32 +52,19 @@ namespace RogueLibsCore
         {
             Item.stackable = true;
             Item.Categories.AddRange(ItemInfo.Categories);
-
-            if (this is CustomWeaponMelee)
-            {
-                Item.itemType = ItemTypes.WeaponMelee;
-                Item.weaponCode = weaponType.WeaponMelee;
-                Item.isWeapon = true;
-            }
-            else if (this is CustomWeaponThrown)
-            {
-                Item.itemType = ItemTypes.WeaponThrown;
-                Item.weaponCode = weaponType.WeaponThrown;
-                Item.isWeapon = true;
-            }
-            else if (this is CustomWeaponProjectile)
-            {
-                Item.itemType = ItemTypes.WeaponProjectile;
-                Item.weaponCode = weaponType.WeaponProjectile;
-                Item.isWeapon = true;
-            }
-            else if (this is IItemCombinable)
-            {
+            if (this is IItemCombinable)
                 Item.itemType = ItemTypes.Combine;
-            }
+
+            ICustomItemSetupHelper? helper = this as ICustomItemSetupHelper;
+            helper?.BeforeSetup();
 
             SetupDetails();
 
+            if (Item.itemType is null)
+            {
+                RogueFramework.LogWarning($"Item '{Item.invItemName}' doesn't have the itemType set!");
+                Item.itemType = "Tool";
+            }
             if (Item.itemIcon is null) Item.LoadItemSprite(ItemInfo.Name);
             if (Item.maxAmmo == 0) Item.maxAmmo = Item.initCount;
             if (Item.rewardCount == 0) Item.rewardCount = Item.initCount;
@@ -92,6 +79,8 @@ namespace RogueLibsCore
                 else if (Item.isArmor || Item.isArmorHead)
                     Item.lowCountThreshold = 25;
             }
+
+            helper?.AfterSetup();
         }
         /// <summary>
         ///   <para>The method that is called when the item's details are set up.</para>
