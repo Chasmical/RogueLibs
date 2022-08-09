@@ -59,11 +59,9 @@ Some references have documentation as a separate file, like `RogueLibsCore.xml`.
 PluginBuildEvents is a simple utility for copying your mods over to the BepInEx/plugins directory. The default project template includes it as a post-build event, so you just need to build your mod, and its file will be automatically moved!
 
 :::note Non-Steam versions of the game
-If you haven't purchased the Steam version of the game (or if you somehow messed up the Steam's installation path in the registry), then specify the full path to the game's root directory in the `Directory.Build.props` file of your project:
-```xml
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;$(SolutionDir)\..\.events\PluginBuildEvents.exe&quot; &quot;$(TargetPath)&quot; &quot;C:\GOG Games\Streets of Rogue&quot;" />
-  </Target>
+If you haven't purchased the Steam version of the game (or if you somehow messed up the Steam's installation path in the registry), then specify the full path to the game's root directory in the properties of your project (right-click on it in the Solution Explorer and select Properties > Build > Events):
+```sh
+"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "D:\Games\Streets of Rogue"
 ```
 :::
 

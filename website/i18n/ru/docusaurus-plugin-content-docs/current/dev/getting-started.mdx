@@ -56,14 +56,12 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ### `.events` - PluginBuildEvents {#pluginbuildevents}
 
-PluginBuildEvents - это простая утилита для копирования ваших модов в папаку BepInEx/plugins. Шаблон проекта по умолчанию использует её как после-сборочное событие, поэтому вам надо лишь собрать ваш мод, и его файл автоматически перенесётся куда надо!
+PluginBuildEvents - это простая утилита для копирования ваших модов в папку BepInEx/plugins. Шаблон проекта по умолчанию использует её как после-сборочное событие, поэтому вам надо лишь собрать ваш мод, и его файл автоматически перенесётся куда надо!
 
 :::note Не-Steam версии игры
-Если вы не купили Steam версию игры (или если вы каким-то образом накосячили путь установки Steam в регистре), то укажите полный путь к корневой папке игры в файле `Directory.Build.props` вашего проекта:
-```xml
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="&quot;$(SolutionDir)\..\.events\PluginBuildEvents.exe&quot; &quot;$(TargetPath)&quot; &quot;C:\GOG Games\Streets of Rogue&quot;" />
-  </Target>
+Если вы не купили Steam версию игры (или если вы каким-то образом накосячили путь установки Steam в регистре), то укажите полный путь к корневой папке игры в свойствах вашего проекта (кликните правой кнопкой по проекту в Обозревателе решений и выберите Свойства > Сборка > События сборки):
+```sh
+"$(SolutionDir)\..\.events\PluginBuildEvents.exe" "$(TargetPath)" "D:\Games\Streets of Rogue"
 ```
 :::
 
