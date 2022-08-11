@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -12,7 +13,9 @@ namespace RogueLibsCore
         public void PatchWeapons()
         {
             Patcher.Transpiler(typeof(Melee), nameof(Melee.Attack), new Type[1] { typeof(bool) });
-            Patcher.Postfix(typeof(MeleeContainer), nameof(MeleeContainer.stopMeleeAnim));
+
+            Patcher.Prefix(typeof(Melee), "DisableFailsafe");
+            Patcher.Prefix(typeof(MeleeContainer), nameof(MeleeContainer.stopMeleeAnim));
 
         }
 
@@ -72,7 +75,7 @@ namespace RogueLibsCore
                     MeleeAttackInfo.AnimationInfo anim = info.Animation;
                     MeleeAttackInfo.ParticlesInfo particles = info.Particles;
 
-                    __instance.meleeContainerAnim.speed = anim.Speed;
+                    __instance.meleeContainerAnim.speed = info.Speed;
 
                     MeleeHands hands = info.Hands;
                     __instance.realArm1.enabled = (hands & MeleeHands.Left) is 0;
@@ -81,7 +84,7 @@ namespace RogueLibsCore
                     if (anim.Sound is not null)
                         __instance.gc.audioHandler.Play(__instance.agent, anim.Sound);
 
-                    __instance.SetWeaponCooldown(info.Cooldown);
+                    __instance.SetWeaponCooldown(1f);
                     __instance.canMove = info.CanMoveDuringAttack;
                     __instance.agent.movement.KnockForward(__instance.agent.tr.rotation, info.KnockForce, true);
 
@@ -89,6 +92,17 @@ namespace RogueLibsCore
                     __instance.meleeHitbox.boxColliderDefaultOffsetY = info.HitBox.y;
                     __instance.meleeHitbox.boxColliderDefaultSizeX = info.HitBox.width;
                     __instance.meleeHitbox.boxColliderDefaultSizeY = info.HitBox.height;
+
+                    string animClass = info.Type switch
+                    {
+                        MeleeAttackType.Fist => "Fist",
+                        MeleeAttackType.Claw => "Claw",
+                        MeleeAttackType.Stab => "Stab",
+                        MeleeAttackType.Swing => "Swing",
+                        _ => throw new InvalidOperationException($"Invalid {nameof(MeleeAttackType)} value: {info.Type}."),
+                    };
+                    if (__instance.specialLunge) animClass += "Lunge";
+                    __instance.animClass = animClass;
 
                     if (__instance.mustDoBackstab && info.CanBackstab)
                     {
@@ -115,6 +129,11 @@ namespace RogueLibsCore
             }
         }
 
+        public static bool Melee_DisableFailsafe(out IEnumerator __result)
+        {
+            __result = Array.Empty<object>().GetEnumerator();
+            return false;
+        }
         public static void MeleeContainer_stopMeleeAnim(MeleeContainer __instance)
         {
             CustomWeaponMelee? custom = __instance.melee.agent.inventory.equippedWeapon?.GetHook<CustomWeaponMelee>();

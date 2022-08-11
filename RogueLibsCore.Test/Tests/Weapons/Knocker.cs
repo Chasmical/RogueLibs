@@ -31,17 +31,17 @@ namespace RogueLibsCore.Test
 
         public override MeleeAttackInfo StartAttack()
         {
+            TestPlugin.Log.LogWarning("StartAttack");
             return new MeleeAttackInfo(MeleeAttackType.Swing, MeleeHands.Both)
             {
-                Cooldown = 2f,
-                Animation = { Speed = 2f },
+				Speed = 4f,
                 CanBackstab = false,
                 KnockForce = 0f,
             };
         }
         public override void EndAttack()
         {
-
+            TestPlugin.Log.LogWarning("EndAttack");
         }
         public override void Hit(MeleeHitArgs e)
         {
