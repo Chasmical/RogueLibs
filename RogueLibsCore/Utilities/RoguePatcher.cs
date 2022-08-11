@@ -384,7 +384,7 @@ namespace RogueLibsCore
                         ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
                     patch = GetMethod(TypeWithPatches, patchMethod, null)
                         ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, null, null, null, new HarmonyMethod(patch));
+                    harmony.Patch(target, null, null, null, new HarmonyMethod(patch), null);
                     sw.Stop();
 
                     results.Add(new PatchRecord("Finalizer", target, patch, sw.Elapsed, true));
@@ -395,7 +395,7 @@ namespace RogueLibsCore
                         ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
                     patch = GetMethod(TypeWithPatches, patchMethod, null)
                         ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, null, null, null, new HarmonyMethod(patch));
+                    harmony.Patch(target, null, null, null, new HarmonyMethod(patch), null);
                 }
                 return true;
             }
