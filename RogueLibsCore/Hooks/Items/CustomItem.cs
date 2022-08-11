@@ -54,11 +54,21 @@ namespace RogueLibsCore
             Item.Categories.AddRange(ItemInfo.Categories);
             if (this is IItemCombinable)
                 Item.itemType = ItemTypes.Combine;
+            Item.maxAmmo = RogueFramework.SpecialInt;
+            Item.rewardCount = RogueFramework.SpecialInt;
+            Item.lowCountThreshold = RogueFramework.SpecialInt;
 
             ICustomItemSetupHelper? helper = this as ICustomItemSetupHelper;
             helper?.BeforeSetup();
 
-            SetupDetails();
+            try
+            {
+                SetupDetails();
+            }
+            catch (Exception e)
+            {
+                RogueFramework.LogError(e, "SetupDetails", this, Owner);
+            }
 
             if (Item.itemType is null)
             {
@@ -66,9 +76,11 @@ namespace RogueLibsCore
                 Item.itemType = "Tool";
             }
             if (Item.itemIcon is null) Item.LoadItemSprite(ItemInfo.Name);
-            if (Item.maxAmmo == 0) Item.maxAmmo = Item.initCount;
-            if (Item.rewardCount == 0) Item.rewardCount = Item.initCount;
-            if (Item.lowCountThreshold == 0)
+            if (Item.maxAmmo is RogueFramework.SpecialInt)
+                Item.maxAmmo = Item.initCount;
+            if (Item.rewardCount is RogueFramework.SpecialInt)
+                Item.rewardCount = Item.initCount;
+            if (Item.lowCountThreshold is RogueFramework.SpecialInt)
             {
                 if (Item.itemType == "WeaponProjectile")
                     Item.lowCountThreshold = Math.Max(Item.maxAmmo / 4, 3);

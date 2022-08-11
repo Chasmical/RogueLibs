@@ -11,11 +11,11 @@ namespace RogueLibsCore
             Item.itemType = ItemTypes.WeaponMelee;
             Item.weaponCode = weaponType.WeaponMelee;
             Item.isWeapon = true;
-            Item.meleeDamage = -1;
+            Item.meleeDamage = RogueFramework.SpecialInt;
         }
         void ICustomItemSetupHelper.AfterSetup()
         {
-            if (Item.meleeDamage is -1)
+            if (Item.meleeDamage is RogueFramework.SpecialInt)
             {
                 Item.meleeDamage = 0;
                 RogueFramework.LogWarning($"Custom item {GetType()} doesn't set the Item.meleeDamage field!");

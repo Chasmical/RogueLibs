@@ -76,6 +76,8 @@ namespace RogueLibsCore
             LogError(method.Name);
         }
 
+        internal const int SpecialInt = -488755541;
+
         /// <summary>
         ///   <para>The list of item hook factories, used by RogueLibs.</para>
         /// </summary>
