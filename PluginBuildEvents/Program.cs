@@ -46,6 +46,19 @@ namespace PluginBuildEvents
         }
         public static void Main(string[] args)
         {
+            try
+            {
+                Main2(args);
+            }
+            catch (Exception e)
+            {
+                string curDir = AppDomain.CurrentDomain.BaseDirectory;
+                string path = Path.Combine(curDir, "error-log.txt");
+                File.WriteAllText(path, e.ToString());
+            }
+        }
+        private static void Main2(string[] args)
+        {
             if (args.Length < 2)
                 throw new InvalidOperationException("Usage:" +
                 "\n./PluginBuildEvents.exe \"<plugin .dll>\" \"<game directory>\"" +
