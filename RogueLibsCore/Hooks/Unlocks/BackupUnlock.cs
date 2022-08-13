@@ -32,21 +32,23 @@ namespace RogueLibsCore
         public List<string>? ProgressList;
         public void WriteXml(XmlWriter xml)
         {
-            xml.WriteAttributeString("Name", UnlockName!);
-            xml.WriteAttributeString("Type", UnlockType!);
-            xml.WriteAttributeString("Unlocked", Unlocked.ToString());
-            xml.WriteAttributeString("NotActive", NotActive.ToString());
-            xml.WriteAttributeString("ProgressCount", ProgressCount.ToString());
+            xml.WriteAttributeString("N", UnlockName!);
+            xml.WriteAttributeString("T", UnlockType!);
+            xml.WriteAttributeString("U", Unlocked ? "1" : "0");
+            xml.WriteAttributeString("D", NotActive ? "1" : "0");
+            xml.WriteAttributeString("P", ProgressCount.ToString());
             foreach (string progress in ProgressList!)
-                xml.WriteElementString("Progress", progress);
+                xml.WriteElementString("P", progress);
         }
         public void ReadXml(XmlReader xml)
         {
-            UnlockName = xml.GetAttribute("Name");
-            UnlockType = xml.GetAttribute("Type");
-            Unlocked = bool.Parse(xml.GetAttribute("Unlocked")!);
-            NotActive = bool.Parse(xml.GetAttribute("NotActive")!);
-            ProgressCount = int.Parse(xml.GetAttribute("ProgressCount")!);
+            UnlockName = xml.GetAttribute("N") ?? xml.GetAttribute("Name");
+            UnlockType = xml.GetAttribute("T") ?? xml.GetAttribute("Type");
+            string unlockedStr = xml.GetAttribute("U") ?? xml.GetAttribute("Unlocked")!;
+            Unlocked = unlockedStr.Length is 1 ? unlockedStr == "1" : bool.Parse(unlockedStr);
+            string notActiveStr = xml.GetAttribute("D") ?? xml.GetAttribute("NotActive")!;
+            NotActive = notActiveStr.Length is 1 ? notActiveStr == "1" : bool.Parse(notActiveStr);
+            ProgressCount = int.Parse(xml.GetAttribute("P") ?? xml.GetAttribute("ProgressCount")!);
 
             bool nonEmpty = !xml.IsEmptyElement;
             xml.ReadStartElement();

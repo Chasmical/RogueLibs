@@ -15,18 +15,18 @@ namespace RogueLibsCore
 
         public void WriteXml(XmlWriter xml)
         {
-            xml.WriteAttributeString("Nuggets", Nuggets.ToString());
+            xml.WriteAttributeString("N", Nuggets.ToString());
             if (unlocks is not null)
                 foreach (BackupUnlock unlock in unlocks)
                 {
-                    xml.WriteStartElement("Unlock");
+                    xml.WriteStartElement("B");
                     unlock.WriteXml(xml);
                     xml.WriteEndElement();
                 }
         }
         public void ReadXml(XmlReader xml)
         {
-            string? nuggetsAttr = xml.GetAttribute("Nuggets");
+            string? nuggetsAttr = xml.GetAttribute("N") ?? xml.GetAttribute("Nuggets");
             if (!string.IsNullOrEmpty(nuggetsAttr)) Nuggets = int.Parse(nuggetsAttr);
 
             bool nonEmpty = !xml.IsEmptyElement;

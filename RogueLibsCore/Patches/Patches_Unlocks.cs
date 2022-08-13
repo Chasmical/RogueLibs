@@ -101,7 +101,7 @@ namespace RogueLibsCore
 
             using (XmlWriter writer = XmlWriter.Create(path))
             {
-                writer.WriteStartElement("BackupUnlocks");
+                writer.WriteStartElement("BS");
                 backupUnlocks.WriteXml(writer);
                 writer.WriteEndElement();
             }
