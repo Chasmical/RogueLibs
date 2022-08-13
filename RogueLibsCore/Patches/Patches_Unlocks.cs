@@ -73,7 +73,11 @@ namespace RogueLibsCore
                 if (File.Exists(path))
                 {
                     using (XmlReader reader = XmlReader.Create(path))
+                    {
+                        while (reader.NodeType is not XmlNodeType.Element)
+                            reader.Read();
                         backup.ReadXml(reader);
+                    }
                 }
                 unlocksBackup = backup;
             }
