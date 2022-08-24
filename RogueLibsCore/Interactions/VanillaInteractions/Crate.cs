@@ -14,7 +14,7 @@
 
                 if (h.Object.locked)
                 {
-                    h.SetStopCallback(static m => m.Agent.SayDialogue("CantOpenDoor"));
+                    h.SetStopCallback(static m => m.Agent.SayDialogue("CantOpenCrate"));
 
                     InvItem? crowbar = h.Agent.inventory.FindItem("Crowbar");
                     if (crowbar is not null && !h.Object.startedFlashing)

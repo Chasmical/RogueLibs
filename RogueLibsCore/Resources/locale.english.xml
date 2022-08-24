@@ -2026,6 +2026,7 @@
     <Entry Id="NA_CantGoInvisible">I can't, I'm being watched!</Entry>
     <Entry Id="NA_CantOpenSafe">I have no way to open it!</Entry>
     <Entry Id="NA_CantOpenDoor">I have no way to open it!</Entry>
+    <Entry Id="NA_CantOpenCrate">I have no way to open it!</Entry>
     <Entry Id="NA_CantOperateGenerator">I don't have any way to tamper with it.</Entry>
     <Entry Id="NA_CantOperateSatelliteDish">I don't have any way to tamper with it.</Entry>
     <Entry Id="NA_CanPass">Alright, you're cool.</Entry>

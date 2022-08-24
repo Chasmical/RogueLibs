@@ -2026,6 +2026,7 @@
     <Entry Id="NA_CantGoInvisible">Ich kann nicht, ich werde beobachtet!</Entry>
     <Entry Id="NA_CantOpenSafe">Ich kann den nicht öffnen!</Entry>
     <Entry Id="NA_CantOpenDoor">Ich kann die nicht öffnen!</Entry>
+    <Entry Id="NA_CantOpenCrate">Ich kann die nicht öffnen!</Entry>
     <Entry Id="NA_CantOperateGenerator">Ich kann den nicht manipulieren.</Entry>
     <Entry Id="NA_CantOperateSatelliteDish">Ich kann den nicht manipulieren.</Entry>
     <Entry Id="NA_CanPass">Okay, alles klar.</Entry>

@@ -2026,6 +2026,7 @@
     <Entry Id="NA_CantGoInvisible">现在不行，有人看着呢！</Entry>
     <Entry Id="NA_CantOpenSafe">我打不开这玩意！</Entry>
     <Entry Id="NA_CantOpenDoor">我打不开这玩意！</Entry>
+    <Entry Id="NA_CantOpenCrate">我打不开这玩意！</Entry>
     <Entry Id="NA_CantOperateGenerator">我没办法破坏这东西。</Entry>
     <Entry Id="NA_CantOperateSatelliteDish">我没办法破坏这东西。</Entry>
     <Entry Id="NA_CanPass">好啦，你过检了。</Entry>

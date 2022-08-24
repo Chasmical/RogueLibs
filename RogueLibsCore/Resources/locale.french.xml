@@ -2026,6 +2026,7 @@
     <Entry Id="NA_CantGoInvisible">Je ne peux pas, on me surveille !</Entry>
     <Entry Id="NA_CantOpenSafe">Je n'ai aucun moyen de l'ouvrir !</Entry>
     <Entry Id="NA_CantOpenDoor">Je n'ai aucun moyen de l'ouvrir !</Entry>
+    <Entry Id="NA_CantOpenCrate">Je n'ai aucun moyen de l'ouvrir !</Entry>
     <Entry Id="NA_CantOperateGenerator">Je n'ai pas de moyen de traficoter ça.</Entry>
     <Entry Id="NA_CantOperateSatelliteDish">Je n'ai pas de moyen de traficoter ça.</Entry>
     <Entry Id="NA_CanPass">Ok, vous pouvez passer.</Entry>

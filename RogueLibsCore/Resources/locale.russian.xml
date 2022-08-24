@@ -2024,10 +2024,11 @@
     <Entry Id="NA_Bought">Спаси-и-ибо!</Entry>
     <Entry Id="NA_BribeQuestItem">Мне хлам не нужен, только хорошее беру.</Entry>
     <Entry Id="NA_CantGoInvisible">Не могу, за мной наблюдают!</Entry>
-    <Entry Id="NA_CantOpenSafe">Я не могу его открыть!</Entry>
-    <Entry Id="NA_CantOpenDoor">Я не могу её открыть!</Entry>
-    <Entry Id="NA_CantOperateGenerator">Ничего не могу сделать.</Entry>
-    <Entry Id="NA_CantOperateSatelliteDish">Ничего не могу сделать.</Entry>
+    <Entry Id="NA_CantOpenSafe">Мне нечем его открыть!</Entry>
+    <Entry Id="NA_CantOpenDoor">Мне нечем её открыть!</Entry>
+    <Entry Id="NA_CantOpenCrate">Мне нечем его открыть!</Entry>
+    <Entry Id="NA_CantOperateGenerator">Ничего не могу с этим сделать.</Entry>
+    <Entry Id="NA_CantOperateSatelliteDish">Ничего не могу с этим сделать.</Entry>
     <Entry Id="NA_CanPass">Окей, проходи.</Entry>
     <Entry Id="NA_CanPassGroup">Так, ты и твои друзья — проходите.</Entry>
     <Entry Id="NA_CanPassProtector">Окей, тебя больше никто не потревожит.</Entry>

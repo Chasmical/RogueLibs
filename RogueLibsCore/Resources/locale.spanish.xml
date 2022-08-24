@@ -2026,6 +2026,7 @@
     <Entry Id="NA_CantGoInvisible">No puedo, ¡me están vigilando!</Entry>
     <Entry Id="NA_CantOpenSafe">¡No tengo manera de abrirlo!</Entry>
     <Entry Id="NA_CantOpenDoor">¡No tengo manera de abrirlo!</Entry>
+    <Entry Id="NA_CantOpenCrate">¡No tengo manera de abrirlo!</Entry>
     <Entry Id="NA_CantOperateGenerator">No tengo forma alguna de forzarlo.</Entry>
     <Entry Id="NA_CantOperateSatelliteDish">No tengo forma alguna de forzarlo.</Entry>
     <Entry Id="NA_CanPass">Bien, puedes pasar.</Entry>

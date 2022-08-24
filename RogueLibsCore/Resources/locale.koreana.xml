@@ -2026,6 +2026,7 @@
     <Entry Id="NA_CantGoInvisible">못해요. 전 감시당하고 있어요!</Entry>
     <Entry Id="NA_CantOpenSafe">저는 그것을 열 수 없어요!</Entry>
     <Entry Id="NA_CantOpenDoor">저는 그것을 열 수 없어요!</Entry>
+    <Entry Id="NA_CantOpenCrate">저는 그것을 열 수 없어요!</Entry>
     <Entry Id="NA_CantOperateGenerator">저는 그것으로 조작할 수 있는 방법이 없어요.</Entry>
     <Entry Id="NA_CantOperateSatelliteDish">저는 그것으로 조작할 수 있는 방법이 없어요.</Entry>
     <Entry Id="NA_CanPass">좋아요, 쿨한데요.</Entry>
