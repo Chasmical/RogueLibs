@@ -1,10 +1,10 @@
 <LanguageVersions>
-  <Language Id="english" Version="5"/>
-  <Language Id="spanish" Version="4"/>
-  <Language Id="schinese" Version="4"/>
-  <Language Id="german" Version="4"/>
-  <Language Id="brazilian" Version="4"/>
-  <Language Id="french" Version="4"/>
-  <Language Id="russian" Version="8"/>
-  <Language Id="koreana" Version="4"/>
+  <Language Id="english" Version="10"/>
+  <Language Id="spanish" Version="10"/>
+  <Language Id="schinese" Version="10"/>
+  <Language Id="german" Version="10"/>
+  <Language Id="brazilian" Version="10"/>
+  <Language Id="french" Version="10"/>
+  <Language Id="russian" Version="10"/>
+  <Language Id="koreana" Version="10"/>
 </LanguageVersions>
