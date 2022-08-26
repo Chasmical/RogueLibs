@@ -3799,7 +3799,7 @@
     <Entry Id="PlayerMarker4">Игрок 4</Entry>
     <Entry Id="StartingChunk">Вход</Entry>
     <Entry Id="EndingChunk">Выход</Entry>
-    <Entry Id="CantTeleportIndoors">Нельзя телепортироваться внутрь помещений</Entry>
+    <Entry Id="CantTeleportIndoors">Нельзя телепортироваться внутри помещений</Entry>
     <Entry Id="CantTeleportHatefulClose">Нельзя телепортироваться, когда рядом опасность</Entry>
     <Entry Id="CantTeleportToSelf">Нельзя телепортироваться к самому себе</Entry>
     <Entry Id="CantTeleportTooCloseObject">Слишком близко</Entry>
