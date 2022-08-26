@@ -1,4 +1,4 @@
-<Language Id="russian" Version="8">
+<Language Id="russian" Version="11">
   <Category Id="Agent"> <!-- Not yet translated stuff is marked with "TBT" -->
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актёр</Entry>

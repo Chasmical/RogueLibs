@@ -1,4 +1,4 @@
-<Language Id="koreana" Version="4">
+<Language Id="koreana" Version="10">
   <Category Id="Agent">
     <Entry Id="Playerr">플레이어</Entry>
     <Entry Id="Actor">배우</Entry>

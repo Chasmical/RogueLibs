@@ -1,4 +1,4 @@
-<Language Id="brazilian" Version="4">
+<Language Id="brazilian" Version="10">
   <Category Id="Agent">
     <Entry Id="Playerr">Jogador</Entry>
     <Entry Id="Actor">Ator</Entry>
