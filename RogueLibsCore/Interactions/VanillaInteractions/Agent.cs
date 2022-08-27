@@ -20,6 +20,9 @@ namespace RogueLibsCore
                     try
                     {
                         Queuing = true; // call the original method with a flag
+                        agent.buttons.Clear();
+                        agent.buttonsExtra.Clear();
+                        agent.buttonPrices.Clear();
                         agent.agentInteractions.DetermineButtons(agent, interactingAgent, agent.buttons, agent.buttonsExtra, agent.buttonPrices);
                     }
                     finally
@@ -27,11 +30,8 @@ namespace RogueLibsCore
                         Queuing = false;
                     }
 
-                    if (queuedActions.Count > 0) // there are side effects to be executed
-                    {
-                        QueuedAction[] actions = queuedActions.ToArray();
-                        h.SetSideEffect(m => Array.ForEach(actions, a => a.Action(m)));
-                    }
+                    QueuedAction[] actions = queuedActions.ToArray();
+                    h.SetSideEffect(m => Array.ForEach(actions, a => a.Action(m)));
 
                     // create an action for each button
                     for (int i = 0, length = preparedButtons.Count; i < length; i++)
