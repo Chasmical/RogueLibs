@@ -22,6 +22,11 @@ namespace RogueLibsCore
         /// </summary>
         public PlayfieldObject Target { get; }
 
+        // Mechanics
+        public bool IgnoreLineOfSight { get; set; }
+        public bool IgnoreAlignedCheck { get; set; }
+
+        // Visuals and sounds
         /// <summary>
         ///   <para>Gets or sets whether to highlight the hit object for just a moment.</para>
         /// </summary>
@@ -30,11 +35,24 @@ namespace RogueLibsCore
         ///   <para>Gets or sets the sound that the hit should make.</para>
         /// </summary>
         public string? HitSound { get; set; }
+        public string? Particles { get; set; }
+        public float NoiseVolume { get; set; }
 
+        // Input response
+        public float ScreenShakeTime { get; set; }
+        public float ScreenShakeOffset { get; set; }
+        public int FreezeFrames { get; set; }
+        public float VibrateController { get; set; }
+
+        // Knockback
         public Vector2 KnockbackDirection { get; set; }
         public float KnockbackStrength { get; set; }
+        public Vector2 RecoilDirection { get; set; }
+        public float RecoilStrength { get; set; }
 
-        // TODO
+        public float AICombatCooldown { get; set; }
+
+        // TODO Durability
         // public int DepleteAmount { get; set; }
 
 
@@ -51,19 +69,40 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Prevents any default behaviour of the melee weapon.</para>
         /// </summary>
-        public void PreventDefault() => IsDefaultPrevented = true;
+        public void PreventDefault()
+        {
+            IsDefaultPrevented = true;
+
+            IgnoreLineOfSight = true;
+            IgnoreAlignedCheck = true;
+
+            DoFlash = false;
+            HitSound = null;
+            Particles = null;
+            NoiseVolume = 0f;
+
+            ScreenShakeTime = 0f;
+            ScreenShakeOffset = 0f;
+            FreezeFrames = 0;
+            VibrateController = 0f;
+
+            KnockbackStrength = 0f;
+            RecoilStrength = 0f;
+            AICombatCooldown = 0f;
+        }
         public bool IsDefaultPrevented { get; set; }
 
     }
     public sealed class MeleePreHitArgs
     {
         internal MeleePreHitArgs(GameObject gameObject, PlayfieldObject target,
-                              GameObject originalGameObject, PlayfieldObject originalTarget)
+                              GameObject originalGameObject, PlayfieldObject originalTarget, bool isFirstHit)
         {
             GameObject = gameObject;
             Target = target;
             OriginalGameObject = originalGameObject;
             OriginalTarget = originalTarget;
+            IsFirstHit = isFirstHit;
         }
 
         /// <summary>
