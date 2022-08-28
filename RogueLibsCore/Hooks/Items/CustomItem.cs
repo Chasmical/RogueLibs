@@ -54,7 +54,6 @@ namespace RogueLibsCore
             Item.Categories.AddRange(ItemInfo.Categories);
             if (this is IItemCombinable)
                 Item.itemType = ItemTypes.Combine;
-            Item.maxAmmo = RogueFramework.SpecialInt;
             Item.rewardCount = RogueFramework.SpecialInt;
             Item.lowCountThreshold = RogueFramework.SpecialInt;
 
@@ -72,21 +71,19 @@ namespace RogueLibsCore
 
             if (Item.itemType is null)
             {
-                RogueFramework.LogWarning($"Item '{Item.invItemName}' doesn't have the itemType set!");
+                RogueFramework.LogWarning($"Custom item {GetType()} doesn't set the Item.itemType field!");
                 Item.itemType = "Tool";
             }
             if (Item.itemIcon is null) Item.LoadItemSprite(ItemInfo.Name);
-            if (Item.maxAmmo is RogueFramework.SpecialInt)
-                Item.maxAmmo = Item.initCount;
             if (Item.rewardCount is RogueFramework.SpecialInt)
                 Item.rewardCount = Item.initCount;
             if (Item.lowCountThreshold is RogueFramework.SpecialInt)
             {
-                if (Item.itemType == "WeaponProjectile")
+                if (this is CustomWeaponProjectile)
                     Item.lowCountThreshold = Math.Max(Item.maxAmmo / 4, 3);
-                else if (Item.itemType == "WeaponMelee")
+                else if (this is CustomWeaponMelee)
                     Item.lowCountThreshold = 25;
-                else if (Item.itemType == "WeaponThrown")
+                else if (this is CustomWeaponThrown)
                     Item.lowCountThreshold = 5;
                 else if (Item.isArmor || Item.isArmorHead)
                     Item.lowCountThreshold = 25;

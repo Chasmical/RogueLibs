@@ -140,5 +140,16 @@ namespace RogueLibsCore
             custom?.EndAttack();
         }
 
+        public static bool MeleeHitbox_HitObject(MeleeHitbox __instance, GameObject hitObject, bool fromClient)
+        {
+            static void RewrittenOriginal(MeleeHitbox me, GameObject hitGO, bool fromClient)
+            {
+                // TODO
+            }
+
+            RewrittenOriginal(__instance, hitObject, fromClient);
+            return false;
+        }
+
     }
 }

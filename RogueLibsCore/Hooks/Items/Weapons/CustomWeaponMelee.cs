@@ -19,16 +19,18 @@
             }
         }
 
+        public Melee? Melee => Owner?.melee;
+
         public abstract MeleeAttackInfo? StartAttack();
         public abstract void EndAttack();
 
-        public virtual void Hit(MeleeHitArgs e)
-        {
+        public virtual void PreHit(MeleePreHitArgs e) { }
+        public virtual void Hit(MeleeHitArgs e) { }
 
-        }
-
-
-
+        // public virtual int Deplete(PlayfieldObject obj, float damage);
+        // IItemEquippable
+        // public virtual void OnEquipped();
+        // public virtual void OnUnequipped();
 
     }
 }

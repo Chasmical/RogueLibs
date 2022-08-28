@@ -18,26 +18,27 @@ namespace RogueLibsCore
         /// </summary>
         public GameObject GameObject { get; }
         /// <summary>
-        ///   <para>Gets or sets the hit object.</para>
+        ///   <para>Gets the hit object.</para>
         /// </summary>
-        public PlayfieldObject Target { get; set; }
+        public PlayfieldObject Target { get; }
 
         /// <summary>
-        ///   <para>Gets or sets the knockback strength.</para>
+        ///   <para>Gets or sets whether to highlight the hit object for just a moment.</para>
         /// </summary>
-        public float KnockbackStrength { get; set; }
-        /// <summary>
-        ///   <para>Gets or sets the knockback direction. The vector is normalized after the method returns.</para>
-        /// </summary>
-        public Vector2 KnockbackDirection { get; set; }
+        public bool DoFlash { get; set; }
         /// <summary>
         ///   <para>Gets or sets the sound that the hit should make.</para>
         /// </summary>
         public string? HitSound { get; set; }
-        /// <summary>
-        ///   <para>Gets or sets the amount of durability that will be depleted from the weapon.</para>
-        /// </summary>
-        public int DepleteCount { get; set; }
+
+        public Vector2 KnockbackDirection { get; set; }
+        public float KnockbackStrength { get; set; }
+
+        // TODO
+        // public int DepleteAmount { get; set; }
+
+
+
         /// <summary>
         ///   <para>Gets or sets whether the object can be hit again in the same swing.</para>
         /// </summary>
@@ -46,6 +47,51 @@ namespace RogueLibsCore
         ///   <para>Determines whether this hit was the first one on this object (used with <see cref="CanHitAgain"/>).</para>
         /// </summary>
         public bool IsFirstHit { get; }
+
+        /// <summary>
+        ///   <para>Prevents any default behaviour of the melee weapon.</para>
+        /// </summary>
+        public void PreventDefault() => IsDefaultPrevented = true;
+        public bool IsDefaultPrevented { get; set; }
+
+    }
+    public sealed class MeleePreHitArgs
+    {
+        internal MeleePreHitArgs(GameObject gameObject, PlayfieldObject target,
+                              GameObject originalGameObject, PlayfieldObject originalTarget)
+        {
+            GameObject = gameObject;
+            Target = target;
+            OriginalGameObject = originalGameObject;
+            OriginalTarget = originalTarget;
+        }
+
+        /// <summary>
+        ///   <para>Gets the main <see cref="UnityEngine.GameObject"/> of the hit object.</para>
+        /// </summary>
+        public GameObject GameObject { get; }
+        /// <summary>
+        ///   <para>Gets or sets the hit object.</para>
+        /// </summary>
+        public PlayfieldObject Target { get; set; }
+
+        public GameObject OriginalGameObject { get; }
+        public PlayfieldObject OriginalTarget { get; }
+
+        public int WeaponDamage { get; set; }
+
+
+
+        /// <summary>
+        ///   <para>Determines whether this hit was the first one on this object (used with <see cref="CanHitAgain"/>).</para>
+        /// </summary>
+        public bool IsFirstHit { get; }
+
+        /// <summary>
+        ///   <para>Prevents any default behaviour of the melee weapon.</para>
+        /// </summary>
+        public void PreventDefault() => IsDefaultPrevented = true;
+        public bool IsDefaultPrevented { get; set; }
 
     }
 }

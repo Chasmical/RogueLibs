@@ -8,6 +8,7 @@
             Item.weaponCode = weaponType.WeaponProjectile;
             Item.isWeapon = true;
             Item.gunKnockback = RogueFramework.SpecialInt;
+            Item.maxAmmo = RogueFramework.SpecialInt;
         }
         void ICustomItemSetupHelper.AfterSetup()
         {
@@ -16,6 +17,8 @@
                 Item.gunKnockback = 0;
                 RogueFramework.LogWarning($"Custom item {GetType()} doesn't set the Item.gunKnockback field!");
             }
+            if (Item.maxAmmo is RogueFramework.SpecialInt)
+                Item.maxAmmo = Item.initCount;
         }
 
     }
