@@ -34,9 +34,40 @@ namespace RogueLibsCore
             // clear hooks on PlayfieldObject.RecycleAwake()
             Patcher.Postfix(typeof(PlayfieldObject), nameof(PlayfieldObject.RecycleAwake));
 
+            Patcher.Prefix(typeof(MenuGUI), nameof(MenuGUI.PressedDiscordButton));
+            Patcher.Prefix(typeof(MenuGUI), nameof(MenuGUI.PressedSignUp));
+            Patcher.Postfix(typeof(MenuGUI), nameof(MenuGUI.RealAwake));
+
             Patcher.AnyErrors();
 
             RogueLibs.CreateVersionText("RogueLibsVersion", "RL v" + RogueLibs.CompiledSemanticVersion);
+
+            RogueLibs.CreateCustomName("DiscordLink", NameTypes.Interface, new CustomNameInfo
+            {
+                English = "https://discord.gg/ucsAHt62eB",
+                Russian = "https://discord.gg/neDvsmk",
+            });
+            RogueLibs.CreateCustomName("DiscordButton", NameTypes.Interface, new CustomNameInfo
+            {
+                English = "Discord",
+                Russian = @"Оф. Русский Discord",
+            });
+
+            RogueLibs.CreateCustomName("SoRModHubPromoTitle", NameTypes.Interface, new CustomNameInfo
+            {
+                English = "SoR ModHub",
+                Russian = @"SoR МодХаб",
+            });
+            RogueLibs.CreateCustomName("SoRModHubPromoDescription", NameTypes.Interface, new CustomNameInfo
+            {
+                English = "Installing and updating mods could not be easier!",
+                Russian = @"Устанавливайте и обновляйте моды с лёгкостью!",
+            });
+            RogueLibs.CreateCustomName("SoRModHubPromoButton", NameTypes.Interface, new CustomNameInfo
+            {
+                English = "Download!",
+                Russian = @"Скачать!",
+            });
         }
 
         private static bool firstRun = true;
@@ -241,5 +272,84 @@ namespace RogueLibsCore
                     __instance.AddHook(hook);
                 }
         }
+
+        public static bool MenuGUI_PressedDiscordButton()
+        {
+            GameController gc = GameController.gameController;
+            Application.OpenURL(gc.nameDB.GetName("DiscordLink", NameTypes.Interface));
+            return false;
+        }
+        public static bool MenuGUI_PressedSignUp()
+        {
+            Application.OpenURL("https://sormodhub.vercel.app");
+            return false;
+        }
+
+        public static void MenuGUI_RealAwake(MenuGUI __instance)
+        {
+            GameController gc = GameController.gameController;
+            Text discordText = __instance.followButtons.transform.Find("Discord/Text").GetComponent<Text>();
+            discordText.text = gc.nameDB.GetName("DiscordButton", NameTypes.Interface);
+
+            static Vector3 WithY(Vector3 vector, float y)
+            {
+                vector.y = y;
+                return vector;
+            }
+
+            Transform panelTr = __instance.mailingList.transform.parent;
+
+            panelTr.gameObject.SetActive(true);
+            panelTr.localScale = new Vector3(2f, 2f, 2f);
+            panelTr.localPosition = WithY(panelTr.localPosition, 120f);
+
+            Transform blobTr = panelTr.Find("MailChimpBlob");
+            blobTr.gameObject.SetActive(false);
+
+            RectTransform panelRect = panelTr.GetComponent<RectTransform>();
+            panelRect.sizeDelta = new Vector2(panelRect.sizeDelta.x, 130f);
+
+            Transform backTr = panelTr.Find("Image");
+            backTr.localPosition = WithY(backTr.localPosition, 53f);
+            RectTransform backRect = backTr.GetComponent<RectTransform>();
+            backRect.sizeDelta = new Vector2(backRect.sizeDelta.x, 120f);
+
+            Transform frameTr = panelTr.Find("PanelEdges");
+            frameTr.localPosition = WithY(frameTr.localPosition, 53f);
+            RectTransform frameRect = frameTr.GetComponent<RectTransform>();
+            frameRect.sizeDelta = new Vector2(frameRect.sizeDelta.x, 306f);
+
+            Transform imageTr = panelTr.Find("InfoText/Image");
+            imageTr.localPosition = WithY(imageTr.localPosition, 13f);
+            RectTransform imageRect = imageTr.GetComponent<RectTransform>();
+            imageRect.sizeDelta = new Vector2(imageRect.sizeDelta.x, 31f);
+
+            Transform titleTr = panelTr.Find("InfoText/InfoTextText");
+            Text title = titleTr.GetComponent<Text>();
+            title.text = gc.nameDB.GetName("SoRModHubPromoTitle", NameTypes.Interface);
+            title.alignment = TextAnchor.UpperCenter;
+
+            Transform descriptionTr = panelTr.Find("InfoText/InfoTextText (1)");
+            Text description = descriptionTr.GetComponent<Text>();
+            description.text = gc.nameDB.GetName("SoRModHubPromoDescription", NameTypes.Interface);
+            description.alignment = TextAnchor.UpperCenter;
+            descriptionTr.localPosition = WithY(descriptionTr.localPosition, -25f);
+
+            Transform buttonTr = panelTr.Find("SignUp");
+            buttonTr.localPosition = WithY(buttonTr.localPosition, 20f);
+            RectTransform buttonRect = buttonTr.GetComponent<RectTransform>();
+            buttonRect.sizeDelta = new Vector2(300f, buttonRect.sizeDelta.y);
+
+            Transform buttonTextTr = panelTr.Find("SignUp/Text");
+            Text buttonText = buttonTextTr.GetComponent<Text>();
+            buttonText.text = gc.nameDB.GetName("SoRModHubPromoButton", NameTypes.Interface);
+
+            Transform buttonFrameTr = panelTr.Find("SignUp/ButtonEdges");
+            RectTransform buttonFrameRect = buttonFrameTr.GetComponent<RectTransform>();
+            buttonFrameRect.sizeDelta = new Vector2(300f, buttonFrameRect.sizeDelta.y);
+
+
+        }
+
     }
 }
