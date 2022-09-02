@@ -48,7 +48,7 @@ public class MyCustomDisaster : CustomDisaster
     public override bool Test()
     {
         // for example, if it's a Park level
-        return CurrentDistrict === 2;
+        return CurrentDistrict == 2;
     }
     // highlight-end
 }
@@ -57,12 +57,12 @@ public class MyCustomDisaster : CustomDisaster
 :::info
 
 `CustomDisaster` exposes several useful properties for that:
-- `CurrentDistrict` - index of the current level's district.  
+- `CurrentDistrict` - index of the current level's district.
   *(`0` - Slums, `1` - Industrial, `2` - Park, `3` - Downtown, `4` - Uptown, `5` - Mayor Village)*
-- `CurrentFloor` - index of the current level's floor of the district.  
+- `CurrentFloor` - index of the current level's floor of the district.
   *(`0`, `1` or `2` in a normal playthrough, and `0` or `1` with "Quick Game" mutator on)*
-- `CurrentLevel` - index of the current level.  
-  *(`0-2` - Slums, `3-5` - Industrial, `6-8` - Park, `9-11` - Downtown, `12-14` - Uptown, `15` - Mayor Village)*  
+- `CurrentLevel` - index of the current level.
+  *(`0-2` - Slums, `3-5` - Industrial, `6-8` - Park, `9-11` - Downtown, `12-14` - Uptown, `15` - Mayor Village)*
   *(or `0-1`, `2-3`, `4-5`, `6-7`, `8-9`, `10` if Quick Game is on), and more in Endless mode)*
 
 :::
