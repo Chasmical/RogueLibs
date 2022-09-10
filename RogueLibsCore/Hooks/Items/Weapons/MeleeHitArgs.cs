@@ -22,10 +22,6 @@ namespace RogueLibsCore
         /// </summary>
         public PlayfieldObject Target { get; }
 
-        // Mechanics
-        public bool IgnoreLineOfSight { get; set; }
-        public bool IgnoreAlignedCheck { get; set; }
-
         // Visuals and sounds
         /// <summary>
         ///   <para>Gets or sets whether to highlight the hit object for just a moment.</para>
@@ -72,9 +68,6 @@ namespace RogueLibsCore
         {
             IsDefaultPrevented = true;
 
-            IgnoreLineOfSight = true;
-            IgnoreAlignedCheck = true;
-
             DoFlash = false;
             HitSound = null;
             Particles = null;
@@ -119,6 +112,10 @@ namespace RogueLibsCore
 
         public int WeaponDamage { get; set; }
 
+        // Mechanics
+        public bool IgnoreLineOfSight { get; set; }
+        public bool IgnoreAlignedCheck { get; set; }
+
 
 
         /// <summary>
@@ -129,7 +126,14 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Prevents any default behaviour of the melee weapon.</para>
         /// </summary>
-        public void PreventDefault() => IsDefaultPrevented = true;
+        public void PreventDefault()
+        {
+            IsDefaultPrevented = true;
+
+            WeaponDamage = 0;
+            IgnoreLineOfSight = true;
+            IgnoreAlignedCheck = true;
+        }
         public bool IsDefaultPrevented { get; set; }
 
     }

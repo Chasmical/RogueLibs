@@ -239,11 +239,15 @@ namespace RogueLibsCore
                 }
                 #endregion
 
+
+                // CustomWeaponMelee.PreHit(pre)
+
+
                 if (hitObj is ObjectReal objectReal)
                 {
-                    // Add sprites to the objectList
                     // #multiplayer-sync
-                    // if (can't hit) return
+                    // if (weapon's sprite is disabled) return
+                    // if (!pre.IgnoreLOS && not in LOS) return
 
                     // if (it's a window)
                     //   if (damage >= 30)
@@ -252,37 +256,43 @@ namespace RogueLibsCore
                     //     suppress window breaking sounds
 
                     // if (not real object or melee can't hit it) return
-                    // damage the object
-                    // spawn noise
-                    // OwnCheck
+
+                    // damage the object // pre.WeaponDamage
+
+                    // CustomWeaponMelee.Hit(e)
+
+                    // spawn noise // e.Noise
+                    // OwnCheck // e.OwnCheck
                     // reset justHitWindow
-                    // spawn particles
-                    // shake the screen, enable freeze frames and stuff
+                    // spawn particles // e.Particles
+                    // shake the screen, enable freeze frames and stuff // e.ShakeScreen, e.FreezeFrames
                     // #multiplayer-sync
 
+                    // finally { Add sprites to the objectList } // e.CanHitAgain
 
                 }
                 else if (hitObj is Agent agent)
                 {
-                    // add opponent to the objectList
                     // #multiplayer-sync
-                    // if (can't hit) return
+                    // if (same person, attacked is a ghost, or !pre.IgnoreLOS && not in LOS) return
 
-                    // if (weapon can't hit and target not dead)
-                    //   do stealing and chloroforming (HitAftermath)
-                    //   spawn noise if unsuccessful
+                    // if (!pre.IgnoreAlignedCheck && aligned trait active) return
+                    // (stealing and chloroforming bypass the aligned check in vanilla)
 
-                    // if (weapon can't hit) return
-                    // if (opponent's aligned with the attacker,
-                    //     and one of them has that one trait) return
+                    // if (weapon.meleeNoHit)
+                    //   if (target not dead)
+                    //     do stealing and chloroforming (HitAftermath)
+                    //     CustomWeaponMelee.Hit(e), I guess? // TODO
+                    //     spawn noise if unsuccessful
+                    //   return
 
-                    // add opponent's melee to the objectList
                     // infect the opponent if the attacker's a zombie
-
                     // handle FleshFeast traits
 
-                    // if (opponent not dead and has health)
+                    // if (opponent not dead and has health && pre.WeaponDamage != 0)
                     //   do actual damage to the opponent
+
+                    // CustomWeaponMelee.Hit(e)
 
                     // alert attacker's followers to attack
                     // handle AttacksDamageAttacker traits
@@ -290,83 +300,97 @@ namespace RogueLibsCore
                     // if (opponent just died)
                     //   maybe turn on slow motion
 
-                    // do knockback
+                    // do knockback // e.Knockback
                     // handle ProtectiveShell ability
                     //   with a chance to knock weapons
 
                     // #multiplayer-sync
-                    // shake the screen
-                    // set AI combat cooldown
-                    // if (server) spawn noise
+                    // shake the screen // e.ShakeScreen
+                    // set AI combat cooldown // e.AICombatCooldown
+                    // if (server) spawn noise // e.Noise
                     // #MeleeHitEffect
 
-                    // vibrate the controller
+                    // vibrate the controller // e.VibrateController
                     // tutorial trigger
+
+                    // finally { add opponent's melee to the objectList } // if (!weapon.meleeNoHit) // e.CanHitAgain
+
+                    // finally { add opponent to the objectList } // e.CanHitAgain
 
 
 
                 }
                 else if (hitObj is Item item)
                 {
-                    // add item to the objectList
                     // #multiplayer-sync
 
                     // if (throwing) return
-                    // if (weapon can't hit item) return
+                    // if (weapon.meleeNoHit) return
+                    // if (!pre.IgnoreLOS && not in LOS) return
 
-                    // do knockback
-                    // do damage to the item
-                    // trigger item's effects
+                    // CustomWeaponMelee.Hit(e)
+
+                    // do knockback // e.Knockback
+                    // do damage to the item // pre.WeaponDamage
+                    // trigger item's effects // e.TriggerItems
                     // set item's thrower
 
-                    // spawn noise
-                    // OwnCheck
-                    // ignore collision with the thrower
+                    // spawn noise // e.Noise
+                    // OwnCheck // e.OwnCheck
+                    // ignore collision with the thrower for a bit
                     // #MeleeHitEffect
-                    // vibrate the controller
+                    // vibrate the controller // e.VibrateController
                     // #multiplayer-sync
+
+                    // finally { add item to the objectList } // e.CanHitAgain
 
 
 
                 }
                 else if (hitObj is Melee melee)
                 {
-                    // add melee to the objectList
-                    // if (any of the melees is a stealing glove or a chloroform hankie) return
+                    // ~~if (any of the melees is a stealing glove or a chloroform hankie) return~~
+                    // if (any of the weapons has meleeNoHit) return // TODO: should be pretty much equivalent to the previous line?
                     // #multiplayer-sync
 
-                    // if (opponent's aligned with the attacker
-                    //     and one of them has that one trait) return
+                    // if (!pre.IgnoreAlignedCheck && aligned trait active) return
 
-                    // if (same person or weapon can't hit the opponent) return
-                    // if (neither of them is giant or shrunk) return ???
+                    // if (same person, or meleeNoHit, or !pre.IgnoreLOS && not in LOS) return
+                    // if (neither of them is giant or shrunk) return // TODO: why is this check needed?
 
-                    // add melee's agent to the objectList
-                    // add my melee and agent to the other melee's objectList
+                    // try (for the first two finally blocks)
 
-                    // find and clamp damage
+                    // find and clamp damage (e.WeaponDamage)
+
+                    // CustomWeaponMelee.Hit(e)
+
                     // #multiplayer-sync
                     // if (#multiplayer-something)
-                    //   knockback my agent
+                    //   knockback my agent // e.Recoil
                     //   if (server?)
-                    //     knockback my opponent
+                    //     knockback my opponent // e.Knockback
                     // #multiplayer-sync
                     // if (neither of them is a ghost)
                     //   if (one has a weapon and the other doesn't)
                     //     subtract 1 health from the one without a weapon
 
-                    // deplete 5 melee from both
+                    // deplete 5 melee from both // e.DepleteAmount
                     // #MeleeHitEffect
 
-                    // shake the screen, enable freeze frames and stuff
+                    // shake the screen, enable freeze frames and stuff // e.ShakeScreen, e.FreezeFrames
                     // alert the cops
-                    // vibrate the controller
-                    // set the AI combat cooldown
-                    // if (server) spawn noise
+                    // vibrate the controller // e.VibrateController
+                    // set the AI combat cooldown // e.AICombatCooldown
+                    // if (server) spawn noise // e.Noise
                     // if (melee emitted particles)
-                    //   spawn ObjectDestroyed particles
+                    //   spawn ObjectDestroyed particles // e.Particles
 
                     // handle KnockWeapons traits
+
+                    // finally { add melee's agent to the objectList } (#try) // e.CanHitAgain
+                    // finally { add my melee and agent to the other melee's objectList } (#try) // e.CanHitAgain
+
+                    // finally { add melee to the objectList } // e.CanHitAgain
 
 
 
@@ -380,15 +404,17 @@ namespace RogueLibsCore
                 }
                 else if (isWall)
                 {
-                    // add wall to the objectList
-                    // if (weapon already hit a wall or weapon can't hit) return
+                    // if (weapon already hit a wall or meleeNoHit or !pre.IgnoreLOS && not in LOS) return
                     // hitWall = true
+
                     // find damage that the attacker would deal to themselves ???
+                    // TODO: should be determined before CustomWeaponMelee.PreHit(pre)?
                     // if (attacker is a giant)
                     //   set damage to 200
                     //   if (wall is not steel)
-                    //     hitWall = false
-                    //     (allowing multiple weak walls to be destroyed)
+                    //     hitWall = false (allowing multiple weak walls to be destroyed)
+
+                    // CustomWeaponMelee.Hit(e)
 
                     // determine the wall destruction thresholds
 
@@ -400,24 +426,26 @@ namespace RogueLibsCore
                     //     set wall's layer to 1 ??? (destroyed walls layer?)
                     //     add destruction points, if it's not a border wall
                     //     add destruction stats
-                    //     shake the screen and enable freeze frames
+                    //     shake the screen and enable freeze frames // e.ShakeScreen, e.FreezeFrames
 
-                    //     deplete 10 or 20 melee
+                    //     deplete 10 or 20 melee // e.DepleteAmount
 
                     // if (weapon emitted particles)
-                    //   spawn ObjectDestroyed particles
+                    //   spawn ObjectDestroyed particles // e.Particles
 
                     // if (no Silent Vandalizer and not a stealth attack)
-                    //   spawn noise
+                    //   spawn noise // e.Noise
                     //   if (destroyed a wall)
                     //     spawn noise at the wall's location
 
                     // if (destroyed a wall)
-                    //   OwnCheck
+                    //   OwnCheck // e.OwnCheck
 
-                    // play BulletHitWall sound
-                    // vibrate the controller
+                    // play BulletHitWall sound // e.Sound
+                    // vibrate the controller // e.VibrateController
                     // #multiplayer-sync
+
+                    // finally { add wall to the objectList } // e.CanHitAgain
 
 
 
