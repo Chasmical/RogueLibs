@@ -52,8 +52,7 @@ namespace RogueLibsCore
 
         public float AICombatCooldown { get; set; }
 
-        // TODO Durability
-        // public int DepleteAmount { get; set; }
+        public int DepleteAmount { get; set; }
 
 
 
@@ -67,7 +66,7 @@ namespace RogueLibsCore
         public bool IsFirstHit { get; }
 
         /// <summary>
-        ///   <para>Prevents any default behaviour of the melee weapon.</para>
+        ///   <para>Prevents any default behaviour of the melee weapon hit.</para>
         /// </summary>
         public void PreventDefault()
         {
@@ -89,6 +88,7 @@ namespace RogueLibsCore
             KnockbackStrength = 0f;
             RecoilStrength = 0f;
             AICombatCooldown = 0f;
+            DepleteAmount = 0;
         }
         public bool IsDefaultPrevented { get; set; }
 
