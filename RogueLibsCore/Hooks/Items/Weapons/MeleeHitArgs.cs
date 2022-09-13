@@ -7,10 +7,12 @@ namespace RogueLibsCore
     /// </summary>
     public sealed class MeleeHitArgs
     {
-        internal MeleeHitArgs(GameObject gameObject, PlayfieldObject target)
+        internal MeleeHitArgs(MeleePreHitArgs e)
         {
-            GameObject = gameObject;
-            Target = target;
+            GameObject = e.GameObject;
+            Target = e.Target;
+            IsFirstHit = e.IsFirstHit;
+            FromClient = e.FromClient;
         }
 
         /// <summary>
@@ -22,23 +24,32 @@ namespace RogueLibsCore
         /// </summary>
         public PlayfieldObject Target { get; }
 
+        public int DamageDealt { get; internal set; }
+
         // Visuals and sounds
         /// <summary>
         ///   <para>Gets or sets whether to highlight the hit object for just a moment.</para>
         /// </summary>
         public bool DoFlash { get; set; }
+        public string? Particles { get; set; }
+        public Vector2 ParticlesPosition { get; set; }
+        public float ParticlesAngle { get; set; }
+
         /// <summary>
         ///   <para>Gets or sets the sound that the hit should make.</para>
         /// </summary>
         public string? HitSound { get; set; }
-        public string? Particles { get; set; }
+        public Vector2 HitSoundPosition { get; set; }
         public float NoiseVolume { get; set; }
+        public Vector2 NoisePosition { get; set; }
 
         // Input response
         public float ScreenShakeTime { get; set; }
         public float ScreenShakeOffset { get; set; }
+        public float VibrateControllerIntensity { get; set; }
+        public float VibrateControllerTime { get; set; }
         public int FreezeFrames { get; set; }
-        public float VibrateController { get; set; }
+        public bool AlienFX { get; set; }
 
         // Knockback
         public Vector2 KnockbackDirection { get; set; }
@@ -46,6 +57,7 @@ namespace RogueLibsCore
         public Vector2 RecoilDirection { get; set; }
         public float RecoilStrength { get; set; }
 
+        public bool DoOwnCheck { get; set; }
         public float AICombatCooldown { get; set; }
 
         public int DepleteAmount { get; set; }
@@ -60,6 +72,7 @@ namespace RogueLibsCore
         ///   <para>Determines whether this hit was the first one on this object (used with <see cref="CanHitAgain"/>).</para>
         /// </summary>
         public bool IsFirstHit { get; }
+        public bool FromClient { get; }
 
         /// <summary>
         ///   <para>Prevents any default behaviour of the melee weapon hit.</para>
@@ -69,17 +82,18 @@ namespace RogueLibsCore
             IsDefaultPrevented = true;
 
             DoFlash = false;
-            HitSound = null;
             Particles = null;
+            HitSound = null;
             NoiseVolume = 0f;
 
-            ScreenShakeTime = 0f;
             ScreenShakeOffset = 0f;
+            VibrateControllerIntensity = 0f;
             FreezeFrames = 0;
-            VibrateController = 0f;
+            AlienFX = false;
 
             KnockbackStrength = 0f;
             RecoilStrength = 0f;
+            DoOwnCheck = false;
             AICombatCooldown = 0f;
             DepleteAmount = 0;
         }
@@ -89,13 +103,15 @@ namespace RogueLibsCore
     public sealed class MeleePreHitArgs
     {
         internal MeleePreHitArgs(GameObject gameObject, PlayfieldObject target,
-                              GameObject originalGameObject, PlayfieldObject originalTarget, bool isFirstHit)
+                              GameObject originalGameObject, PlayfieldObject originalTarget,
+                              bool isFirstHit, bool fromClient)
         {
             GameObject = gameObject;
             Target = target;
             OriginalGameObject = originalGameObject;
             OriginalTarget = originalTarget;
             IsFirstHit = isFirstHit;
+            FromClient = fromClient;
         }
 
         /// <summary>
@@ -116,12 +132,11 @@ namespace RogueLibsCore
         public bool IgnoreLineOfSight { get; set; }
         public bool IgnoreAlignedCheck { get; set; }
 
-
-
         /// <summary>
         ///   <para>Determines whether this hit was the first one on this object (used with <see cref="CanHitAgain"/>).</para>
         /// </summary>
         public bool IsFirstHit { get; }
+        public bool FromClient { get; }
 
         /// <summary>
         ///   <para>Prevents any default behaviour of the melee weapon.</para>

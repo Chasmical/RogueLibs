@@ -16,6 +16,11 @@ namespace RogueLibsCore
 
             Patcher.Prefix(typeof(Melee), "DisableFailsafe");
             Patcher.Prefix(typeof(MeleeContainer), nameof(MeleeContainer.stopMeleeAnim));
+            Patcher.Postfix(typeof(Melee), nameof(Melee.ShowMelee));
+            Patcher.Postfix(typeof(MeleeHitbox), nameof(MeleeHitbox.RevertAllVars));
+            Patcher.Postfix(typeof(MeleeHitbox), nameof(MeleeHitbox.SetDisabled));
+
+            Patcher.Prefix(typeof(MeleeHitbox), nameof(MeleeHitbox.HitObject));
 
         }
 
@@ -140,20 +145,27 @@ namespace RogueLibsCore
             custom?.EndAttack();
         }
 
+        public static void Melee_ShowMelee(Melee __instance) => __instance.GetHook<MeleeHitHook>()?.Clear();
+        public static void MeleeHitbox_RevertAllVars(MeleeHitbox __instance) => __instance.myMelee.GetHook<MeleeHitHook>()?.Clear();
+        public static void MeleeHitbox_SetDisabled(MeleeHitbox __instance) => __instance.myMelee.GetHook<MeleeHitHook>()?.Clear();
+
         public static bool MeleeHitbox_HitObject(MeleeHitbox __instance, GameObject hitObject, bool fromClient)
         {
+            RewrittenOriginal(__instance, hitObject, fromClient);
+            return false;
+
             static void RewrittenOriginal(MeleeHitbox me, GameObject hitGO, bool fromClient)
             {
                 GameController gc = me.gc;
                 Melee myMelee = me.myMelee;
                 Agent myAgent = myMelee.agent;
-                InvItem? weaponItem = myAgent.inventory.equippedWeapon;
-                if (weaponItem is null || weaponItem.itemType == ItemTypes.WeaponProjectile)
+                InvItem weaponItem = myAgent.inventory.equippedWeapon ?? myAgent.inventory.fist;
+                if (weaponItem.itemType == ItemTypes.WeaponProjectile)
                     weaponItem = myAgent.inventory.fist;
-                CustomWeaponMelee? custom = weaponItem?.GetHook<CustomWeaponMelee>();
+                CustomWeaponMelee? custom = weaponItem.GetHook<CustomWeaponMelee>();
 
                 PlayfieldObject hitObj;
-                #region Determine the object's type
+                #region Set hitObj
                 bool isWall = false;
                 if (hitGO.CompareTag("ObjectRealSprite"))
                 {
@@ -239,228 +251,607 @@ namespace RogueLibsCore
                 }
                 #endregion
 
+                #region Handle hit detection
+                MeleeHitHook hitsHook = myMelee.GetOrAddHook<MeleeHitHook>();
+                bool firstHit = hitsHook.IsFirstHit(hitObj);
+                if (!firstHit && !hitsHook.CanHitAgain(hitObj)) return;
 
-                // CustomWeaponMelee.PreHit(pre)
+                MeleePreHitArgs pre = new MeleePreHitArgs(hitGO, hitObj, originalGO, originalObj, firstHit, fromClient);
 
+                // (stealing and chloroforming bypass the aligned check in vanilla)
+                if (weaponItem?.invItemName is VanillaItems.StickyGlove or VanillaItems.ChloroformHankie)
+                    pre.IgnoreAlignedCheck = true;
 
+                custom?.PreHit(pre); // the attack can be redirected only once // TODO: review
+
+                hitGO = pre.GameObject;
+                hitObj = pre.Target;
+                firstHit = hitsHook.IsFirstHit(hitObj);
+                if (!firstHit && !hitsHook.CanHitAgain(hitObj)) return;
+
+                hitsHook.RegisterHit(hitObj);
+
+                if (pre.IsDefaultPrevented) return; // CustomWeaponMelee will take care of the entire attack sequence
+                #endregion
+
+                #region Actual hit and type-specific stuff
+                MeleeHitArgs e = new MeleeHitArgs(pre);
+
+                bool canContinue;
                 if (hitObj is ObjectReal objectReal)
-                {
-                    // #multiplayer-sync
-                    // if (weapon's sprite is disabled) return
-                    // if (!pre.IgnoreLOS && not in LOS) return
-
-                    // if (it's a window)
-                    //   if (damage >= 30)
-                    //     justHitWindow = true
-                    //   if (Silent Vandalizer trait)
-                    //     suppress window breaking sounds
-
-                    // if (not real object or melee can't hit it) return
-
-                    // damage the object // pre.WeaponDamage
-
-                    // CustomWeaponMelee.Hit(e)
-
-                    // spawn noise // e.Noise
-                    // OwnCheck // e.OwnCheck
-                    // reset justHitWindow
-                    // spawn particles // e.Particles
-                    // shake the screen, enable freeze frames and stuff // e.ShakeScreen, e.FreezeFrames
-                    // #multiplayer-sync
-
-                    // finally { Add sprites to the objectList } // e.CanHitAgain
-
-                }
+                    canContinue = HitObjectReal(me, objectReal, pre, e);
                 else if (hitObj is Agent agent)
-                {
-                    // #multiplayer-sync
-                    // if (same person, attacked is a ghost, or !pre.IgnoreLOS && not in LOS) return
-
-                    // if (!pre.IgnoreAlignedCheck && aligned trait active) return
-                    // (stealing and chloroforming bypass the aligned check in vanilla)
-
-                    // if (weapon.meleeNoHit)
-                    //   if (target not dead)
-                    //     do stealing and chloroforming (HitAftermath)
-                    //     CustomWeaponMelee.Hit(e), I guess? // TODO
-                    //     spawn noise if unsuccessful
-                    //   return
-
-                    // infect the opponent if the attacker's a zombie
-                    // handle FleshFeast traits
-
-                    // if (opponent not dead and has health && pre.WeaponDamage != 0)
-                    //   do actual damage to the opponent
-
-                    // CustomWeaponMelee.Hit(e)
-
-                    // alert attacker's followers to attack
-                    // handle AttacksDamageAttacker traits
-
-                    // if (opponent just died)
-                    //   maybe turn on slow motion
-
-                    // do knockback // e.Knockback
-                    // handle ProtectiveShell ability
-                    //   with a chance to knock weapons
-
-                    // #multiplayer-sync
-                    // shake the screen // e.ShakeScreen
-                    // set AI combat cooldown // e.AICombatCooldown
-                    // if (server) spawn noise // e.Noise
-                    // #MeleeHitEffect
-
-                    // vibrate the controller // e.VibrateController
-                    // tutorial trigger
-
-                    // finally { add opponent's melee to the objectList } // if (!weapon.meleeNoHit) // e.CanHitAgain
-
-                    // finally { add opponent to the objectList } // e.CanHitAgain
-
-
-
-                }
+                    canContinue = HitAgent(me, agent, pre, e);
                 else if (hitObj is Item item)
-                {
-                    // #multiplayer-sync
-
-                    // if (throwing) return
-                    // if (weapon.meleeNoHit) return
-                    // if (!pre.IgnoreLOS && not in LOS) return
-
-                    // CustomWeaponMelee.Hit(e)
-
-                    // do knockback // e.Knockback
-                    // do damage to the item // pre.WeaponDamage
-                    // trigger item's effects // e.TriggerItems
-                    // set item's thrower
-
-                    // spawn noise // e.Noise
-                    // OwnCheck // e.OwnCheck
-                    // ignore collision with the thrower for a bit
-                    // #MeleeHitEffect
-                    // vibrate the controller // e.VibrateController
-                    // #multiplayer-sync
-
-                    // finally { add item to the objectList } // e.CanHitAgain
-
-
-
-                }
+                    canContinue = HitItem(me, item, pre, e);
                 else if (hitObj is Melee melee)
-                {
-                    // ~~if (any of the melees is a stealing glove or a chloroform hankie) return~~
-                    // if (any of the weapons has meleeNoHit) return // TODO: should be pretty much equivalent to the previous line?
-                    // #multiplayer-sync
-
-                    // if (!pre.IgnoreAlignedCheck && aligned trait active) return
-
-                    // if (same person, or meleeNoHit, or !pre.IgnoreLOS && not in LOS) return
-                    // if (neither of them is giant or shrunk) return // TODO: why is this check needed?
-
-                    // try (for the first two finally blocks)
-
-                    // find and clamp damage (e.WeaponDamage)
-
-                    // CustomWeaponMelee.Hit(e)
-
-                    // #multiplayer-sync
-                    // if (#multiplayer-something)
-                    //   knockback my agent // e.Recoil
-                    //   if (server?)
-                    //     knockback my opponent // e.Knockback
-                    // #multiplayer-sync
-                    // if (neither of them is a ghost)
-                    //   if (one has a weapon and the other doesn't)
-                    //     subtract 1 health from the one without a weapon
-
-                    // deplete 5 melee from both // e.DepleteAmount
-                    // #MeleeHitEffect
-
-                    // shake the screen, enable freeze frames and stuff // e.ShakeScreen, e.FreezeFrames
-                    // alert the cops
-                    // vibrate the controller // e.VibrateController
-                    // set the AI combat cooldown // e.AICombatCooldown
-                    // if (server) spawn noise // e.Noise
-                    // if (melee emitted particles)
-                    //   spawn ObjectDestroyed particles // e.Particles
-
-                    // handle KnockWeapons traits
-
-                    // finally { add melee's agent to the objectList } (#try) // e.CanHitAgain
-                    // finally { add my melee and agent to the other melee's objectList } (#try) // e.CanHitAgain
-
-                    // finally { add melee to the objectList } // e.CanHitAgain
-
-
-
-                }
+                    canContinue = HitMelee(me, melee, pre, e);
                 else if (hitObj is Bullet bullet)
-                {
-                    // add bullet to the objectList
-
-
-
-                }
+                    canContinue = HitBullet(me, bullet, pre, e);
                 else if (isWall)
+                    canContinue = HitWall(me, pre, e);
+                else return;
+                #endregion
+
+                try
                 {
-                    // if (weapon already hit a wall or meleeNoHit or !pre.IgnoreLOS && not in LOS) return
-                    // hitWall = true
+                    if (canContinue)
+                    {
+                        try
+                        {
+                            custom?.Hit(e);
+                        }
+                        catch (Exception err)
+                        {
+                            // TODO
+                        }
 
-                    // find damage that the attacker would deal to themselves ???
-                    // TODO: should be determined before CustomWeaponMelee.PreHit(pre)?
-                    // if (attacker is a giant)
-                    //   set damage to 200
-                    //   if (wall is not steel)
-                    //     hitWall = false (allowing multiple weak walls to be destroyed)
+                        // General clean up
+                        me.justHitWindow = false;
 
-                    // CustomWeaponMelee.Hit(e)
+                        // TODO: also use HitSound, AICombatCooldown
 
-                    // determine the wall destruction thresholds
+                        #region Noise, own check and particles
+                        if (e.NoiseVolume > 0)
+                            gc.spawnerMain.SpawnNoise(e.NoisePosition, e.NoiseVolume, null, null, myAgent);
+                        if (e.DoOwnCheck && gc.serverPlayer)
+                            gc.OwnCheck(myAgent, hitGO, "Normal", 1);
+                        if (e.Particles is not null)
+                            gc.spawnerMain.SpawnParticleEffect("ObjectDestroyed", e.ParticlesPosition, e.ParticlesAngle);
+                        #endregion
 
-                    // if (damage >= minimum threshold)
-                    //   get tile data
-                    //   if (damage >= material threshold)
-                    //     destroy tile
-                    //     play wall destruction sound
-                    //     set wall's layer to 1 ??? (destroyed walls layer?)
-                    //     add destruction points, if it's not a border wall
-                    //     add destruction stats
-                    //     shake the screen and enable freeze frames // e.ShakeScreen, e.FreezeFrames
+                        #region Knockback and recoil
+                        if (e.KnockbackStrength > 0f)
+                        {
+                            float angle = Mathf.Atan2(e.KnockbackDirection.y, e.KnockbackDirection.x);
+                            Quaternion rotation = Quaternion.Euler(0f, 0f, angle);
+                            if (hitObj is Agent agent3)
+                            {
+                                if (!agent3.disappeared && !fromClient)
+                                    agent3.movement.KnockBackBullet(rotation, e.KnockbackStrength, true, myAgent);
+                            }
+                            // TODO: for other types
+                        }
+                        if (e.RecoilStrength > 0f)
+                        {
+                            float angle = Mathf.Atan2(e.RecoilDirection.y, e.RecoilDirection.x);
+                            Quaternion rotation = Quaternion.Euler(0f, 0f, angle);
+                            if (!myAgent.disappeared && !fromClient)
+                                myAgent.movement.KnockBackBullet(rotation, e.RecoilStrength, true, myAgent);
+                        }
+                        #endregion
 
-                    //     deplete 10 or 20 melee // e.DepleteAmount
+                        #region Input response
+                        if (e.ScreenShakeOffset > 0f)
+                            gc.ScreenShake(e.ScreenShakeTime, e.ScreenShakeOffset, myAgent.tr.position, myAgent);
+                        if (e.FreezeFrames > 0)
+                            gc.FreezeFrames(e.FreezeFrames - 1);
+                        if (e.VibrateControllerIntensity > 0)
+                            gc.playerControl.Vibrate(myAgent.isPlayer, e.VibrateControllerIntensity, e.VibrateControllerTime);
+                        if (e.AlienFX)
+                        {
+                            if (hitObj is ObjectReal) gc.alienFX.HitObject(myAgent);
+                            else if (hitObj is Agent) gc.alienFX.PlayerHitEnemy(myAgent);
+                            // TODO: for other types?
+                        }
 
-                    // if (weapon emitted particles)
-                    //   spawn ObjectDestroyed particles // e.Particles
-
-                    // if (no Silent Vandalizer and not a stealth attack)
-                    //   spawn noise // e.Noise
-                    //   if (destroyed a wall)
-                    //     spawn noise at the wall's location
-
-                    // if (destroyed a wall)
-                    //   OwnCheck // e.OwnCheck
-
-                    // play BulletHitWall sound // e.Sound
-                    // vibrate the controller // e.VibrateController
-                    // #multiplayer-sync
-
-                    // finally { add wall to the objectList } // e.CanHitAgain
-
-
-
+                        me.MeleeHitEffect(hitGO); // TODO: MeleeHitEffect ?
+                        #endregion
+                    }
                 }
-                else
+                finally
                 {
-                    return;
+                    if (hitObj is Agent agent)
+                    {
+                        MeleeHitHook otherHits = agent.melee.GetOrAddHook<MeleeHitHook>();
+                        hitsHook.RegisterHit(agent);
+
+                        // TODO: hit agents and their melees
+                    }
+                    else if (hitObj is Melee otherMelee)
+                    {
+                        MeleeHitHook otherHits = otherMelee.GetOrAddHook<MeleeHitHook>();
+                        hitsHook.RegisterHit(otherMelee);
+
+                        // TODO: hit melees and agents
+                    }
+                    else if (isWall)
+                    {
+                        // TODO: wrapper class ???
+                    }
+                    else // default: Item, ObjectReal
+                    {
+                        hitsHook.RegisterHit(hitObj);
+                        if (e.CanHitAgain) hitsHook.SetCanHitAgain(hitObj);
+                    }
                 }
-
-
 
             }
 
-            RewrittenOriginal(__instance, hitObject, fromClient);
-            return false;
+            static bool HitObjectReal(MeleeHitbox me, ObjectReal objectReal, MeleePreHitArgs pre, MeleeHitArgs e)
+            {
+                GameController gc = me.gc;
+                Melee myMelee = me.myMelee;
+                Agent myAgent = myMelee.agent;
+                InvItem weaponItem = myAgent.inventory.equippedWeapon ?? myAgent.inventory.fist;
+                if (weaponItem.itemType == ItemTypes.WeaponProjectile)
+                    weaponItem = myAgent.inventory.fist;
+                CustomWeaponMelee? custom = weaponItem.GetHook<CustomWeaponMelee>();
+
+                #region #multiplayer-sync
+                if (!gc.serverPlayer && !myAgent.localPlayer && myAgent.mindControlAgent != gc.playerAgent
+                    && objectReal.objectSprite.meshRenderer.enabled && !objectReal.notRealObject && !objectReal.OnFloor
+                    && !objectReal.meleeCanPass && !objectReal.tempNoMeleeHits)
+                {
+                    me.FakeHit(e.GameObject);
+                    return false;
+                }
+                #endregion
+
+                #region ObjectReal pre-conditions and checks
+                if (!objectReal.objectMeshRenderer.enabled) return false;
+                if (!pre.IgnoreLineOfSight && !me.HasLOSMelee(objectReal)) return false;
+
+                bool noNoiseTrait = myAgent.statusEffects.hasTrait("HitObjectsNoNoise");
+                if (objectReal is Window window)
+                {
+                    if (objectReal.FindDamage(myMelee, false, true, e.FromClient) >= 30)
+                        me.justHitWindow = true;
+                    if (noNoiseTrait) // TODO: make it an option to suppress breaking sounds as well?
+                        window.StartCoroutine(window.TempNoNoise());
+                }
+
+                if (objectReal.notRealObject || objectReal.OnFloor || objectReal.meleeCanPass && !me.justHitWindow
+                    || objectReal.tempNoMeleeHits)
+                {
+                    return false;
+                }
+                #endregion
+
+                objectReal.Damage(myMelee, e.FromClient); // TODO: make pre.WeaponDamage affect this
+                e.DamageDealt = objectReal.damagedAmount;
+
+                #region ObjectReal hit parameters
+                // set noise
+                e.NoisePosition = objectReal.FindDamageNoisePos(objectReal.tr.position);
+                e.NoiseVolume = objectReal.noDamageNoise || myMelee.successfullySleepKilled || noNoiseTrait ? 0 : objectReal.noiseHitVol;
+                // set particles
+                if (myMelee.hitParticlesTr != null && myMelee.meleeContainerTr != null)
+                {
+                    e.Particles = "ObjectDestroyed";
+                    e.ParticlesPosition = myMelee.hitParticlesTr.position;
+                    e.ParticlesAngle = myMelee.meleeContainerTr.eulerAngles.z - 90f;
+                }
+
+                // set screen shake, freeze frames, vibration and AlienFX
+                if (myAgent.isPlayer > 0)
+                {
+                    if (myAgent.localPlayer)
+                    {
+                        bool impactful = !objectReal.noDestroyEffects && (objectReal.destroying || objectReal.justDamaged);
+                        e.ScreenShakeTime = impactful ? 0.2f : 0.1f;
+                        e.ScreenShakeOffset = 80f;
+                        e.FreezeFrames = impactful ? 2 : 1;
+                    }
+                    e.VibrateControllerIntensity = Mathf.Clamp(objectReal.damagedAmount / 100f + 0.05f, 0f, 0.25f);
+                    e.VibrateControllerTime = Mathf.Clamp(objectReal.damagedAmount / 132f + 0.05f, 0f, 0.2f);
+                    e.AlienFX = true;
+                }
+                // set own check
+                if (gc.serverPlayer) e.DoOwnCheck = true;
+                #endregion
+
+                #region #multiplayer-sync
+                if (!gc.serverPlayer && (myAgent.isPlayer > 0 || myAgent.mindControlAgent == gc.playerAgent))
+                {
+                    if (myAgent.isPlayer != 0) myAgent.objectMult.CallCmdMeleeHitObjectReal(e.Target.objectNetID);
+                    else gc.playerAgent.objectMult.CallCmdMeleeHitObjectRealNPC(myAgent.objectNetID, e.Target.objectNetID);
+                }
+                else if (gc.serverPlayer && gc.multiplayerMode)
+                    myAgent.objectMult.CallRpcMeleeHitObjectFake(e.Target.objectNetID);
+                #endregion
+
+                return true;
+            }
+            static bool HitAgent(MeleeHitbox me, Agent agent, MeleePreHitArgs pre, MeleeHitArgs e)
+            {
+                GameController gc = me.gc;
+                Melee myMelee = me.myMelee;
+                Agent myAgent = myMelee.agent;
+                InvItem weaponItem = myAgent.inventory.equippedWeapon ?? myAgent.inventory.fist;
+                if (weaponItem.itemType == ItemTypes.WeaponProjectile)
+                    weaponItem = myAgent.inventory.fist;
+                CustomWeaponMelee? custom = weaponItem.GetHook<CustomWeaponMelee>();
+
+                #region #multiplayer-sync
+                if (gc.multiplayerMode)
+                {
+                    if (gc.serverPlayer && myAgent.localPlayer && agent.isPlayer > 0 && !agent.localPlayer)
+                    {
+                        me.FakeHit(e.GameObject);
+                        return false;
+                    }
+                    if (gc.serverPlayer && myAgent.isPlayer == 0 && agent.isPlayer > 0 && !agent.localPlayer)
+                    {
+                        me.FakeHit(e.GameObject);
+                        return false;
+                    }
+                    if (gc.multiplayerMode && gc.serverPlayer && myAgent.isPlayer == 0 && agent.isPlayer == 0
+                        && myAgent.mindControlAgent != null && myAgent.mindControlAgent != gc.playerAgent && !agent.dead)
+                    {
+                        me.FakeHit(e.GameObject);
+                        return false;
+                    }
+                    if (gc.multiplayerMode && gc.serverPlayer && myAgent.isPlayer == 0 && agent.isPlayer == 0
+                        && agent.mindControlAgent != null && agent.mindControlAgent != gc.playerAgent && !agent.dead)
+                    {
+                        me.FakeHit(e.GameObject);
+                        return false;
+                    }
+                    if (!gc.serverPlayer && myAgent.isPlayer == 0 && !agent.localPlayer && myAgent != agent
+                        && (myAgent.mindControlAgent != gc.playerAgent && agent.mindControlAgent != gc.playerAgent || agent.dead))
+                    {
+                        me.FakeHit(e.GameObject);
+                        return false;
+                    }
+                    if (!gc.serverPlayer && myAgent.isPlayer > 0 && !myAgent.localPlayer && !agent.localPlayer)
+                    {
+                        me.FakeHit(e.GameObject);
+                        return false;
+                    }
+                    if (!gc.serverPlayer && (myAgent.localPlayer || myAgent.mindControlAgent == gc.playerAgent)
+                                         && agent.isPlayer > 0 && !agent.localPlayer)
+                    {
+                        me.FakeHit(e.GameObject);
+                        return false;
+                    }
+                    if (!gc.serverPlayer && myAgent.isPlayer != 0 && !myAgent.localPlayer && agent.isPlayer != 0 && !agent.localPlayer)
+                    {
+                        me.FakeHit(e.GameObject);
+                        return false;
+                    }
+                }
+                #endregion
+
+                #region Agent pre-conditions and checks
+                if (agent == myAgent || agent.ghost || agent.fellInHole || gc.cinematic
+                    || !pre.IgnoreLineOfSight && !me.HasLOSMelee(agent)) return false;
+                // TODO: make ghost and cinematic checks configurable
+                if (!pre.IgnoreAlignedCheck && !myAgent.DontHitAlignedCheck(agent)) return false;
+                #endregion
+
+                if (weaponItem!.meleeNoHit)
+                {
+                    if (!agent.dead)
+                    {
+                        #region Stealing and chloroforming
+                        // TODO: do stealing and chloroforming (HitAftermath)
+                        // spawn noise if unsuccessful
+                        #endregion
+                    }
+                }
+                else
+                {
+                    if (gc.serverPlayer || agent.health > 0f || agent.dead)
+                    {
+                        agent.Damage(myMelee, e.FromClient); // TODO: make pre.WeaponDamage affect this
+                        e.DamageDealt = agent.damagedAmount;
+                    }
+                }
+
+                #region Agent hit parameters
+                // set knockback strength
+                if (myMelee.successfullySleepKilled || myMelee.successfullyBackstabbed)
+                    e.KnockbackStrength = 0f;
+                else if ((!agent.dead || agent.justDied) && !agent.disappeared)
+                    e.KnockbackStrength = Mathf.Clamp(e.DamageDealt * 20f, 80f, 9999f);
+                else if (!agent.disappeared)
+                    e.KnockbackStrength = 80f;
+                if (myAgent.statusEffects.hasTrait("CauseBiggerKnockback"))
+                    e.KnockbackStrength *= 2f;
+                // set knockback direction
+                float rot = myMelee.meleeContainerTr.rotation.eulerAngles.z - 90f;
+                e.KnockbackDirection = new Vector2(Mathf.Sin(rot * Mathf.Deg2Rad), Mathf.Cos(rot * Mathf.Deg2Rad));
+
+                // set noise
+                if (gc.serverPlayer && (myMelee.successfullyBackstabbed || !myMelee.successfullySleepKilled))
+                {
+                    e.NoisePosition = me.tr.position;
+                    e.NoiseVolume = myMelee.successfullyBackstabbed ? 0.7f : 1f;
+                }
+
+                // set AI combat cooldown // TODO
+                //this.myMelee.agent.combat.meleeJustHitCooldown = this.myMelee.agent.combat.meleeJustHitTimeStart;
+                //this.myMelee.agent.combat.meleeJustHitCloseCooldown = this.myMelee.agent.combat.meleeJustHitCloseTimeStart;
+
+                // set screen shake, vibration and AlienFX
+                if (myAgent.isPlayer > 0 && myAgent.localPlayer || agent.isPlayer > 0 && agent.localPlayer)
+                {
+                    bool fatalHit = agent.justDied;
+                    e.ScreenShakeTime = fatalHit ? 0.25f : 0.2f;
+                    e.ScreenShakeOffset = Mathf.Clamp(15 * e.DamageDealt, fatalHit ? 160 : 0, 500);
+                }
+                if (myAgent.isPlayer > 0)
+                {
+                    e.VibrateControllerIntensity = Mathf.Clamp(agent.damagedAmount / 100f + 0.05f, 0f, 0.25f);
+                    e.VibrateControllerTime = Mathf.Clamp(agent.damagedAmount / 132f + 0.05f, 0f, 0.2f);
+                    e.AlienFX = true;
+                }
+                #endregion
+
+                #region Agent side effects
+                if (!weaponItem!.meleeNoHit)
+                {
+                    // infect the opponent
+                    if (myAgent.zombified && agent.isPlayer == 0 && !agent.oma.bodyGuarded)
+                        agent.zombieWhenDead = true;
+
+                    // handle FleshFeast traits
+                    if (agent.isPlayer == 0 && myAgent.isPlayer != 0 && !agent.dead && agent.agentName != "Zombie"
+                        && !agent.inhuman && !agent.mechEmpty && !agent.mechFilled && myAgent.localPlayer
+                        && !agent.statusEffects.hasStatusEffect("Invincible"))
+                    {
+                        if (myAgent.statusEffects.hasTrait("FleshFeast2"))
+                            myAgent.statusEffects.ChangeHealth(6f);
+                        else if (myAgent.statusEffects.hasTrait("FleshFeast"))
+                            myAgent.statusEffects.ChangeHealth(3f);
+                    }
+                }
+
+                // alert attacker's followers to attack
+                myAgent.relationships.FollowerAlert(agent);
+                // handle AttacksDamageAttacker traits
+                if (!myAgent.ghost)
+                {
+                    bool upgrade;
+                    if ((upgrade = agent.statusEffects.hasTrait("AttacksDamageAttacker2"))
+                        || agent.statusEffects.hasTrait("AttacksDamageAttacker"))
+                    {
+                        if (gc.percentChance(agent.DetermineLuck(20, "AttacksDamageAttacker", true)))
+                        {
+                            myAgent.lastHitByAgent = agent;
+                            myAgent.justHitByAgent2 = agent;
+                            myAgent.lastHitByAgent = agent;
+                            myAgent.deathMethod = "AttacksDamageAttacker";
+                            myAgent.deathKiller = agent.agentName;
+                            myAgent.statusEffects.ChangeHealth(upgrade ? -10f : -5f);
+                        }
+                    }
+                }
+
+                if (agent.justDied && myAgent.isPlayer > 0 && !gc.coopMode && !gc.fourPlayerMode && !gc.multiplayerMode
+                    && gc.sessionDataBig.slowMotionCinematic && gc.percentChance(25))
+                {
+                    if (!gc.challenges.Contains("LowHealth") || gc.percentChance(50))
+                        gc.StartCoroutine(gc.SetSecondaryTimeScale(0.1f, 0.13f));
+                }
+
+                // handle ProtectiveShell ability
+                //   with a chance to knock weapons
+                // TODO: I guess there's no need to do this one
+                #endregion
+
+                #region #multiplayer-sync
+                if (!gc.serverPlayer && (myAgent.localPlayer || myAgent.mindControlAgent == gc.playerAgent))
+                {
+                    myAgent.objectMultPlayfield.TempDisableNetworkTransform(agent);
+                    Quaternion localRotation = myMelee.meleeHelperTr.localRotation;
+                    myMelee.meleeHelperTr.rotation = myMelee.meleeContainerTr!.rotation;
+                    myMelee.meleeHelperTr.position = myMelee.meleeContainerTr.position;
+                    myMelee.meleeHelperTr.localPosition = new Vector3(myMelee.meleeHelperTr.localPosition.x, myMelee.meleeHelperTr.localPosition.y + 10f, myMelee.meleeHelperTr.localPosition.z);
+                    Vector3 position2 = myMelee.meleeHelperTr.position;
+                    myMelee.meleeHelperTr.localPosition = Vector3.zero;
+                    myMelee.meleeHelperTr.localRotation = localRotation;
+                    if (!myAgent.testingNewClientLerps)
+                    {
+                        if (myAgent.isPlayer != 0)
+                        {
+                            myAgent.objectMult.CallCmdMeleeHitAgent(agent.objectNetID, position2, (int)e.KnockbackStrength, agent.tr.position, agent.rb.velocity);
+                        }
+                        else
+                        {
+                            gc.playerAgent.objectMult.CallCmdMeleeHitAgentNPC(myAgent.objectNetID, agent.objectNetID, position2, (int)e.KnockbackStrength, agent.tr.position, agent.rb.velocity);
+                        }
+                    }
+                }
+                else if (gc.multiplayerMode && gc.serverPlayer)
+                    myAgent.objectMult.CallRpcMeleeHitObjectFake(agent.objectNetID);
+                #endregion
+
+                if (gc.levelType == "Tutorial") gc.tutorial.MeleeTarget(agent);
+
+                return true;
+            }
+            static bool HitItem(MeleeHitbox me, Item item, MeleePreHitArgs pre, MeleeHitArgs e)
+            {
+                GameController gc = me.gc;
+                Melee myMelee = me.myMelee;
+                Agent myAgent = myMelee.agent;
+                InvItem weaponItem = myAgent.inventory.equippedWeapon ?? myAgent.inventory.fist;
+                if (weaponItem.itemType == ItemTypes.WeaponProjectile)
+                    weaponItem = myAgent.inventory.fist;
+                CustomWeaponMelee? custom = weaponItem.GetHook<CustomWeaponMelee>();
+
+                #region #multiplayer-sync
+                if (!gc.serverPlayer && !myAgent.localPlayer && myAgent.mindControlAgent != gc.playerAgent)
+                {
+                    me.FakeHit(e.GameObject);
+                    return false;
+                }
+                #endregion
+
+                #region Item pre-conditions
+                if (item.justSpilled) return false;
+                if (weaponItem!.meleeNoHit) return false;
+                if (item.itemObject != null) return false;
+                if (!pre.IgnoreLineOfSight && !me.HasLOSMelee(item)) return false;
+                #endregion
+
+                // TODO
+                // do knockback // e.Knockback
+                // do damage to the item // pre.WeaponDamage
+                // trigger item's effects // e.TriggerItems
+                // set item's thrower
+
+                // spawn noise // e.Noise
+                // OwnCheck // e.OwnCheck
+                // ignore collision with the thrower for a bit
+                // #MeleeHitEffect
+                // vibrate the controller // e.VibrateController
+                // #multiplayer-sync
+
+                return true;
+            }
+            static bool HitMelee(MeleeHitbox me, Melee melee, MeleePreHitArgs pre, MeleeHitArgs e)
+            {
+                GameController gc = me.gc;
+                Melee myMelee = me.myMelee;
+                Agent myAgent = myMelee.agent;
+
+                // TODO
+                // ~~if (any of the melees is a stealing glove or a chloroform hankie) return~~
+                // if (any of the weapons has meleeNoHit) return // TODO: should be pretty much equivalent to the previous line?
+                // #multiplayer-sync
+
+                // if (!pre.IgnoreAlignedCheck && aligned trait active) return
+
+                // if (same person, or meleeNoHit, or !pre.IgnoreLOS && not in LOS) return
+                // if (neither of them is giant or shrunk) return // TODO: why is this check needed?
+
+                // #try (for the first two finally blocks)
+
+                // find and clamp damage (e.WeaponDamage)
+
+                // TODO: Clean up
+                // #multiplayer-sync
+                // if (#multiplayer-something)
+                //   knockback my agent // e.Recoil
+                //   if (server?)
+                //     knockback my opponent // e.Knockback
+                // #multiplayer-sync
+                // if (neither of them is a ghost)
+                //   if (one has a weapon and the other doesn't)
+                //     subtract 1 health from the one without a weapon
+
+                // deplete 5 melee from both // e.DepleteAmount
+                // #MeleeHitEffect
+
+                // shake the screen, enable freeze frames and stuff // e.ShakeScreen, e.FreezeFrames
+                // alert the cops
+                // vibrate the controller // e.VibrateController
+                // set the AI combat cooldown // e.AICombatCooldown
+                // if (server) spawn noise // e.Noise
+                // if (melee emitted particles)
+                //   spawn ObjectDestroyed particles // e.Particles
+
+                // handle KnockWeapons traits
+
+                return true;
+            }
+            static bool HitBullet(MeleeHitbox me, Bullet bullet, MeleePreHitArgs pre, MeleeHitArgs e)
+            {
+                GameController gc = me.gc;
+                Melee myMelee = me.myMelee;
+                Agent myAgent = myMelee.agent;
+
+
+
+
+                return true;
+            }
+            static bool HitWall(MeleeHitbox me, MeleePreHitArgs pre, MeleeHitArgs e)
+            {
+                GameController gc = me.gc;
+                Melee myMelee = me.myMelee;
+                Agent myAgent = myMelee.agent;
+
+                // TODO
+                // if (weapon already hit a wall or meleeNoHit or !pre.IgnoreLOS && not in LOS) return
+                // hitWall = true
+
+                // find damage that the attacker would deal to themselves ???
+                // TODO: should be determined before CustomWeaponMelee.PreHit(pre)?
+                // if (attacker is a giant)
+                //   set damage to 200
+                //   if (wall is not steel)
+                //     hitWall = false (allowing multiple weak walls to be destroyed)
+
+                // CustomWeaponMelee.Hit(e)
+
+                // determine the wall destruction thresholds
+
+                // if (damage >= minimum threshold)
+                //   get tile data
+                //   if (damage >= material threshold)
+                //     destroy tile
+                //     set wall's layer to 1 ??? (destroyed walls layer?)
+
+                // TODO: Clean up
+                // if (wall destroyed)
+                //     play wall destruction sound
+                //     add destruction points, if it's not a border wall
+                //     add destruction stats
+                //     shake the screen and enable freeze frames // e.ShakeScreen, e.FreezeFrames
+                //     deplete 10 or 20 melee // e.DepleteAmount
+
+                // if (weapon emitted particles)
+                //   spawn ObjectDestroyed particles // e.Particles
+
+                // if (no Silent Vandalizer and not a stealth attack)
+                //   spawn noise // e.Noise
+                //   if (destroyed a wall)
+                //     spawn noise at the wall's location
+
+                // if (destroyed a wall)
+                //   OwnCheck // e.OwnCheck
+
+                // play BulletHitWall sound // e.Sound
+                // vibrate the controller // e.VibrateController
+                // #multiplayer-sync
+
+                return true;
+            }
+        }
+
+        private sealed class MeleeHitHook : HookBase<PlayfieldObject>
+        {
+            protected override void Initialize() { }
+
+            public bool IsFirstHit(PlayfieldObject obj) => !HitList.Contains(obj);
+            public void RegisterHit(PlayfieldObject obj) => HitList.Add(obj);
+
+            public bool CanHitAgain(PlayfieldObject obj) => CanHitAgainList.Remove(obj);
+            public void SetCanHitAgain(PlayfieldObject obj) => CanHitAgainList.Add(obj);
+
+            public void Clear()
+            {
+                HitList.Clear();
+                CanHitAgainList.Clear();
+            }
+
+            private readonly List<PlayfieldObject> HitList = new List<PlayfieldObject>();
+            private readonly List<PlayfieldObject> CanHitAgainList = new List<PlayfieldObject>();
+
         }
 
     }

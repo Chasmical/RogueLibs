@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-
-namespace RogueLibsCore.Test
+﻿namespace RogueLibsCore.Test
 {
     public class Knocker : CustomWeaponMelee
     {
@@ -34,7 +27,7 @@ namespace RogueLibsCore.Test
             TestPlugin.Log.LogWarning("StartAttack");
             return new MeleeAttackInfo(MeleeAttackType.Swing, MeleeHands.Both)
             {
-				Speed = 4f,
+                Speed = 4f,
                 CanBackstab = false,
                 KnockForce = 0f,
             };
@@ -45,7 +38,8 @@ namespace RogueLibsCore.Test
         }
         public override void Hit(MeleeHitArgs e)
         {
-
+            TestPlugin.Log.LogWarning("Hit");
+            e.KnockbackStrength *= 5f;
         }
 
     }
