@@ -34,9 +34,9 @@ namespace RogueLibsCore
             // clear hooks on PlayfieldObject.RecycleAwake()
             Patcher.Postfix(typeof(PlayfieldObject), nameof(PlayfieldObject.RecycleAwake));
 
-            // Patcher.Prefix(typeof(MenuGUI), nameof(MenuGUI.PressedDiscordButton));
-            // Patcher.Prefix(typeof(MenuGUI), nameof(MenuGUI.PressedSignUp));
-            // Patcher.Postfix(typeof(MenuGUI), nameof(MenuGUI.RealAwake));
+            Patcher.Prefix(typeof(MenuGUI), nameof(MenuGUI.PressedDiscordButton));
+            Patcher.Prefix(typeof(MenuGUI), nameof(MenuGUI.PressedSignUp));
+            Patcher.Postfix(typeof(MenuGUI), nameof(MenuGUI.RealAwake));
 
             Patcher.AnyErrors();
 
