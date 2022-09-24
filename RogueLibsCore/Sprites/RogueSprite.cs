@@ -74,7 +74,6 @@ namespace RogueLibsCore
                 if (defined && value is null) throw new ArgumentNullException(nameof(value));
                 Undefine();
                 name = value;
-                if (Texture != null) Texture.name = value;
                 if (Sprite != null) Sprite.name = value;
                 if (defined) Define();
             }
@@ -192,15 +191,26 @@ namespace RogueLibsCore
 
         private static readonly Dictionary<byte[], Texture2D> loadedTextures = new Dictionary<byte[], Texture2D>();
 
-        internal RogueSprite(string spriteName, SpriteScope spriteScope, byte[] rawData, Rect? spriteRegion, float ppu = 64f)
+        /// <summary>
+        ///   <para>Loads a texture from the specified <paramref name="rawData"/>, and if one wasn't created earlier, sets its name to <paramref name="textureName"/>.<br/>Can be used before any sprite initializations to define the texture's name (the first sprite's name is used by default).</para>
+        /// </summary>
+        /// <param name="rawData">The byte array containing a raw PNG- or JPEG-encoded image.</param>
+        /// <param name="textureName">The texture name to set, if the texture hasn't been loaded before.</param>
+        /// <returns>The loaded texture.</returns>
+        public static Texture2D LoadTexture(byte[] rawData, string textureName)
         {
             if (!loadedTextures.TryGetValue(rawData, out Texture2D? tex))
             {
-                tex = new Texture2D(13, 6) { name = spriteName, filterMode = FilterMode.Point };
+                tex = new Texture2D(13, 6) { name = textureName, filterMode = FilterMode.Point };
                 tex.LoadImage(rawData);
                 loadedTextures.Add(rawData, tex);
             }
-            texture = tex;
+            return tex;
+        }
+
+        internal RogueSprite(string spriteName, SpriteScope spriteScope, byte[] rawData, Rect? spriteRegion, float ppu = 64f)
+        {
+            texture = LoadTexture(rawData, spriteName);
             name = spriteName;
             scope = spriteScope;
             pixelsPerUnit = ppu;
@@ -257,6 +267,7 @@ namespace RogueLibsCore
             if (coll != null)
             {
                 tk2dSpriteDefinition def = CreateDefinition(texture!, region, 64f / PixelsPerUnit / coll.invOrthoSize / coll.halfTargetHeight);
+                def.name = name;
                 AddDefinition(coll, def);
                 def.__RogueLibsCustom = this;
                 definitions!.Add(new CustomTk2dDefinition(coll, def, targetScope));
@@ -390,7 +401,6 @@ namespace RogueLibsCore
                 materialInst = mat,
                 flipped = tk2dSpriteDefinition.FlipMode.None,
                 extractRegion = false,
-                name = texture.name,
                 colliderType = tk2dSpriteDefinition.ColliderType.Unset,
                 positions = new Vector3[]
                 {
