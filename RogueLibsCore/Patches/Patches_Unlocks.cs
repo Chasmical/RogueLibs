@@ -81,6 +81,9 @@ namespace RogueLibsCore
                             reader.Read();
                         backup.ReadXml(reader);
                     }
+                    SessionDataBig? sdb = GameController.gameController?.sessionDataBig;
+                    if (sdb?.nuggets is 99 && backup.Nuggets > 99)
+                        sdb.nuggets = backup.Nuggets;
                 }
                 unlocksBackup = backup;
             }
