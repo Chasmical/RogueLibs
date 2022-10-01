@@ -80,7 +80,10 @@ namespace RogueLibsCore
         /// <returns>The current instance of <see cref="DisasterBuilder"/>, for chaining purposes.</returns>
         public DisasterBuilder WithRemovalMutator()
         {
-            RogueLibs.CreateCustomUnlock(RemovalMutator = new MutatorUnlock("NoD_" + Info.Name, true));
+            RogueLibs.CreateCustomUnlock(RemovalMutator = new MutatorUnlock("NoD_" + Info.Name, true)
+            {
+                IsAvailableInDailyRun = false,
+            });
             return this;
         }
 

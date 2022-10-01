@@ -64,6 +64,8 @@
             }
         }
 
+        public bool IsAvailableInDailyRun { get; set; }
+
         /// <inheritdoc/>
         public override void OnPushedButton()
         {

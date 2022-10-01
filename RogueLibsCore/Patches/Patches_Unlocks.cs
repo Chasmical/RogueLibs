@@ -27,6 +27,9 @@ namespace RogueLibsCore
             Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.CanDoUnlocks));
             Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.isBigQuestCompleted));
 
+            Patcher.Prefix(typeof(MenuGUI), nameof(MenuGUI.OpenDailyRunScreen), nameof(MenuGUI_OpenDailyRunScreen_Prefix));
+            Patcher.Finalizer(typeof(MenuGUI), nameof(MenuGUI.OpenDailyRunScreen), nameof(MenuGUI_OpenDailyRunScreen_Finalizer));
+
             Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.SaveUnlockData2));
             Patcher.Prefix(typeof(Unlocks), nameof(Unlocks.LoadUnlockData2));
 
@@ -173,8 +176,12 @@ namespace RogueLibsCore
                 UnlockWrapper wrapper;
                 if (unlock.unlockType == UnlockTypes.Mutator)
                 {
+                    bool isAvailableInDailyRun = !unlock.unavailable;
                     unlock.unavailable = false;
-                    wrapper = new MutatorUnlock(unlock);
+                    wrapper = new MutatorUnlock(unlock)
+                    {
+                        IsAvailableInDailyRun = isAvailableInDailyRun,
+                    };
                 }
                 else if (unlock.unlockType == UnlockTypes.Item)
                 {
@@ -334,6 +341,28 @@ namespace RogueLibsCore
             if (unlock is not BigQuestUnlock bq) return true;
             __result = bq.IsCompleted;
             return false;
+        }
+
+        public static void MenuGUI_OpenDailyRunScreen_Prefix(out List<Unlock> __state)
+        {
+            SessionDataBig sdb = GameController.gameController.sessionDataBig;
+            List<Unlock> available = new List<Unlock>();
+            foreach (Unlock unlock in sdb.unlocks)
+            {
+                UnlockWrapper wrapper = unlock.GetHook();
+                if (wrapper is MutatorUnlock { IsAvailableInDailyRun: true })
+                {
+                    Unlock copy = new Unlock(unlock.unlockName, unlock.unlockType, true) { cancellations = unlock.cancellations };
+                    available.Add(copy);
+                }
+            }
+            __state = sdb.challengeUnlocks;
+            sdb.challengeUnlocks = available;
+        }
+        public static void MenuGUI_OpenDailyRunScreen_Finalizer(List<Unlock> __state)
+        {
+            SessionDataBig sdb = GameController.gameController.sessionDataBig;
+            sdb.challengeUnlocks = __state;
         }
 
         private static bool curSaving;
