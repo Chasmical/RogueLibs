@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using HarmonyLib;
 using UnityEngine;
 
@@ -37,6 +38,8 @@ namespace RogueLibsCore
 
             Patcher.Postfix(typeof(LockdownWall), nameof(LockdownWall.SetWallDown));
             Patcher.Postfix(typeof(LockdownWall), nameof(LockdownWall.SetWallDownAnim));
+
+            Patcher.Transpiler(typeof(WorldSpaceGUI), nameof(WorldSpaceGUI.ShowObjectButtons));
 
             VanillaInteractions.PatchAll();
 
@@ -238,5 +241,29 @@ namespace RogueLibsCore
             => __instance.objectSprite.objectHitbox.enabled = true;
         public static void LockdownWall_SetWallDownAnim(LockdownWall __instance)
             => __instance.objectSprite.objectHitbox.enabled = true;
+
+        private static readonly MethodInfo stringListAddMethod = AccessTools.Method(typeof(List<string>), nameof(List<string>.Add));
+        public static IEnumerable<CodeInstruction> WorldSpaceGUI_ShowObjectButtons(IEnumerable<CodeInstruction> original)
+            => original.ReplaceRegion(new Func<CodeInstruction, bool>[]
+            {
+                static i => i.opcode == OpCodes.Ldarg_2,
+                static i => i.opcode == OpCodes.Ldstr && (string)i.operand is "Done",
+                static i => i.Calls(stringListAddMethod),
+            }, new Func<CodeInstruction[], CodeInstruction>[]
+            {
+                static _ => new CodeInstruction(OpCodes.Ldarg_1),
+                static _ => new CodeInstruction(OpCodes.Ldarg_2),
+                static _ => new CodeInstruction(OpCodes.Call, typeof(RogueLibsPlugin).GetMethod(nameof(WorldSpaceGUI_ShowObjectButtonsHelper))),
+            });
+        public static void WorldSpaceGUI_ShowObjectButtonsHelper(GameObject go, List<string> buttons)
+        {
+            PlayfieldObject obj = go.GetComponent<PlayfieldObject>();
+            InteractionModel model = GetOrCreateModel(obj);
+            if (model.AddDoneButton) buttons.Add("Done");
+        }
+
+
+
+
     }
 }

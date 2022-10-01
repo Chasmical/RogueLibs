@@ -177,6 +177,8 @@ namespace RogueLibsCore
             _model!.SideEffect = SideEffect;
         }
 
+        public void RemoveDoneButton() => Model.AddDoneButton = false;
+
         private InteractionModel? _model;
         /// <summary>
         ///   <para>Gets the interaction model that the provider provides interactions for.</para>

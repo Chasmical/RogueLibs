@@ -80,6 +80,7 @@ namespace RogueLibsCore
         ///   <para>Gets or sets the side effect, that gets called after the interactions are set up, regardless of whether it was successful.</para>
         /// </summary>
         public Action? SideEffect { get; set; }
+        public bool AddDoneButton { get; set; } = true;
 
         /// <summary>
         ///   <para>Removes the specified <paramref name="interaction"/> from the model.</para>
@@ -180,6 +181,7 @@ namespace RogueLibsCore
             forcedStop = false;
             StopCallback = null;
             SideEffect = null;
+            AddDoneButton = true;
 
             // repopulate the interactions
             IInteractionProvider? lastProvider = null;
@@ -253,6 +255,8 @@ namespace RogueLibsCore
             shouldStop = false;
             forcedStop = false;
             StopCallback = null;
+            SideEffect = null;
+            AddDoneButton = true;
 
             // handle the default "Done" button
             if (buttonName is "Done")
