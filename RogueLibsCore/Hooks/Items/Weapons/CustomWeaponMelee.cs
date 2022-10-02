@@ -25,6 +25,7 @@
         public abstract void EndAttack();
 
         public virtual void PreHit(MeleePreHitArgs e) { }
+        public virtual void HitEffects(MeleeHitArgs e) { }
         public virtual void Hit(MeleeHitArgs e) { }
 
         // public virtual int Deplete(PlayfieldObject obj, float damage);

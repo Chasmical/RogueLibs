@@ -274,32 +274,62 @@ namespace RogueLibsCore
                 if (pre.IsDefaultPrevented) return; // CustomWeaponMelee will take care of the entire attack sequence
                 #endregion
 
+                InvItem? otherWeapon = null;
+                CustomWeaponMelee? otherCustomWeapon = null;
+                if (hitObj is Melee melee2)
+                {
+                    otherWeapon = melee2.agent.inventory.equippedWeapon ?? melee2.agent.inventory.fist;
+                    if (otherWeapon.itemType == ItemTypes.WeaponProjectile)
+                        otherWeapon = melee2.agent.inventory.fist;
+                    otherCustomWeapon = otherWeapon.GetHook<CustomWeaponMelee>();
+                }
+
                 #region Actual hit and type-specific stuff
                 MeleeHitArgs e = new MeleeHitArgs(pre);
+                MeleeHitArgs? eOther = null;
 
-                bool canContinue;
+                Action? cleanUpAction = null;
                 if (hitObj is ObjectReal objectReal)
-                    canContinue = HitObjectReal(me, objectReal, pre, e);
+                    cleanUpAction = HitObjectReal(me, objectReal, pre, e);
                 else if (hitObj is Agent agent)
-                    canContinue = HitAgent(me, agent, pre, e);
+                    cleanUpAction = HitAgent(me, agent, pre, e);
                 else if (hitObj is Item item)
-                    canContinue = HitItem(me, item, pre, e);
+                    cleanUpAction = HitItem(me, item, pre, e);
                 else if (hitObj is Melee melee)
-                    canContinue = HitMelee(me, melee, pre, e);
+                {
+                    GameObject myGO = melee.gameObject;
+                    MeleePreHitArgs preOther = new MeleePreHitArgs(myGO, melee, myGO, melee, pre.IsFirstHit, pre.FromClient);
+                    eOther = new MeleeHitArgs(preOther);
+                    Action? a = HitMelee(me, melee, pre, e);
+                    if (a is not null)
+                    {
+                        Action? b = HitMelee(melee.meleeHitbox, myMelee, preOther, eOther);
+                        if (b is not null)
+                        {
+                            cleanUpAction = () => { a(); b(); };
+                        }
+                    }
+
+                }
                 else if (hitObj is Bullet bullet)
-                    canContinue = HitBullet(me, bullet, pre, e);
+                    cleanUpAction = HitBullet(me, bullet, pre, e);
                 else if (isWall)
-                    canContinue = HitWall(me, pre, e);
+                    cleanUpAction = HitWall(me, pre, e);
                 else return;
                 #endregion
 
                 try
                 {
-                    if (canContinue)
+                    if (cleanUpAction != null)
                     {
                         try
                         {
                             custom?.Hit(e);
+                            if (otherCustomWeapon is not null)
+                            {
+                                otherCustomWeapon.Hit(eOther!);
+                                eOther!.MergeInto(e);
+                            }
                         }
                         catch (Exception err)
                         {
@@ -309,54 +339,10 @@ namespace RogueLibsCore
                         // General clean up
                         me.justHitWindow = false;
 
-                        // TODO: also use HitSound, AICombatCooldown
-
-                        #region Noise, own check and particles
-                        if (e.NoiseVolume > 0)
-                            gc.spawnerMain.SpawnNoise(e.NoisePosition, e.NoiseVolume, null, null, myAgent);
-                        if (e.DoOwnCheck && gc.serverPlayer)
-                            gc.OwnCheck(myAgent, hitGO, "Normal", 1);
-                        if (e.Particles is not null)
-                            gc.spawnerMain.SpawnParticleEffect("ObjectDestroyed", e.ParticlesPosition, e.ParticlesAngle);
-                        #endregion
-
-                        #region Knockback and recoil
-                        if (e.KnockbackStrength > 0f)
-                        {
-                            float angle = Mathf.Atan2(e.KnockbackDirection.y, e.KnockbackDirection.x);
-                            Quaternion rotation = Quaternion.Euler(0f, 0f, angle);
-                            if (hitObj is Agent agent3)
-                            {
-                                if (!agent3.disappeared && !fromClient)
-                                    agent3.movement.KnockBackBullet(rotation, e.KnockbackStrength, true, myAgent);
-                            }
-                            // TODO: for other types
-                        }
-                        if (e.RecoilStrength > 0f)
-                        {
-                            float angle = Mathf.Atan2(e.RecoilDirection.y, e.RecoilDirection.x);
-                            Quaternion rotation = Quaternion.Euler(0f, 0f, angle);
-                            if (!myAgent.disappeared && !fromClient)
-                                myAgent.movement.KnockBackBullet(rotation, e.RecoilStrength, true, myAgent);
-                        }
-                        #endregion
-
-                        #region Input response
-                        if (e.ScreenShakeOffset > 0f)
-                            gc.ScreenShake(e.ScreenShakeTime, e.ScreenShakeOffset, myAgent.tr.position, myAgent);
-                        if (e.FreezeFrames > 0)
-                            gc.FreezeFrames(e.FreezeFrames - 1);
-                        if (e.VibrateControllerIntensity > 0)
-                            gc.playerControl.Vibrate(myAgent.isPlayer, e.VibrateControllerIntensity, e.VibrateControllerTime);
-                        if (e.AlienFX)
-                        {
-                            if (hitObj is ObjectReal) gc.alienFX.HitObject(myAgent);
-                            else if (hitObj is Agent) gc.alienFX.PlayerHitEnemy(myAgent);
-                            // TODO: for other types?
-                        }
+                        e.DoSideEffects(myMelee, myAgent);
+                        eOther?.DoSideEffects(myMelee, myAgent);
 
                         me.MeleeHitEffect(hitGO); // TODO: MeleeHitEffect ?
-                        #endregion
                     }
                 }
                 finally
@@ -365,15 +351,38 @@ namespace RogueLibsCore
                     {
                         MeleeHitHook otherHits = agent.melee.GetOrAddHook<MeleeHitHook>();
                         hitsHook.RegisterHit(agent);
+                        if (e.CanHitAgain) hitsHook.SetCanHitAgain(agent);
 
-                        // TODO: hit agents and their melees
+                        if (!weaponItem!.meleeNoHit && !otherWeapon!.meleeNoHit)
+                        {
+                            hitsHook.RegisterHit(agent.melee);
+                            otherHits.RegisterHit(myAgent);
+                            otherHits.RegisterHit(myMelee);
+                            if (e.CanHitAgain)
+                            {
+                                hitsHook.SetCanHitAgain(agent.melee);
+                                otherHits.SetCanHitAgain(myAgent);
+                                otherHits.SetCanHitAgain(myMelee);
+                            }
+                        }
                     }
                     else if (hitObj is Melee otherMelee)
                     {
                         MeleeHitHook otherHits = otherMelee.GetOrAddHook<MeleeHitHook>();
                         hitsHook.RegisterHit(otherMelee);
 
-                        // TODO: hit melees and agents
+                        if (!weaponItem!.meleeNoHit && !otherWeapon!.meleeNoHit)
+                        {
+                            hitsHook.RegisterHit(otherMelee.agent);
+                            otherHits.RegisterHit(myAgent);
+                            otherHits.RegisterHit(myMelee);
+                            if (e.CanHitAgain)
+                            {
+                                hitsHook.SetCanHitAgain(otherMelee.agent);
+                                otherHits.SetCanHitAgain(myAgent);
+                                otherHits.SetCanHitAgain(myMelee);
+                            }
+                        }
                     }
                     else if (isWall)
                     {
@@ -388,7 +397,7 @@ namespace RogueLibsCore
 
             }
 
-            static bool HitObjectReal(MeleeHitbox me, ObjectReal objectReal, MeleePreHitArgs pre, MeleeHitArgs e)
+            static Action? HitObjectReal(MeleeHitbox me, ObjectReal objectReal, MeleePreHitArgs pre, MeleeHitArgs e)
             {
                 GameController gc = me.gc;
                 Melee myMelee = me.myMelee;
@@ -404,13 +413,13 @@ namespace RogueLibsCore
                     && !objectReal.meleeCanPass && !objectReal.tempNoMeleeHits)
                 {
                     me.FakeHit(e.GameObject);
-                    return false;
+                    return null;
                 }
                 #endregion
 
                 #region ObjectReal pre-conditions and checks
-                if (!objectReal.objectMeshRenderer.enabled) return false;
-                if (!pre.IgnoreLineOfSight && !me.HasLOSMelee(objectReal)) return false;
+                if (!objectReal.objectMeshRenderer.enabled) return null;
+                if (!pre.IgnoreLineOfSight && !me.HasLOSMelee(objectReal)) return null;
 
                 bool noNoiseTrait = myAgent.statusEffects.hasTrait("HitObjectsNoNoise");
                 if (objectReal is Window window)
@@ -424,7 +433,7 @@ namespace RogueLibsCore
                 if (objectReal.notRealObject || objectReal.OnFloor || objectReal.meleeCanPass && !me.justHitWindow
                     || objectReal.tempNoMeleeHits)
                 {
-                    return false;
+                    return null;
                 }
                 #endregion
 
@@ -458,22 +467,23 @@ namespace RogueLibsCore
                     e.AlienFX = true;
                 }
                 // set own check
-                if (gc.serverPlayer) e.DoOwnCheck = true;
+                e.DoOwnCheck = gc.serverPlayer;
                 #endregion
 
-                #region #multiplayer-sync
-                if (!gc.serverPlayer && (myAgent.isPlayer > 0 || myAgent.mindControlAgent == gc.playerAgent))
+                return () =>
                 {
-                    if (myAgent.isPlayer != 0) myAgent.objectMult.CallCmdMeleeHitObjectReal(e.Target.objectNetID);
-                    else gc.playerAgent.objectMult.CallCmdMeleeHitObjectRealNPC(myAgent.objectNetID, e.Target.objectNetID);
-                }
-                else if (gc.serverPlayer && gc.multiplayerMode)
-                    myAgent.objectMult.CallRpcMeleeHitObjectFake(e.Target.objectNetID);
-                #endregion
-
-                return true;
+                    #region #multiplayer-sync
+                    if (!gc.serverPlayer && (myAgent.isPlayer > 0 || myAgent.mindControlAgent == gc.playerAgent))
+                    {
+                        if (myAgent.isPlayer != 0) myAgent.objectMult.CallCmdMeleeHitObjectReal(e.Target.objectNetID);
+                        else gc.playerAgent.objectMult.CallCmdMeleeHitObjectRealNPC(myAgent.objectNetID, e.Target.objectNetID);
+                    }
+                    else if (gc.serverPlayer && gc.multiplayerMode)
+                        myAgent.objectMult.CallRpcMeleeHitObjectFake(e.Target.objectNetID);
+                    #endregion
+                };
             }
-            static bool HitAgent(MeleeHitbox me, Agent agent, MeleePreHitArgs pre, MeleeHitArgs e)
+            static Action? HitAgent(MeleeHitbox me, Agent agent, MeleePreHitArgs pre, MeleeHitArgs e)
             {
                 GameController gc = me.gc;
                 Melee myMelee = me.myMelee;
@@ -489,55 +499,55 @@ namespace RogueLibsCore
                     if (gc.serverPlayer && myAgent.localPlayer && agent.isPlayer > 0 && !agent.localPlayer)
                     {
                         me.FakeHit(e.GameObject);
-                        return false;
+                        return null;
                     }
                     if (gc.serverPlayer && myAgent.isPlayer == 0 && agent.isPlayer > 0 && !agent.localPlayer)
                     {
                         me.FakeHit(e.GameObject);
-                        return false;
+                        return null;
                     }
                     if (gc.multiplayerMode && gc.serverPlayer && myAgent.isPlayer == 0 && agent.isPlayer == 0
                         && myAgent.mindControlAgent != null && myAgent.mindControlAgent != gc.playerAgent && !agent.dead)
                     {
                         me.FakeHit(e.GameObject);
-                        return false;
+                        return null;
                     }
                     if (gc.multiplayerMode && gc.serverPlayer && myAgent.isPlayer == 0 && agent.isPlayer == 0
                         && agent.mindControlAgent != null && agent.mindControlAgent != gc.playerAgent && !agent.dead)
                     {
                         me.FakeHit(e.GameObject);
-                        return false;
+                        return null;
                     }
                     if (!gc.serverPlayer && myAgent.isPlayer == 0 && !agent.localPlayer && myAgent != agent
                         && (myAgent.mindControlAgent != gc.playerAgent && agent.mindControlAgent != gc.playerAgent || agent.dead))
                     {
                         me.FakeHit(e.GameObject);
-                        return false;
+                        return null;
                     }
                     if (!gc.serverPlayer && myAgent.isPlayer > 0 && !myAgent.localPlayer && !agent.localPlayer)
                     {
                         me.FakeHit(e.GameObject);
-                        return false;
+                        return null;
                     }
                     if (!gc.serverPlayer && (myAgent.localPlayer || myAgent.mindControlAgent == gc.playerAgent)
                                          && agent.isPlayer > 0 && !agent.localPlayer)
                     {
                         me.FakeHit(e.GameObject);
-                        return false;
+                        return null;
                     }
                     if (!gc.serverPlayer && myAgent.isPlayer != 0 && !myAgent.localPlayer && agent.isPlayer != 0 && !agent.localPlayer)
                     {
                         me.FakeHit(e.GameObject);
-                        return false;
+                        return null;
                     }
                 }
                 #endregion
 
                 #region Agent pre-conditions and checks
                 if (agent == myAgent || agent.ghost || agent.fellInHole || gc.cinematic
-                    || !pre.IgnoreLineOfSight && !me.HasLOSMelee(agent)) return false;
+                    || !pre.IgnoreLineOfSight && !me.HasLOSMelee(agent)) return null;
                 // TODO: make ghost and cinematic checks configurable
-                if (!pre.IgnoreAlignedCheck && !myAgent.DontHitAlignedCheck(agent)) return false;
+                if (!pre.IgnoreAlignedCheck && !myAgent.DontHitAlignedCheck(agent)) return null;
                 #endregion
 
                 if (weaponItem!.meleeNoHit)
@@ -557,51 +567,48 @@ namespace RogueLibsCore
                         agent.Damage(myMelee, e.FromClient); // TODO: make pre.WeaponDamage affect this
                         e.DamageDealt = agent.damagedAmount;
                     }
-                }
 
-                #region Agent hit parameters
-                // set knockback strength
-                if (myMelee.successfullySleepKilled || myMelee.successfullyBackstabbed)
-                    e.KnockbackStrength = 0f;
-                else if ((!agent.dead || agent.justDied) && !agent.disappeared)
-                    e.KnockbackStrength = Mathf.Clamp(e.DamageDealt * 20f, 80f, 9999f);
-                else if (!agent.disappeared)
-                    e.KnockbackStrength = 80f;
-                if (myAgent.statusEffects.hasTrait("CauseBiggerKnockback"))
-                    e.KnockbackStrength *= 2f;
-                // set knockback direction
-                float rot = myMelee.meleeContainerTr.rotation.eulerAngles.z - 90f;
-                e.KnockbackDirection = new Vector2(Mathf.Sin(rot * Mathf.Deg2Rad), Mathf.Cos(rot * Mathf.Deg2Rad));
+                    #region Agent hit parameters
+                    // set knockback strength
+                    if (myMelee.successfullySleepKilled || myMelee.successfullyBackstabbed)
+                        e.KnockbackStrength = 0f;
+                    else if ((!agent.dead || agent.justDied) && !agent.disappeared)
+                        e.KnockbackStrength = Mathf.Clamp(e.DamageDealt * 20f, 80f, 9999f);
+                    else if (!agent.disappeared)
+                        e.KnockbackStrength = 80f;
+                    if (myAgent.statusEffects.hasTrait("CauseBiggerKnockback"))
+                        e.KnockbackStrength *= 2f;
+                    // set knockback direction
+                    float rot = myMelee.meleeContainerTr.rotation.eulerAngles.z - 90f;
+                    e.KnockbackDirection = new Vector2(Mathf.Sin(rot * Mathf.Deg2Rad), Mathf.Cos(rot * Mathf.Deg2Rad));
 
-                // set noise
-                if (gc.serverPlayer && (myMelee.successfullyBackstabbed || !myMelee.successfullySleepKilled))
-                {
-                    e.NoisePosition = me.tr.position;
-                    e.NoiseVolume = myMelee.successfullyBackstabbed ? 0.7f : 1f;
-                }
+                    // set noise
+                    if (gc.serverPlayer && (myMelee.successfullyBackstabbed || !myMelee.successfullySleepKilled))
+                    {
+                        e.NoisePosition = me.tr.position;
+                        e.NoiseVolume = myMelee.successfullyBackstabbed ? 0.7f : 1f;
+                    }
 
-                // set AI combat cooldown // TODO
-                //this.myMelee.agent.combat.meleeJustHitCooldown = this.myMelee.agent.combat.meleeJustHitTimeStart;
-                //this.myMelee.agent.combat.meleeJustHitCloseCooldown = this.myMelee.agent.combat.meleeJustHitCloseTimeStart;
+                    // set AI combat cooldown
+                    e.AICombatCooldown = myAgent.combat.meleeJustHitTimeStart;
+                    e.AICombatCooldownClose = myAgent.combat.meleeJustHitCloseTimeStart;
 
-                // set screen shake, vibration and AlienFX
-                if (myAgent.isPlayer > 0 && myAgent.localPlayer || agent.isPlayer > 0 && agent.localPlayer)
-                {
-                    bool fatalHit = agent.justDied;
-                    e.ScreenShakeTime = fatalHit ? 0.25f : 0.2f;
-                    e.ScreenShakeOffset = Mathf.Clamp(15 * e.DamageDealt, fatalHit ? 160 : 0, 500);
-                }
-                if (myAgent.isPlayer > 0)
-                {
-                    e.VibrateControllerIntensity = Mathf.Clamp(agent.damagedAmount / 100f + 0.05f, 0f, 0.25f);
-                    e.VibrateControllerTime = Mathf.Clamp(agent.damagedAmount / 132f + 0.05f, 0f, 0.2f);
-                    e.AlienFX = true;
-                }
-                #endregion
+                    // set screen shake, vibration and AlienFX
+                    if (myAgent.isPlayer > 0 && myAgent.localPlayer || agent.isPlayer > 0 && agent.localPlayer)
+                    {
+                        bool fatalHit = agent.justDied;
+                        e.ScreenShakeTime = fatalHit ? 0.25f : 0.2f;
+                        e.ScreenShakeOffset = Mathf.Clamp(15 * e.DamageDealt, fatalHit ? 160 : 0, 500);
+                    }
+                    if (myAgent.isPlayer > 0)
+                    {
+                        e.VibrateControllerIntensity = Mathf.Clamp(agent.damagedAmount / 100f + 0.05f, 0f, 0.25f);
+                        e.VibrateControllerTime = Mathf.Clamp(agent.damagedAmount / 132f + 0.05f, 0f, 0.2f);
+                        e.AlienFX = true;
+                    }
+                    #endregion
 
-                #region Agent side effects
-                if (!weaponItem!.meleeNoHit)
-                {
+                    #region Agent side effects
                     // infect the opponent
                     if (myAgent.zombified && agent.isPlayer == 0 && !agent.oma.bodyGuarded)
                         agent.zombieWhenDead = true;
@@ -616,73 +623,76 @@ namespace RogueLibsCore
                         else if (myAgent.statusEffects.hasTrait("FleshFeast"))
                             myAgent.statusEffects.ChangeHealth(3f);
                     }
-                }
 
-                // alert attacker's followers to attack
-                myAgent.relationships.FollowerAlert(agent);
-                // handle AttacksDamageAttacker traits
-                if (!myAgent.ghost)
-                {
-                    bool upgrade;
-                    if ((upgrade = agent.statusEffects.hasTrait("AttacksDamageAttacker2"))
-                        || agent.statusEffects.hasTrait("AttacksDamageAttacker"))
+                    // alert attacker's followers to attack
+                    myAgent.relationships.FollowerAlert(agent);
+                    // handle AttacksDamageAttacker traits
+                    if (!myAgent.ghost)
                     {
-                        if (gc.percentChance(agent.DetermineLuck(20, "AttacksDamageAttacker", true)))
+                        bool upgrade;
+                        if ((upgrade = agent.statusEffects.hasTrait("AttacksDamageAttacker2"))
+                            || agent.statusEffects.hasTrait("AttacksDamageAttacker"))
                         {
-                            myAgent.lastHitByAgent = agent;
-                            myAgent.justHitByAgent2 = agent;
-                            myAgent.lastHitByAgent = agent;
-                            myAgent.deathMethod = "AttacksDamageAttacker";
-                            myAgent.deathKiller = agent.agentName;
-                            myAgent.statusEffects.ChangeHealth(upgrade ? -10f : -5f);
+                            if (gc.percentChance(agent.DetermineLuck(20, "AttacksDamageAttacker", true)))
+                            {
+                                myAgent.lastHitByAgent = agent;
+                                myAgent.justHitByAgent2 = agent;
+                                myAgent.lastHitByAgent = agent;
+                                myAgent.deathMethod = "AttacksDamageAttacker";
+                                myAgent.deathKiller = agent.agentName;
+                                myAgent.statusEffects.ChangeHealth(upgrade ? -10f : -5f);
+                            }
                         }
                     }
-                }
 
-                if (agent.justDied && myAgent.isPlayer > 0 && !gc.coopMode && !gc.fourPlayerMode && !gc.multiplayerMode
-                    && gc.sessionDataBig.slowMotionCinematic && gc.percentChance(25))
-                {
-                    if (!gc.challenges.Contains("LowHealth") || gc.percentChance(50))
-                        gc.StartCoroutine(gc.SetSecondaryTimeScale(0.1f, 0.13f));
-                }
-
-                // handle ProtectiveShell ability
-                //   with a chance to knock weapons
-                // TODO: I guess there's no need to do this one
-                #endregion
-
-                #region #multiplayer-sync
-                if (!gc.serverPlayer && (myAgent.localPlayer || myAgent.mindControlAgent == gc.playerAgent))
-                {
-                    myAgent.objectMultPlayfield.TempDisableNetworkTransform(agent);
-                    Quaternion localRotation = myMelee.meleeHelperTr.localRotation;
-                    myMelee.meleeHelperTr.rotation = myMelee.meleeContainerTr!.rotation;
-                    myMelee.meleeHelperTr.position = myMelee.meleeContainerTr.position;
-                    myMelee.meleeHelperTr.localPosition = new Vector3(myMelee.meleeHelperTr.localPosition.x, myMelee.meleeHelperTr.localPosition.y + 10f, myMelee.meleeHelperTr.localPosition.z);
-                    Vector3 position2 = myMelee.meleeHelperTr.position;
-                    myMelee.meleeHelperTr.localPosition = Vector3.zero;
-                    myMelee.meleeHelperTr.localRotation = localRotation;
-                    if (!myAgent.testingNewClientLerps)
+                    if (agent.justDied && myAgent.isPlayer > 0 && !gc.coopMode && !gc.fourPlayerMode && !gc.multiplayerMode
+                        && gc.sessionDataBig.slowMotionCinematic && gc.percentChance(25))
                     {
-                        if (myAgent.isPlayer != 0)
+                        if (!gc.challenges.Contains("LowHealth") || gc.percentChance(50))
+                            gc.StartCoroutine(gc.SetSecondaryTimeScale(0.1f, 0.13f));
+                    }
+
+                    // handle ProtectiveShell ability
+                    //   with a chance to knock weapons
+                    // TODO: I guess there's no need to do this one
+                    #endregion
+
+                    if (gc.levelType == "Tutorial") gc.tutorial.MeleeTarget(agent);
+                }
+
+                return () =>
+                {
+                    #region #multiplayer-sync
+                    if (!gc.serverPlayer && (myAgent.localPlayer || myAgent.mindControlAgent == gc.playerAgent))
+                    {
+                        myAgent.objectMultPlayfield.TempDisableNetworkTransform(agent);
+                        Quaternion localRotation = myMelee.meleeHelperTr.localRotation;
+                        myMelee.meleeHelperTr.rotation = myMelee.meleeContainerTr!.rotation;
+                        myMelee.meleeHelperTr.position = myMelee.meleeContainerTr.position;
+                        myMelee.meleeHelperTr.localPosition = new Vector3(myMelee.meleeHelperTr.localPosition.x, myMelee.meleeHelperTr.localPosition.y + 10f, myMelee.meleeHelperTr.localPosition.z);
+                        Vector3 position2 = myMelee.meleeHelperTr.position;
+                        myMelee.meleeHelperTr.localPosition = Vector3.zero;
+                        myMelee.meleeHelperTr.localRotation = localRotation;
+                        if (!myAgent.testingNewClientLerps)
                         {
-                            myAgent.objectMult.CallCmdMeleeHitAgent(agent.objectNetID, position2, (int)e.KnockbackStrength, agent.tr.position, agent.rb.velocity);
-                        }
-                        else
-                        {
-                            gc.playerAgent.objectMult.CallCmdMeleeHitAgentNPC(myAgent.objectNetID, agent.objectNetID, position2, (int)e.KnockbackStrength, agent.tr.position, agent.rb.velocity);
+                            if (myAgent.isPlayer != 0)
+                            {
+                                myAgent.objectMult.CallCmdMeleeHitAgent(agent.objectNetID, position2, (int)e.KnockbackStrength,
+                                                                        agent.tr.position, agent.rb.velocity);
+                            }
+                            else
+                            {
+                                gc.playerAgent.objectMult.CallCmdMeleeHitAgentNPC(myAgent.objectNetID, agent.objectNetID, position2,
+                                                                                  (int)e.KnockbackStrength, agent.tr.position, agent.rb.velocity);
+                            }
                         }
                     }
-                }
-                else if (gc.multiplayerMode && gc.serverPlayer)
-                    myAgent.objectMult.CallRpcMeleeHitObjectFake(agent.objectNetID);
-                #endregion
-
-                if (gc.levelType == "Tutorial") gc.tutorial.MeleeTarget(agent);
-
-                return true;
+                    else if (gc.multiplayerMode && gc.serverPlayer)
+                        myAgent.objectMult.CallRpcMeleeHitObjectFake(agent.objectNetID);
+                    #endregion
+                };
             }
-            static bool HitItem(MeleeHitbox me, Item item, MeleePreHitArgs pre, MeleeHitArgs e)
+            static Action? HitItem(MeleeHitbox me, Item item, MeleePreHitArgs pre, MeleeHitArgs e)
             {
                 GameController gc = me.gc;
                 Melee myMelee = me.myMelee;
@@ -696,51 +706,135 @@ namespace RogueLibsCore
                 if (!gc.serverPlayer && !myAgent.localPlayer && myAgent.mindControlAgent != gc.playerAgent)
                 {
                     me.FakeHit(e.GameObject);
-                    return false;
+                    return null;
                 }
                 #endregion
 
                 #region Item pre-conditions
-                if (item.justSpilled) return false;
-                if (weaponItem!.meleeNoHit) return false;
-                if (item.itemObject != null) return false;
-                if (!pre.IgnoreLineOfSight && !me.HasLOSMelee(item)) return false;
+                if (item.justSpilled) return null;
+                if (weaponItem!.meleeNoHit) return null;
+                if (item.itemObject != null) return null; // part of an object?
+                if (!pre.IgnoreLineOfSight && !me.HasLOSMelee(item)) return null;
                 #endregion
 
-                // TODO
-                // do knockback // e.Knockback
-                // do damage to the item // pre.WeaponDamage
-                // trigger item's effects // e.TriggerItems
-                // set item's thrower
+                item.Damage(myMelee, e.FromClient); // TODO: pre.WeaponDamage
+                // trigger item's effects // TODO: e.TriggerItems?
+                if (item.invItem.reactOnTouch) item.TouchMe(myAgent, "MeleeHitbox");
+                item.thrower = myAgent;
+                if (item.go.activeSelf) item.StartCoroutine(item.HitCauserCoroutine(myAgent));
 
-                // spawn noise // e.Noise
-                // OwnCheck // e.OwnCheck
-                // ignore collision with the thrower for a bit
-                // #MeleeHitEffect
-                // vibrate the controller // e.VibrateController
-                // #multiplayer-sync
+                #region Item hit parameters
+                // set knockback strength and direction
+                e.KnockbackStrength = !e.FromClient ? 250f : 0f;
+                float rot = myMelee.meleeContainerTr.rotation.eulerAngles.z - 90f;
+                e.KnockbackDirection = new Vector2(Mathf.Sin(rot * Mathf.Deg2Rad), Mathf.Cos(rot * Mathf.Deg2Rad));
 
-                return true;
+                // set noise and own check
+                if (gc.serverPlayer && !myMelee.successfullySleepKilled && !myAgent.statusEffects.hasTrait("HitObjectsNoNoise"))
+                {
+                    e.NoisePosition = me.tr.position;
+                    e.NoiseVolume = 1f;
+                }
+                e.DoOwnCheck = item.startingOwner != 0 && gc.serverPlayer && !myAgent.statusEffects.hasTrait("NoStealPenalty");
+                // set vibration
+                e.VibrateControllerIntensity = Mathf.Clamp(myMelee.invItem.meleeDamage / 100f + 0.05f, 0f, 0.25f);
+                e.VibrateControllerTime = Mathf.Clamp(myMelee.invItem.meleeDamage / 132f + 0.05f, 0f, 0.2f);
+                #endregion
+
+                // prevent hitting yourself with the item
+                Physics2D.IgnoreCollision(item.myCollider2D, myAgent.myCollider2D, true);
+                Physics2D.IgnoreCollision(item.myCollider2D, myAgent.agentItemCollider, true);
+
+                return () =>
+                {
+                    #region #multiplayer-sync
+                    if (!gc.serverPlayer && (myAgent.localPlayer || myAgent.mindControlAgent == gc.playerAgent))
+                    {
+                        myAgent.objectMultPlayfield.TempDisableNetworkTransform(item);
+                        Quaternion rot1 = myMelee.meleeHelperTr.localRotation;
+                        myMelee.meleeHelperTr.rotation = myMelee.meleeContainerTr.rotation;
+                        myMelee.meleeHelperTr.position = myMelee.meleeContainerTr.position;
+                        Vector3 pos1 = myMelee.meleeHelperTr.localPosition;
+                        pos1.y += 10f;
+                        myMelee.meleeHelperTr.localPosition = pos1;
+
+                        Vector3 pos2 = myMelee.meleeHelperTr.position;
+                        myMelee.meleeHelperTr.localPosition = Vector3.zero;
+                        myMelee.meleeHelperTr.localRotation = rot1;
+
+                        if (myAgent.isPlayer != 0)
+                        {
+                            myAgent.objectMult.CallCmdMeleeHitItem(item.objectNetID, pos2, (int)e.KnockbackStrength,
+                                                                   item.tr.position, item.rb.velocity);
+                        }
+                        else
+                        {
+                            gc.playerAgent.objectMult.CallCmdMeleeHitItemNPC(myAgent.objectNetID, item.objectNetID, pos2,
+                                                                             (int)e.KnockbackStrength, item.tr.position, item.rb.velocity);
+                        }
+                    }
+                    #endregion
+                };
             }
-            static bool HitMelee(MeleeHitbox me, Melee melee, MeleePreHitArgs pre, MeleeHitArgs e)
+            static Action? HitMelee(MeleeHitbox me, Melee melee, MeleePreHitArgs pre, MeleeHitArgs e)
             {
                 GameController gc = me.gc;
                 Melee myMelee = me.myMelee;
                 Agent myAgent = myMelee.agent;
+                InvItem weaponItem = myAgent.inventory.equippedWeapon ?? myAgent.inventory.fist;
+                if (weaponItem.itemType == ItemTypes.WeaponProjectile)
+                    weaponItem = myAgent.inventory.fist;
+                CustomWeaponMelee? custom = weaponItem.GetHook<CustomWeaponMelee>();
 
-                // TODO
-                // ~~if (any of the melees is a stealing glove or a chloroform hankie) return~~
-                // if (any of the weapons has meleeNoHit) return // TODO: should be pretty much equivalent to the previous line?
-                // #multiplayer-sync
+                Agent agent = melee.agent;
+                InvItem otherWeapon = agent.inventory.equippedWeapon ?? agent.inventory.fist;
+                if (otherWeapon.itemType == ItemTypes.WeaponProjectile)
+                    otherWeapon = agent.inventory.fist;
 
-                // if (!pre.IgnoreAlignedCheck && aligned trait active) return
+                #region #multiplayer-sync
+                if (gc.serverPlayer && myAgent.isPlayer == 0 && agent.isPlayer > 0 && !agent.localPlayer)
+                    return null;
+                if (!gc.serverPlayer && myAgent.isPlayer == 0 && !agent.localPlayer && myAgent != agent
+                    && (agent.mindControlAgent != gc.playerAgent && myAgent.mindControlAgent != gc.playerAgent || agent.dead))
+                    return null;
+                if (gc.multiplayerMode && gc.serverPlayer && myAgent.isPlayer == 0 && agent.isPlayer == 0
+                    && myAgent.mindControlAgent != null && myAgent.mindControlAgent != gc.playerAgent && !agent.dead)
+                {
+                    me.FakeHit(e.GameObject);
+                    return null;
+                }
+                if (gc.multiplayerMode && gc.serverPlayer && myAgent.isPlayer == 0 && agent.isPlayer == 0
+                    && agent.mindControlAgent != null && agent.mindControlAgent != gc.playerAgent && !agent.dead)
+                {
+                    me.FakeHit(e.GameObject);
+                    return null;
+                }
+                if (!gc.serverPlayer && myAgent.isPlayer > 0 && !myAgent.localPlayer && !agent.localPlayer)
+                    return null;
+                #endregion
 
-                // if (same person, or meleeNoHit, or !pre.IgnoreLOS && not in LOS) return
-                // if (neither of them is giant or shrunk) return // TODO: why is this check needed?
+                #region Melee pre-conditions and checks
+                // if the weapons don't hit
+                if (weaponItem.meleeNoHit || otherWeapon.meleeNoHit) return null;
 
-                // #try (for the first two finally blocks)
+                if (myAgent == agent) return null; // same?
+                if (!pre.IgnoreLineOfSight && !me.HasLOSMelee(melee.agent)) return null;
+                if (!pre.IgnoreAlignedCheck && !myAgent.DontHitAlignedCheck(agent)) return null;
+
+                if (!pre.IgnoreSizeDifference)
+                {
+                    if (myAgent.agentSpriteTransform.localScale.x >= 3f
+                        || agent.agentSpriteTransform.localScale.x >= 3f
+                        || myAgent.agentSpriteTransform.localScale.x <= 0.34f
+                        || agent.agentSpriteTransform.localScale.x <= 0.34f)
+                    {
+                        return null;
+                    }
+                }
+                #endregion
 
                 // find and clamp damage (e.WeaponDamage)
+                // knockback depends on damage?
 
                 // TODO: Clean up
                 // #multiplayer-sync
@@ -766,9 +860,9 @@ namespace RogueLibsCore
 
                 // handle KnockWeapons traits
 
-                return true;
+                return () => { };
             }
-            static bool HitBullet(MeleeHitbox me, Bullet bullet, MeleePreHitArgs pre, MeleeHitArgs e)
+            static Action? HitBullet(MeleeHitbox me, Bullet bullet, MeleePreHitArgs pre, MeleeHitArgs e)
             {
                 GameController gc = me.gc;
                 Melee myMelee = me.myMelee;
@@ -776,10 +870,9 @@ namespace RogueLibsCore
 
 
 
-
-                return true;
+                return () => { };
             }
-            static bool HitWall(MeleeHitbox me, MeleePreHitArgs pre, MeleeHitArgs e)
+            static Action? HitWall(MeleeHitbox me, MeleePreHitArgs pre, MeleeHitArgs e)
             {
                 GameController gc = me.gc;
                 Melee myMelee = me.myMelee;
@@ -829,7 +922,7 @@ namespace RogueLibsCore
                 // vibrate the controller // e.VibrateController
                 // #multiplayer-sync
 
-                return true;
+                return () => { };
             }
         }
 
