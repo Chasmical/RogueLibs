@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useTabGroupChoice } from '@docusaurus/theme-common';
+import { useTabGroupChoice } from '@docusaurus/theme-common/internal';
 import clsx from 'clsx';
 import styles from './Tabs.module.css';
 
-function isInViewport(element) {
+function isInViewport(element: any) {
   const {top, left, bottom, right} = element.getBoundingClientRect();
   const {innerHeight, innerWidth} = window;
 

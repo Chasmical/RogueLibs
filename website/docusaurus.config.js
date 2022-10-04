@@ -13,16 +13,19 @@ module.exports = {
     defaultLocale: 'en',
     locales: ['en', 'ru'],
     localeConfigs: {
-      'en': {
+      en: {
         label: 'English',
       },
-      'ru': {
+      ru: {
         label: 'Русский',
       },
     },
   },
   plugins: ['docusaurus-plugin-sass'],
   themeConfig: {
+    metadata: [
+      { name: "twitter:image", content: "/RogueLibs/img/logo.png" },
+    ],
     docs: {
       sidebar: {
         hideable: true,
@@ -42,8 +45,7 @@ module.exports = {
       title: '',
       logo: {
         alt: 'RogueLibs Logo',
-        src: 'img/logo.png',
-        srcDark: 'img/logo-inverted.png',
+        src: 'img/logo-long.png',
       },
       items: [
         {

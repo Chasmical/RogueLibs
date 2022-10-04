@@ -5,19 +5,18 @@ import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import styles from './index.module.css';
 import HomepageFeatures from '../components/HomepageFeatures';
-import { useColorMode } from '@docusaurus/theme-common';
 import Logo from '@site/static/img/logo.png';
-import LogoDark from '@site/static/img/logo-inverted.png';
 import LogoPokemon from '@site/static/img/logo-pokemon.png';
+import LogoLegacy from '@site/static/img/logo-legacy.png';
 import Translate from '@docusaurus/Translate';
 import { useLocation } from '@docusaurus/router';
 import { parse as queryParse } from 'query-string';
 
 function HomepageHeader() {
-  const { isDarkTheme } = useColorMode();
   const params = queryParse(useLocation().search);
-  let logo = isDarkTheme ? LogoDark : Logo;
-  if (params.pokemon) logo = LogoPokemon;
+  let logo = Logo;
+  if (params.pokemon !== undefined) logo = LogoPokemon;
+  if (params.legacy !== undefined) logo = LogoLegacy;
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">

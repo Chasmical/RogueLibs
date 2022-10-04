@@ -7,6 +7,14 @@
   --ifm-color-primary-lighter: #b39cfa;
   --ifm-color-primary-lightest: #dacffc;
   --ifm-code-font-size: 95%;
+  --ifm-navbar-height: 5rem;
+}
+
+.navbar__logo {
+  height: 3rem;
+}
+.sidebarLogo_node_modules-\@docusaurus-theme-classic-lib-theme-DocSidebar-Desktop-styles-module img {
+  height: auto !important;
 }
 
 .docusaurus-highlight-code-line {
