@@ -1,12 +1,14 @@
 # Custom Names
 
+Custom localization in RogueLibs is implemented using instances of the `CustomName` class, which contain all languages' translations at the same time (which isn't really efficient, but whatever). You can integrate your custom names into the game using the `RogueLibs.CreateCustomName(...)` method.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-## `CustomNameInfo` {#customnameinfo}
+## `CustomNameInfo` structure {#customnameinfo}
 
-`CustomNameInfo` structure is used to create custom names and transfer localizations data.
+`CustomNameInfo` structure is used to create custom names and transfer localization data.
 
 ```csharp
 CustomNameInfo emptyInfo = new CustomNameInfo();
@@ -18,7 +20,7 @@ You can add more translations to the custom names too:
 <Tabs
     defaultValue="indexer"
     values={[
-        {label:'Indexer property', value:'indexer'},
+        {label:'Indexer properties', value:'indexer'},
         {label:'Named properties', value:'named'},
     ]}>
 <TabItem value="indexer">
@@ -69,7 +71,7 @@ string translation = nameInfo[(LanguageCode)123];
 string display = translation ?? nameInfo.English;
 ```
 
-## `CustomName` {#customname}
+## `CustomName` class {#customname}
 
 Usually, `CustomName`s are created automatically, when you add names and descriptions to your items, traits, abilities and etc.:
 

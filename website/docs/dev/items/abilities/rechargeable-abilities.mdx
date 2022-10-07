@@ -1,5 +1,7 @@
 # Rechargeable Abilities
 
+Custom abilities can be made rechargeable by implementing the `IAbilityRechargeable` interface. Ability's `Count` here works as a cooldown and usually represents the amount of time to wait until full recharge. This interface makes use of some of the game's recharging mechanics, but it doesn't completely rely on it. I'd recommend taking a look at [Recharging Items](../recharging-items.mdx), if you need finer control.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -16,8 +18,6 @@ public class MyRechargeableAbility : CustomAbility, IAbilityRechargeable
     public void OnRecharging(AbilityRechargingArgs e) { /* ... */ }
 }
 ```
-
-`Count` here works as a cooldown and represents the amount of time to wait until full recharge.
 
 :::tip Pro-tip
 You can just set it to 0 when it's fully recharged and to 1 when it's recharging (you can override the displayed count if you want), and use your own cooldown mechanism instead. See [Recharging Items](../recharging-items) for more info.

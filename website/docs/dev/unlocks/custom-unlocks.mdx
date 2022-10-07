@@ -1,25 +1,17 @@
 # Custom Unlocks
 
+Custom unlocks allow your custom content to be accessed through vanilla menus. Unlike other hooks, unlocks persist throughout the game, and get destroyed and created only when initially loading the game or changing save slots. RogueLibs also creates wrappers around vanilla unlocks, to ensure the compatibility of your unlocks with the vanilla ones.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-## `UnlockWrapper` class {#unlockwrapper}
+`UnlockWrapper` is a flexible wrapper around a `Unlock` class, and provides methods to get the unlock's name, description, image and other stuff. It is the base class for any and all custom or vanilla unlocks.
 
-All of the unlocks in the game are wrapped in a more flexible class - `UnlockWrapper`.
-
-`UnlockWrapper` provides methods to get the unlock's name, description, image and other stuff.
+`DisplayedUnlock` derives from the `UnlockWrapper` class. It provides methods to display the unlock in the in-game menus. You can alter or augment your unlock's name and description, and even use [Unity's rich text formatting](https://docs.unity3d.com/Packages/com.unity.ugui@1.0/manual/StyledText.html). Note, that all rich text formatting tags have to be closed (this was introduced in one of the Unity versions).
 
 :::caution
-You probably shouldn't implement `UnlockWrapper` directly. Use the classes described later on the page.
-:::
-
-## `DisplayedUnlock` class {#displayedunlock}
-
-`DisplayedUnlock` derives from the `UnlockWrapper` class. It provides methods to display the unlock in the in-game menus.
-
-:::caution
-You shouldn't implement `DisplayedUnlock` directly either. Use the classes described later on the page.
+You probably shouldn't implement `UnlockWrapper` or `DisplayedUnlock` directly. Use the classes described below.
 :::
 
 ## Unlock classes {#unlock-classes}

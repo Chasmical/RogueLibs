@@ -1,5 +1,7 @@
 # Creating a Custom Item
 
+RogueLibs provides classes and methods to create: usable, combinable, targetable (and targetable+) items. All custom items derive from the `CustomItem` class, which provides all of the basic item functionality. You can derive your custom item's class from specialized interfaces to expand its functionality ([`IItemUsable`](./usable-items.mdx), [`IItemCombinable`](./combinable-items.mdx), [`IItemTargetable`](./targetable-items.mdx), [`IItemTargetableAnywhere`](./targetable-items-plus.mdx)). Custom items are initialized and integrated into the game using the `RogueLibs.CreateCustomItem<TItem>()` method.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';

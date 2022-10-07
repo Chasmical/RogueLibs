@@ -1,5 +1,7 @@
 # Patching Utilities
 
+RogueLibs provides several utilities to help you with patching. Whether you use Harmony's attributes, Harmony instances directly, RogueLibs' stuff or something else, is your choice. All of them have their own pros and cons. You can learn more [about Harmony here](https://harmony.pardeike.net/articles/intro.html).
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -166,9 +168,7 @@ public class MyEvenCoolerPatches
 
 ## Transpiler helper methods {#transpiler-helper-methods}
 
-Transpilers are kind of complicated.
-
-Here's an example from RogueLibs:
+Transpilers are kind of complicated, since they use a low-level Intermediate Language (IL) instead of C# (branches, loops and conditions are the hardest part in here). As an example, here's one of the simplest transpilers from RogueLibs:
 
 <Tabs defaultValue="helper"
     values={[
@@ -337,3 +337,7 @@ Still relatively simple. I just don't want to spend my time writing a really com
 
 </TabItem>
 </Tabs>
+
+:::info BTHarmonyUtils
+You might also want to consider using BlazingTwist's [BTHarmonyUtils](https://github.com/BlazingTwist/BTHarmonyUtils). It provides several useful transpiler-patching utilities, similar to the ones in RogueLibs. It is easier to use, but I don't think there's any documentation on it.
+:::

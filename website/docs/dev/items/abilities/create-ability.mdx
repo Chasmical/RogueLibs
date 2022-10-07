@@ -1,12 +1,13 @@
 # Creating a Custom Ability
 
+Special abilities in SoR are actually implemented as items. They have `SetupDetails`, `Count`, and exist in the owner's inventory, just like items. The `CustomAbility` class provided by RogueLibs inherits from the `CustomItem` class and provides a default implementation of `SetupDetails`. Just like with custom items, you can use interfaces to expand your ability's functionality: [`IAbilityRechargeable`](./rechargeable-abilities.mdx), [`IAbilityChargeable`](./chargeable-abilities.mdx), [`IAbilityTargetable`](./targetable-abilities.mdx).
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## `CustomAbility` class {#customability}
-
-Special abilities are actually really similar to items. They have `SetupDetails`, `Count` and exist in the owner's inventory, just like items. To create one, you need to create a class deriving from `CustomAbility` (which derives from `CustomItem`):
+To make a custom ability, you need to create a class deriving from `CustomAbility`:
 
 ```csharp title="MyCustomAbility.cs"
 // highlight-next-line

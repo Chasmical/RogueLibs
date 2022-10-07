@@ -1,5 +1,7 @@
 # Creating a Custom Effect
 
+RogueLibs provides classes and methods to create custom effects, and an interface to make status effects updateable. Just like items and traits, custom effects derive from a hook class, `CustomEffect`. If you want the effect to have some kind of a passive effect, then you might need to patch that in yourself.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -44,7 +46,7 @@ public class MyCustomEffect : CustomEffect
 `OnUpdated` works like Unity's `Update`, but with a settable interval (default is 1 second):
 
 ```csharp
-    public void OnUpdated(EffectUpdatedArgs e)
+    public override void OnUpdated(EffectUpdatedArgs e)
     {
         // highlight-next-line
         e.UpdateDelay = 0.5f; // 2 updates per second

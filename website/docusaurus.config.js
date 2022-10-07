@@ -24,7 +24,7 @@ module.exports = {
   plugins: ['docusaurus-plugin-sass'],
   themeConfig: {
     metadata: [
-      { name: "twitter:image", content: "/RogueLibs/img/logo.png" },
+      { name: "twitter:image", content: "https://sugarbarrel.github.io/RogueLibs/img/logo.png" },
     ],
     docs: {
       sidebar: {

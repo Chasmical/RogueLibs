@@ -1,5 +1,7 @@
 # Creating a Custom Interaction
 
+RogueLibs v3.5.0 introduced custom interactions with a pretty unique syntax. All of the code is condensed and basically can be put into a single method. You just need to keep in mind that the main function must be pure (mustn't do anything, except add/remove buttons and set callbacks), and that all of the side effects must be set using `SetSideEffect` or `SetStopCallback`.
+
 ## Using `SimpleInteractionProvider` class {#simpleinteractionprovider}
 
 The simplest way to create custom interactions is by using a `SimpleInteractionProvider` class. It allows you to utilize all of the object-oriented programming principles and keeps the code simple and straightforward. Use `RogueInteractions.CreateProvider<T>` methods to create instances of that class. You can add buttons using `h.AddButton` inside the handler.

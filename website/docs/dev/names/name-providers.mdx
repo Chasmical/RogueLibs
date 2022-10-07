@@ -1,10 +1,14 @@
 # Custom Name Providers
 
+If you have some kind of a complicated localization logic, then you might want to create your own `INameProvider`. This way you can control what strings are returned by `NameDB.GetName` in a more generic way. You can even hook up your localization provider, if you don't like the localization system provided by RogueLibs.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
-If you have some kind of complicated naming strategy, then you might want to use `INameProvider`. This way you can control what strings are returned by `NameDB.GetName` in a more generic way. Just create a class implementing `INameProvider` and add it to `RogueFramework`.
+## `INameProvider` interface {#inameprovider}
+
+Just create a class implementing `INameProvider` and add it to `RogueFramework`:
 
 ```csharp title="MyNameProvider.cs"
 public class MyNameProvider : INameProvider
@@ -20,7 +24,7 @@ public class MyNameProvider : INameProvider
 }
 ```
 
-:::note
+:::info
 If the original `NameDB.GetName` returned an error string (with `E_` prefix), `result` is set to `null`.
 :::
 
@@ -45,4 +49,4 @@ public class DialogueNameProvider : INameProvider
 }
 ```
 
-Normally, the game looks for dialogue names of the following format: `<AgentName>_<DialogueName>`. If such a name doesn't exist, then `NA_<DialogueName>` (NA - No Agent) is used instead. This name provider will also look for a name with just the dialogue name. This allows the developers to write dialogue names without that annoying `NA_` prefix.
+Normally, the game looks for dialogue names of the following format: `<AgentName>_<DialogueName>`. If such a name doesn't exist, then `NA_<DialogueName>` (NA - No Agent) is used instead. This name provider will also look for a name with just the dialogue name. This allows the developers to write dialogue names without that annoying and often confusing `NA_` prefix.

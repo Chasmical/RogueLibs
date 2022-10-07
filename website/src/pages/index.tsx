@@ -11,6 +11,7 @@ import LogoLegacy from '@site/static/img/logo-legacy.png';
 import Translate from '@docusaurus/Translate';
 import { useLocation } from '@docusaurus/router';
 import { parse as queryParse } from 'query-string';
+import Head from '@docusaurus/Head';
 
 function HomepageHeader() {
   const params = queryParse(useLocation().search);
@@ -43,10 +44,26 @@ function HomepageHeader() {
 
 export default function Home() {
   const {siteConfig} = useDocusaurusContext();
+
+  const title = `RogueLibs - SoR Modding Library`;
+  const description = `This modding library does nothing on its own, but it provides methods for other mods to easily create custom mutators, items, traits, status effects, abilities, unlocks, menus and even integrate custom sounds and sprites (yep, even TK2D ones)!`;
+
   return (
     <Layout
       title={`${siteConfig.title}`}
       description="RogueLibs Modding Library for Streets of Rogue">
+      <Head>
+        <title>{title}</title>
+
+        <meta property="title" content={title}/>
+        <meta name="description" content={description}/>
+
+        <meta property="og:title" content={title}/>
+        <meta property="og:description" content={description}/>
+
+        <meta name="twitter:title" content={title}/>
+        <meta name="twitter:description" content={description}/>
+      </Head>
       <HomepageHeader/>
       <main>
         <HomepageFeatures/>

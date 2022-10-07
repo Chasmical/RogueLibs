@@ -1,4 +1,6 @@
-# Getting Started (new!)
+# Getting Started
+
+Welcome to the SoR mod-making guide featuring RogueLibs! Library and tools provided by RogueLibs really simplify the modding process, but you'll still need some basic C# knowledge to get started. If you have any questions, feel free to ask them in the official Discord's [#🔧|modding](https://discord.gg/m3zuHSwQw2) channel.
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
@@ -7,9 +9,7 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 ## Required software {#tools}
 
 First of all, you'll need to install these tools:
-
 - **[dnSpy](https://github.com/dnSpy/dnSpy/releases/latest)** - a .NET assembly editor (and a debugger, but it's way too tedious to make it work for BepInEx and plugins). You're not gonna edit assemblies, just view them to see how the game and/or other plugins work.
-
 - **[Visual Studio 2019 Community](https://visualstudio.microsoft.com/downloads/)** - the Integrated Development Environment (IDE for short) that you'll be working in.
 
 ## New Way of Modding {#new-way-of-modding}
@@ -25,8 +25,6 @@ Instead of creating a project manually, we'll be using a **special template** wi
 - Most of the stuff you could possibly need is already in the template!
 
 You can just copy-paste the template, and start working on your mod in less than a minute!
-
-> *Before that template was created, you had to create a project and some folders, copy-paste dlls, add references, set up some settings, write the base code, then write some of your mod's content, then realize that you forgot to add a reference, then continue working on your mod, then again, you forgot to add something really fundamental and you have to rewrite the entire thing, and then when you almost got it to a stable release, you remember "that cool feature in C# 8.0 and later", start the project from scratch to try and add that feature, fail and then cry in your bed because you really need that feature and you can't imagine modding the game without it, and also because you scratched the entire project and you don't care enough to start over...* True story.
 
 ## Workspace Structure {#workspace-structure}
 

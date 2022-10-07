@@ -1,5 +1,7 @@
 # Creating a Custom Trait
 
+RogueLibs provides classes and methods to create custom traits, and an interface to make traits updateable. Just like items, custom traits derive from a hook class, `CustomTrait`, and their functionality can be expanded with interfaces: `ITraitUpdateable`, just one in this case. If you want the trait to have some kind of a passive effect, then you might need to patch that in yourself.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';

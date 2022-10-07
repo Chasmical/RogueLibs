@@ -48,7 +48,7 @@ module.exports = {
           ],
           'Custom Unlocks': [
             'dev/unlocks/custom-unlocks',
-            'dev/unlocks/overriding-behavior',
+            'dev/unlocks/configuring-unlocks',
           ],
           'Custom Names': [
             'dev/names/custom-names',

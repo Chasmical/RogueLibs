@@ -1,5 +1,7 @@
 # Custom Sprites and Resources
 
+Adding image resources to a plugin is a bit tricky. Visual Studio loads any image resources as bitmaps, but we don't want that. You'll need to modify the resources manifest yourself, and add your images as binary files (or byte arrays). RogueLibs supports cropping and resizing your sprites, so, technically, you could even upload a spritesheet, and cut sprites out of it, but the performance gain would not be worth it (loading all of the 1204 64x64 sprites from [Sidi's spritepack](https://sugarbarrel.github.io/SoRModHub/) takes about 350 milliseconds, while patching methods is significantly slower - RogueLibs takes about 5 seconds to load).
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -51,7 +53,7 @@ But you can create them directly too, although you'll have to specify a name and
 RogueLibs.CreateCustomSprite("name", SpriteScope.Items, Properties.Resources.ResourceName);
 ```
 
-By default, RogueLibs uses the entire file as a texture. You can specify the region of the texture to use with a `Rect` parameter (for example, if you included a color palette used in the image by its side and don't want to include it):
+By default, RogueLibs uses the entire file as a texture. You can specify the region of the texture to use with a `Rect` parameter (for example, if you included a color palette used in the image by its side and don't want to display it in the game):
 
 ```csharp
 RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceName,
@@ -101,4 +103,4 @@ public class Present : CustomItem, IItemUsable
 }
 ```
 
-This example works only if an item actually exists. In the Loadout and Rewards menus it will always have the `Present` sprite. If you want the sprite in the menus to be randomly selected too, you'll have to [override the `DisplayedUnlock.GetImage` method](./unlocks/overriding-behavior#examples).
+This example works only if an item actually exists. In the Loadout and Rewards menus it will always have the `Present` sprite. If you want the sprite in the menus to be randomly selected too, you'll have to [override the `DisplayedUnlock.GetImage` method](./unlocks/configuring-unlocks#examples).

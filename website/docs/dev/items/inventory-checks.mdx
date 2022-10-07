@@ -1,12 +1,14 @@
 # Inventory Checks
 
+Custom usable items might have varying restrictions, and it will be hard to enforce a consistent standard for that kind of stuff. That's why RogueLibs introduces special **inventory checks**, that will run before and after any usable/combinable/targetable items in the game. You can use these checks to prevent the item's intended function, or maybe somehow augment it.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## `InventoryChecks` {#inventorychecks}
 
-So, with inventory checks, you can omit code like this:
+With inventory checks, you can omit code like this:
 
 ```csharp
 if (Owner.statusEffects.hasTrait("BloodRestoresHealth"))
@@ -27,7 +29,7 @@ if (Owner.health == Owner.maxHealth)
 ...
 ```
 
-RogueLibs allows you to make **inventory checks**, that will work on all items in the game that meet a certain criteria (for example, have "Food" type and an "Alcohol" category). These inventory checks also implement some usual stuff, that modders sometimes forget to implement. For example, removing an item from the inventory or stopping the interaction, when the item's count reaches 0.
+These inventory checks can also implement some common side effects, that modders sometimes forget to implement. For example, removing an item from the inventory or stopping the interaction, when the item's count reaches 0 (RogueLibs provides these checks).
 
 ## Ignoring inventory checks {#ignoring-checks}
 

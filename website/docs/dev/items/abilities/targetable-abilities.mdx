@@ -1,5 +1,7 @@
 # Targetable Abilities
 
+Custom abilities can be made targetable by implementing the `IAbilityTargetable` interface. You can determine the target of the special ability (for example, the closest agent), and a special ability indicator will be displayed over it. Then you'll be able to access the determined target through the `CurrentTarget` property.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -17,9 +19,7 @@ public class MyTargetableAbility : CustomAbility, IAbilityTargetable
 }
 ```
 
-`FindTarget` determines the closest target, that the ability can be used on. An ability indicator will be displayed over that object. If the ability cannot be used right now, you should return `null`.
-
-Then, you can use `CurrentTarget` in any of the methods:
+`FindTarget` determines the closest (or the most compatible/applicable) target, that the ability can be used on right now. If the ability cannot be used right now, you should return `null`. Then, you can use `CurrentTarget` in any of the methods:
 
 ```csharp
     public override void OnPressed()

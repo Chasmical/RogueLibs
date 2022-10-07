@@ -1,5 +1,7 @@
 # Installation
 
+To start using mods, first you need to install BepInEx, the modding framework that we're using to mod Streets of Rogue. Then, install RogueLibs (both plugin and patcher - two different important files) and then any mods that you want to play with. You can find a lot of mods on [SoR ModHub](https://sugarbarrel.github.io/SoRModHub) or [GameBanana](https://gamebanana.com/mods/games/8455).
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
@@ -43,6 +45,10 @@ Here's a few pointers:
 
 </TabItem>
 </Tabs>
+
+:::caution BepInEx v6
+BepInEx v6 pre-release recently came out. Don't use it yet. All of the mods at the moment still use BepInEx v5.4.x, and if you install v6, the mods probably won't work. BepInEx developers plan on supporting older v5 plugins in the future, so once a stable v6 version comes out, you should be able to use it.
+:::
 
 ### Extracting files {#bepinex-extract}
 
@@ -384,6 +390,8 @@ And put these `.dll` files in the `BepInEx/plugins` directory.
 
 **[SoR ModHub](https://sugarbarrel.github.io/SoRModHub)** is a collection of mods that use the latest RogueLibs v3 that I know about. Includes links to other mod sources as well, and is updated pretty regularly.
 
-[GameBanana](https://gamebanana.com/mods/games/8455) - Streets of Rogue's *official* mod-sharing place.
+**[GameBanana](https://gamebanana.com/mods/games/8455)** - Streets of Rogue's official mod-sharing place. Some mods don't get released or updated there, since the process of setting up or updating a page is way too long and overly complicated.
+
+The **[#👍|modding-gallery🔧](https://discord.gg/m3zuHSwQw2)** channel in the official SoR's Discord. You'll find all of the latest info, updates and bugfixes there. It's kind of hard to search for specific mods though.
 
 ModDB and NexusMods are barely used at all.

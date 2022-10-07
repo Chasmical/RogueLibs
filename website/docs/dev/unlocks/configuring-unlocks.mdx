@@ -1,4 +1,6 @@
-# Overriding Default Behavior
+# Configuring Unlocks
+
+Custom unlocks' displayed names, descriptions, images, buttons and their order in the list can be configured. You can even determine your own unlock conditions, change the displayed text and sprites conditionally and stuff like that.
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
@@ -6,11 +8,9 @@ import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## Sorting {#sorting}
 
-If you want your unlock to be at the top of the menu, set the `SortingOrder` and `SortingIndex` properties.
-
 Unlocks are first sorted by their `SortingOrder`, then by their state (unlocked, purchasable, available and locked), and then by their `SortingIndex`. You can ignore the sorting by the state by setting `IgnoreStateSorting` to `true`.
 
-Here's an example of how it would work:
+Here's an example of how this sorting would work:
 
 - `SortingOrder = -400`:
   - `Unlocked`:
@@ -25,7 +25,7 @@ Here's an example of how it would work:
     - ...
 - `SortingOrder = -3`:
   - ...
-- `SortingOrder = 0` (vanilla unlocks go here):
+- `SortingOrder = 0` (vanilla unlocks go here, with sorting index of 0):
   - ...
 - `SortingOrder = 1`:
   - ...

@@ -1,12 +1,14 @@
 # Extra Stuff
 
+RogueLibs provides a couple of extra interfaces that you can use for any supported custom content hooks: `IDoUpdate`, `IDoFixedUpdate`. These interfaces correspond to the `Update` and `FixedUpdate` Unity methods (not directly, but through the game's `Updater` class).
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## `IDoUpdate` and `IDoFixedUpdate` {#update-interfaces}
 
-If you want to update your items/traits/unlocks with Unity's `Update` or `FixedUpdate`, implement these interfaces:
+If you want to update your items/traits/effects/objects with Unity's `Update` or `FixedUpdate`, implement these interfaces:
 
 <Tabs
     defaultValue="update"

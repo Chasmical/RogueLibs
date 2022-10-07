@@ -1,5 +1,7 @@
 # Targetable Items +
 
+Custom items can be made targetable+ (targetable anywhere) by implementing the `IItemTargetableAnywhere`. Normal targetable items can only be used on something actually present in the game, but as that parenthesised text implies, targetable+ items can be used anywhere on the screen. And so, this interface uses in-game positions instead of objects.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';

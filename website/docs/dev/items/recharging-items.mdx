@@ -1,12 +1,14 @@
 # Recharging Items
 
+RogueLibs doesn't provide any explicit functionality for rechargeable items, but you can easily implement that yourself, using the `IDoUpdate` interface. You'll find some useful code snippets below, that you can reuse for your own items.
+
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## Making items rechargeable {#making-rechargeable}
 
-If you want to make a rechargeable item, you'll have to make use of the [`IDoUpdate` interface](../extra#update-interfaces):
+Make your custom item's class implement the [`IDoUpdate` interface](../extra#update-interfaces):
 
 ```csharp title="MyRechargeableItem.cs"
 // highlight-next-line
@@ -17,8 +19,6 @@ public class MyRechargeableItem : CustomItem, IDoUpdate
 ```
 
 ## Presets {#presets}
-
-Here's a couple of useful presets:
 
 <Tabs defaultValue="cooldown"
     values={[
