@@ -35,7 +35,7 @@ namespace RogueLibsCore
             try
             {
                 string text = File.ReadAllText(lastAccessFile);
-                DateTime lastAccess = DateTime.Parse(text);
+                DateTime lastAccess = DateTime.Parse(text, CultureInfo.InvariantCulture);
                 return DateTime.Now - lastAccess > new TimeSpan(1, 0, 0);
             }
             catch
