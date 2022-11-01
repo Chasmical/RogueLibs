@@ -1,4 +1,4 @@
-<Language Id="russian" Version="11">
+<Language Id="russian" Version="12">
   <Category Id="Agent"> <!-- Not yet translated stuff is marked with "TBT" -->
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актёр</Entry>
@@ -1406,7 +1406,7 @@
     <Entry Id="Toss">Позволяет поднимать и бросать практически любые объекты.</Entry>
     <Entry Id="Handcuffs">Можно надеть на людей наручники и нейтрализовать их не убивая. Нельзя использовать на "стражах Закона" и нелюдях.</Entry>
     <Entry Id="AboveTheLaw">Копы на текущем уровне игнорируют твои преступления</Entry>
-    <Entry Id="BloodRestoresHealth">Кровь — единственное, что может восстановить тво` здоровье</Entry>
+    <Entry Id="BloodRestoresHealth">Кровь — единственное, что может восстановить твоё здоровье</Entry>
     <Entry Id="Ghost">С одной стороны, ты можешь запросто ходить сквозь стены. С другой стороны, это не важно, ведь ты МЁРТВ!</Entry>
     <Entry Id="GhostBlaster">Who you gonna call? Надеюсь, маме. Она ведь скучает. Этот электростатический заряд работает на всех сверхъестественных существах.</Entry>
     <Entry Id="Suspicious">Хозяева различных заведений просят тебя уйти</Entry>
@@ -1455,7 +1455,7 @@
     <Entry Id="KillProfiterAmmo">В качестве награды за убийство 3 человек во всём твоём оружии будут появляться боеприпасы, чтобы цикл насилия не прерывался!</Entry>
     <Entry Id="KillProfiterHealth">Убивая людей, ты немного подлечиваешься. Но это не исцелит твою измученную душу!</Entry>
     <Entry Id="Blindenizer">Излучает ослепляющую вспышку света, которая сильно (хоть и временно) ухудшает зрение людей. Первый шаг на пути к миру тьмы и постоянно ушибленным пальцам на ногах.</Entry>
-    <Entry Id="ParalyzerTrap">Временно парализует людей. Выглядит как разноцветная перевернутая буква P — просто у одного геймдизайнера напрочь иссякли идеи.</Entry>
+    <Entry Id="ParalyzerTrap">Временно парализует людей. Выглядит как разноцветный мягкий знак — просто у одного геймдизайнера напрочь иссякли идеи.</Entry>
     <Entry Id="WerewolfTransform">Превращение в вервольфа. 15 секунд радостного насилия. А потом парализующее смятение.</Entry>
     <Entry Id="WerewolfEffect">Хватит это читать, иди уже порви кому-нибудь глотку!</Entry>
     <Entry Id="Bloodlust">Убийства восстанавливают здоровье</Entry>
@@ -1915,7 +1915,7 @@
     <Entry Id="Guard_NoiseReact_1">Что за...</Entry>
     <Entry Id="Guard_NoiseReact_2">Кто там?</Entry>
     <Entry Id="Guard_NoiseReact_3">Хм...</Entry>
-    <Entry Id="Guard_NoiseReact_4">...Что за чёрт?</Entry>
+    <Entry Id="Guard_NoiseReact_4">...Какого чёрта?</Entry>
     <Entry Id="Guard2_Interact_1">Чё нада?</Entry>
     <Entry Id="Guard2_FleeBattle_1">Я ухожу!</Entry>
     <Entry Id="Guard2_FleeBattle_2">Стоп!</Entry>
@@ -1925,7 +1925,7 @@
     <Entry Id="Guard2_NoiseReact_1">Что за...</Entry>
     <Entry Id="Guard2_NoiseReact_2">Кто там?</Entry>
     <Entry Id="Guard2_NoiseReact_3">Хм...</Entry>
-    <Entry Id="Guard2_NoiseReact_4">...Что за чёрт?</Entry>
+    <Entry Id="Guard2_NoiseReact_4">...Какого чёрта?</Entry>
     <Entry Id="Hobo_FleeBattle_1">А-а-а-а-а!!!</Entry>
     <Entry Id="Hobo_FleeBattle_2">О, пора сваливать!</Entry>
     <Entry Id="Hobo_FleeBattle_3">Моя задница не готова к смерти!</Entry>
@@ -2266,7 +2266,7 @@
     <Entry Id="HB_ResistanceLeader_Intro1">Позволь сказать тебе пару слов, прежде чем мы отправим тебя на самоуб... самостоятельное задание по убийству Мэра...</Entry>
     <Entry Id="HB_ResistanceLeader_Intro2">ПЕРВОЕ: Ты в городе недавно, поэтому не знаешь... но город состоит из вертикальных слоев. Как лазанья.</Entry>
     <Entry Id="HB_ResistanceLeader_Intro3">Внизу Трущобы, потом Завод, потом крытый Парк, затем Деловой центр и Пригород на самом верху.</Entry>
-    <Entry Id="HB_ResistanceLeader_Intro4">Единственный способ добраться с одного уровня на другой — лифты.</Entry>
+    <Entry Id="HB_ResistanceLeader_Intro4">Единственный способ перейти с одного уровня на другой — лифты.</Entry>
     <Entry Id="HB_ResistanceLeader_Intro5">ВТОРОЕ: Помимо первостепенного задания, ты должен помочь нам и с другими делами.</Entry>
     <Entry Id="HB_ResistanceLeader_Intro6">Они будут подсвечиваться на карте, как, например, тот генератор, который ты взорвал.</Entry>
     <Entry Id="HB_ResistanceLeader_Intro7">Чтобы перейти на другой этаж, нужно выполнить все задания на текущем.</Entry>
@@ -2276,7 +2276,7 @@
     <Entry Id="HB_ResistanceLeader_Intro11">Поэтому постарайся, пожалуйста, меня могут повысить, если всё получится!</Entry>
     <Entry Id="HB_ResistanceLeader_Intro12">ЧЕТВЁРТОЕ: Как ты уже знаешь, Мэр запретил Куриные наггетсы, поскольку однажды у него заболел от них живот.</Entry>
     <Entry Id="HB_ResistanceLeader_Intro13">С тех пор Куриные наггетсы стали редким и очень ценным товаром.</Entry>
-    <Entry Id="HB_ResistanceLeader_Intro14">Если ты найдешь несколько Куриных наггетсов, мы сможем дать тебе за них разные полезные вещи.</Entry>
+    <Entry Id="HB_ResistanceLeader_Intro14">Если ты найдёшь несколько Куриных наггетсов, мы сможем дать тебе за них разные полезные вещи.</Entry>
     <Entry Id="HB_ResistanceLeader_Intro15">Ученый, Вор и Солдат расскажут тебе о Наггетсах поподробнее.</Entry>
     <Entry Id="HB_ResistanceLeader_Intro16">Если ты хочешь сразу попасть в город — Лифт к северу от тебя.</Entry>
     <Entry Id="HB_ResistanceLeader_Intro17">Удачи тебе, юный разбойник!</Entry>
@@ -2487,7 +2487,7 @@
     <Entry Id="NA_PawnShopMachineOut">Деньги закончились.</Entry>
     <Entry Id="CopBot_MayorTrigger">Обнаружена угроза. Приготовитесь к смерти.</Entry>
     <Entry Id="Clerk_MayorComputerBroken">Компьютер сломался... сегодня выборов не будет!</Entry>
-    <Entry Id="Clerk_MayorDeadNoElection">Стало известно, что Мэр мертв. Поэтому, думаю, сегодня выборов не будет!</Entry>
+    <Entry Id="Clerk_MayorDeadNoElection">Стало известно, что Мэр мёртв. Поэтому, думаю, сегодня выборов не будет!</Entry>
     <Entry Id="Clerk_MayorLostHat">Стало известно, что пропала Шляпа Мэра... так что сегодня никаких выборов!</Entry>
     <Entry Id="Clerk_MayorHatesPlayer">Мэр считает, что проводить выборы сегодня слишком опасно: похоже, КТО-ТО его напугал...</Entry>
     <Entry Id="Clerk_ElectionResultsIn">...И-и-и у нас есть результаты! Обсудим это в парке!</Entry>
@@ -2924,7 +2924,7 @@
     <Entry Id="NA_MindControlInteract">Др-р-р-р-р.</Entry>
     <Entry Id="NA_MindControlInteract2">Э-э-э-э-э.</Entry>
     <Entry Id="NA_OtherPlayerDelivering">Кто-то другой уже занимается доставкой.</Entry>
-    <Entry Id="NA_DeliverySuccess">На этом этаже больше ничего не надо доставлять!</Entry>
+    <Entry Id="NA_DeliverySuccess">Отлично! Все посылки на этом этаже доставлены!</Entry>
     <Entry Id="NA_DeliveryFail">Ой-ой, посылка полностью испорчена... Упс.</Entry>
     <Entry Id="NA_DeliveryFail2">Всё помялось! Осторожнее в следующий раз, ладно?</Entry>
     <Entry Id="NA_UsedDeliveryApp">Местоположение показано на карте.</Entry>
@@ -3173,14 +3173,14 @@
     <Entry Id="GeneratingHomeKeyboard">Высшая раса ПК-игроков не признаёт геймпады!</Entry>
     <Entry Id="GeneratingHomeGamepad">Геймпад — наше всё!</Entry>
     <Entry Id="GeneratingTutorial">Сейчас ты многому научишься!</Entry>
-    <Entry Id="Optional">Необязательная</Entry>
+    <Entry Id="Optional">Необязательно</Entry>
     <Entry Id="BigQuest">Большой Квест</Entry>
     <Entry Id="ComingSoon">Скоро</Entry>
     <Entry Id="Soon">Скоро</Entry>
     <Entry Id="Kill">Нейтрализовать</Entry>
     <Entry Id="KillAll">Нейтрализовать всех</Entry>
-    <Entry Id="KillAndRetrieve">Нейтрализовать и добыть предмет</Entry>
-    <Entry Id="DestroyAndRetrieve">Уничтожить и добыть предмет</Entry>
+    <Entry Id="KillAndRetrieve">Нейтрализовать и достать предмет</Entry>
+    <Entry Id="DestroyAndRetrieve">Уничтожить и достать предмет</Entry>
     <Entry Id="RoughUp">Избить</Entry>
     <Entry Id="GiveStatusEffect">Заразить</Entry>
     <Entry Id="Destroy">Уничтожить</Entry>
@@ -3190,8 +3190,8 @@
     <Entry Id="Rewards">Награды</Entry>
     <Entry Id="Rescue">Спасти</Entry>
     <Entry Id="PlantItem">Подложить предмет</Entry>
-    <Entry Id="Retrieve">Добыть предмет</Entry>
-    <Entry Id="From">У кого</Entry>
+    <Entry Id="Retrieve">Достать</Entry>
+    <Entry Id="From">Где</Entry>
     <Entry Id="Deliver">Доставить</Entry>
     <Entry Id="Escort">Сопроводить</Entry>
     <Entry Id="FindBombs">Найти бомбы</Entry>
@@ -3202,14 +3202,14 @@
     <Entry Id="In">В</Entry>
     <Entry Id="With">С помощью</Entry>
     <Entry Id="DontKill">Никого не убивая</Entry>
-    <Entry Id="UseObject">Использовать</Entry>
-    <Entry Id="UseAll">Использовать все</Entry>
+    <Entry Id="UseObject">Нажать</Entry>
+    <Entry Id="UseAll">Нажать все</Entry>
     <Entry Id="KillMarker">НЕЙТРАЛИЗОВАТЬ</Entry>
     <Entry Id="KillAllMarker">НЕЙТРАЛИЗОВАТЬ</Entry>
-    <Entry Id="KillAndRetrieveMarker">ДОБЫТЬ ПРЕДМЕТ</Entry>
+    <Entry Id="KillAndRetrieveMarker">ДОСТАТЬ ПРЕДМЕТ</Entry>
     <Entry Id="DestroyMarker">УНИЧТОЖИТЬ</Entry>
     <Entry Id="DestroyAllMarker">УНИЧТОЖИТЬ</Entry>
-    <Entry Id="DestroyAndRetrieveMarker">УНИЧТОЖИТЬ И ДОБЫТЬ ПРЕДМЕТ</Entry>
+    <Entry Id="DestroyAndRetrieveMarker">УНИЧТОЖИТЬ И ДОСТАТЬ ПРЕДМЕТ</Entry>
     <Entry Id="FreeSlaveMarker">ОСВОБОДИТЬ РАБА</Entry>
     <Entry Id="GiveStatusEffectMarker">ЗАРАЗИТЬ</Entry>
     <Entry Id="PlantItemMarker">ПОДЛОЖИТЬ ПРЕДМЕТ</Entry>
@@ -3217,9 +3217,9 @@
     <Entry Id="RescueMarker">СПАСТИ</Entry>
     <Entry Id="RescueMarker2">ДОВЕСТИ ДО ВХОДА НА УРОВЕНЬ</Entry>
     <Entry Id="RescueMarker3">ДОВЕСТИ ДО ВЫДАВШЕГО ЗАДАНИЕ</Entry>
-    <Entry Id="RetrieveMarker">ДОБЫТЬ ПРЕДМЕТ</Entry>
-    <Entry Id="UseObjectMarker">ИСПОЛЬЗОВАТЬ</Entry>
-    <Entry Id="UseAllMarker">ИСПОЛЬЗОВАТЬ</Entry>
+    <Entry Id="RetrieveMarker">ДОСТАТЬ ПРЕДМЕТ</Entry>
+    <Entry Id="UseObjectMarker">НАЖАТЬ КНОПКУ</Entry>
+    <Entry Id="UseAllMarker">НАЖАТЬ КНОПКУ</Entry>
     <Entry Id="FindBombsMarker">ОБЕЗВРЕДИТЬ БОМБУ</Entry>
     <Entry Id="TutorialMarker">ТУТОРИАЛ</Entry>
     <Entry Id="IntroMarker">ВСТУПЛЕНИЕ</Entry>
@@ -3239,14 +3239,14 @@
     <Entry Id="MissionFailed">Задание провалено!</Entry>
     <Entry Id="FloorClear">Этаж зачищен!</Entry>
     <Entry Id="ElevatorOpen">Лифт открыт!</Entry>
-    <Entry Id="YouDied">Ты умер!</Entry>
-    <Entry Id="FailKilledQuestGiver">Давший это задание человек мертв!</Entry>
+    <Entry Id="YouDied">Вы умерли!</Entry>
+    <Entry Id="FailKilledQuestGiver">Давший это задание человек мёртв!</Entry>
     <Entry Id="FailQuestGiverHatesYou">Выдавший это задание тебя ненавидит!</Entry>
     <Entry Id="FailKilledSlave">Раб мёртв!</Entry>
     <Entry Id="FailSlaveHatesYou">Раб ненавидит тебя!</Entry>
-    <Entry Id="FailKilledPrisoner">Пленник мертв!</Entry>
+    <Entry Id="FailKilledPrisoner">Пленник мёртв!</Entry>
     <Entry Id="FailPrisonerHatesYou">Пленник ненавидит тебя!</Entry>
-    <Entry Id="FailKilledAllPrisoners">Пленник мертв!</Entry>
+    <Entry Id="FailKilledAllPrisoners">Пленник мёртв!</Entry>
     <Entry Id="FailPlantLocationDestroyed">Место закладки предмета уничтожено!</Entry>
     <Entry Id="FailLostItem">Предмет упал в яму!</Entry>
     <Entry Id="QuickRestart">Выбор персонажа</Entry>
@@ -4260,7 +4260,7 @@
     <Entry Id="WithdrawInvestment">Забрать вложения</Entry>
     <Entry Id="FlushYourself">Смыть себя</Entry>
     <Entry Id="PurgeStatusEffects">Снять статусные эффекты</Entry>
-    <Entry Id="RescueMarker4">ДОБРАТЬСЯ ДО ВЫХОДА С УРОВНЯ</Entry>
+    <Entry Id="RescueMarker4">ДОВЕСТИ ДО ВЫХОДА С УРОВНЯ</Entry>
     <Entry Id="FailTimeUp">Закончилось время!</Entry>
     <Entry Id="OfferOfficeDrone">Мотивировать</Entry>
     <Entry Id="SpitOutMoney">Выплюнуть деньги</Entry>
@@ -4668,7 +4668,7 @@
     <Entry Id="Mission">Миссия</Entry>
     <Entry Id="Help_SpawnChanceAgent">Вероятность спавна, от 0% до 100%. Тут это немного запутанно. Например: Если вы хотите чтобы что-то появилось с 75% шансом на всех уровнях сложности, вы поставите "75, 0, 0" или "75, 75, 75". Если вы хотите чтобы что-то появилось с 80% шансом на сложности 2, но не 3, вы поставите "0, 80, 0". Если вы хотите чтобы что-то появилось с 50% шансом на сложности 2, или с 100% на сложности 3, вы поставите "0, 50, 100".</Entry>
     <Entry Id="Help_SpawnChance">Вероятность спавна, от 0% до 100%</Entry>
-    <Entry Id="Help_Important">Объекты и персонажи классифицируемые как "Важные" могут быть выбраны для использования в миссиях. Например, сундук помеченный как "Важный" может быть использован в миссиях типа "Добыть предмет". Заключённый персонаж с пометкой "Важный" может быть выбран для миссии типа "Спасти". Владелец с пометкой "Важный" может быть выбран для миссий типа "Нейтрализуй". НПС помеченные как "Важные" также могут давать миссии.</Entry>
+    <Entry Id="Help_Important">Объекты и персонажи классифицируемые как "Важные" могут быть выбраны для использования в миссиях. Например, сундук помеченный как "Важный" может быть использован в миссиях типа "Достать предмет". Заключённый персонаж с пометкой "Важный" может быть выбран для миссии типа "Спасти". Владелец с пометкой "Важный" может быть выбран для миссий типа "Нейтрализуй". НПС помеченные как "Важные" также могут давать миссии.</Entry>
     <Entry Id="Help_OwnerID">Числовое значение, обозначающее принадлежность. Любые объекты, стены или полы с таким же ID будет принадлежать этому НПС. НПС с ID владельца 99 будет относиться ко всему имуществу в чанке, как к своему собственному.</Entry>
     <Entry Id="Help_OwnedByID">Числовое значение, обозначающее принадлежность. Любой НПС с таким же ID владельца будет владеть этим. Объекты и стены будут автоматически принимать ID пола под ними, если другой владелец не указывается.</Entry>
     <Entry Id="Help_WallSpawnSometimes">Стены, отмеченные этим будут иметь 50% шанс спавна, даже если они имеют один и тот же Множественный ID, как и другие близлежащие стены</Entry>
@@ -4947,12 +4947,12 @@
     <Entry Id="AlcoholicBeverages">Алкогольные напитки</Entry>
     <Entry Id="WithoutKilling">Не убивая</Entry>
     <Entry Id="WithoutAlerting">Никого не потревожив</Entry>
-    <Entry Id="CompleteAnyFloorWith">Пройти любой этаж персонажем класса</Entry>
-    <Entry Id="CompleteFloor1With">Пройти Трущобы персонажем класса</Entry>
-    <Entry Id="CompleteFloor2With">Пройти Завод персонажем класса</Entry>
-    <Entry Id="CompleteFloor3With">Пройти Парк персонажем класса</Entry>
-    <Entry Id="CompleteFloor4With">Пройти Деловой центр персонажем класса</Entry>
-    <Entry Id="CompleteFloor5With">Пройти Пригород персонажем класса</Entry>
+    <Entry Id="CompleteAnyFloorWith">Пройти любой этаж с</Entry>
+    <Entry Id="CompleteFloor1With">Пройти Трущобы с</Entry>
+    <Entry Id="CompleteFloor2With">Пройти Завод с</Entry>
+    <Entry Id="CompleteFloor3With">Пройти Парк с</Entry>
+    <Entry Id="CompleteFloor4With">Пройти Деловой центр с</Entry>
+    <Entry Id="CompleteFloor5With">Пройти Пригород с</Entry>
     <Entry Id="CompleteFloor1">Пройти Трущобы</Entry>
     <Entry Id="CompleteFloor2">Пройти Завод</Entry>
     <Entry Id="CompleteFloor3">Пройти Парк</Entry>
@@ -4961,7 +4961,7 @@
     <Entry Id="ClearAll">Убрать все</Entry>
     <Entry Id="D_ClearAll">Убрать все включенные мутаторы</Entry>
     <Entry Id="LevelFeelingsEveryLevel">Катастрофы на каждом уровне</Entry>
-    <Entry Id="D_LevelFeelingsEveryLevel">Столько катастроф, что с ума сойдешь.</Entry>
+    <Entry Id="D_LevelFeelingsEveryLevel">Столько катастроф, что с ума сойдёшь.</Entry>
     <Entry Id="RealisticMode">"Реалистичный" режим</Entry>
     <Entry Id="D_RealisticMode">Глупая попытка подражания реальности в плане запаса здоровья и урона.</Entry>
     <Entry Id="UnlockInHomeBase">Открывается на Базе</Entry>
@@ -4983,7 +4983,7 @@
     <Entry Id="ExplodingBodies">Взрывающиеся тела</Entry>
     <Entry Id="D_ExplodingBodies">При падении на землю тела взрываются.</Entry>
     <Entry Id="NoCops">Без патрулей</Entry>
-    <Entry Id="D_NoCops">Правоохранители не патрулируют улицы, однако могут появляться в определенных обстоятельствах.</Entry>
+    <Entry Id="D_NoCops">Правоохранители не патрулируют улицы, однако могут появляться в определённых обстоятельствах.</Entry>
     <Entry Id="FullHealth">Полное здоровье у всех</Entry>
     <Entry Id="D_FullHealth">У неигровых персонажей с начала столько же здоровья, сколько и у игрока (по умолчанию — меньше).</Entry>
     <Entry Id="InfiniteMeleeDurability">Бесконечная прочность оружия ближнего боя</Entry>
@@ -5006,13 +5006,13 @@
     <Entry Id="D2_Gangbanger_BQ">Нейтрализовать всех Кровяных</Entry>
     <Entry Id="Zombie_BQ">Заразная любовь</Entry>
     <Entry Id="D_Zombie_BQ">Заражай людей повсюду, и да станут у них стеклянные глаза, и да сгниёт у них кожа — да здравствует любовь!</Entry>
-    <Entry Id="D2_Zombie_BQ">Преврати в зомби определенное количество людей на каждом этаже</Entry>
+    <Entry Id="D2_Zombie_BQ">Преврати в зомби определённое количество людей на каждом этаже</Entry>
     <Entry Id="Cop_BQ">Законопослушный правоохранитель</Entry>
     <Entry Id="D_Cop_BQ">Делай всё по инструкциям и осуществи свою мечту: стань Суперкопом.</Entry>
     <Entry Id="D2_Cop_BQ">Зарабатывай 2 очка за арест виновных, 1 за убийство. Теряй очки за убийство невиновных. Необязательно выполнять на каждом этаже.</Entry>
     <Entry Id="Doctor_BQ">Вестник мира</Entry>
     <Entry Id="D_Doctor_BQ">Распространяй праведное послание о мире и хлороформе: не убивай СЛИШКОМ много людей.</Entry>
-    <Entry Id="D2_Doctor_BQ">Необходимо убить меньше определенное числа людей. Необязательно выполнять на каждом этаже.</Entry>
+    <Entry Id="D2_Doctor_BQ">Необходимо убить меньше определённое числа людей. Необязательно выполнять на каждом этаже.</Entry>
     <Entry Id="Businessman_BQ">Трезвость для сосунков</Entry>
     <Entry Id="D_Businessman_BQ">Достигни эйфории, как можно дольше поддерживая высокий уровень наркотиков — ведь именно это настоящая жизнь.</Entry>
     <Entry Id="D2_Businessman_BQ">Не получай Абстинентный синдром больше чем определённое количество раз за уровень. Необязательно выполнять на каждом этаже.</Entry>
@@ -5046,7 +5046,7 @@
     <Entry Id="D2_Comedian_BQ">Расскажи шутки определённому количеству людей на каждом этаже</Entry>
     <Entry Id="Slavemaster_BQ">Поймай их всех!</Entry>
     <Entry Id="D_Slavemaster_BQ">Поработи граждан всех классов и создай самую большую коллекцию рабов в городе.</Entry>
-    <Entry Id="D2_Slavemaster_BQ">Поработи персонажа определенного класса и доведи их до входа или выхода</Entry>
+    <Entry Id="D2_Slavemaster_BQ">Поработи персонажа определённого класса и доведи их до входа или выхода</Entry>
     <Entry Id="Soldier_BQ">Борьба за энергию</Entry>
     <Entry Id="D_Soldier_BQ">Генераторы всего города снабжают верхний этаж чрезмерным количеством энергии. Взорви их все к чёртовой матери!</Entry>
     <Entry Id="D2_Soldier_BQ">Уничтожить все Генераторы</Entry>
@@ -5206,7 +5206,7 @@
     <Entry Id="BQC_Bouncer">У Топота повышается радиус, он наносит урон персонажам, но меньше вредит игроку. Музыкант забирает меньше здоровья и быстрее успокаивается после бунта</Entry>
     <Entry Id="Courier_BQ">Подработка</Entry>
     <Entry Id="D_Courier_BQ">Доставляй посылки людям. Что там внутри — человеческая голова или капуста? Тебя это не касается!</Entry>
-    <Entry Id="D2_Courier_BQ">Доставь определенное количество посылок. Необязательно выполнять на каждом этаже.</Entry>
+    <Entry Id="D2_Courier_BQ">Доставь определённое количество посылок. Необязательно выполнять на каждом этаже.</Entry>
     <Entry Id="BQC_Courier">Ролики едут быстрее, больше времени на доставку, больше чаевых, больше заказов на уровне. Посылки не портятся, если ты получаешь урон</Entry>
     <Entry Id="Guard_BQ">На страже</Entry>
     <Entry Id="D_Guard_BQ">Охраняй здания и их обитателей от чужаков. Короче говоря, делай свою работу!</Entry>
@@ -5218,7 +5218,7 @@
     <Entry Id="BQC_Alien">Повышается радиус Контроля разума, зомбированные наносят больше и получают меньше урона, а также могут проходить сквозь некоторые стены</Entry>
     <Entry Id="Demolitionist_BQ">Ходячий кошмар</Entry>
     <Entry Id="D_Demolitionist_BQ">Разрушать не только легче, чем создавать, но ещё и куда веселее. Вперёд — круши всё, что можешь!</Entry>
-    <Entry Id="D2_Demolitionist_BQ">Уничтожь определенное количество стен зданий</Entry>
+    <Entry Id="D2_Demolitionist_BQ">Уничтожь определённое количество стен зданий</Entry>
     <Entry Id="BQC_Demolitionist">Дистанционные бомбы изготавливаются дешевле, взрываются мощнее и уничтожают все типы стен. NPC не замечают, как ты ставишь бомбы</Entry>
     <Entry Id="MechPilot_BQ">Час расплаты</Entry>
     <Entry Id="D_MechPilot_BQ">Выбей дурь из всех отбросов этого города, даже тех, на кого плевать хотел сам Закон. Если что — они вооружены. И не особо приветливы.</Entry>
