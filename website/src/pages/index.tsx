@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
@@ -12,16 +12,31 @@ import Translate from '@docusaurus/Translate';
 import { useLocation } from '@docusaurus/router';
 import { parse as queryParse } from 'query-string';
 import Head from '@docusaurus/Head';
+import BrowserOnly from '@docusaurus/BrowserOnly';
+
+function getLogo(location) {
+  const params = queryParse(location.search);
+  if (params.pokemon !== undefined) return LogoPokemon;
+  if (params.legacy !== undefined) return LogoLegacy;
+  return Logo;
+}
 
 function HomepageHeader() {
-  const params = queryParse(useLocation().search);
-  let logo = Logo;
-  if (params.pokemon !== undefined) logo = LogoPokemon;
-  if (params.legacy !== undefined) logo = LogoLegacy;
+  const location = useLocation();
+  const [logo, setLogo] = useState(() => getLogo(location));
+
+  useEffect(() => {
+    setLogo(getLogo(location));
+  }, [location]);
+
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
-        <img src={logo} width='50%'/>
+        <BrowserOnly>
+          {() => {
+            return <img src={logo} width='50%'/>;
+          }}
+        </BrowserOnly>
         <p className="hero__subtitle">
           <Translate id="homepage.tagline">
             Doing the impossible.
