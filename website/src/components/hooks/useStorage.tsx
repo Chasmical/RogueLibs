@@ -49,7 +49,7 @@ function useStorageInternal(): StorageController {
   }
 
   useEffect(() => {
-    let localStorage = {};
+    let localStorage: Record<string, string> = {};
     try {
       listStorageKeys().forEach(key => {
         if (key.startsWith(STORAGE_PREFIX)) {
