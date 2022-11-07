@@ -78,16 +78,16 @@ namespace RogueLibsCore
             if (Item.rewardCount is RogueFramework.SpecialInt)
                 Item.rewardCount = Item.initCount;
             if (Item.lowCountThreshold is RogueFramework.SpecialInt)
-            {
-                if (this is CustomWeaponProjectile)
-                    Item.lowCountThreshold = Math.Max(Item.maxAmmo / 4, 3);
-                else if (this is CustomWeaponMelee)
+			{
+				if (Item.isArmor || Item.isArmorHead)
                     Item.lowCountThreshold = 25;
-                else if (this is CustomWeaponThrown)
-                    Item.lowCountThreshold = 5;
-                else if (Item.isArmor || Item.isArmorHead)
-                    Item.lowCountThreshold = 25;
-            }
+				//else if (this is CustomWeaponProjectile)
+				//    Item.lowCountThreshold = Math.Max(Item.maxAmmo / 4, 3);
+				//else if (this is CustomWeaponMelee)
+				//    Item.lowCountThreshold = 25;
+				//else if (this is CustomWeaponThrown)
+				//    Item.lowCountThreshold = 5;
+			}
 
             helper?.AfterSetup();
         }
