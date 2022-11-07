@@ -14,7 +14,7 @@ namespace RogueLibsCore
             Patcher.Postfix(typeof(PlayfieldObject), "Awake");
 
             Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.DetermineButtons), nameof(DetermineButtonsHook));
-            Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.PressedButton), nameof(PressedButtonHook),
+            Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.PressedButton), nameof(PressedButtonHook2),
                            new Type[2] { typeof(string), typeof(int) });
             Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.Interact), nameof(InteractHook));
             Patcher.Prefix(typeof(ObjectReal), nameof(ObjectReal.InteractFar), nameof(InteractFarHook));
@@ -83,7 +83,7 @@ namespace RogueLibsCore
             GetOrCreateModel(__instance).OnDetermineButtons();
             return false;
         }
-        public static bool PressedButtonHook(PlayfieldObject __instance, string buttonText)
+        public static bool PressedButtonHook1(PlayfieldObject __instance, string buttonText)
         {
             #region Re-implementing base.PressedButton()
             if (__instance.interactingAgent != null && (__instance.interactingAgent.controllerType != "Keyboard" || __instance.interactingAgent.controllerType == "Keyboard" && __instance.gc.playerControl.keyCheck(buttonType.Interact, __instance.interactingAgent)) && __instance.interactingAgent.localPlayer)
@@ -92,7 +92,19 @@ namespace RogueLibsCore
             }
             #endregion
 
-            GetOrCreateModel(__instance).OnPressedButton(buttonText);
+            GetOrCreateModel(__instance).OnPressedButton(buttonText, 0);
+            return false;
+        }
+        public static bool PressedButtonHook2(PlayfieldObject __instance, string buttonText, int buttonPrice)
+        {
+            #region Re-implementing base.PressedButton()
+            if (__instance.interactingAgent != null && (__instance.interactingAgent.controllerType != "Keyboard" || __instance.interactingAgent.controllerType == "Keyboard" && __instance.gc.playerControl.keyCheck(buttonType.Interact, __instance.interactingAgent)) && __instance.interactingAgent.localPlayer)
+            {
+                __instance.interactingAgent.mainGUI.invInterface.justPressedInteract = true;
+            }
+            #endregion
+
+            GetOrCreateModel(__instance).OnPressedButton(buttonText, buttonPrice);
             return false;
         }
 

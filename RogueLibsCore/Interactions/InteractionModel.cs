@@ -237,19 +237,19 @@ namespace RogueLibsCore
             }
 
         }
-        internal void OnPressedButton(string buttonName)
+        internal void OnPressedButton(string buttonName, int buttonPrice)
         {
             try
             {
                 RogueLibsPlugin.useModelStopInteraction = true;
-                OnPressedButton2(buttonName);
+                OnPressedButton2(buttonName, buttonPrice);
             }
             finally
             {
                 RogueLibsPlugin.useModelStopInteraction = false;
             }
         }
-        private void OnPressedButton2(string buttonName)
+        private void OnPressedButton2(string buttonName, int buttonPrice)
         {
             // reset state
             shouldStop = false;
@@ -265,8 +265,8 @@ namespace RogueLibsCore
                 return;
             }
             // find the button that was pressed
-            Interaction pressed = interactions.Find(i => i.ButtonName == buttonName);
-            if (pressed is null)
+            Interaction pressed = interactions.Find(i => i.ButtonName == buttonName && (i.ButtonPrice ?? 0) == buttonPrice);
+            if ((pressed ??= interactions.Find(i => i.ButtonName == buttonName)) is null)
             {
                 RogueFramework.LogError($"Couldn't find '{buttonName}' button on {Object}.");
                 RogueFramework.LogDebug($"Available: {string.Join(",", interactions.ConvertAll(static i => i.ButtonName))}.");

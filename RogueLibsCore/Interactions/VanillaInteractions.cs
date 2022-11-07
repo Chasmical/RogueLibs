@@ -83,7 +83,8 @@ namespace RogueLibsCore
         internal static void Patch<T>(Type[] parameterTypes) where T : PlayfieldObject
         {
             patcher.Prefix(typeof(T), nameof(PlayfieldObject.DetermineButtons), nameof(RogueLibsPlugin.DetermineButtonsHook));
-            patcher.Prefix(typeof(T), nameof(PlayfieldObject.PressedButton), nameof(RogueLibsPlugin.PressedButtonHook), parameterTypes);
+            string patchName = parameterTypes.Length == 1 ? nameof(RogueLibsPlugin.PressedButtonHook1) : nameof(RogueLibsPlugin.PressedButtonHook2);
+            patcher.Prefix(typeof(T), nameof(PlayfieldObject.PressedButton), patchName, parameterTypes);
         }
         internal static void PatchInteract<T>() where T : PlayfieldObject
         {
