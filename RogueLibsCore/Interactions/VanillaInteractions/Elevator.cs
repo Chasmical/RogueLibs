@@ -90,11 +90,11 @@ namespace RogueLibsCore
                         }
                         else
                         {
-                            elevatorShowingSecondButtonSet.SetValue(h.Object, false);
-                            h.AddButton("ElevatorGoUp", static m =>
+                            bool showingConfirm = (bool)elevatorShowingSecondButtonSet.GetValue(h.Object);
+                            h.SetSideEffect(static m => elevatorShowingSecondButtonSet.SetValue(m.Object, false));
+                            h.AddButton("ElevatorGoUp", m =>
                             {
-                                bool showing = (bool)elevatorShowingSecondButtonSet.GetValue(m.Object);
-                                if (m.Object.BigQuestRunning(m.Agent) && !showing)
+                                if (m.Object.BigQuestRunning(m.Agent) && !showingConfirm)
                                 {
                                     elevatorShowingSecondButtonSet.SetValue(m.Object, true);
                                     m.Object.SetObjectNameDisplay(m.Agent);
