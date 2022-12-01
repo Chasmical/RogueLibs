@@ -2775,7 +2775,7 @@
     <Entry Id="Clerk_GenericTalk">Могу ли я чем-то помочь?</Entry>
     <Entry Id="Clerk_HospitalTalk">Хочешь стать донором?</Entry>
     <Entry Id="Clerk_MovieTheaterTalk">Иди, развлекайся!</Entry>
-    <Entry Id="Clerk_OfficeBuildingTalk">Здесь такая шумная толпа!</Entry>
+    <Entry Id="Clerk_OfficeBuildingTalk">Эти дебоширы так шумят!</Entry>
     <Entry Id="Sign_Industrial">Добро пожаловать на Завод!</Entry>
     <Entry Id="Sign_Industrial2">Мы стремимся обеспечить безопасную рабочую среду для нашего расходного материала!</Entry>
     <Entry Id="Sign_Downtown">Добро пожаловать в крутой Деловой центр!</Entry>
