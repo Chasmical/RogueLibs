@@ -48,9 +48,11 @@ namespace RogueLibsPatcher
         public static void PatchCustom(TypeDefinition type) => Patch(type, "__RogueLibsCustom");
         public static void Patch(TypeDefinition type, string fieldName)
         {
-            if (type.Fields.Any(f => f.Name == fieldName)) return;
-            FieldDefinition container = new FieldDefinition(fieldName,
-                FieldAttributes.Public | FieldAttributes.NotSerialized, objRef);
+            for (int i = 0, count = type.Fields.Count; i < count; i++)
+				if (type.Fields[i].Name == fieldName)
+					return;
+			FieldDefinition container = new FieldDefinition(fieldName,
+                                                            FieldAttributes.Public | FieldAttributes.NotSerialized, objRef);
             type.Fields.Add(container);
         }
     }
