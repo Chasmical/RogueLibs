@@ -1285,7 +1285,7 @@
     <Entry Id="CantUseGuns">Не может использовать оружие дальнего боя</Entry>
     <Entry Id="CantUseWeapons">Не может использовать оружие, кроме некоторого метательного</Entry>
     <Entry Id="CantUseWeapons2">Не может использовать никакое оружие, включая метательное</Entry>
-    <Entry Id="DontTriggerFloorHazards">Без неприятностей на этажах, лазеры тебя не замечают</Entry>
+    <Entry Id="DontTriggerFloorHazards">Ловушки и лазеры тебя не замечают</Entry>
     <Entry Id="Drunk">Пьяный</Entry>
     <Entry Id="ElectroTouch">Всех, к кому ты прикасаешься, бьёт током</Entry>
     <Entry Id="Enraged">Все на тебя злятся</Entry>
