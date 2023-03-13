@@ -39,7 +39,7 @@ function HomepageHeader() {
         </BrowserOnly>
         <p className="hero__subtitle">
           <Translate id="homepage.tagline">
-            Doing the impossible.
+            Redefining Limits.
           </Translate>
         </p>
         <div className={styles.buttons}>
