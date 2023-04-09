@@ -1,4 +1,4 @@
-<Language Id="russian" Version="12">
+<Language Id="russian" Version="15">
   <Category Id="Agent"> <!-- Not yet translated stuff is marked with "TBT" -->
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актёр</Entry>
@@ -2336,7 +2336,7 @@
     <Entry Id="NA_BloodTappedOut">Досуха!</Entry>
     <Entry Id="Businessman_DrugsTooWeak">*кашель* *кашель* Слабовато... Мне бы чего-нибудь позабористее!</Entry>
     <Entry Id="Soldier_Joined">К вашим услугам!</Entry>
-    <Entry Id="NA_CantUseCigaretteLighter">Нет масла, не зажигается.</Entry>
+    <Entry Id="NA_CantUseCigaretteLighter">Рядом нет бензина который можно поджечь.</Entry>
     <Entry Id="Sign_Park">Добро пожаловать в городской Парк! Он же, округ Каннибалов.</Entry>
     <Entry Id="Sign_Park2">Внимание: посторонние расчленяются с особой жестокостью.</Entry>
     <Entry Id="Sign_Park3">Получается, на самом деле тебе здесь не рады. Прости за это моё "добро пожаловать"...</Entry>
