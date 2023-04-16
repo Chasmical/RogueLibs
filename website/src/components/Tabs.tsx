@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useTabGroupChoice } from '@docusaurus/theme-common/internal';
+import React from 'react';
+import { useTabs } from "@docusaurus/theme-common/internal";
 import clsx from 'clsx';
 import styles from './Tabs.module.css';
 
@@ -24,47 +24,22 @@ export type Props = {
 
 export default function(props: Props) {
   const { lazy, defaultValue, values, groupId } = props;
-  const {tabGroupChoices, setTabGroupChoices} = useTabGroupChoice();
-  const [selectedValue, setSelectedValue] = useState(defaultValue);
-  const children = React.Children.toArray(props.children);
+  const children = React.Children.toArray(props.children) as any[];
+  const { tabValues, selectedValue, selectValue } = useTabs({ children, defaultValue, values, groupId });
   const tabRefs: (EventTarget | HTMLLIElement)[] = [];
-
-  if (groupId != null) {
-    const relevantTabGroupChoice = tabGroupChoices[groupId];
-    if (
-      relevantTabGroupChoice != null &&
-      relevantTabGroupChoice !== selectedValue &&
-      values.some((value) => value.value === relevantTabGroupChoice)
-    ) {
-      setSelectedValue(relevantTabGroupChoice);
-    }
-  }
 
   const handleTabChange = (event: React.FocusEvent<HTMLLIElement> | React.MouseEvent<HTMLLIElement>) => {
     const selectedTab = event.currentTarget;
-    const selectedTabIndex = tabRefs.indexOf(selectedTab);
-    const selectedTabValue = values[selectedTabIndex].value;
-
-    setSelectedValue(selectedTabValue);
+    const selectedTabValue = values[tabRefs.indexOf(selectedTab)].value;
+    selectValue(selectedTabValue);
 
     if (groupId != null) {
-      setTabGroupChoices(groupId, selectedTabValue);
-
       setTimeout(() => {
-        if (isInViewport(selectedTab)) {
-          return;
-        }
-
-        selectedTab.scrollIntoView({
-          block: 'center',
-          behavior: 'smooth',
-        });
+        if (isInViewport(selectedTab)) return;
+        selectedTab.scrollIntoView({ block: 'center', behavior: 'smooth' });
 
         selectedTab.classList.add(styles.tabItemActive);
-        setTimeout(
-          () => selectedTab.classList.remove(styles.tabItemActive),
-          2000,
-        );
+        setTimeout(() => selectedTab.classList.remove(styles.tabItemActive), 2000);
       }, 150);
     }
   };
