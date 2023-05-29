@@ -1,4 +1,4 @@
-<Language Id="russian" Version="17">
+<Language Id="russian" Version="18">
   <Category Id="Agent"> <!-- Not yet translated stuff is marked with "TBT" -->
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актёр</Entry>
@@ -5106,7 +5106,7 @@
     <Entry Id="SupercopsReplaceCops">Земли Суперкопов</Entry>
     <Entry Id="D_SupercopsReplaceCops">Все Копы заменены на Суперкопов.</Entry>
     <Entry Id="MoneyRewards">Денежные награды</Entry>
-    <Entry Id="D_MoneyRewards">Деньги всегда выдаются в качестве награды за выпонление заданий.</Entry>
+    <Entry Id="D_MoneyRewards">Деньги всегда выдаются в качестве награды за выполнение заданий.</Entry>
     <Entry Id="GorillaTown">Город обезьян</Entry>
     <Entry Id="D_GorillaTown">Все выглядят как гориллы, хоть это и не влияет на геймплей.</Entry>
     <Entry Id="ManyWerewolf">Вервольфы среди нас</Entry>
