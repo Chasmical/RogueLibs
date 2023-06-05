@@ -1,4 +1,4 @@
-<Language Id="russian" Version="18">
+<Language Id="russian" Version="19">
   <Category Id="Agent"> <!-- Not yet translated stuff is marked with "TBT" -->
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актёр</Entry>
@@ -1641,7 +1641,7 @@
     <Entry Id="HealthItemsGiveFollowersExtraHealth">Лечащие предметы также действуют и на последователей поблизости</Entry>
     <Entry Id="HealthItemsGiveFollowersExtraHealth2">Лечащие предметы также действуют и на последователей поблизости</Entry>
     <Entry Id="CannibalsNeutral">Каннибалы больше не будут сразу же нападать</Entry>
-    <Entry Id="MafiaAligned">Гангстеры дружелюбны к тебе</Entry>
+    <Entry Id="MafiaAligned">Гангстеры - твои союзники</Entry>
     <Entry Id="ChanceFreeShopItem">Покупаемые у торговцев товары иногда достаются бесплатно</Entry>
     <Entry Id="ChanceFreeShopItem2">Покупаемые у торговцев товары иногда достаются бесплатно</Entry>
     <Entry Id="MoneyAtLevelStart">Получай деньги в начале каждого нового этажа</Entry>
