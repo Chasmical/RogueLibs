@@ -1,4 +1,4 @@
-<Language Id="russian" Version="19">
+<Language Id="russian" Version="20">
   <Category Id="Agent"> <!-- Not yet translated stuff is marked with "TBT" -->
     <Entry Id="Playerr">Игрок</Entry>
     <Entry Id="Actor">Актёр</Entry>
@@ -390,10 +390,10 @@
     <Entry Id="DartTrap">Ловушка с дротиком</Entry>
     <Entry Id="Door">Дверь</Entry>
     <Entry Id="DoorHard">(Сталь)</Entry>
-    <Entry Id="DoorLocked">(Закрыто)</Entry>
-    <Entry Id="DoorHardLocked">(Сталь + закрыто)</Entry>
+    <Entry Id="DoorLocked">(Закрыта)</Entry>
+    <Entry Id="DoorHardLocked">(Сталь + закрыта)</Entry>
     <Entry Id="DoorNoEntry">(Не входить)</Entry>
-    <Entry Id="DoorArmed">(Взведён)</Entry>
+    <Entry Id="DoorArmed">(Заминирована)</Entry>
     <Entry Id="Dresser">Комод</Entry>
     <Entry Id="Easel">Мольберт</Entry>
     <Entry Id="ElectronicsPanel">Электронная панель</Entry>
