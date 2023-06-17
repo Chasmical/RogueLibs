@@ -137,7 +137,7 @@
             {
                 if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
                     RogueFramework.LogDebug("---- Triggered \"OnlyChargeMedicine\" inventory check.");
-                e.User.SayDialogue("OnlyChargeGivesHealth");
+                e.User.SayDialogue("CantHealFirstAid");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
             }
