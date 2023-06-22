@@ -105,14 +105,6 @@ namespace RogueLibsCore
                     });
                 }
 
-                // add the Door Detonator interaction
-                InvItem? doorDetonator = h.Agent.inventory.FindItem("DoorDetonator");
-                if (!h.Object.hasDetonator && doorDetonator is not null && !h.Agent.isHoisting)
-                {
-                    h.AddButton("PlaceDetonator", $" ({doorDetonator.invItemCount})", static m
-                                    => m.StartOperating("DoorDetonator", 2f, true, "PlacingDetonator"));
-                }
-
                 if (h.Object.locked) // if the door's locked, show options to open it
                 {
                     if (h.Agent.inventory.InvItemList.Exists(i => i.invItemName is "Key" or "KeyCard"
@@ -157,6 +149,14 @@ namespace RogueLibsCore
                                         static m => m.StartOperating("Crowbar", 2f, true, "Unlocking"));
                         }
                     }
+                }
+
+                // add the Door Detonator interaction
+                InvItem? doorDetonator = h.Agent.inventory.FindItem("DoorDetonator");
+                if (!h.Object.hasDetonator && doorDetonator is not null && !h.Agent.isHoisting)
+                {
+                    h.AddButton("PlaceDetonator", $" ({doorDetonator.invItemCount})", static m
+                                    => m.StartOperating("DoorDetonator", 2f, true, "PlacingDetonator"));
                 }
 
             });
