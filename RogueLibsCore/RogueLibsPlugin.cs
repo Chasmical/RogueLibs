@@ -1,11 +1,6 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
-using System.Text;
+﻿using System.Diagnostics;
 using BepInEx;
 using System.Threading;
-using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -23,55 +18,6 @@ namespace RogueLibsCore
             if (Interlocked.Exchange(ref awoken, 1) == 1)
             {
                 Logger.LogError("A second instance of RogueLibs was awakened, so it was terminated immediately.");
-                return;
-            }
-
-            string invalidPatcherPath = Path.Combine(Paths.PluginPath, "RogueLibsPatcher.dll");
-            if (File.Exists(invalidPatcherPath))
-            {
-                Logger.LogWarning("Moved RogueLibsPatcher.dll from \\BepInEx\\plugins to \\BepInEx\\patchers.");
-                File.Move(invalidPatcherPath, Path.Combine(Paths.PatcherPluginPath, "RogueLibsPatcher.dll"));
-
-                string[] cmdArgs = Environment.GetCommandLineArgs();
-                // string fileName = cmdArgs[0];
-                StringBuilder args = new StringBuilder();
-                for (int i = 1; i < cmdArgs.Length; i++)
-                    args.Append(' ').Append('\"').Append(cmdArgs[i].Replace("\"", "\\\"")).Append('\"');
-
-                Directory.Delete(Application.temporaryCachePath, true);
-
-                // Process.Start(fileName, args.ToString());
-
-                Application.Quit(0);
-                Logger.LogError("\n===================================================" +
-                                "\n‖‖‖    RogueLibsPatcher was installed in the    ‖‖‖" +
-                                "\n‖‖‖ wrong directory! Restart the game manually. ‖‖‖" +
-                                "\n===================================================");
-                Thread.Sleep(3000);
-                Process.GetCurrentProcess().Kill();
-                return;
-            }
-
-            try
-            {
-                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-                // ReSharper disable once UnusedLocalFunctionReturnValue
-                static int Use(object? obj) => obj?.GetHashCode() ?? 0;
-
-                PlayfieldObject test = new PlayfieldObject();
-                Use(test.__RogueLibsHooks);
-                test.__RogueLibsHooks = new object();
-                Use(test.__RogueLibsHooks);
-            }
-            catch (Exception)
-            {
-                Application.Quit(0);
-                Logger.LogError("\n==========================================" +
-                                "\n‖‖‖ RogueLibsPatcher is not installed! ‖‖‖" +
-                                "\n‖‖‖  Install it and restart the game.  ‖‖‖" +
-                                "\n==========================================");
-                Thread.Sleep(3000);
-                Process.GetCurrentProcess().Kill();
                 return;
             }
 
