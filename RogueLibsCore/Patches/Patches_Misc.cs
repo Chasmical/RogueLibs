@@ -77,8 +77,6 @@ namespace RogueLibsCore
         {
             if (!LanguageService.Languages.TryGetValue(__instance.language, out LanguageCode code))
                 code = LanguageCode.English;
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Names))
-                RogueFramework.LogDebug($"Current language: {LanguageService.GetLanguageName(code)} ({(int)code})");
 
             LanguageService.NameDB = __instance;
             if (firstRun)
@@ -266,13 +264,9 @@ namespace RogueLibsCore
 
             GetOrCreateModel(__instance);
 
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Effects);
             foreach (IHookFactory<PlayfieldObject> factory in RogueFramework.ObjectFactories)
                 if (factory.TryCreate(__instance, out IHook<PlayfieldObject>? hook))
-                {
-                    if (debug) RogueFramework.LogDebug($"Initializing object hook {hook} ({__instance.objectName}.");
                     __instance.AddHook(hook);
-                }
         }
 
         public static bool MenuGUI_PressedDiscordButton()

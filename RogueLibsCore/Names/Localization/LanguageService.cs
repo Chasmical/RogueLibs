@@ -88,9 +88,6 @@ namespace RogueLibsCore
             if (languages.ContainsKey(languageName))
                 throw new ArgumentException($"The specified {nameof(languageName)} is already taken.", nameof(languageName));
 
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Names))
-                RogueFramework.Logger.LogDebug($"Registered \"{languageName}\" language ({(int)code})");
-
             languages.Add(languageName, code);
             languageNames.Add(code, languageName);
         }

@@ -28,18 +28,6 @@ namespace RogueLibsCore
             false;
 #endif
 
-        /// <summary>
-        ///   <para>Determines the RogueLibs' enabled debugging flags.</para>
-        /// </summary>
-        public static DebugFlags DebugFlags { get; set; }
-
-        /// <summary>
-        ///   <para>Determines whether any of the specified <paramref name="flags"/> is enabled.</para>
-        /// </summary>
-        /// <param name="flags">The flags to test for.</param>
-        /// <returns><see langword="true"/>, if any of the specified <paramref name="flags"/> is enabled; otherwise, <see langword="false"/>.</returns>
-        public static bool IsDebugEnabled(DebugFlags flags) => (DebugFlags & flags) != 0;
-
         internal static void LogDebug(string message) => Logger.LogDebug(message);
         internal static void LogWarning(string message) => Logger.LogWarning(message);
         internal static void LogError(string message) => Logger.LogError(message);

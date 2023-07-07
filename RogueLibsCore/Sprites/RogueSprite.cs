@@ -178,9 +178,6 @@ namespace RogueLibsCore
             registered[scope] = collection;
             if (prepared.TryGetValue(scope, out List<RogueSprite> sprites))
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
-                    RogueFramework.LogDebug($"Initializing ${sprites.Count} prepared sprites in scope {scope}:");
-
                 foreach (RogueSprite sprite in sprites)
                 {
                     sprite.isPrepared = false;
@@ -247,11 +244,7 @@ namespace RogueLibsCore
             {
                 isPrepared = true;
                 if (prepared.TryGetValue(targetScope, out List<RogueSprite> sprites))
-                {
-                    if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
-                        RogueFramework.LogDebug($"Prepared sprite \"{Name}\" for initialization.");
                     sprites.Add(this);
-                }
                 else RogueFramework.LogError($"Pseudo-prepared sprite \"{Name}\" for initialization.");
             }
             else DefineInternal(coll, targetScope);
@@ -261,9 +254,6 @@ namespace RogueLibsCore
         internal Material? LightUpMaterial { get; private set; }
         internal void DefineInternal(tk2dSpriteCollectionData? coll, SpriteScope targetScope)
         {
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
-                RogueFramework.LogDebug($"Defining \"{Name}\" sprite in scope {targetScope}.");
-
             if (coll != null)
             {
                 tk2dSpriteDefinition def = CreateDefinition(texture!, region, 64f / PixelsPerUnit / coll.invOrthoSize / coll.halfTargetHeight);
@@ -341,9 +331,6 @@ namespace RogueLibsCore
         }
         private void UndefineInternal(CustomTk2dDefinition def)
         {
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Sprites))
-                RogueFramework.LogDebug($"Undefining sprite \"{Name}\" from scope {def.Scope}.");
-
             if (def.Collection != null)
                 RemoveDefinition(def.Collection, def.Definition!);
 

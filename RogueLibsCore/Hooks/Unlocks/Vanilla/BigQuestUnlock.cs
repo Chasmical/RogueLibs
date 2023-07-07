@@ -172,7 +172,7 @@ namespace RogueLibsCore
                 string? text = GetDescription();
                 AddCancellationsTo(ref text);
                 AddRecommendationsTo(ref text);
-                if (!IsUnlocked || RogueFramework.IsDebugEnabled(DebugFlags.Unlocks | DebugFlags.UnlockMenus))
+                if (!IsUnlocked)
                     AddPrerequisitesTo(ref text);
                 return text ?? string.Empty;
             }

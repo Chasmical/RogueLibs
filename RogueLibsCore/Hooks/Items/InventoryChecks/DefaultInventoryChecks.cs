@@ -27,8 +27,6 @@
         {
             if (e.User.ghost)
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"Ghost\" inventory check.");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
             }
@@ -41,8 +39,6 @@
         {
             if (e.Item.itemType != ItemTypes.Food && e.User.HasTrait("CantInteract"))
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"PeaBrained\" inventory check.");
                 e.User.SayDialogue("CantInteract");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
@@ -57,8 +53,6 @@
             if (e.Item.itemType == ItemTypes.Food && (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol"))
                 && e.User.HasTrait("OilRestoresHealth"))
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"OnlyOil\" inventory check.");
                 e.User.SayDialogue("OnlyOilGivesHealth");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
@@ -73,8 +67,6 @@
             if (e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health")
                 && e.User.HasTrait("OilRestoresHealth"))
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"OnlyOilMedicine\" inventory check.");
                 e.User.SayDialogue("OnlyOilGivesHealth");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
@@ -89,8 +81,6 @@
             if (e.Item.itemType == ItemTypes.Food && (e.Item.Categories.Contains("Food") || e.Item.Categories.Contains("Alcohol"))
                 && e.User.HasTrait("BloodRestoresHealth"))
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"OnlyBlood\" inventory check.");
                 e.User.SayDialogue("OnlyBloodGivesHealth");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
@@ -105,8 +95,6 @@
             if (e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health")
                 && e.User.HasTrait("BloodRestoresHealth") && !e.Item.Categories.Contains("Blood"))
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"OnlyBloodMedicine\" inventory check.");
                 e.User.SayDialogue("OnlyBloodGivesHealth2");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
@@ -120,8 +108,6 @@
         {
             if (e.User.electronic && e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food"))
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"OnlyCharge\" inventory check.");
                 e.User.SayDialogue("OnlyChargeGivesHealth");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
@@ -135,8 +121,6 @@
         {
             if (e.User.electronic && e.Item.itemType == ItemTypes.Consumable && e.Item.Categories.Contains("Health"))
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"OnlyChargeMedicine\" inventory check.");
                 e.User.SayDialogue("CantHealFirstAid");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
@@ -151,8 +135,6 @@
             if (e.Item.itemType == ItemTypes.Food && e.Item.Categories.Contains("Food")
                 && e.User.HasTrait("CannibalizeRestoresHealth"))
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"OnlyHumanFlesh\" inventory check.");
                 e.User.SayDialogue("OnlyCannibalizeGivesHealth");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;
@@ -167,8 +149,6 @@
             // ReSharper disable once CompareOfFloatsByEqualityOperator
             if (e.Item.healthChange > 0 && e.User.health == e.User.healthMax)
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                    RogueFramework.LogDebug("---- Triggered \"FullHealth\" inventory check.");
                 e.User.SayDialogue("HealthFullCantUseItem");
                 e.User.gc.audioHandler.Play(e.User, "CantDo");
                 e.Cancel = e.Handled = true;

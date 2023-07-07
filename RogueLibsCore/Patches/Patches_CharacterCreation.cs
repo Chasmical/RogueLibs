@@ -38,8 +38,6 @@ namespace RogueLibsCore
                 displayedList.RemoveAll(static u => u is IUnlockInCC { IsAvailableInCC: false });
 
             CustomCharacterCreation menu = new CustomCharacterCreation(__instance, displayedList);
-            if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
-                RogueFramework.LogDebug($"Setting up \"{menu.Type}\" menu.");
 
             foreach (DisplayedUnlock du in menu.Unlocks)
                 du.Menu = menu;
@@ -77,14 +75,7 @@ namespace RogueLibsCore
 
         public static bool CharacterCreation_PushedButton(CharacterCreation __instance, ButtonHelper myButton)
         {
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus);
-            if (__instance.selectedSpace == "Load")
-            {
-                if (debug) RogueFramework.LogDebug("Redirecting the button push to the original method.");
-                return true;
-            }
-
-            if (debug) RogueFramework.LogDebug($"Pressing \"{myButton.myText.text}\" ({myButton.scrollingButtonNum}, {myButton.scrollingButtonType}) button.");
+            if (__instance.selectedSpace == "Load") return true;
 
             string type = myButton.scrollingButtonUnlock.unlockType;
             List<ButtonData> buttonsData = type switch

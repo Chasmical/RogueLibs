@@ -31,8 +31,6 @@ namespace RogueLibsCore
         public ItemInfo AddItem<TItem>() where TItem : CustomItem, new()
         {
             ItemInfo info = ItemInfo.Get<TItem>();
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Items))
-                RogueFramework.LogDebug($"Created custom item {typeof(TItem)} ({info.Name}).");
             itemsDict.Add(info.Name, new ItemEntry { Initializer = static () => new TItem(), ItemInfo = info });
             return info;
         }

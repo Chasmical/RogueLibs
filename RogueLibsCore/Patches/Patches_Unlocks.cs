@@ -133,8 +133,6 @@ namespace RogueLibsCore
         public static void Unlocks_LoadInitialUnlocks_Helper(bool cancel)
         {
             if (cancel) return;
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
-                RogueFramework.LogDebug("Reloading unlocks.");
             unlocksBackup = null;
             RogueFramework.Unlocks.Clear();
         }
@@ -170,11 +168,7 @@ namespace RogueLibsCore
             {
                 // wrapping original unlocks
                 if (!string.IsNullOrEmpty(gc.unlocks.GetSpecialUnlockInfo(unlock.unlockName, unlock)))
-                {
                     unlock.cost = -2;
-                    if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
-                        RogueFramework.LogDebug($"\"{unlock.unlockName}\" ({unlock.unlockType}) has special unlock conditions.");
-                }
 
                 UnlockWrapper wrapper;
                 if (unlock.unlockType == UnlockTypes.Mutator)
@@ -238,8 +232,6 @@ namespace RogueLibsCore
             FixPrerequisites();
             foreach (UnlockWrapper wrapper in RogueFramework.CustomUnlocks)
             {
-                if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
-                    RogueFramework.LogDebug($"Initializing custom unlock \"{wrapper.Name}\" ({wrapper.Type}).");
                 RogueFramework.Unlocks.Add(wrapper);
                 AddUnlockFull(wrapper);
             }
@@ -273,9 +265,6 @@ namespace RogueLibsCore
                 Unlock fromSaveFile = alreadyLoaded ? wrapper.Unlock : GameController.gameController.unlocks.AddUnlock(wrapper.Unlock);
                 if (wrapper.Unlock != fromSaveFile)
                 {
-                    if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
-                        RogueFramework.LogDebug($"Loaded state for \"{wrapper.Name}\" ({wrapper.Type}): unlocked - {fromSaveFile.unlocked}, enabled - {!fromSaveFile.notActive}");
-
                     List<Unlock> list = GameController.gameController.sessionDataBig.unlocks;
                     list.Remove(fromSaveFile);
                     list.Add(wrapper.Unlock);

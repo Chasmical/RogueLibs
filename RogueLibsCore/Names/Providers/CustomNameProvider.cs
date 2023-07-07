@@ -43,8 +43,6 @@ namespace RogueLibsCore
         {
             if (name is null || type is null)
                 throw new ArgumentNullException(name is null ? nameof(name) : nameof(type));
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Names))
-                RogueFramework.LogDebug($"Added \"{name}\" name ({type}): {info.GetCurrentOrDefault()}");
 
             CustomName customName = new CustomName(name, type, info);
             if (!CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category))

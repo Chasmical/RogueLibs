@@ -30,9 +30,6 @@ namespace RogueLibsCore
             CustomAbility? custom = __instance.agent.GetAbility();
             if (custom is null) return;
 
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
-                RogueFramework.LogDebug($"Giving ability {custom} ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
-
             try { custom.OnAdded(); }
             catch (Exception e) { RogueFramework.LogError(e, "CustomAbility.OnAdded", custom, __instance.agent); }
 
@@ -48,9 +45,6 @@ namespace RogueLibsCore
             if (custom is null) return;
             if (custom.Item.invItemName != __instance.agent.specialAbility) return;
 
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
-                RogueFramework.LogDebug($"Pressing ability ability {custom} ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
-
             try { custom.OnPressed(); }
             catch (Exception e) { RogueFramework.LogError(e, "CustomAbility.OnPressed", custom, __instance.agent); }
             if (custom.Count > 0)
@@ -64,9 +58,6 @@ namespace RogueLibsCore
 
             ref float held = ref GameController.gameController.playerControl.pressedSpecialAbilityTime[__instance.agent.isPlayer - 1];
             float prevHeld = held;
-
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
-                RogueFramework.LogDebug($"Holding ability {custom} for {prevHeld}s ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
 
             AbilityHeldArgs args = new AbilityHeldArgs { HeldTime = prevHeld };
             try { chargeable.OnHeld(args); }
@@ -86,9 +77,6 @@ namespace RogueLibsCore
             float prevHeld = custom.lastHeld;
             if (prevHeld is 0f) return;
 
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
-                RogueFramework.LogDebug($"Releasing ability {custom} - {prevHeld}s ({__instance.agent.specialAbility}, {__instance.agent.agentName}).");
-
             custom.lastHeld = 0f;
             try { chargeable.OnReleased(new AbilityReleasedArgs(prevHeld)); }
             catch (Exception e) { RogueFramework.LogError(e, "CustomAbility.OnReleased", custom, __instance.agent); }
@@ -98,8 +86,6 @@ namespace RogueLibsCore
         {
             CustomAbility? custom = __instance.agent.inventory.equippedSpecialAbility.GetHook<CustomAbility>();
             if (custom is not IAbilityRechargeable) return true;
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
-                RogueFramework.LogDebug($"Starting {custom} recharge coroutine ({custom.Item.invItemName}, {__instance.agent.agentName}).");
             __result = AbilityRechargeEnumerator(__instance, custom);
             return false;
         }
@@ -144,8 +130,6 @@ namespace RogueLibsCore
         {
             CustomAbility? custom = __instance.agent.inventory.equippedSpecialAbility.GetHook<CustomAbility>();
             if (custom is not IAbilityTargetable) return true;
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Abilities))
-                RogueFramework.LogDebug($"Starting {custom} indicator coroutine ({custom.Item.invItemName}, {__instance.agent.agentName}).");
             __result = AbilityIndicatorEnumerator(__instance, custom);
             return false;
         }

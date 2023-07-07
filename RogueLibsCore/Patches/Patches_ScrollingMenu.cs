@@ -14,7 +14,6 @@ namespace RogueLibsCore
             ClearAllItems = new ClearAllItemsUnlock();
             ClearAllTraits = new ClearAllTraitsUnlock();
             ReRollLoadouts = new ReRollLoadoutsUnlock();
-            giveNuggets = new GiveNuggetsButton();
 
             Patcher.Prefix(typeof(ScrollingMenu), nameof(ScrollingMenu.OpenScrollingMenu), nameof(ScrollingMenu_OpenScrollingMenu_Prefix));
             Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.OpenScrollingMenu));
@@ -40,24 +39,17 @@ namespace RogueLibsCore
             Patcher.Postfix(typeof(ScrollingMenu), nameof(ScrollingMenu.CanHaveTrait));
 
             Patcher.AnyErrors();
-
-            RogueLibs.CreateCustomName("GiveNuggetsDebug", NameTypes.Unlock, new CustomNameInfo("[DEBUG] +10 Nuggets"));
-            RogueLibs.CreateCustomName("D_GiveNuggetsDebug", NameTypes.Unlock, new CustomNameInfo("A debug tool that gives you 10 nuggets."));
         }
 
         public static void ScrollingMenu_OpenScrollingMenu_Prefix(ScrollingMenu __instance, out float __state)
         {
             float x = 1f - __instance.scrollBar.value;
             __state = x * (__instance.numButtons - __instance.numButtonsOnScreen + 1f);
-            if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
-                RogueFramework.LogDebug($"Stored menu's scrolling value of {__state} units.");
         }
         public static void ScrollingMenu_OpenScrollingMenu(ScrollingMenu __instance, ref float __state, List<Unlock> ___listUnlocks)
         {
             __instance.numButtons = ___listUnlocks.Count;
             float x = __state / (__instance.numButtons - __instance.numButtonsOnScreen + 1f);
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus);
-            if (debug) RogueFramework.LogDebug($"Restoring menu's scrolling value of {__state} units.");
             __instance.StartCoroutine(EnsureScrollbarValue(__instance, Mathf.Clamp01(1f - x)));
 
             if (__instance.menuType is "Challenges" or "FreeItems")
@@ -66,7 +58,6 @@ namespace RogueLibsCore
             }
             else if (__instance.menuType == "Floors")
             {
-                if (debug) RogueFramework.LogDebug("Setting up \"Floors\" menu.");
                 List<DisplayedUnlock> displayedUnlocks = GameController.gameController.sessionDataBig.floorUnlocks
                                                                        .Select(static u => (DisplayedUnlock)u.__RogueLibsCustom)
                                                                        .OrderBy(static d => d).ToList();
@@ -86,7 +77,6 @@ namespace RogueLibsCore
             }
             else if (__instance.menuType == "Traits")
             {
-                if (debug) RogueFramework.LogDebug("Setting up \"Traits\" menu.");
                 __instance.numButtons = __instance.smallTraitList.Count;
                 List<DisplayedUnlock> displayedUnlocks = __instance.smallTraitList
                                                                    .Select(static u => (DisplayedUnlock)u.__RogueLibsCustom)
@@ -101,7 +91,6 @@ namespace RogueLibsCore
             }
             else if (__instance.menuType is "RemoveTrait" or "ChangeTraitRandom" or "UpgradeTrait")
             {
-                if (debug) RogueFramework.LogDebug($"Setting up \"{__instance.menuType}\" menu.");
                 __instance.numButtons = __instance.customTraitList.Count;
                 List<DisplayedUnlock> displayedUnlocks = __instance.customTraitList
                                                                    .Select(static u => (DisplayedUnlock)u.__RogueLibsCustom)
@@ -172,7 +161,6 @@ namespace RogueLibsCore
         public static ClearAllItemsUnlock ClearAllItems = null!;
         public static ClearAllTraitsUnlock ClearAllTraits = null!;
         public static ReRollLoadoutsUnlock ReRollLoadouts = null!;
-        private static GiveNuggetsButton giveNuggets = null!;
 
         public static bool ScrollingMenu_SortUnlocks(ScrollingMenu __instance, List<Unlock> myUnlockList, List<Unlock> ___listUnlocks)
         {
@@ -181,8 +169,6 @@ namespace RogueLibsCore
                 displayedList.RemoveAll(static u => u is ItemUnlock { IsAvailableInItemTeleporter: false });
 
             CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedList);
-            if (RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus))
-                RogueFramework.LogDebug($"Setting up \"{menu.Type}\" menu.");
 
             foreach (DisplayedUnlock du in menu.Unlocks)
                 du.Menu = menu;
@@ -196,12 +182,6 @@ namespace RogueLibsCore
             {
                 ReRollLoadouts.Menu = menu;
                 ___listUnlocks.Insert(0, ReRollLoadouts.Unlock);
-                if (RogueFramework.IsDebugEnabled(DebugFlags.EnableTools))
-                {
-                    RogueFramework.LogDebug("Adding \"GiveNuggets\" debug tool to the menu.");
-                    giveNuggets.Menu = menu;
-                    ___listUnlocks.Insert(0, giveNuggets.Unlock);
-                }
             }
             if (menu.Type == UnlocksMenuType.MutatorMenu)
             {
@@ -228,14 +208,7 @@ namespace RogueLibsCore
 
         public static bool ScrollingMenu_PushedButton(ScrollingMenu __instance, ButtonHelper myButton)
         {
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus);
-            if (__instance.menuType.EndsWith("Configs", StringComparison.Ordinal))
-            {
-                if (debug) RogueFramework.LogDebug("Redirecting the button push to the original method.");
-                return true;
-            }
-
-            if (debug) RogueFramework.LogDebug($"Pressing \"{myButton.myText.text}\" ({myButton.scrollingButtonNum}, {myButton.scrollingButtonType}) button.");
+            if (__instance.menuType.EndsWith("Configs", StringComparison.Ordinal)) return true;
 
             ButtonData buttonData = __instance.buttonsData[myButton.scrollingButtonNum];
             DisplayedUnlock du = (DisplayedUnlock)buttonData.__RogueLibsCustom;
@@ -283,14 +256,11 @@ namespace RogueLibsCore
 
         public static void ScrollingMenu_RefreshLoadouts(List<Unlock> ___loadoutList)
         {
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.UnlockMenus);
-            if (debug) RogueFramework.LogDebug("Refreshing the loadouts.");
             ___loadoutList.RemoveAt(0);
             foreach (Unlock unlock in ___loadoutList.ToArray())
             {
                 if (unlock.__RogueLibsCustom is null)
                 {
-                    if (debug) RogueFramework.LogDebug("Hooking up an unhooked unlock.");
                     Unlock? normalized = GameController.gameController.sessionDataBig.unlocks
                                                        .Find(u => u.unlockName == unlock.unlockName && u.unlockType == unlock.unlockType);
                     if (normalized is null) ___loadoutList.Remove(unlock);

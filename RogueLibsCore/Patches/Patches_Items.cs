@@ -58,35 +58,19 @@ namespace RogueLibsCore
             (__instance.__RogueLibsHooks as IDisposable)?.Dispose();
             __instance.__RogueLibsHooks = null;
 
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
-            bool debug2 = RogueFramework.IsDebugEnabled(DebugFlags.Abilities);
             foreach (IHookFactory<InvItem> factory in RogueFramework.ItemFactories)
                 if (factory.TryCreate(__instance, out IHook<InvItem>? hook))
-                {
-                    if (debug2 && hook is CustomAbility)
-                        RogueFramework.LogDebug($"Initializing custom ability {hook} ({__instance.invItemName}).");
-                    else if (debug)
-                    {
-                        RogueFramework.LogDebug(hook is CustomItem
-                                                    ? $"Initializing custom item {hook} ({__instance.invItemName})."
-                                                    : $"Initializing item hook {hook} for \"{__instance.invItemName}\".");
-                    }
                     __instance.AddHook(hook);
-                }
         }
 
         public static bool ItemFunctions_UseItem(InvItem item, Agent agent)
         {
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
             CustomItem? custom = item.GetHook<CustomItem>();
             if (custom is IItemTargetable or IItemTargetableAnywhere)
             {
-                if (debug) RogueFramework.LogDebug($"Showing target for {custom} ({item.invItemName}).");
                 item.invInterface.ShowOrHideTarget(item);
                 return false;
             }
-
-            if (debug) RogueFramework.LogDebug($"Using {custom} ({item.invItemName}):");
 
             Agent originalAgent = agent;
             OnItemUsingArgs args = new OnItemUsingArgs(item, agent);
@@ -108,34 +92,22 @@ namespace RogueLibsCore
                         }
                     }
                     // if it's not a custom item, run the original method
-                    if (custom is not IItemUsable usable)
-                    {
-                        if (debug) RogueFramework.LogDebug("---- Running the original method.");
-                        return true;
-                    }
+                    if (custom is not IItemUsable usable) return true;
 
                     bool success = usable.UseItem();
-                    if (debug) RogueFramework.LogDebug($"---- Usage {(success ? "was successful" : "failed")}.");
                     if (success) new ItemFunctions().UseItemAnim(item, agent);
                 }
-            }
-            else
-            {
-                if (debug) RogueFramework.LogDebug("---- Usage was prevented by an inventory check.");
             }
             return false;
         }
 
         public static bool InvItem_CombineItems(InvItem __instance, InvItem otherItem, int slotNum, Agent myAgent, string combineType, out bool __result)
         {
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
             bool actualCombining = combineType == "Combine";
             CustomItem? custom = __instance.GetHook<CustomItem>();
 
-            if (debug && actualCombining) RogueFramework.LogDebug($"Combining {custom} ({__instance.invItemName}) with {otherItem.invItemName}:");
-
             if (__instance.stackable && __instance.invItemName == otherItem.invItemName
-                && InventoryChecks.IsCheckAllowed(custom, "AutoStacking"))
+                                     && InventoryChecks.IsCheckAllowed(custom, "AutoStacking"))
             {
                 if (__instance.invItemName == VanillaItems.Syringe && __instance.contents[0] != otherItem.contents[0])
                 {
@@ -144,11 +116,6 @@ namespace RogueLibsCore
                 }
                 if (actualCombining)
                 {
-                    if (debug)
-                    {
-                        RogueFramework.LogDebug("---- Triggered \"AutoStacking\" inventory check.");
-                        RogueFramework.LogDebug("---- Combining was prevented by an inventory check.");
-                    }
                     if (myAgent.controllerType != "Keyboard")
                         myAgent.gc.audioHandler.Play(myAgent, VanillaAudio.BeginCombine);
                     otherItem.agent.mainGUI.invInterface.PutDraggedItemBack();
@@ -176,67 +143,42 @@ namespace RogueLibsCore
                         using (new AgentSwapper(__instance, myAgent))
                         {
                             bool success = combinable2.CombineItems(otherItem);
-                            if (debug) RogueFramework.LogDebug($"---- Combining {(success ? "was successful" : "failed")}.");
                             if (success) new ItemFunctions().UseItemAnim(__instance, myAgent);
                         }
                     }
                     else
                     {
-                        if (debug) RogueFramework.LogDebug("---- Running the original method.");
                         new ItemFunctions().CombineItems(__instance, myAgent, otherItem, slotNum, "Combine");
                     }
 
                     if (__instance.invItemCount < 1 || __instance.database?.InvItemList.Contains(__instance) == false
                         && InventoryChecks.IsCheckAllowed(custom, "StopOnZero"))
                     {
-                        if (debug) RogueFramework.LogDebug("---- Triggered \"StopOnZero\" inventory check.");
                         myAgent.mainGUI.invInterface.HideDraggedItem();
                         myAgent.mainGUI.invInterface.HideTarget();
                     }
-                }
-                else
-                {
-                    if (debug) RogueFramework.LogDebug("---- Combining was prevented by an inventory check.");
                 }
             }
             return false;
         }
         public static bool InvItem_TargetObject(InvItem __instance, PlayfieldObject otherObject, string combineType, out bool __result)
         {
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
             bool actualCombining = combineType == "Combine";
             CustomItem? custom = __instance.GetHook<CustomItem>();
 
-            if (debug && actualCombining) RogueFramework.LogDebug($"Targeting {custom} ({__instance.invItemName}) on {otherObject.objectName}:");
-
             if (Vector2.Distance(__instance.agent.curPosition, otherObject.curPosition) > 15f
-                && InventoryChecks.IsCheckAllowed(custom, "Distance"))
+             && InventoryChecks.IsCheckAllowed(custom, "Distance"))
             {
-                if (debug && actualCombining)
-                {
-                    RogueFramework.LogDebug("---- Triggered \"Distance\" inventory check.");
-                    RogueFramework.LogDebug("---- Targeting was prevented by an inventory check.");
-                }
                 __result = false;
                 return false;
             }
             if ((otherObject as Agent)?.butlerBot == true && InventoryChecks.IsCheckAllowed(custom, "ButlerBot"))
             {
-                if (debug && actualCombining)
-                {
-                    RogueFramework.LogDebug("---- Triggered \"ButlerBot\" inventory check.");
-                    RogueFramework.LogDebug("---- Targeting was prevented by an inventory check.");
-                }
                 __result = false;
                 return false;
             }
             if ((otherObject as Agent)?.mechEmpty == true && InventoryChecks.IsCheckAllowed(custom, "EmptyMech"))
             {
-                if (debug && actualCombining)
-                {
-                    RogueFramework.LogDebug("---- Triggered \"EmptyMech\" inventory check.");
-                    RogueFramework.LogDebug("---- Targeting was prevented by an inventory check.");
-                }
                 __result = false;
                 return false;
             }
@@ -256,27 +198,20 @@ namespace RogueLibsCore
                         if (custom is IItemTargetable targetable2)
                         {
                             bool success = targetable2.TargetObject(otherObject);
-                            if (debug) RogueFramework.LogDebug($"---- Targeting {(success ? "was successful" : "failed")}.");
                             if (success) new ItemFunctions().UseItemAnim(__instance, __instance.agent);
                         }
                         else
                         {
-                            if (debug) RogueFramework.LogDebug("---- Running the original method.");
                             new ItemFunctions().TargetObject(__instance, __instance.agent, otherObject, "Combine");
                         }
 
                         if (__instance.invItemCount < 1 || __instance.database?.InvItemList.Contains(__instance) == false
                             && InventoryChecks.IsCheckAllowed(custom, "StopOnZero"))
                         {
-                            if (debug) RogueFramework.LogDebug("---- Triggered \"StopOnZero\" inventory check.");
                             __instance.agent.mainGUI.invInterface.HideDraggedItem();
                             __instance.agent.mainGUI.invInterface.HideTarget();
                         }
                     }
-                }
-                else
-                {
-                    if (debug) RogueFramework.LogDebug("---- Targeting was prevented by an inventory check.");
                 }
             }
             return false;
@@ -435,7 +370,6 @@ namespace RogueLibsCore
         {
             __instance.cursorTextString3.color = Color.white;
 
-            bool debug = RogueFramework.IsDebugEnabled(DebugFlags.Items);
             InvItem invItem = __instance.mainGUI.targetItem;
             if (invItem != null)
             {
@@ -443,9 +377,6 @@ namespace RogueLibsCore
                 __instance.cursorHighlightTargetObjects = custom is IItemTargetable;
                 if (custom is IItemTargetableAnywhere targetable)
                 {
-                    if (debug && pressedButton)
-                        RogueFramework.LogDebug($"Targeting {custom} ({invItem.invItemName}) anywhere:");
-
                     bool filter = targetable.TargetFilter(myPos);
                     __instance.cursorHighlight = filter;
                     __instance.cursorHighlightTargetAnywhere = filter;
@@ -465,21 +396,15 @@ namespace RogueLibsCore
                             using (new AgentSwapper(invItem, args.User))
                             {
                                 bool success = targetable.TargetPosition(myPos);
-                                if (debug) RogueFramework.LogDebug($"---- Targeting {(success ? "was successful" : "failed")}.");
                                 if (success) new ItemFunctions().UseItemAnim(invItem, invItem.agent);
 
                                 if (custom.Count < 1 || custom.Inventory?.InvItemList.Contains(custom.Item) == false
                                     && InventoryChecks.IsCheckAllowed(custom, "StopOnZero"))
                                 {
-                                    if (debug) RogueFramework.LogDebug("---- Triggered \"StopOnZero\" inventory check.");
                                     __instance.HideDraggedItem();
                                     __instance.HideTarget();
                                 }
                             }
-                        }
-                        else
-                        {
-                            if (debug) RogueFramework.LogDebug("---- Targeting was prevented by an inventory check.");
                         }
                     }
                 }

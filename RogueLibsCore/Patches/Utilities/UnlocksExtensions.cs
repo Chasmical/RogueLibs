@@ -21,8 +21,6 @@ namespace RogueLibsCore
         public static void DoUnlockForced(this Unlocks unlocks, string unlockName, string unlockType)
         {
             if (unlocks is null) throw new ArgumentNullException(nameof(unlocks));
-            if (RogueFramework.IsDebugEnabled(DebugFlags.Unlocks))
-                RogueFramework.LogDebug($"Force-unlocking \"{unlockName}\" ({unlockType})");
 
             bool prev = AllowUnlocksAnyway;
             AllowUnlocksAnyway = true;
