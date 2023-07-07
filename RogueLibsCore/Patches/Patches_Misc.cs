@@ -16,10 +16,10 @@ namespace RogueLibsCore
 
             // IDoUpdate.Update
             Patcher.Postfix(typeof(Updater), "Update");
-            // IDoFixedUpdate.FixedUpdate
-            Patcher.Postfix(typeof(Updater), nameof(Updater.FixedUpdate));
             // IDoLateUpdate.LateUpdate
             Patcher.Postfix(typeof(Updater), "LateUpdate");
+            // IDoFixedUpdate.FixedUpdate
+            Patcher.Postfix(typeof(Updater), "FixedUpdate");
 
             // load prepared AudioClips
             Patcher.Prefix(typeof(AudioHandler), nameof(AudioHandler.SetupDics), nameof(AudioHandler_SetupDics_Prefix));
@@ -102,91 +102,22 @@ namespace RogueLibsCore
             return __result is null;
         }
 
-        internal static bool updatingHooks;
-        internal static bool fixedUpdatingHooks;
-        internal static bool lateUpdatingHooks;
-        internal static readonly List<WeakReference<IHook>> doUpdateHooks = new List<WeakReference<IHook>>();
-        internal static readonly List<WeakReference<IHook>> doFixedUpdateHooks = new List<WeakReference<IHook>>();
-        internal static readonly List<WeakReference<IHook>> doLateUpdateHooks = new List<WeakReference<IHook>>();
-        internal static readonly List<WeakReference<IHook>> removeDoUpdateHooks = new List<WeakReference<IHook>>();
-        internal static readonly List<WeakReference<IHook>> removeDoFixedUpdateHooks = new List<WeakReference<IHook>>();
-        internal static readonly List<WeakReference<IHook>> removeDoLateUpdateHooks = new List<WeakReference<IHook>>();
-
         public static void Updater_Update()
         {
             GameController gc = GameController.gameController;
             if (gc.levelTransitioning || gc.offlineGameStarting) return;
-            try
-            {
-                updatingHooks = true;
-                for (int i = 0, count = doUpdateHooks.Count; i < count; i++)
-                {
-                    WeakReference<IHook> hookRef = doUpdateHooks[i];
-                    if (!hookRef.TryGetTarget(out IHook? hook))
-                        removeDoUpdateHooks.Add(hookRef);
-                    else ((IDoUpdate)hook).Update();
-                }
-            }
-            finally
-            {
-                updatingHooks = false;
-                if (removeDoUpdateHooks.Count > 0)
-                {
-                    doUpdateHooks.RemoveAll(removeDoUpdateHooks.Contains);
-                    removeDoUpdateHooks.Clear();
-                }
-            }
-        }
-        public static void Updater_FixedUpdate()
-        {
-            if (GameController.gameController.levelTransitioning) return;
-            try
-            {
-                fixedUpdatingHooks = true;
-                for (int i = 0, count = doFixedUpdateHooks.Count; i < count; i++)
-                {
-                    WeakReference<IHook> hookRef = doFixedUpdateHooks[i];
-                    if (!hookRef.TryGetTarget(out IHook? hook))
-                        removeDoFixedUpdateHooks.Add(hookRef);
-                    // ReSharper disable once SuspiciousTypeConversion.Global
-                    else ((IDoFixedUpdate)hook).FixedUpdate();
-                }
-            }
-            finally
-            {
-                fixedUpdatingHooks = false;
-                if (removeDoFixedUpdateHooks.Count > 0)
-                {
-                    doFixedUpdateHooks.RemoveAll(removeDoFixedUpdateHooks.Contains);
-                    removeDoFixedUpdateHooks.Clear();
-                }
-            }
+            HookEvents.updateDispatcher.DispatchEvent(static h => h.Update());
         }
         public static void Updater_LateUpdate()
         {
             GameController gc = GameController.gameController;
             if (gc.levelTransitioning || gc.offlineGameStarting) return;
-            try
-            {
-                lateUpdatingHooks = true;
-                for (int i = 0, count = doLateUpdateHooks.Count; i < count; i++)
-                {
-                    WeakReference<IHook> hookRef = doLateUpdateHooks[i];
-                    if (!hookRef.TryGetTarget(out IHook? hook))
-                        removeDoLateUpdateHooks.Add(hookRef);
-                    // ReSharper disable once SuspiciousTypeConversion.Global
-                    else ((IDoLateUpdate)hook).LateUpdate();
-                }
-            }
-            finally
-            {
-                lateUpdatingHooks = false;
-                if (removeDoLateUpdateHooks.Count > 0)
-                {
-                    doLateUpdateHooks.RemoveAll(removeDoLateUpdateHooks.Contains);
-                    removeDoLateUpdateHooks.Clear();
-                }
-            }
+            HookEvents.lateUpdateDispatcher.DispatchEvent(static h => h.LateUpdate());
+        }
+        public static void Updater_FixedUpdate()
+        {
+            if (GameController.gameController.levelTransitioning) return;
+            HookEvents.fixedUpdateDispatcher.DispatchEvent(static h => h.FixedUpdate());
         }
 
         // ReSharper disable once IdentifierTypo
