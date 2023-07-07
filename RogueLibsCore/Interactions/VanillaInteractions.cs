@@ -10,7 +10,7 @@ namespace RogueLibsCore
 
         internal static void PatchAll()
         {
-            patcher = RogueLibsPlugin.Instance.Patcher;
+            patcher = ((RogueLibsPlugin)RogueFramework.Plugin).Patcher;
 
             Patch<PlayfieldObject>(Params2);
             PatchInteract<PlayfieldObject>();

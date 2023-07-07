@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
-using BepInEx;
 using System.Threading;
+using BepInEx;
 
 namespace RogueLibsCore
 {
@@ -10,14 +10,14 @@ namespace RogueLibsCore
     internal sealed partial class RogueLibsPlugin : BaseUnityPlugin
     {
         public RoguePatcher Patcher = null!; // initialized in Awake()
-        public static RogueLibsPlugin Instance = null!;
 
         private static int awoken;
-        public void Awake()
+
+        private void Awake()
         {
             if (Interlocked.Exchange(ref awoken, 1) == 1)
             {
-                Logger.LogError("A second instance of RogueLibs was awakened, so it was terminated immediately.");
+                Logger.LogError("RogueLibs multi-instancing is not supported!");
                 return;
             }
 
@@ -25,7 +25,6 @@ namespace RogueLibsCore
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
-            Instance = this;
             RogueFramework.Plugin = this;
             RogueFramework.Logger = Logger;
 
@@ -50,7 +49,10 @@ namespace RogueLibsCore
             Patcher.LogResults();
 #endif
             sw.Stop();
-            Logger.LogDebug($"RogueLibs took {sw.ElapsedMilliseconds,5:#####} ms to load.");
+            Logger.LogDebug($"RogueLibs took {sw.ElapsedMilliseconds,5:#####} ms to initialize.");
         }
+
+        private void OnDestroy()
+            => awoken = 0;
     }
 }
