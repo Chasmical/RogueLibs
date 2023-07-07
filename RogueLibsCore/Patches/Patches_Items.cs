@@ -502,16 +502,18 @@ namespace RogueLibsCore
         public static void InvSlot_SortItems(InvSlot __instance)
         {
             InvDatabase inventory = __instance.database;
+            int index = inventory.sortedItemList.FindIndex(static i => string.IsNullOrEmpty(i.invItemName));
             foreach (InvItem item in inventory.InvItemList)
-                if (!inventory.sortedItemList.Contains(item))
-                    inventory.sortedItemList.Add(item);
+                if (!string.IsNullOrEmpty(item.invItemName) && !inventory.sortedItemList.Contains(item))
+                    inventory.sortedItemList[index++] = item;
         }
         public static void InvSlot_SortUseItems(InvSlot __instance)
         {
             InvDatabase inventory = __instance.database;
+            int index = inventory.sortedUseItemList.FindIndex(static i => string.IsNullOrEmpty(i.invItemName));
             foreach (InvItem item in inventory.InvItemList)
-                if (!inventory.sortedUseItemList.Contains(item))
-                    inventory.sortedUseItemList.Add(item);
+                if (!string.IsNullOrEmpty(item.invItemName) && !inventory.sortedUseItemList.Contains(item))
+                    inventory.sortedUseItemList[index++] = item;
         }
 
     }
