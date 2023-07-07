@@ -39,23 +39,11 @@
     ///   <para>Represents a collection of hooks, attached to a single instance of type <typeparamref name="T"/>.</para>
     /// </summary>
     /// <typeparam name="T">The type of objects, that the hooks can be attached to.</typeparam>
-    public interface IHookController<T> : IHookController
+    public interface IHookController<out T> : IHookController where T : notnull
     {
         /// <summary>
         ///   <para>Gets the instance of type <typeparamref name="T"/> that the hooks are attached to.</para>
         /// </summary>
         new T Instance { get; }
-
-        /// <summary>
-        ///   <para>Attaches the specified <paramref name="hook"/> to the current instance.</para>
-        /// </summary>
-        /// <param name="hook">The hook to attach to the current instance.</param>
-        void AddHook(IHook<T> hook);
-        /// <summary>
-        ///   <para>Detaches the specified <paramref name="hook"/> from the current instance.</para>
-        /// </summary>
-        /// <param name="hook">The hook to detach from the current instance.</param>
-        /// <returns><see langword="true"/>, if the hook was successfully detached; otherwise, <see langword="false"/>.</returns>
-        bool RemoveHook(IHook<T> hook);
     }
 }

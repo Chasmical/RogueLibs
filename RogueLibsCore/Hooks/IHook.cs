@@ -6,23 +6,23 @@
     public interface IHook
     {
         /// <summary>
-        ///   <para>Initializes the hook.</para>
+        ///   <para>Gets the instance that the hook is attached to.</para>
         /// </summary>
-        void Initialize();
+        object Instance { get; }
         /// <summary>
-        ///   <para>Gets or sets the instance that the hook is attached to.</para>
+        ///   <para>Initializes the hook on the specified <paramref name="instance"/>.</para>
         /// </summary>
-        object? Instance { get; set; }
+        void Initialize(object instance);
     }
     /// <summary>
     ///   <para>Represents a hook, attachable to instances of type <typeparamref name="T"/>.</para>
     /// </summary>
     /// <typeparam name="T">The type of objects that the hook can be attached to.</typeparam>
-    public interface IHook<T> : IHook
+    public interface IHook<out T> : IHook where T : notnull
     {
         /// <summary>
-        ///   <para>Gets or sets the instance that the hook is attached to.</para>
+        ///   <para>Gets the instance that the hook is attached to.</para>
         /// </summary>
-        new T? Instance { get; set; }
+        new T Instance { get; }
     }
 }
