@@ -1,4 +1,15 @@
-﻿[*.cs]
+﻿root = true
 
-# IDE0022: Use expression body for methods
-csharp_style_expression_bodied_methods = when_on_single_line
+# C# files
+[*.cs]
+
+#### Core EditorConfig Options ####
+
+# Indentation and spacing
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+# New line preferences
+end_of_line = lf
+insert_final_newline = true
