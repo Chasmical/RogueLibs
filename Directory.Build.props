@@ -4,7 +4,7 @@
 
     <TargetFramework>net471</TargetFramework>
 
-    <Version>3.6.9</Version>
+    <Version>4.0.0</Version>
 
     <!-- Project Properties -->
     <Nullable>enable</Nullable>
