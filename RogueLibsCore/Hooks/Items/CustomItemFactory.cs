@@ -17,7 +17,7 @@ namespace RogueLibsCore
             {
                 hook = entry.Initializer();
                 if (hook is CustomItem custom)
-                    custom.ItemInfo = entry.ItemInfo;
+                    custom.Metadata = entry.Metadata;
                 return true;
             }
             hook = null;
@@ -28,17 +28,17 @@ namespace RogueLibsCore
         /// </summary>
         /// <typeparam name="TItem">The <see cref="CustomItem"/> type to add.</typeparam>
         /// <returns>The added item's metadata.</returns>
-        public ItemInfo AddItem<TItem>() where TItem : CustomItem, new()
+        public CustomItemMetadata AddItem<TItem>() where TItem : CustomItem, new()
         {
-            ItemInfo info = ItemInfo.Get<TItem>();
-            itemsDict.Add(info.Name, new ItemEntry { Initializer = static () => new TItem(), ItemInfo = info });
-            return info;
+            CustomItemMetadata metadata = CustomItemMetadata.Get<TItem>();
+            itemsDict.Add(metadata.Name, new ItemEntry { Initializer = static () => new TItem(), Metadata = metadata });
+            return metadata;
         }
 
         private struct ItemEntry
         {
             public Func<IHook<InvItem>> Initializer;
-            public ItemInfo ItemInfo;
+            public CustomItemMetadata Metadata;
         }
     }
 }

@@ -63,8 +63,8 @@ namespace RogueLibsCore
         {
             if (typeof(CustomAbility).IsAssignableFrom(typeof(TItem)))
                 throw new ArgumentException($"The specified type is a CustomAbility! Use {nameof(CreateCustomAbility)} instead.", nameof(TItem));
-            ItemInfo info = ItemFactory.AddItem<TItem>();
-            return new ItemBuilder(info);
+            CustomItemMetadata metadata = ItemFactory.AddItem<TItem>();
+            return new ItemBuilder(metadata);
         }
         /// <summary>
         ///   <para>Creates a <typeparamref name="TAbility"/> custom ability. Chain "With" methods to attach extra information.</para>
@@ -73,8 +73,8 @@ namespace RogueLibsCore
         /// <returns>An <see cref="AbilityBuilder"/> with the specified ability's metadata.</returns>
         public static AbilityBuilder CreateCustomAbility<TAbility>() where TAbility : CustomAbility, new()
         {
-            ItemInfo info = ItemFactory.AddItem<TAbility>();
-            return new AbilityBuilder(info);
+            CustomItemMetadata metadata = ItemFactory.AddItem<TAbility>();
+            return new AbilityBuilder(metadata);
         }
         /// <summary>
         ///   <para>Creates a <typeparamref name="TTrait"/> custom trait. Chain "With" methods to attach extra information.</para>

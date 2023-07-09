@@ -10,7 +10,7 @@ namespace RogueLibsCore
     /// <summary>
     ///   <para>Represents the <see cref="CustomItem"/> type metadata.</para>
     /// </summary>
-    public sealed class ItemInfo
+    public sealed class CustomItemMetadata
     {
         /// <summary>
         ///   <para>Gets the custom item's name.</para>
@@ -48,22 +48,22 @@ namespace RogueLibsCore
         /// <returns>The <see cref="RogueSprite"/> that represents this item, if found; otherwise, <see langword="null"/>.</returns>
         public RogueSprite? GetSprite() => sprite;
 
-        private static readonly Dictionary<Type, ItemInfo> infos = new Dictionary<Type, ItemInfo>();
+        private static readonly Dictionary<Type, CustomItemMetadata> infos = new Dictionary<Type, CustomItemMetadata>();
         /// <summary>
         ///   <para>Gets the specified <see cref="CustomItem"/> <paramref name="type"/>'s metadata.</para>
         /// </summary>
         /// <param name="type">The <see cref="CustomItem"/> type to get the metadata for.</param>
         /// <returns>The specified <paramref name="type"/>'s metadata.</returns>
         /// <exception cref="ArgumentException"><paramref name="type"/> is not a <see cref="CustomItem"/>.</exception>
-        public static ItemInfo Get(Type type) => infos.TryGetValue(type, out ItemInfo info) ? info : infos[type] = new ItemInfo(type);
+        public static CustomItemMetadata Get(Type type) => infos.TryGetValue(type, out CustomItemMetadata info) ? info : infos[type] = new CustomItemMetadata(type);
         /// <summary>
         ///   <para>Gets the specified <typeparamref name="TItem"/>'s metadata.</para>
         /// </summary>
         /// <typeparam name="TItem">The <see cref="CustomItem"/> type get the metadata for.</typeparam>
         /// <returns>The specified <typeparamref name="TItem"/>'s metadata.</returns>
-        public static ItemInfo Get<TItem>() where TItem : CustomItem => Get(typeof(TItem));
+        public static CustomItemMetadata Get<TItem>() where TItem : CustomItem => Get(typeof(TItem));
 
-        private ItemInfo(Type type)
+        private CustomItemMetadata(Type type)
         {
             if (!typeof(CustomItem).IsAssignableFrom(type))
                 throw new ArgumentException($"{nameof(type)} does not inherit from {nameof(CustomItem)}!", nameof(type));

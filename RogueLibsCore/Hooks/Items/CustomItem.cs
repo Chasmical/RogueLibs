@@ -47,13 +47,13 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Gets the custom item's metadata.</para>
         /// </summary>
-        public ItemInfo ItemInfo { get; internal set; } = null!; // initialized immediately in CustomItemFactory
+        public CustomItemMetadata Metadata { get; internal set; } = null!; // initialized immediately in CustomItemFactory
 
         /// <inheritdoc/>
         protected sealed override void Initialize()
         {
             Item.stackable = true;
-            Item.Categories.AddRange(ItemInfo.Categories);
+            Item.Categories.AddRange(Metadata.Categories);
             if (this is IItemCombinable)
                 Item.itemType = ItemTypes.Combine;
 
@@ -77,9 +77,9 @@ namespace RogueLibsCore
             if (Item.itemType is null)
             {
                 RogueFramework.LogWarning($"Custom item {GetType()} doesn't set the Item.itemType field!");
-                Item.itemType = "Tool";
+                Item.itemType = ItemTypes.Tool;
             }
-            if (Item.itemIcon is null) Item.LoadItemSprite(ItemInfo.Name);
+            if (Item.itemIcon is null) Item.LoadItemSprite(Metadata.Name);
 
             if (float.IsNaN(Item.hierarchy2))
                 Item.hierarchy2 = Item.hierarchy;
@@ -137,7 +137,7 @@ namespace RogueLibsCore
         ///   <para>Returns the custom item's sprite name. Can be dynamically changed, for example, based on the item's count.</para>
         /// </summary>
         /// <returns>The name of the sprite for the custom item to use.</returns>
-        public virtual string GetSprite() => ItemInfo.Name;
+        public virtual string GetSprite() => Metadata.Name;
 
     }
 }

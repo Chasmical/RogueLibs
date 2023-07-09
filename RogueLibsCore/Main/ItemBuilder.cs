@@ -9,14 +9,14 @@ namespace RogueLibsCore
     public class ItemBuilder
     {
         /// <summary>
-        ///   <para>Initializes a new instance of the <see cref="ItemBuilder"/> class with the specified <paramref name="info"/>.</para>
+        ///   <para>Initializes a new instance of the <see cref="ItemBuilder"/> class with the specified <paramref name="metadata"/>.</para>
         /// </summary>
-        /// <param name="info">The item metadata to use.</param>
-        public ItemBuilder(ItemInfo info) => Info = info;
+        /// <param name="metadata">The item metadata to use.</param>
+        public ItemBuilder(CustomItemMetadata metadata) => Metadata = metadata;
         /// <summary>
         ///   <para>The used item metadata.</para>
         /// </summary>
-        public ItemInfo Info { get; }
+        public CustomItemMetadata Metadata { get; }
 
         /// <summary>
         ///   <para>Gets the item's localizable name.</para>
@@ -43,7 +43,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentException">A localizable string that acts as the item's name already exists.</exception>
         public ItemBuilder WithName(CustomNameInfo info)
         {
-            Name = RogueLibs.CreateCustomName(Info.Name, NameTypes.Item, info);
+            Name = RogueLibs.CreateCustomName(Metadata.Name, NameTypes.Item, info);
             return this;
         }
         /// <summary>
@@ -54,7 +54,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentException">A localizable string that acts as the item's description already exists.</exception>
         public ItemBuilder WithDescription(CustomNameInfo info)
         {
-            Description = RogueLibs.CreateCustomName(Info.Name, NameTypes.Description, info);
+            Description = RogueLibs.CreateCustomName(Metadata.Name, NameTypes.Description, info);
             return this;
         }
         /// <summary>
@@ -67,8 +67,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public ItemBuilder WithSprite(byte[] rawData, float ppu = 64f)
         {
-            Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, ppu);
-            Info.sprite = Sprite;
+            Sprite = RogueLibs.CreateCustomSprite(Metadata.Name, SpriteScope.Items, rawData, ppu);
+            Metadata.sprite = Sprite;
             return this;
         }
         /// <summary>
@@ -82,15 +82,15 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public ItemBuilder WithSprite(byte[] rawData, Rect region, float ppu = 64f)
         {
-            Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, region, ppu);
-            Info.sprite = Sprite;
+            Sprite = RogueLibs.CreateCustomSprite(Metadata.Name, SpriteScope.Items, rawData, region, ppu);
+            Metadata.sprite = Sprite;
             return this;
         }
         /// <summary>
         ///   <para>Creates a default <see cref="ItemUnlock"/> for the item, that is unlocked by default.</para>
         /// </summary>
         /// <returns>The current instance of <see cref="ItemBuilder"/>, for chaining purposes.</returns>
-        public ItemBuilder WithUnlock() => WithUnlock(new ItemUnlock(Info.Name, true));
+        public ItemBuilder WithUnlock() => WithUnlock(new ItemUnlock(Metadata.Name, true));
         /// <summary>
         ///   <para>Creates the specified <paramref name="unlock"/> for the item.</para>
         /// </summary>
@@ -100,7 +100,7 @@ namespace RogueLibsCore
         public ItemBuilder WithUnlock(ItemUnlock unlock)
         {
             if (unlock is null) throw new ArgumentNullException(nameof(unlock));
-            unlock.Name = Info.Name;
+            unlock.Name = Metadata.Name;
             RogueLibs.CreateCustomUnlock(unlock);
             Unlock = unlock;
             return this;

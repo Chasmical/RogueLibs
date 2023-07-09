@@ -29,7 +29,7 @@ namespace RogueLibsCore
         ///   <para>The method that is called to determine the special ability indicator over the current target.</para>
         /// </summary>
         /// <returns>The sprite to display over the current target.</returns>
-        public virtual Sprite? GetIndicator() => gc.gameResources.itemDic.TryGetValue(ItemInfo.Name, out Sprite sprite) ? sprite : null;
+        public virtual Sprite? GetIndicator() => gc.gameResources.itemDic.TryGetValue(Metadata.Name, out Sprite sprite) ? sprite : null;
 
         /// <summary>
         ///   <para>Gets the last <see cref="PlayfieldObject"/> returned by the <see cref="IAbilityTargetable.FindTarget"/> method.</para>

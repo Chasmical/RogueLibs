@@ -71,6 +71,6 @@ namespace RogueLibsCore
         /// <param name="checkName">The name of the inventory check.</param>
         /// <returns><see langword="true"/>, if the inventory check is allowed; otherwise, <see langword="false"/>.</returns>
         public static bool IsCheckAllowed(CustomItem? customItem, string checkName)
-            => customItem?.ItemInfo.IgnoredChecks.Contains(checkName) != true;
+            => customItem?.Metadata.IgnoredChecks.Contains(checkName) != true;
     }
 }

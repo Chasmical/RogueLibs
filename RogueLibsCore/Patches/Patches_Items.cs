@@ -74,7 +74,7 @@ namespace RogueLibsCore
 
             Agent originalAgent = agent;
             OnItemUsingArgs args = new OnItemUsingArgs(item, agent);
-            if (InventoryChecks.onItemUsing.Raise(args, custom?.ItemInfo.IgnoredChecks))
+            if (InventoryChecks.onItemUsing.Raise(args, custom?.Metadata.IgnoredChecks))
             {
                 agent = args.User;
                 // in case an inventory check redirected the use of an item on someone else
@@ -134,7 +134,7 @@ namespace RogueLibsCore
             if (actualCombining)
             {
                 OnItemsCombiningArgs args = new OnItemsCombiningArgs(__instance, otherItem, myAgent);
-                if (InventoryChecks.onItemsCombining.Raise(args, custom?.ItemInfo.IgnoredChecks))
+                if (InventoryChecks.onItemsCombining.Raise(args, custom?.Metadata.IgnoredChecks))
                 {
                     myAgent = args.Combiner;
                     otherItem = args.OtherItem;
@@ -190,7 +190,7 @@ namespace RogueLibsCore
             if (actualCombining)
             {
                 OnItemTargetingArgs args = new OnItemTargetingArgs(__instance, otherObject, __instance.agent);
-                if (InventoryChecks.onItemTargeting.Raise(args, custom?.ItemInfo.IgnoredChecks))
+                if (InventoryChecks.onItemTargeting.Raise(args, custom?.Metadata.IgnoredChecks))
                 {
                     otherObject = args.Target;
                     using (new AgentSwapper(__instance, args.User))
@@ -390,7 +390,7 @@ namespace RogueLibsCore
                     if (pressedButton)
                     {
                         OnItemTargetingAnywhereArgs args = new OnItemTargetingAnywhereArgs(invItem, myPos, invItem.agent);
-                        if (InventoryChecks.onItemTargetingAnywhere.Raise(args, custom.ItemInfo.IgnoredChecks))
+                        if (InventoryChecks.onItemTargetingAnywhere.Raise(args, custom.Metadata.IgnoredChecks))
                         {
                             myPos = args.Target;
                             using (new AgentSwapper(invItem, args.User))

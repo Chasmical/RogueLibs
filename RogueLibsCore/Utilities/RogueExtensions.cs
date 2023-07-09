@@ -38,7 +38,7 @@ namespace RogueLibsCore
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
             if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), amount, $"{nameof(amount)} is less than or equal to 0.");
-            InvItem? item = inventory.AddItem(ItemInfo.Get<TItem>().Name, amount);
+            InvItem? item = inventory.AddItem(CustomItemMetadata.Get<TItem>().Name, amount);
             return item?.GetHook<TItem>();
         }
         /// <summary>
@@ -106,7 +106,7 @@ namespace RogueLibsCore
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
             if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), amount, $"{nameof(amount)} is less than or equal to 0.");
-            InvItem item = inventory.AddItem(ItemInfo.Get(itemType).Name, amount);
+            InvItem item = inventory.AddItem(CustomItemMetadata.Get(itemType).Name, amount);
             return item?.GetHooks<CustomItem>().FirstOrDefault(itemType.IsInstanceOfType);
         }
         /// <summary>
@@ -170,7 +170,7 @@ namespace RogueLibsCore
         public static TAbility? GiveAbility<TAbility>(this Agent agent) where TAbility : CustomAbility
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            string abilityName = ItemInfo.Get<TAbility>().Name;
+            string abilityName = CustomItemMetadata.Get<TAbility>().Name;
             agent.statusEffects.GiveSpecialAbility(abilityName);
             return agent.inventory.equippedSpecialAbility.GetHook<TAbility>();
         }
@@ -222,7 +222,7 @@ namespace RogueLibsCore
         public static CustomAbility? GiveAbility(this Agent agent, Type abilityType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            string abilityName = ItemInfo.Get(abilityType).Name;
+            string abilityName = CustomItemMetadata.Get(abilityType).Name;
             agent.statusEffects.GiveSpecialAbility(abilityName);
             return agent.inventory.equippedSpecialAbility.GetHooks<CustomAbility>().FirstOrDefault(abilityType.IsInstanceOfType);
         }

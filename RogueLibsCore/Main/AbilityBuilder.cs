@@ -9,14 +9,14 @@ namespace RogueLibsCore
     public class AbilityBuilder
     {
         /// <summary>
-        ///   <para>Initializes a new instance of the <see cref="ItemBuilder"/> class with the specified <paramref name="info"/>.</para>
+        ///   <para>Initializes a new instance of the <see cref="ItemBuilder"/> class with the specified <paramref name="metadata"/>.</para>
         /// </summary>
-        /// <param name="info">The item metadata to use.</param>
-        public AbilityBuilder(ItemInfo info) => Info = info;
+        /// <param name="metadata">The item metadata to use.</param>
+        public AbilityBuilder(CustomItemMetadata metadata) => Metadata = metadata;
         /// <summary>
         ///   <para>The used item metadata.</para>
         /// </summary>
-        public ItemInfo Info { get; }
+        public CustomItemMetadata Metadata { get; }
 
         /// <summary>
         ///   <para>Gets the ability's localizable name.</para>
@@ -43,7 +43,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentException">A localizable string that acts as the ability's name already exists.</exception>
         public AbilityBuilder WithName(CustomNameInfo info)
         {
-            Name = RogueLibs.CreateCustomName(Info.Name, NameTypes.Item, info);
+            Name = RogueLibs.CreateCustomName(Metadata.Name, NameTypes.Item, info);
             return this;
         }
         /// <summary>
@@ -54,7 +54,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentException">A localizable string that acts as the ability's description already exists.</exception>
         public AbilityBuilder WithDescription(CustomNameInfo info)
         {
-            Description = RogueLibs.CreateCustomName(Info.Name, NameTypes.Description, info);
+            Description = RogueLibs.CreateCustomName(Metadata.Name, NameTypes.Description, info);
             return this;
         }
         /// <summary>
@@ -67,7 +67,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public AbilityBuilder WithSprite(byte[] rawData, float ppu = 64f)
         {
-            Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, ppu);
+            Sprite = RogueLibs.CreateCustomSprite(Metadata.Name, SpriteScope.Items, rawData, ppu);
             return this;
         }
         /// <summary>
@@ -81,14 +81,14 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public AbilityBuilder WithSprite(byte[] rawData, Rect region, float ppu = 64f)
         {
-            Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Items, rawData, region, ppu);
+            Sprite = RogueLibs.CreateCustomSprite(Metadata.Name, SpriteScope.Items, rawData, region, ppu);
             return this;
         }
         /// <summary>
         ///   <para>Creates a default <see cref="AbilityUnlock"/> for the ability, that is unlocked by default.</para>
         /// </summary>
         /// <returns>The current instance of <see cref="AbilityBuilder"/>, for chaining purposes.</returns>
-        public AbilityBuilder WithUnlock() => WithUnlock(new AbilityUnlock(Info.Name, true));
+        public AbilityBuilder WithUnlock() => WithUnlock(new AbilityUnlock(Metadata.Name, true));
         /// <summary>
         ///   <para>Creates the specified <paramref name="unlock"/> for the ability.</para>
         /// </summary>
@@ -98,7 +98,7 @@ namespace RogueLibsCore
         public AbilityBuilder WithUnlock(AbilityUnlock unlock)
         {
             if (unlock is null) throw new ArgumentNullException(nameof(unlock));
-            unlock.Name = Info.Name;
+            unlock.Name = Metadata.Name;
             RogueLibs.CreateCustomUnlock(unlock);
             Unlock = unlock;
             return this;

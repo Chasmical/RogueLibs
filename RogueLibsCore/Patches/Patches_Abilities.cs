@@ -36,7 +36,7 @@ namespace RogueLibsCore
             if (custom is IAbilityTargetable)
                 __instance.SpecialAbilityInterfaceCheck();
             if (custom is IAbilityRechargeable)
-                __instance.RechargeSpecialAbility(custom.ItemInfo.Name);
+                __instance.RechargeSpecialAbility(custom.Metadata.Name);
         }
 
         public static void StatusEffects_PressedSpecialAbility(StatusEffects __instance)
