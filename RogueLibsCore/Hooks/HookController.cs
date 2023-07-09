@@ -32,6 +32,7 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public void AddHook(IHook hook)
         {
+            ValidateHookType(hook);
             hook.Initialize(Instance);
             hooks.Add(hook);
             HookEvents.RegisterHookEvents(hook);
@@ -55,6 +56,22 @@ namespace RogueLibsCore
                 if (hook is THook hookT)
                     results.Add(hookT);
             return results.ToArray();
+        }
+
+        // ReSharper disable once StaticMemberInGenericType
+        private static readonly Dictionary<Type, bool> validHookTypes = new();
+
+        private static void ValidateHookType(IHook hook)
+        {
+            Type hookType = hook.GetType();
+            if (!validHookTypes.TryGetValue(hookType, out bool isValid))
+            {
+                Type[] interfaces = hookType.GetInterfaces();
+                Type? instanceType = Array.Find(interfaces, static i => i.GetGenericTypeDefinition() == typeof(IHook<>));
+                isValid = instanceType is null || instanceType.IsAssignableFrom(typeof(T));
+                validHookTypes.Add(hookType, isValid);
+            }
+            if (!isValid) throw new NotImplementedException();
         }
 
         private static void HandleHookRemoval(IHook hook)
