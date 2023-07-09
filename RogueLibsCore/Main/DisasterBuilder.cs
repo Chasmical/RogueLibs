@@ -8,14 +8,14 @@ namespace RogueLibsCore
     public class DisasterBuilder
     {
         /// <summary>
-        ///   <para>Initializes a new instance of the <see cref="DisasterBuilder"/> class with the specified <paramref name="info"/>.</para>
+        ///   <para>Initializes a new instance of the <see cref="DisasterBuilder"/> class with the specified <paramref name="metadata"/>.</para>
         /// </summary>
-        /// <param name="info">The disaster metadata to use.</param>
-        public DisasterBuilder(DisasterInfo info) => Info = info;
+        /// <param name="metadata">The disaster metadata to use.</param>
+        public DisasterBuilder(CustomDisasterMetadata metadata) => Metadata = metadata;
         /// <summary>
         ///   <para>The used disaster metadata.</para>
         /// </summary>
-        public DisasterInfo Info { get; }
+        public CustomDisasterMetadata Metadata { get; }
 
         /// <summary>
         ///   <para>Gets the disaster's localizable name.</para>
@@ -46,7 +46,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentException">A localizable string that acts as the disaster's name already exists.</exception>
         public DisasterBuilder WithName(CustomNameInfo info)
         {
-            Name = RogueLibs.CreateCustomName($"LevelFeeling{Info.Name}_Name", NameTypes.Interface, info);
+            Name = RogueLibs.CreateCustomName($"LevelFeeling{Metadata.Name}_Name", NameTypes.Interface, info);
             return this;
         }
         /// <summary>
@@ -57,7 +57,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentException">A localizable string that acts as the disaster's description already exists.</exception>
         public DisasterBuilder WithDescription(CustomNameInfo info)
         {
-            Description = RogueLibs.CreateCustomName($"LevelFeeling{Info.Name}_Desc", NameTypes.Description, info);
+            Description = RogueLibs.CreateCustomName($"LevelFeeling{Metadata.Name}_Desc", NameTypes.Description, info);
             return this;
         }
         /// <summary>
@@ -69,8 +69,8 @@ namespace RogueLibsCore
         /// <exception cref="InvalidOperationException">The maximum of two localizable messages have already been created.</exception>
         public DisasterBuilder WithMessage(CustomNameInfo info)
         {
-            if (Message1 is null) Message1 = RogueLibs.CreateCustomName($"LevelFeeling{Info.Name}1", NameTypes.Description, info);
-            else if (Message2 is null) Message2 = RogueLibs.CreateCustomName($"LevelFeeling{Info.Name}2", NameTypes.Description, info);
+            if (Message1 is null) Message1 = RogueLibs.CreateCustomName($"LevelFeeling{Metadata.Name}1", NameTypes.Description, info);
+            else if (Message2 is null) Message2 = RogueLibs.CreateCustomName($"LevelFeeling{Metadata.Name}2", NameTypes.Description, info);
             else throw new InvalidOperationException("You can't specify more than two messages for a custom disaster!");
             return this;
         }
@@ -80,7 +80,7 @@ namespace RogueLibsCore
         /// <returns>The current instance of <see cref="DisasterBuilder"/>, for chaining purposes.</returns>
         public DisasterBuilder WithRemovalMutator()
         {
-            RogueLibs.CreateCustomUnlock(RemovalMutator = new MutatorUnlock("NoD_" + Info.Name, true)
+            RogueLibs.CreateCustomUnlock(RemovalMutator = new MutatorUnlock("NoD_" + Metadata.Name, true)
             {
                 IsAvailableInDailyRun = false,
             });

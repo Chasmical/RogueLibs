@@ -11,7 +11,7 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>Determines whether this disaster is currently active.</para>
         /// </summary>
-        public bool IsActive => gc.levelFeeling == DisasterInfo.Name;
+        public bool IsActive => gc.levelFeeling == Metadata.Name;
 
         /// <summary>
         ///   <para>Gets the index of the current district (0 - Slums, 1 - Industrial, 2 - Park, 3 - Downtown, 4 - Uptown, 5 - Mayor Village).</para>
@@ -26,11 +26,11 @@ namespace RogueLibsCore
         /// </summary>
         public int CurrentLevel => gc.sessionDataBig.curLevel;
 
-        private DisasterInfo? disasterInfo;
+        private CustomDisasterMetadata? metadata;
         /// <summary>
         ///   <para>Gets the custom disaster's metadata.</para>
         /// </summary>
-        public DisasterInfo DisasterInfo => disasterInfo ??= DisasterInfo.Get(GetType());
+        public CustomDisasterMetadata Metadata => metadata ??= CustomDisasterMetadata.Get(GetType());
 
         /// <summary>
         ///   <para>Gets the currently used instance of <see cref="GameController"/>.</para>

@@ -62,7 +62,7 @@ namespace RogueLibsCore
         private static bool LevelFeelings_GetLevelFeeling_Helper(string disasterName)
         {
             // returns initial value for the 'flag' variable
-            CustomDisaster? custom = RogueFramework.CustomDisasters.Find(d => d.DisasterInfo.Name == disasterName);
+            CustomDisaster? custom = RogueFramework.CustomDisasters.Find(d => d.Metadata.Name == disasterName);
             RogueFramework.LogWarning($"Found custom disaster : {custom} - {disasterName}");
             return custom?.Test() is not false; // not a custom disaster, or the custom disaster passed the check
         }
@@ -96,7 +96,7 @@ namespace RogueLibsCore
             CustomDisaster? forced = RogueFramework.CustomDisasters.FindLast(static d => d.TestForced());
             if (forced is not null)
             {
-                __result = forced.DisasterInfo.Name;
+                __result = forced.Metadata.Name;
             }
             else
             {
@@ -105,7 +105,7 @@ namespace RogueLibsCore
                 RogueFramework.LogWarning($"Randomizing, {index} index ({random.elementList.Count} vanilla + {custom.Count} custom).");
                 __result = index < random.elementList.Count
                     ? random.elementList[index].rName
-                    : custom[index - random.elementList.Count].DisasterInfo.Name;
+                    : custom[index - random.elementList.Count].Metadata.Name;
                 RogueFramework.LogWarning($"Selected {__result}.");
             }
             return false;

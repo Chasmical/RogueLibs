@@ -103,9 +103,9 @@ namespace RogueLibsCore
         /// <returns>An <see cref="DisasterBuilder"/> with the specified disaster's metadata.</returns>
         public static DisasterBuilder CreateCustomDisaster<TDisaster>() where TDisaster : CustomDisaster, new()
         {
-            DisasterInfo info = DisasterInfo.Get<TDisaster>();
+            CustomDisasterMetadata metadata = CustomDisasterMetadata.Get<TDisaster>();
             RogueFramework.CustomDisasters.Add(new TDisaster());
-            return new DisasterBuilder(info);
+            return new DisasterBuilder(metadata);
         }
 
         /// <summary>
