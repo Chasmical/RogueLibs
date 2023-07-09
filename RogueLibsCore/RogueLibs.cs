@@ -93,8 +93,8 @@ namespace RogueLibsCore
         /// <returns>An <see cref="EffectBuilder"/> with the specified effect's metadata.</returns>
         public static EffectBuilder CreateCustomEffect<TEffect>() where TEffect : CustomEffect, new()
         {
-            EffectInfo info = EffectFactory.AddEffect<TEffect>();
-            return new EffectBuilder(info);
+            CustomEffectMetadata metadata = EffectFactory.AddEffect<TEffect>();
+            return new EffectBuilder(metadata);
         }
         /// <summary>
         ///   <para>Creates a <typeparamref name="TDisaster"/> custom disaster. Chain "With" methods to attach extra information.</para>

@@ -9,7 +9,7 @@ namespace RogueLibsCore
     /// <summary>
     ///   <para>Represents the <see cref="CustomEffect"/> type metadata.</para>
     /// </summary>
-    public sealed class EffectInfo
+    public sealed class CustomEffectMetadata
     {
         /// <summary>
         ///   <para>Gets the custom effect's name.</para>
@@ -49,22 +49,22 @@ namespace RogueLibsCore
         /// <returns>The <see cref="RogueSprite"/> that represents this effect, if found; otherwise, <see langword="null"/>.</returns>
         public RogueSprite? GetSprite() => sprite;
 
-        private static readonly Dictionary<Type, EffectInfo> infos = new Dictionary<Type, EffectInfo>();
+        private static readonly Dictionary<Type, CustomEffectMetadata> infos = new Dictionary<Type, CustomEffectMetadata>();
         /// <summary>
         ///   <para>Gets the specified <see cref="CustomEffect"/> <paramref name="type"/>'s metadata.</para>
         /// </summary>
         /// <param name="type">The <see cref="CustomEffect"/> type to get the metadata for.</param>
         /// <returns>The specified <paramref name="type"/>'s metadata.</returns>
         /// <exception cref="ArgumentException"><paramref name="type"/> is not a <see cref="CustomEffect"/>.</exception>
-        public static EffectInfo Get(Type type) => infos.TryGetValue(type, out EffectInfo info) ? info : infos[type] = new EffectInfo(type);
+        public static CustomEffectMetadata Get(Type type) => infos.TryGetValue(type, out CustomEffectMetadata info) ? info : infos[type] = new CustomEffectMetadata(type);
         /// <summary>
         ///   <para>Gets the specified <typeparamref name="TEffect"/>'s metadata.</para>
         /// </summary>
         /// <typeparam name="TEffect">The <see cref="CustomEffect"/> type get the metadata for.</typeparam>
         /// <returns>The specified <typeparamref name="TEffect"/>'s metadata.</returns>
-        public static EffectInfo Get<TEffect>() where TEffect : CustomEffect => Get(typeof(TEffect));
+        public static CustomEffectMetadata Get<TEffect>() where TEffect : CustomEffect => Get(typeof(TEffect));
 
-        private EffectInfo(Type type)
+        private CustomEffectMetadata(Type type)
         {
             if (!typeof(CustomEffect).IsAssignableFrom(type))
                 throw new ArgumentException($"The specified {nameof(type)} is not a {nameof(CustomEffect)}.", nameof(type));

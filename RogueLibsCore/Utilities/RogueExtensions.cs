@@ -444,7 +444,7 @@ namespace RogueLibsCore
         public static TEffect? AddEffect<TEffect>(this Agent agent, CreateEffectInfo info) where TEffect : CustomEffect
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            string effectName = EffectInfo.Get<TEffect>().Name;
+            string effectName = CustomEffectMetadata.Get<TEffect>().Name;
             agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent,
                 agent.objectMult.IsFromClient(), info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
             return agent.GetEffect<TEffect>();
@@ -461,7 +461,7 @@ namespace RogueLibsCore
         public static CustomEffect? AddEffect(this Agent agent, Type effectType, CreateEffectInfo info)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            string effectName = EffectInfo.Get(effectType).Name;
+            string effectName = CustomEffectMetadata.Get(effectType).Name;
             agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent, agent.objectMult.IsFromClient(), info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
             return (CustomEffect?)agent.GetEffect(effectType);
         }

@@ -206,7 +206,7 @@ namespace RogueLibsCore
             {
                 if (__instance.StatusEffectList != null)
                 {
-                    while (customEffect.CurrentTime > 0 && __instance.hasStatusEffect(customEffect.EffectInfo.Name) && (!__instance.agent.disappeared || __instance.agent.oma.notReadyToEnterLevel || __instance.agent.FellInHole() || __instance.agent.teleporting) || __instance.agent.FellInHole() || __instance.agent.teleporting || __instance.agent.KnockedOut())
+                    while (customEffect.CurrentTime > 0 && __instance.hasStatusEffect(customEffect.Metadata.Name) && (!__instance.agent.disappeared || __instance.agent.oma.notReadyToEnterLevel || __instance.agent.FellInHole() || __instance.agent.teleporting) || __instance.agent.FellInHole() || __instance.agent.teleporting || __instance.agent.KnockedOut())
                     {
                         if (!__instance.agent.FellInHole() && !__instance.agent.teleporting && !__instance.agent.KnockedOut() && GameController.gameController.loadComplete && !GameController.gameController.cinematic)
                         {
@@ -231,10 +231,10 @@ namespace RogueLibsCore
                         if (customEffect.CurrentTime > 0)
                             yield return countSpeed > 0 ? new WaitForSeconds(countSpeed) : null;
                     }
-                    if (!customEffect.Effect.infiniteTime && (!__instance.agent.disappeared || __instance.agent.FellInHole() || __instance.agent.teleporting) && (!__instance.agent.dead || customEffect.EffectInfo.Name != "Resurrection"))
+                    if (!customEffect.Effect.infiniteTime && (!__instance.agent.disappeared || __instance.agent.FellInHole() || __instance.agent.teleporting) && (!__instance.agent.dead || customEffect.Metadata.Name != "Resurrection"))
                     {
                         removeEffectOnUpdateField.SetValue(__instance, true);
-                        __instance.RemoveStatusEffect(customEffect.EffectInfo.Name, showTextOnRemoval);
+                        __instance.RemoveStatusEffect(customEffect.Metadata.Name, showTextOnRemoval);
                         removeEffectOnUpdateField.SetValue(__instance, false);
                     }
                 }

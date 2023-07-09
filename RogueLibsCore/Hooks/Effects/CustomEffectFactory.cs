@@ -17,7 +17,7 @@ namespace RogueLibsCore
             {
                 hook = entry.Initializer();
                 if (hook is CustomEffect custom)
-                    custom.EffectInfo = entry.EffectInfo;
+                    custom.Metadata = entry.Metadata;
                 return true;
             }
             hook = null;
@@ -28,17 +28,17 @@ namespace RogueLibsCore
         /// </summary>
         /// <typeparam name="TEffect">The <see cref="CustomEffect"/> type to add.</typeparam>
         /// <returns>The added effect's metadata.</returns>
-        public EffectInfo AddEffect<TEffect>() where TEffect : CustomEffect, new()
+        public CustomEffectMetadata AddEffect<TEffect>() where TEffect : CustomEffect, new()
         {
-            EffectInfo info = EffectInfo.Get<TEffect>();
-            effectsDict.Add(info.Name, new EffectEntry { Initializer = static () => new TEffect(), EffectInfo = info });
-            return info;
+            CustomEffectMetadata metadata = CustomEffectMetadata.Get<TEffect>();
+            effectsDict.Add(metadata.Name, new EffectEntry { Initializer = static () => new TEffect(), Metadata = metadata });
+            return metadata;
         }
 
         private struct EffectEntry
         {
             public Func<IHook<StatusEffect>> Initializer;
-            public EffectInfo EffectInfo;
+            public CustomEffectMetadata Metadata;
         }
     }
 }

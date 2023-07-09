@@ -37,14 +37,14 @@
         /// <summary>
         ///   <para>Gets the custom effect's metadata.</para>
         /// </summary>
-        public EffectInfo EffectInfo { get; internal set; } = null!; // initialized immediately in CustomEffectFactory
+        public CustomEffectMetadata Metadata { get; internal set; } = null!; // initialized immediately in CustomEffectFactory
 
         /// <inheritdoc/>
         protected sealed override void Initialize()
         {
-            Effect.dontRemoveOnDeath = !EffectInfo.RemoveOnDeath;
-            Effect.removeOnKnockout = EffectInfo.RemoveOnKnockOut;
-            Effect.keepBetweenLevels = !EffectInfo.RemoveOnNextLevel;
+            Effect.dontRemoveOnDeath = !Metadata.RemoveOnDeath;
+            Effect.removeOnKnockout = Metadata.RemoveOnKnockOut;
+            Effect.keepBetweenLevels = !Metadata.RemoveOnNextLevel;
         }
 
         /// <summary>

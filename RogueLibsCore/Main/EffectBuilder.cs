@@ -9,14 +9,14 @@ namespace RogueLibsCore
     public class EffectBuilder
     {
         /// <summary>
-        ///   <para>Initializes a new instance of the <see cref="EffectBuilder"/> class with the specified <paramref name="info"/>.</para>
+        ///   <para>Initializes a new instance of the <see cref="EffectBuilder"/> class with the specified <paramref name="metadata"/>.</para>
         /// </summary>
-        /// <param name="info">The effect metadata to use.</param>
-        public EffectBuilder(EffectInfo info) => Info = info;
+        /// <param name="metadata">The effect metadata to use.</param>
+        public EffectBuilder(CustomEffectMetadata metadata) => Metadata = metadata;
         /// <summary>
         ///   <para>The used effect metadata.</para>
         /// </summary>
-        public EffectInfo Info { get; }
+        public CustomEffectMetadata Metadata { get; }
 
         /// <summary>
         ///   <para>Gets the effect's localizable name.</para>
@@ -39,7 +39,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentException">A localizable string that acts as the effect's name already exists.</exception>
         public EffectBuilder WithName(CustomNameInfo info)
         {
-            Name = RogueLibs.CreateCustomName(Info.Name, NameTypes.StatusEffect, info);
+            Name = RogueLibs.CreateCustomName(Metadata.Name, NameTypes.StatusEffect, info);
             return this;
         }
         /// <summary>
@@ -50,7 +50,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentException">A localizable string that acts as the effect's description already exists.</exception>
         public EffectBuilder WithDescription(CustomNameInfo info)
         {
-            Description = RogueLibs.CreateCustomName(Info.Name, NameTypes.Description, info);
+            Description = RogueLibs.CreateCustomName(Metadata.Name, NameTypes.Description, info);
             return this;
         }
         /// <summary>
@@ -63,8 +63,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public EffectBuilder WithSprite(byte[] rawData, float ppu = 64f)
         {
-            Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Extra, rawData, ppu);
-            Info.sprite = Sprite;
+            Sprite = RogueLibs.CreateCustomSprite(Metadata.Name, SpriteScope.Extra, rawData, ppu);
+            Metadata.sprite = Sprite;
             return this;
         }
         /// <summary>
@@ -78,8 +78,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public EffectBuilder WithSprite(byte[] rawData, Rect region, float ppu = 64f)
         {
-            Sprite = RogueLibs.CreateCustomSprite(Info.Name, SpriteScope.Extra, rawData, region, ppu);
-            Info.sprite = Sprite;
+            Sprite = RogueLibs.CreateCustomSprite(Metadata.Name, SpriteScope.Extra, rawData, region, ppu);
+            Metadata.sprite = Sprite;
             return this;
         }
     }
