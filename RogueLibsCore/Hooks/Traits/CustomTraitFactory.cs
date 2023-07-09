@@ -17,7 +17,7 @@ namespace RogueLibsCore
             {
                 hook = entry.Initializer();
                 if (hook is CustomTrait custom)
-                    custom.TraitInfo = entry.TraitInfo;
+                    custom.Metadata = entry.Metadata;
                 return true;
             }
             hook = null;
@@ -28,17 +28,17 @@ namespace RogueLibsCore
         /// </summary>
         /// <typeparam name="TTrait">The <see cref="CustomTrait"/> type to add.</typeparam>
         /// <returns>The added trait's metadata.</returns>
-        public TraitInfo AddTrait<TTrait>() where TTrait : CustomTrait, new()
+        public CustomTraitMetadata AddTrait<TTrait>() where TTrait : CustomTrait, new()
         {
-            TraitInfo info = TraitInfo.Get<TTrait>();
-            traitsDict.Add(info.Name, new TraitEntry { Initializer = static () => new TTrait(), TraitInfo = info });
-            return info;
+            CustomTraitMetadata metadata = CustomTraitMetadata.Get<TTrait>();
+            traitsDict.Add(metadata.Name, new TraitEntry { Initializer = static () => new TTrait(), Metadata = metadata });
+            return metadata;
         }
 
         private struct TraitEntry
         {
             public Func<IHook<Trait>> Initializer;
-            public TraitInfo TraitInfo;
+            public CustomTraitMetadata Metadata;
         }
     }
 }

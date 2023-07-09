@@ -28,7 +28,7 @@
         /// <summary>
         ///   <para>Gets the custom trait's metadata.</para>
         /// </summary>
-        public TraitInfo TraitInfo { get; internal set; } = null!; // initialized immediately in CustomTraitFactory
+        public CustomTraitMetadata Metadata { get; internal set; } = null!; // initialized immediately in CustomTraitFactory
 
         /// <inheritdoc/>
         protected sealed override void Initialize() => OnAdded();

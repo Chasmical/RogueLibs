@@ -262,7 +262,7 @@ namespace RogueLibsCore
         public static TTrait? AddTrait<TTrait>(this Agent agent) where TTrait : CustomTrait
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            string traitName = TraitInfo.Get<TTrait>().Name;
+            string traitName = CustomTraitMetadata.Get<TTrait>().Name;
             agent.statusEffects.AddTrait(traitName);
             return agent.statusEffects.TraitList.Find(t => t.traitName == traitName)?.GetHook<TTrait>();
         }
@@ -314,7 +314,7 @@ namespace RogueLibsCore
         public static CustomTrait? AddTrait(this Agent agent, Type traitType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            string traitName = TraitInfo.Get(traitType).Name;
+            string traitName = CustomTraitMetadata.Get(traitType).Name;
             agent.statusEffects.AddTrait(traitName);
             return (CustomTrait?)agent.GetTrait(traitType);
         }

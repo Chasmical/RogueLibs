@@ -83,8 +83,8 @@ namespace RogueLibsCore
         /// <returns>An <see cref="TraitBuilder"/> with the specified trait's metadata.</returns>
         public static TraitBuilder CreateCustomTrait<TTrait>() where TTrait : CustomTrait, new()
         {
-            TraitInfo info = TraitFactory.AddTrait<TTrait>();
-            return new TraitBuilder(info);
+            CustomTraitMetadata metadata = TraitFactory.AddTrait<TTrait>();
+            return new TraitBuilder(metadata);
         }
         /// <summary>
         ///   <para>Creates a <typeparamref name="TEffect"/> custom effect. Chain "With" methods to attach extra information.</para>
