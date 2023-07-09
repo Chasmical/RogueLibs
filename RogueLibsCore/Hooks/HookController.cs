@@ -14,12 +14,12 @@ namespace RogueLibsCore
         public T Instance { get; }
         object IHookController.Instance => Instance;
 
-        private List<IHook<T>> hooks = new();
-        private ReadOnlyCollection<IHook<T>>? hooksReadonly;
+        private List<IHook> hooks = new();
+        private ReadOnlyCollection<IHook>? hooksReadonly;
         /// <summary>
         ///   <para>Gets a read-only collection of all hooks attached to the current instance.</para>
         /// </summary>
-        public ReadOnlyCollection<IHook<T>> Hooks
+        public ReadOnlyCollection<IHook> Hooks
             => hooksReadonly ??= hooks.AsReadOnly();
 
         /// <summary>
@@ -29,20 +29,21 @@ namespace RogueLibsCore
         public HookController(T instance)
             => Instance = instance;
 
-        /// <inheritdoc cref="IHookController.AddHook"/>
-        public void AddHook(IHook<T> hook)
+        /// <inheritdoc/>
+        public void AddHook(IHook hook)
         {
             hook.Initialize(Instance);
             hooks.Add(hook);
             HookEvents.RegisterHookEvents(hook);
         }
-        /// <inheritdoc cref="IHookController.RemoveHook"/>
-        public bool RemoveHook(IHook<T> hook)
+        /// <inheritdoc/>
+        public bool RemoveHook(IHook hook)
         {
             bool res = hooks.Remove(hook);
             if (res) HandleHookRemoval(hook);
             return res;
         }
+
         /// <inheritdoc/>
         public THook? GetHook<THook>()
             => (THook?)hooks.Find(static hook => hook is THook);
@@ -50,16 +51,11 @@ namespace RogueLibsCore
         public THook[] GetHooks<THook>()
         {
             List<THook> results = new();
-            foreach (IHook<T> hook in hooks)
+            foreach (IHook hook in hooks)
                 if (hook is THook hookT)
                     results.Add(hookT);
             return results.ToArray();
         }
-
-        void IHookController.AddHook(IHook hook)
-            => AddHook((IHook<T>)hook);
-        bool IHookController.RemoveHook(IHook hook)
-            => hook is IHook<T> hookT && RemoveHook(hookT);
 
         private static void HandleHookRemoval(IHook hook)
         {
