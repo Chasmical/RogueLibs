@@ -13,13 +13,14 @@ namespace RogueLibsCore
         /// </summary>
         public InvItem Item => Instance;
         /// <summary>
-        ///   <para>Gets the item's inventory.</para>
-        /// </summary>
-        public InvDatabase? Inventory => Item.database;
-        /// <summary>
         ///   <para>Gets the item's owner.</para>
         /// </summary>
         public Agent? Owner => Item.agent;
+        /// <summary>
+        ///   <para>Gets the item's inventory.</para>
+        /// </summary>
+        public InvDatabase? Inventory => Item.database;
+
         /// <summary>
         ///   <para>Gets or sets the item's current count.</para>
         /// </summary>
@@ -28,10 +29,11 @@ namespace RogueLibsCore
             get => Item.invItemCount;
             set
             {
-                int delta = value - Count;
+                int delta = value - Item.invItemCount;
                 if (delta < 0 && Inventory != null)
                     Inventory.SubtractFromItemCount(Item, -delta);
-                else Item.invItemCount += delta;
+                else
+                    Item.invItemCount += delta;
             }
         }
 
@@ -54,6 +56,9 @@ namespace RogueLibsCore
             Item.Categories.AddRange(ItemInfo.Categories);
             if (this is IItemCombinable)
                 Item.itemType = ItemTypes.Combine;
+
+            Item.hierarchy2 = float.NaN;
+            Item.maxAmmo = RogueFramework.SpecialInt;
             Item.rewardCount = RogueFramework.SpecialInt;
             Item.lowCountThreshold = RogueFramework.SpecialInt;
 
@@ -75,26 +80,35 @@ namespace RogueLibsCore
                 Item.itemType = "Tool";
             }
             if (Item.itemIcon is null) Item.LoadItemSprite(ItemInfo.Name);
+
+            if (float.IsNaN(Item.hierarchy2))
+                Item.hierarchy2 = Item.hierarchy;
+            if (Item.maxAmmo is RogueFramework.SpecialInt)
+                Item.maxAmmo = Item.initCount;
             if (Item.rewardCount is RogueFramework.SpecialInt)
                 Item.rewardCount = Item.initCount;
             if (Item.lowCountThreshold is RogueFramework.SpecialInt)
-			{
-				if (Item.isArmor || Item.isArmorHead)
+            {
+                //if (this is CustomWeaponProjectile)
+                //    Item.lowCountThreshold = Math.Max(Item.maxAmmo / 4, 3);
+                //else if (this is CustomWeaponMelee)
+                //    Item.lowCountThreshold = 25;
+                //else if (this is CustomWeaponThrown)
+                //    Item.lowCountThreshold = 5;
+                if (Item.isArmor || Item.isArmorHead)
                     Item.lowCountThreshold = 25;
-				//else if (this is CustomWeaponProjectile)
-				//    Item.lowCountThreshold = Math.Max(Item.maxAmmo / 4, 3);
-				//else if (this is CustomWeaponMelee)
-				//    Item.lowCountThreshold = 25;
-				//else if (this is CustomWeaponThrown)
-				//    Item.lowCountThreshold = 5;
-			}
+                else
+                    Item.lowCountThreshold = 0;
+            }
 
             helper?.AfterSetup();
         }
+
         /// <summary>
         ///   <para>The method that is called when the item's details are set up.</para>
         /// </summary>
         public abstract void SetupDetails();
+
         /// <summary>
         ///   <para>Returns the custom item's count text.</para>
         /// </summary>
@@ -113,11 +127,12 @@ namespace RogueLibsCore
             }
 
             if (Item.stackable || Item.stackableContents || Item.isArmor || Item.isArmorHead
-                || Item.itemType is ItemTypes.WeaponProjectile or ItemTypes.WeaponMelee)
+             || Item.itemType is ItemTypes.WeaponProjectile or ItemTypes.WeaponMelee)
                 return new CustomTooltip(Count, Color.white);
 
             return default;
         }
+
         /// <summary>
         ///   <para>Returns the custom item's sprite name. Can be dynamically changed, for example, based on the item's count.</para>
         /// </summary>
