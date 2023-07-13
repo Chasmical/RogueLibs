@@ -67,8 +67,8 @@ namespace RogueLibsCore
             if (!validHookTypes.TryGetValue(hookType, out bool isValid))
             {
                 Type[] interfaces = hookType.GetInterfaces();
-                Type? instanceType = Array.Find(interfaces, static i => i.GetGenericTypeDefinition() == typeof(IHook<>));
-                isValid = instanceType is null || instanceType.IsAssignableFrom(typeof(T));
+                Type? instanceType = Array.Find(interfaces, static i => i.IsConstructedGenericType && i.GetGenericTypeDefinition() == typeof(IHook<>));
+                isValid = instanceType is null || instanceType.GenericTypeArguments[0].IsAssignableFrom(typeof(T));
                 validHookTypes.Add(hookType, isValid);
             }
             if (!isValid) throw new NotImplementedException();
