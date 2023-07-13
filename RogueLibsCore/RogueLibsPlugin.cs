@@ -32,12 +32,12 @@ namespace RogueLibsCore
 
                 TryUsingPatchedFields();
                 Logger.LogInfo("RogueLibsPatcher successfully detected.");
-                HookExtensions.OptimizedWithPatcher = true;
+                HookSystem.OptimizedWithPatcher = true;
             }
             catch (MissingFieldException)
             {
                 Logger.LogWarning("RogueLibsPatcher could not be detected. Attempting to install it...");
-                HookExtensions.OptimizedWithPatcher = false;
+                HookSystem.OptimizedWithPatcher = false;
 
                 // TODO: attempt to install RogueLibsPatcher.dll automatically (try-catch)
             }
