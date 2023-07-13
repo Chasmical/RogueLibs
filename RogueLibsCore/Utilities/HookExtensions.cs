@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace RogueLibsCore
 {
@@ -9,12 +10,65 @@ namespace RogueLibsCore
     /// </summary>
     public static class HookExtensions
     {
-        private static IHookController<T>? GetHookController<T>(T obj, ref object field, bool create)
+        internal static bool OptimizedWithPatcher;
+
+        private static readonly ConditionalWeakTable<object, IHookController> controllers = new();
+        private static readonly Dictionary<Type, ConstructorInfo> constructors = new();
+
+        private static IHookController CreateHookController(object obj)
         {
-            HookController<T>? controller = field as HookController<T>;
-            if (controller is null && create) field = controller = new HookController<T>(obj);
+            Type objType = obj.GetType();
+            if (!constructors.TryGetValue(objType, out ConstructorInfo? ctor))
+            {
+                Type controllerType = typeof(HookController<>).MakeGenericType(objType);
+                ctor = controllerType.GetConstructor(BindingFlags.NonPublic | BindingFlags.Instance, null, new Type[1] { objType }, null)!;
+                constructors.Add(objType, ctor);
+            }
+            return (IHookController)ctor.Invoke(new object[1] { obj });
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static IHookController<InvItem> GetPatched(InvItem instance)
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            return (IHookController<InvItem>)(instance.__RogueLibsHooks ??= CreateHookController(instance));
+        }
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static IHookController<PlayfieldObject> GetPatched(PlayfieldObject instance)
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            return (IHookController<PlayfieldObject>)(instance.__RogueLibsHooks ??= CreateHookController(instance));
+        }
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static IHookController<StatusEffect> GetPatched(StatusEffect instance)
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            return (IHookController<StatusEffect>)(instance.__RogueLibsHooks ??= CreateHookController(instance));
+        }
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static IHookController<Trait> GetPatched(Trait instance)
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            return (IHookController<Trait>)(instance.__RogueLibsHooks ??= CreateHookController(instance));
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private static IHookController GetFromTable(object instance)
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            if (!controllers.TryGetValue(instance, out IHookController? controller))
+                controllers.Add(instance, controller = CreateHookController(instance));
             return controller;
         }
+
+        public static IHookController<InvItem> GetHookController(this InvItem instance)
+            => (IHookController<InvItem>)(OptimizedWithPatcher ? GetPatched(instance) : GetFromTable(instance));
+        public static IHookController<PlayfieldObject> GetHookController(this PlayfieldObject instance)
+            => (IHookController<PlayfieldObject>)(OptimizedWithPatcher ? GetPatched(instance) : GetFromTable(instance));
+        public static IHookController<StatusEffect> GetHookController(this StatusEffect instance)
+            => (IHookController<StatusEffect>)(OptimizedWithPatcher ? GetPatched(instance) : GetFromTable(instance));
+        public static IHookController<Trait> GetHookController(this Trait instance)
+            => (IHookController<Trait>)(OptimizedWithPatcher ? GetPatched(instance) : GetFromTable(instance));
 
         /// <summary>
         ///   <para>Attaches the specified <paramref name="hook"/> to the current <paramref name="instance"/>.</para>
@@ -24,9 +78,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> or <paramref name="hook"/> is <see langword="null"/>.</exception>
         public static void AddHook(this InvItem instance, IHook<InvItem> hook)
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
             if (hook is null) throw new ArgumentNullException(nameof(hook));
-            GetHookController(instance, ref instance.__RogueLibsHooks, true)!.AddHook(hook);
+            instance.GetHookController().AddHook(hook);
         }
         /// <summary>
         ///   <para>Attaches the specified <paramref name="hook"/> to the current <paramref name="instance"/>.</para>
@@ -36,9 +89,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> or <paramref name="hook"/> is <see langword="null"/>.</exception>
         public static void AddHook(this PlayfieldObject instance, IHook<PlayfieldObject> hook)
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
             if (hook is null) throw new ArgumentNullException(nameof(hook));
-            GetHookController(instance, ref instance.__RogueLibsHooks, true)!.AddHook(hook);
+            instance.GetHookController().AddHook(hook);
         }
         /// <summary>
         ///   <para>Attaches the specified <paramref name="hook"/> to the current <paramref name="instance"/>.</para>
@@ -48,9 +100,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> or <paramref name="hook"/> is <see langword="null"/>.</exception>
         public static void AddHook(this StatusEffect instance, IHook<StatusEffect> hook)
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
             if (hook is null) throw new ArgumentNullException(nameof(hook));
-            GetHookController(instance, ref instance.__RogueLibsHooks, true)!.AddHook(hook);
+            instance.GetHookController().AddHook(hook);
         }
         /// <summary>
         ///   <para>Attaches the specified <paramref name="hook"/> to the current <paramref name="instance"/>.</para>
@@ -60,9 +111,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> or <paramref name="hook"/> is <see langword="null"/>.</exception>
         public static void AddHook(this Trait instance, IHook<Trait> hook)
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
             if (hook is null) throw new ArgumentNullException(nameof(hook));
-            GetHookController(instance, ref instance.__RogueLibsHooks, true)!.AddHook(hook);
+            instance.GetHookController().AddHook(hook);
         }
 
         /// <summary>
@@ -74,9 +124,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook AddHook<THook>(this InvItem instance) where THook : IHook<InvItem>, new()
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
             THook hook = new THook();
-            GetHookController(instance, ref instance.__RogueLibsHooks, true)!.AddHook(hook);
+            instance.GetHookController().AddHook(hook);
             return hook;
         }
         /// <summary>
@@ -88,9 +137,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook AddHook<THook>(this PlayfieldObject instance) where THook : IHook<PlayfieldObject>, new()
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
             THook hook = new THook();
-            GetHookController(instance, ref instance.__RogueLibsHooks, true)!.AddHook(hook);
+            instance.GetHookController().AddHook(hook);
             return hook;
         }
         /// <summary>
@@ -102,9 +150,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook AddHook<THook>(this StatusEffect instance) where THook : IHook<StatusEffect>, new()
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
             THook hook = new THook();
-            GetHookController(instance, ref instance.__RogueLibsHooks, true)!.AddHook(hook);
+            instance.GetHookController().AddHook(hook);
             return hook;
         }
         /// <summary>
@@ -116,9 +163,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook AddHook<THook>(this Trait instance) where THook : IHook<Trait>, new()
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
             THook hook = new THook();
-            GetHookController(instance, ref instance.__RogueLibsHooks, true)!.AddHook(hook);
+            instance.GetHookController().AddHook(hook);
             return hook;
         }
 
@@ -130,10 +176,7 @@ namespace RogueLibsCore
         /// <returns><see langword="true"/>, if the hook was successfully detached; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static bool RemoveHook(this InvItem instance, IHook<InvItem> hook)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.RemoveHook(hook) == true;
-        }
+            => instance.GetHookController().RemoveHook(hook);
         /// <summary>
         ///   <para>Detaches the specified <paramref name="hook"/> from the current <paramref name="instance"/>.</para>
         /// </summary>
@@ -142,10 +185,7 @@ namespace RogueLibsCore
         /// <returns><see langword="true"/>, if the hook was successfully detached; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static bool RemoveHook(this PlayfieldObject instance, IHook<PlayfieldObject> hook)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.RemoveHook(hook) == true;
-        }
+            => instance.GetHookController().RemoveHook(hook);
         /// <summary>
         ///   <para>Detaches the specified <paramref name="hook"/> from the current <paramref name="instance"/>.</para>
         /// </summary>
@@ -154,10 +194,7 @@ namespace RogueLibsCore
         /// <returns><see langword="true"/>, if the hook was successfully detached; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static bool RemoveHook(this StatusEffect instance, IHook<StatusEffect> hook)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.RemoveHook(hook) == true;
-        }
+            => instance.GetHookController().RemoveHook(hook);
         /// <summary>
         ///   <para>Detaches the specified <paramref name="hook"/> from the current <paramref name="instance"/>.</para>
         /// </summary>
@@ -166,10 +203,7 @@ namespace RogueLibsCore
         /// <returns><see langword="true"/>, if the hook was successfully detached; otherwise, <see langword="false"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static bool RemoveHook(this Trait instance, IHook<Trait> hook)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.RemoveHook(hook) == true;
-        }
+            => instance.GetHookController().RemoveHook(hook);
 
         /// <summary>
         ///   <para>Detaches a hook of the specified <typeparamref name="THook"/> type from the current <paramref name="instance"/>.</para>
@@ -180,10 +214,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static bool RemoveHook<THook>(this InvItem instance) where THook : IHook<InvItem>
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController<InvItem>? controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
-            if (controller is null) return false;
-            IHook<InvItem>? hook = controller.GetHook<THook>();
+            IHookController controller = instance.GetHookController();
+            THook? hook = controller.GetHook<THook>();
             return hook is not null && controller.RemoveHook(hook);
         }
         /// <summary>
@@ -195,10 +227,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static bool RemoveHook<THook>(this PlayfieldObject instance) where THook : IHook<PlayfieldObject>
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController<PlayfieldObject>? controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
-            if (controller is null) return false;
-            IHook<PlayfieldObject>? hook = controller.GetHook<THook>();
+            IHookController controller = instance.GetHookController();
+            THook? hook = controller.GetHook<THook>();
             return hook is not null && controller.RemoveHook(hook);
         }
         /// <summary>
@@ -210,10 +240,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static bool RemoveHook<THook>(this StatusEffect instance) where THook : IHook<StatusEffect>
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController<StatusEffect>? controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
-            if (controller is null) return false;
-            IHook<StatusEffect>? hook = controller.GetHook<THook>();
+            IHookController controller = instance.GetHookController();
+            THook? hook = controller.GetHook<THook>();
             return hook is not null && controller.RemoveHook(hook);
         }
         /// <summary>
@@ -225,10 +253,8 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static bool RemoveHook<THook>(this Trait instance) where THook : IHook<Trait>
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController<Trait>? controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
-            if (controller is null) return false;
-            IHook<Trait>? hook = controller.GetHook<THook>();
+            IHookController controller = instance.GetHookController();
+            THook? hook = controller.GetHook<THook>();
             return hook is not null && controller.RemoveHook(hook);
         }
 
@@ -240,11 +266,7 @@ namespace RogueLibsCore
         /// <returns>The hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="default"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook? GetHook<THook>(this InvItem instance)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController<InvItem>? controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
-            return controller != null ? controller.GetHook<THook>() : default;
-        }
+            => instance.GetHookController().GetHook<THook>();
         /// <summary>
         ///   <para>Returns a hook attached to the current <paramref name="instance"/>, that is assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -253,11 +275,7 @@ namespace RogueLibsCore
         /// <returns>The hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="default"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook? GetHook<THook>(this PlayfieldObject instance)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController<PlayfieldObject>? controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
-            return controller != null ? controller.GetHook<THook>() : default;
-        }
+            => instance.GetHookController().GetHook<THook>();
         /// <summary>
         ///   <para>Returns a hook attached to the current <paramref name="instance"/>, that is assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -266,11 +284,7 @@ namespace RogueLibsCore
         /// <returns>The hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="default"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook? GetHook<THook>(this StatusEffect instance)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController<StatusEffect>? controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
-            return controller != null ? controller.GetHook<THook>() : default;
-        }
+            => instance.GetHookController().GetHook<THook>();
         /// <summary>
         ///   <para>Returns a hook attached to the current <paramref name="instance"/>, that is assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -279,11 +293,7 @@ namespace RogueLibsCore
         /// <returns>The hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="default"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static THook? GetHook<THook>(this Trait instance)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController<Trait>? controller = GetHookController(instance, ref instance.__RogueLibsHooks, false);
-            return controller != null ? controller.GetHook<THook>() : default;
-        }
+            => instance.GetHookController().GetHook<THook>();
         /// <summary>
         ///   <para>Returns the <see cref="UnlockWrapper"/> attached to the current <paramref name="instance"/>.</para>
         /// </summary>
@@ -363,28 +373,32 @@ namespace RogueLibsCore
         /// <typeparam name="THook">The type of a hook to search for.</typeparam>
         /// <param name="instance">The instance of a hookable type.</param>
         /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
-        public static bool HasHook<THook>(this InvItem instance) => !GetHook<THook>(instance).IsDefault();
+        public static bool HasHook<THook>(this InvItem instance)
+            => !GetHook<THook>(instance).IsDefault();
         /// <summary>
         ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
         /// </summary>
         /// <typeparam name="THook">The type of a hook to search for.</typeparam>
         /// <param name="instance">The instance of a hookable type.</param>
         /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
-        public static bool HasHook<THook>(this PlayfieldObject instance) => !GetHook<THook>(instance).IsDefault();
+        public static bool HasHook<THook>(this PlayfieldObject instance)
+            => !GetHook<THook>(instance).IsDefault();
         /// <summary>
         ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
         /// </summary>
         /// <typeparam name="THook">The type of a hook to search for.</typeparam>
         /// <param name="instance">The instance of a hookable type.</param>
         /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
-        public static bool HasHook<THook>(this StatusEffect instance) => !GetHook<THook>(instance).IsDefault();
+        public static bool HasHook<THook>(this StatusEffect instance)
+            => !GetHook<THook>(instance).IsDefault();
         /// <summary>
         ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
         /// </summary>
         /// <typeparam name="THook">The type of a hook to search for.</typeparam>
         /// <param name="instance">The instance of a hookable type.</param>
         /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
-        public static bool HasHook<THook>(this Trait instance) => !GetHook<THook>(instance).IsDefault();
+        public static bool HasHook<THook>(this Trait instance)
+            => !GetHook<THook>(instance).IsDefault();
 
         /// <summary>
         ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</para>
@@ -394,10 +408,7 @@ namespace RogueLibsCore
         /// <returns>An enumerable collection of hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static IEnumerable<THook> GetHooks<THook>(this InvItem instance)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
-        }
+            => instance.GetHookController().GetHooks<THook>();
         /// <summary>
         ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -406,10 +417,7 @@ namespace RogueLibsCore
         /// <returns>An enumerable collection of hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static IEnumerable<THook> GetHooks<THook>(this PlayfieldObject instance)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
-        }
+            => instance.GetHookController().GetHooks<THook>();
         /// <summary>
         ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -418,10 +426,7 @@ namespace RogueLibsCore
         /// <returns>An enumerable collection of hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static IEnumerable<THook> GetHooks<THook>(this StatusEffect instance)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
-        }
+            => instance.GetHookController().GetHooks<THook>();
         /// <summary>
         ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -430,10 +435,7 @@ namespace RogueLibsCore
         /// <returns>An enumerable collection of hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static IEnumerable<THook> GetHooks<THook>(this Trait instance)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return GetHookController(instance, ref instance.__RogueLibsHooks, false)?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
-        }
+            => instance.GetHookController().GetHooks<THook>();
 
         /// <summary>
         ///   <para>Returns the <see cref="StatusEffects"/> instance containing the current <paramref name="statusEffect"/>.</para>

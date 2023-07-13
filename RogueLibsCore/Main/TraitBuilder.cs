@@ -100,7 +100,7 @@ namespace RogueLibsCore
         public TraitBuilder WithUnlock(TraitUnlock unlock)
         {
             if (unlock is null) throw new ArgumentNullException(nameof(unlock));
-            unlock.Name = Metadata.Name;
+            unlock.Unlock.unlockName = Metadata.Name;
             RogueLibs.CreateCustomUnlock(unlock);
             Unlock = unlock;
             return this;

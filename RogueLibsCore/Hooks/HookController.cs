@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using JetBrains.Annotations;
 
 namespace RogueLibsCore
 {
@@ -26,8 +27,11 @@ namespace RogueLibsCore
         ///   <para>Initializes a new instance of the <see cref="HookController{T}"/> class with the specified <paramref name="instance"/>.</para>
         /// </summary>
         /// <param name="instance">An object that the hooks will be attached to.</param>
-        public HookController(T instance)
+#pragma warning disable IDE0051 // Remove unused private members
+        [UsedImplicitly]
+        private HookController(T instance)
             => Instance = instance;
+#pragma warning restore IDE0051
 
         /// <inheritdoc/>
         public void AddHook(IHook hook)

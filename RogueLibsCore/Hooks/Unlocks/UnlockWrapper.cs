@@ -15,32 +15,21 @@ namespace RogueLibsCore
         /// <param name="name">The name of the unlock.</param>
         /// <param name="type">The type of the unlock.</param>
         /// <param name="unlockedFromStart">Determines whether the unlock is unlocked by default.</param>
-        protected UnlockWrapper(string name, string type, bool unlockedFromStart)
-        {
-            Instance = new Unlock(name, type, unlockedFromStart) { __RogueLibsCustom = this };
-            Name = name;
-            Type = type;
-        }
+        protected UnlockWrapper(string name, string type, bool unlockedFromStart) : this(new Unlock(name, type, unlockedFromStart)) { }
         internal UnlockWrapper(Unlock unlock)
         {
-            Instance = unlock;
             unlock.__RogueLibsCustom = this;
-            Name = unlock.unlockName;
-            Type = unlock.unlockType;
+            ((IHook)this).Initialize(unlock);
         }
 
         /// <summary>
         ///   <para>Gets the name of the unlock.</para>
         /// </summary>
-        public string Name
-        {
-            get => Unlock.unlockName ?? throw new InvalidOperationException("The unlock was not fully set up - its name is set to null.");
-            internal set => Unlock.unlockName = value;
-        }
+        public string Name => Unlock.unlockName ?? throw new InvalidOperationException("The unlock was not fully set up - its name is set to null.");
         /// <summary>
         ///   <para>Gets the type of the unlock.</para>
         /// </summary>
-        public string Type { get; }
+        public string Type => Unlock.unlockType ?? throw new InvalidOperationException("The unlock was not fully set up - its type is set to null.");
 
         /// <summary>
         ///   <para>Gets the unlock that the wrapper is attached to.</para>

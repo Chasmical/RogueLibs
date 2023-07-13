@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using BepInEx;
 
@@ -22,6 +24,24 @@ namespace RogueLibsCore
             }
 
             Logger.LogInfo($"Running RogueLibs v{RogueLibs.CompiledSemanticVersion}.");
+
+            try
+            {
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+                static void TryUsingPatchedFields() => _ = new InvItem().__RogueLibsHooks;
+
+                TryUsingPatchedFields();
+                Logger.LogInfo("RogueLibsPatcher successfully detected.");
+                HookExtensions.OptimizedWithPatcher = true;
+            }
+            catch (MissingFieldException)
+            {
+                Logger.LogWarning("RogueLibsPatcher could not be detected. Attempting to install it...");
+                HookExtensions.OptimizedWithPatcher = false;
+
+                // TODO: attempt to install RogueLibsPatcher.dll automatically (try-catch)
+            }
+
             Stopwatch sw = new Stopwatch();
             sw.Start();
 
