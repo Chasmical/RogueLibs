@@ -9,10 +9,10 @@ namespace RogueLibsCore
     {
         public static bool OptimizedWithPatcher { get; internal set; }
 
-        private static readonly ConditionalWeakTable<object, IHookController> controllers = new();
+        private static readonly ConditionalWeakTable<object, object> controllers = new();
         private static readonly Dictionary<Type, ConstructorInfo> constructors = new();
 
-        private static IHookController CreateHookController(object obj)
+        private static IHookController CreateController(object obj)
         {
             Type objType = obj.GetType();
             if (!constructors.TryGetValue(objType, out ConstructorInfo? ctor))
@@ -24,101 +24,45 @@ namespace RogueLibsCore
             return (IHookController)ctor.Invoke(new object[1] { obj });
         }
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static IHookController? GetPatched(InvItem instance, bool create)
+        [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(InvItem obj) => ref obj.__RogueLibsHooks;
+        [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(PlayfieldObject obj) => ref obj.__RogueLibsHooks;
+        [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(StatusEffect obj) => ref obj.__RogueLibsHooks;
+        [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(Trait obj) => ref obj.__RogueLibsHooks;
+
+        private static object? Lookup(object obj)
+            => controllers.TryGetValue(obj, out object? value) ? value : null;
+        private static object Associate(object obj, object controller)
         {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController? controller = instance.__RogueLibsHooks as IHookController;
-            if (controller is null && create) instance.__RogueLibsHooks = controller = CreateHookController(instance);
-            return controller;
-        }
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static IHookController? GetPatched(PlayfieldObject instance, bool create)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController? controller = instance.__RogueLibsHooks as IHookController;
-            if (controller is null && create) instance.__RogueLibsHooks = controller = CreateHookController(instance);
-            return controller;
-        }
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static IHookController? GetPatched(StatusEffect instance, bool create)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController? controller = instance.__RogueLibsHooks as IHookController;
-            if (controller is null && create) instance.__RogueLibsHooks = controller = CreateHookController(instance);
-            return controller;
-        }
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static IHookController? GetPatched(Trait instance, bool create)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            IHookController? controller = instance.__RogueLibsHooks as IHookController;
-            if (controller is null && create) instance.__RogueLibsHooks = controller = CreateHookController(instance);
-            return controller;
-        }
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static IHookController GetFromTable(object instance, bool create)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            if (!controllers.TryGetValue(instance, out IHookController? controller) && create)
-                controllers.Add(instance, controller = CreateHookController(instance));
+            controllers.Add(obj, controller);
             return controller;
         }
 
-        public static IHookController<InvItem>? GetHookControllerIfExists(this InvItem instance)
-            => (IHookController<InvItem>?)(OptimizedWithPatcher ? GetPatched(instance, false) : GetFromTable(instance, false));
-        public static IHookController<TObject>? GetHookControllerIfExists<TObject>(this TObject instance) where TObject : PlayfieldObject
-            => (IHookController<TObject>?)(OptimizedWithPatcher ? GetPatched(instance, false) : GetFromTable(instance, false));
-        public static IHookController<StatusEffect>? GetHookControllerIfExists(this StatusEffect instance)
-            => (IHookController<StatusEffect>?)(OptimizedWithPatcher ? GetPatched(instance, false) : GetFromTable(instance, false));
-        public static IHookController<Trait>? GetHookControllerIfExists(this Trait instance)
-            => (IHookController<Trait>?)(OptimizedWithPatcher ? GetPatched(instance, false) : GetFromTable(instance, false));
+        public static IHookController<InvItem>? GetHookControllerIfExists(this InvItem obj)
+            => (IHookController<InvItem>?)(OptimizedWithPatcher ? Ref(obj) : Lookup(obj));
+        public static IHookController<Trait>? GetHookControllerIfExists(this Trait obj)
+            => (IHookController<Trait>?)(OptimizedWithPatcher ? Ref(obj) : Lookup(obj));
+        public static IHookController<StatusEffect>? GetHookControllerIfExists(this StatusEffect obj)
+            => (IHookController<StatusEffect>?)(OptimizedWithPatcher ? Ref(obj) : Lookup(obj));
+        public static IHookController<TObject>? GetHookControllerIfExists<TObject>(this TObject obj) where TObject : PlayfieldObject
+            => (IHookController<TObject>?)(OptimizedWithPatcher ? Ref(obj) : Lookup(obj));
 
-        public static IHookController<InvItem> GetHookController(this InvItem instance)
-            => (IHookController<InvItem>?)(OptimizedWithPatcher ? GetPatched(instance, true) : GetFromTable(instance, true))!;
-        public static IHookController<TObject> GetHookController<TObject>(this TObject instance) where TObject : PlayfieldObject
-            => (IHookController<TObject>?)(OptimizedWithPatcher ? GetPatched(instance, true) : GetFromTable(instance, true))!;
-        public static IHookController<StatusEffect> GetHookController(this StatusEffect instance)
-            => (IHookController<StatusEffect>?)(OptimizedWithPatcher ? GetPatched(instance, true) : GetFromTable(instance, true))!;
-        public static IHookController<Trait> GetHookController(this Trait instance)
-            => (IHookController<Trait>?)(OptimizedWithPatcher ? GetPatched(instance, true) : GetFromTable(instance, true))!;
+        private static object AttachController(InvItem obj, IHookController controller)
+            => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
+        private static object AttachController(Trait obj, IHookController controller)
+            => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
+        private static object AttachController(StatusEffect obj, IHookController controller)
+            => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
+        private static object AttachController(PlayfieldObject obj, IHookController controller)
+            => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
 
-        private static bool DestroyPatchedInternal(ref object? field)
-        {
-            ((IDisposable?)field)?.Dispose();
-            return (field = null) is null;
-        }
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static bool DestroyPatched(InvItem instance)
-            => DestroyPatchedInternal(ref instance.__RogueLibsHooks);
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static bool DestroyPatched(PlayfieldObject instance)
-            => DestroyPatchedInternal(ref instance.__RogueLibsHooks);
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static bool DestroyPatched(StatusEffect instance)
-            => DestroyPatchedInternal(ref instance.__RogueLibsHooks);
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static bool DestroyPatched(Trait instance)
-            => DestroyPatchedInternal(ref instance.__RogueLibsHooks);
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private static bool DestroyFromTable(object instance)
-        {
-            if (controllers.TryGetValue(instance, out IHookController? controller))
-            {
-                ((IDisposable)controller).Dispose();
-                return controllers.Remove(instance);
-            }
-            return false;
-        }
-
-        public static void DestroyHookController(InvItem instance)
-            => _ = OptimizedWithPatcher ? DestroyPatched(instance) : DestroyFromTable(instance);
-        public static void DestroyHookController(PlayfieldObject instance)
-            => _ = OptimizedWithPatcher ? DestroyPatched(instance) : DestroyFromTable(instance);
-        public static void DestroyHookController(StatusEffect instance)
-            => _ = OptimizedWithPatcher ? DestroyPatched(instance) : DestroyFromTable(instance);
-        public static void DestroyHookController(Trait instance)
-            => _ = OptimizedWithPatcher ? DestroyPatched(instance) : DestroyFromTable(instance);
+        public static IHookController<InvItem> GetHookController(this InvItem obj)
+            => obj.GetHookControllerIfExists() ?? (IHookController<InvItem>)AttachController(obj, CreateController(obj));
+        public static IHookController<Trait> GetHookController(this Trait obj)
+            => obj.GetHookControllerIfExists() ?? (IHookController<Trait>)AttachController(obj, CreateController(obj));
+        public static IHookController<StatusEffect> GetHookController(this StatusEffect obj)
+            => obj.GetHookControllerIfExists() ?? (IHookController<StatusEffect>)AttachController(obj, CreateController(obj));
+        public static IHookController<TObject> GetHookController<TObject>(this TObject obj) where TObject : PlayfieldObject
+            => obj.GetHookControllerIfExists() ?? (IHookController<TObject>)AttachController(obj, CreateController(obj));
 
     }
 }
