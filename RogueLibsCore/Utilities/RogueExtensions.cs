@@ -9,12 +9,6 @@ namespace RogueLibsCore
     /// </summary>
     public static class RogueExtensions
     {
-        internal static bool IsDefault<T>([System.Diagnostics.CodeAnalysis.NotNullWhen(false)] this T? value)
-        {
-            EqualityComparer<T?> comparer = EqualityComparer<T?>.Default;
-            return comparer.Equals(value, default);
-        }
-
         /// <summary>
         ///   <para>Adds the specified <paramref name="amount"/> of the <typeparamref name="TItem"/> item to the current <paramref name="inventory"/>.</para>
         /// </summary>
@@ -28,7 +22,8 @@ namespace RogueLibsCore
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
             if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), amount, $"{nameof(amount)} is less than or equal to 0.");
-            InvItem? item = inventory.AddItem(CustomItemMetadata.Get<TItem>().Name, amount);
+            string itemName = CustomItemMetadata.Get<TItem>().Name;
+            InvItem? item = inventory.AddItem(itemName, amount);
             return item?.GetHook<TItem>();
         }
         /// <summary>
@@ -41,8 +36,7 @@ namespace RogueLibsCore
         public static TItem? GetItem<TItem>(this InvDatabase inventory)
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-            InvItem? item = inventory.InvItemList.Find(static i => !i.GetHook<TItem>().IsDefault());
-            return item != null ? item.GetHook<TItem>() : default;
+            return inventory.InvItemList.Select(static i => i.GetHook<TItem>()).FirstOrDefault(static i => i is not null);
         }
         /// <summary>
         ///   <para>Finds all item hooks that are assignable to a variable of <typeparamref name="TItem"/> type in the current <paramref name="inventory"/>.</para>
@@ -54,7 +48,7 @@ namespace RogueLibsCore
         public static IEnumerable<TItem> GetItems<TItem>(this InvDatabase inventory)
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-            return inventory.InvItemList.SelectMany(static i => i.GetHooks<TItem>()).Where(static i => !i.IsDefault()).ToArray();
+            return inventory.InvItemList.SelectMany(static i => i.GetHooks<TItem>()).ToArray();
         }
         /// <summary>
         ///   <para>Determines whether the current <paramref name="inventory"/> contains an item hook that is assignable to a variable of <typeparamref name="TItem"/> type.</para>
@@ -66,7 +60,7 @@ namespace RogueLibsCore
         public static bool HasItem<TItem>(this InvDatabase inventory)
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-            return inventory.InvItemList.Exists(static i => !i.GetHook<TItem>().IsDefault());
+            return inventory.InvItemList.Exists(static i => i.HasHook<TItem>());
         }
         /// <summary>
         ///   <para>Determines whether the sum of item counts of the items, that have hooks that are assignable to a variable of <typeparamref name="TItem"/> type, is larger than or equal to the specified <paramref name="amount"/>.</para>
@@ -79,7 +73,7 @@ namespace RogueLibsCore
         public static bool HasItem<TItem>(this InvDatabase inventory, int amount)
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-            int sum = inventory.InvItemList.FindAll(static i => !i.GetHook<TItem>().IsDefault()).Sum(static i => i.invItemCount);
+            int sum = inventory.InvItemList.FindAll(static i => i.HasHook<TItem>()).Sum(static i => i.invItemCount);
             return sum >= amount;
         }
 
@@ -92,12 +86,14 @@ namespace RogueLibsCore
         /// <returns>The added item, if found in the inventory; otherwise, <see langword="null"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="inventory"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="amount"/> is less than or equal to 0.</exception>
+        /// <exception cref="ArgumentException"><paramref name="itemType"/> is not a <see cref="CustomItem"/>.</exception>
         public static CustomItem? AddItem(this InvDatabase inventory, Type itemType, int amount)
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
             if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount), amount, $"{nameof(amount)} is less than or equal to 0.");
-            InvItem item = inventory.AddItem(CustomItemMetadata.Get(itemType).Name, amount);
-            return item?.GetHooks<CustomItem>().FirstOrDefault(itemType.IsInstanceOfType);
+            string itemName = CustomItemMetadata.Get(itemType).Name;
+            InvItem? item = inventory.AddItem(itemName, amount);
+            return (CustomItem?)item?.GetHooks().FirstOrDefault(itemType.IsInstanceOfType);
         }
         /// <summary>
         ///   <para>Finds an item hook that is assignable to a variable of the specified <paramref name="itemType"/> in the current <paramref name="inventory"/>.</para>
@@ -106,10 +102,10 @@ namespace RogueLibsCore
         /// <param name="itemType">The type of the item hook to search for.</param>
         /// <returns>An item hook assignable to a variable of the specified <paramref name="itemType"/>, if found; otherwise, <see langword="default"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="inventory"/> is <see langword="null"/>.</exception>
-        public static IHook<InvItem>? GetItem(this InvDatabase inventory, Type itemType)
+        public static IHook? GetItem(this InvDatabase inventory, Type itemType)
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-            return inventory.InvItemList.SelectMany(static i => i.GetHooks<IHook<InvItem>>()).FirstOrDefault(itemType.IsInstanceOfType);
+            return inventory.InvItemList.SelectMany(static i => i.GetHooks()).FirstOrDefault(itemType.IsInstanceOfType);
         }
         /// <summary>
         ///   <para>Finds all item hooks that are assignable to a variable of the specified <paramref name="itemType"/> in the current <paramref name="inventory"/>.</para>
@@ -118,10 +114,10 @@ namespace RogueLibsCore
         /// <param name="itemType">The type of the item hook to search for.</param>
         /// <returns>An enumerable collection of item hooks that are assignable to a variable of the specified <paramref name="itemType"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="inventory"/> is <see langword="null"/>.</exception>
-        public static IEnumerable<IHook<InvItem>> GetItems(this InvDatabase inventory, Type itemType)
+        public static IEnumerable<IHook> GetItems(this InvDatabase inventory, Type itemType)
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-            return inventory.InvItemList.SelectMany(static i => i.GetHooks<IHook<InvItem>>()).Where(itemType.IsInstanceOfType).ToArray();
+            return inventory.InvItemList.SelectMany(static i => i.GetHooks()).Where(itemType.IsInstanceOfType).ToArray();
         }
         /// <summary>
         ///   <para>Determines whether the current <paramref name="inventory"/> contains an item hook that is assignable to a variable of the specified <paramref name="itemType"/>.</para>
@@ -133,7 +129,7 @@ namespace RogueLibsCore
         public static bool HasItem(this InvDatabase inventory, Type itemType)
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-            return inventory.InvItemList.Exists(i => i.GetHooks<IHook<InvItem>>().Any(itemType.IsInstanceOfType));
+            return inventory.InvItemList.Exists(i => i.GetHooks().Any(itemType.IsInstanceOfType));
         }
         /// <summary>
         ///   <para>Determines whether the sum of item counts of the items, that have hooks that are assignable to a variable of the specified <paramref name="itemType"/>, is larger than or equal to the specified <paramref name="amount"/>.</para>
@@ -146,7 +142,7 @@ namespace RogueLibsCore
         public static bool HasItem(this InvDatabase inventory, Type itemType, int amount)
         {
             if (inventory is null) throw new ArgumentNullException(nameof(inventory));
-            int sum = inventory.InvItemList.Where(i => i.GetHooks<IHook<InvItem>>().Any(itemType.IsInstanceOfType)).Sum(static i => i.invItemCount);
+            int sum = inventory.InvItemList.Where(i => i.GetHooks().Any(itemType.IsInstanceOfType)).Sum(static i => i.invItemCount);
             return sum >= amount;
         }
 
@@ -162,7 +158,7 @@ namespace RogueLibsCore
             if (agent is null) throw new ArgumentNullException(nameof(agent));
             string abilityName = CustomItemMetadata.Get<TAbility>().Name;
             agent.statusEffects.GiveSpecialAbility(abilityName);
-            return agent.inventory.equippedSpecialAbility.GetHook<TAbility>();
+            return agent.inventory.equippedSpecialAbility?.GetHook<TAbility>();
         }
         /// <summary>
         ///   <para>Returns the <see cref="CustomAbility"/> hook associated with the current <paramref name="agent"/>'s special ability.</para>
@@ -185,8 +181,8 @@ namespace RogueLibsCore
         public static TAbility? GetAbility<TAbility>(this Agent agent)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            InvItem item = agent.inventory.equippedSpecialAbility;
-            return item != null ? item.GetHook<TAbility>() : default;
+            InvItem? ability = agent.inventory.equippedSpecialAbility;
+            return ability is not null ? ability.GetHook<TAbility>() : default;
         }
         /// <summary>
         ///   <para>Determines whether the current agent has an item hook assignable to a variable of the specified <typeparamref name="TAbility"/> type associated with the current <paramref name="agent"/>'s special ability.</para>
@@ -198,8 +194,8 @@ namespace RogueLibsCore
         public static bool HasAbility<TAbility>(this Agent agent)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            InvItem item = agent.inventory.equippedSpecialAbility;
-            return item != null && !item.GetHook<TAbility>().IsDefault();
+            InvItem? ability = agent.inventory.equippedSpecialAbility;
+            return ability is not null && ability.GetHook<TAbility>() is not null;
         }
 
         /// <summary>
@@ -209,12 +205,13 @@ namespace RogueLibsCore
         /// <param name="abilityType">Type of the ability to give to the <paramref name="agent"/>.</param>
         /// <returns>The given ability.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="abilityType"/> is not a <see cref="CustomAbility"/>.</exception>
         public static CustomAbility? GiveAbility(this Agent agent, Type abilityType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
             string abilityName = CustomItemMetadata.Get(abilityType).Name;
             agent.statusEffects.GiveSpecialAbility(abilityName);
-            return agent.inventory.equippedSpecialAbility.GetHooks<CustomAbility>().FirstOrDefault(abilityType.IsInstanceOfType);
+            return (CustomAbility?)agent.inventory.equippedSpecialAbility.GetHooks().FirstOrDefault(abilityType.IsInstanceOfType);
         }
         /// <summary>
         ///   <para>Finds an item hook assignable to a variable of the specified <paramref name="abilityType"/> associated with the current <paramref name="agent"/>'s special ability.</para>
@@ -223,10 +220,10 @@ namespace RogueLibsCore
         /// <param name="abilityType">Type of the ability to search for.</param>
         /// <returns>The item hook assignable to a variable of the specified <paramref name="abilityType"/> associated with the <paramref name="agent"/>'s special ability, if found; otherwise, <see langword="default"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
-        public static IHook<InvItem>? GetAbility(this Agent agent, Type abilityType)
+        public static IHook? GetAbility(this Agent agent, Type abilityType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.inventory.equippedSpecialAbility?.GetHooks<IHook<InvItem>>().FirstOrDefault(abilityType.IsInstanceOfType);
+            return agent.inventory.equippedSpecialAbility?.GetHooks().FirstOrDefault(abilityType.IsInstanceOfType);
         }
         /// <summary>
         ///   <para>Determines whether the current agent has an item hook assignable to a variable of the specified <paramref name="abilityType"/> associated with the current <paramref name="agent"/>'s special ability.</para>
@@ -238,8 +235,8 @@ namespace RogueLibsCore
         public static bool HasAbility(this Agent agent, Type abilityType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            InvItem item = agent.inventory.equippedSpecialAbility;
-            return item != null && item.GetHooks<IHook<InvItem>>().Any(abilityType.IsInstanceOfType);
+            InvItem? ability = agent.inventory.equippedSpecialAbility;
+            return ability is not null && ability.GetHooks().Any(abilityType.IsInstanceOfType);
         }
 
         /// <summary>
@@ -266,8 +263,7 @@ namespace RogueLibsCore
         public static TTrait? GetTrait<TTrait>(this Agent agent)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            Trait trait = agent.statusEffects.TraitList.Find(static t => !t.GetHook<TTrait>().IsDefault());
-            return trait != null ? trait.GetHook<TTrait>() : default;
+            return agent.statusEffects.TraitList.Select(static t => t.GetHook<TTrait>()).FirstOrDefault(static t => t is not null);
         }
         /// <summary>
         ///   <para>Finds all trait hooks that are assignable to a variable of <typeparamref name="TTrait"/> type on the current <paramref name="agent"/>.</para>
@@ -279,7 +275,7 @@ namespace RogueLibsCore
         public static IEnumerable<TTrait> GetTraits<TTrait>(this Agent agent)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.TraitList.SelectMany(static t => t.GetHooks<TTrait>()).Where(static t => !t.IsDefault()).ToArray();
+            return agent.statusEffects.TraitList.SelectMany(static t => t.GetHooks<TTrait>()).ToArray();
         }
         /// <summary>
         ///   <para>Determines whether the current <paramref name="agent"/> has a trait with a hook that is assignable to a variable of <typeparamref name="TTrait"/> type.</para>
@@ -291,7 +287,7 @@ namespace RogueLibsCore
         public static bool HasTrait<TTrait>(this Agent agent)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.TraitList.Exists(static t => !t.GetHook<TTrait>().IsDefault());
+            return agent.statusEffects.TraitList.Exists(static t => t.HasHook<TTrait>());
         }
 
         /// <summary>
@@ -301,6 +297,7 @@ namespace RogueLibsCore
         /// <param name="traitType">The type of the trait to add to the <paramref name="agent"/>.</param>
         /// <returns>The added trait, if found on the character; otherwise, <see langword="null"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="traitType"/> is not a <see cref="CustomTrait"/>.</exception>
         public static CustomTrait? AddTrait(this Agent agent, Type traitType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
@@ -315,10 +312,10 @@ namespace RogueLibsCore
         /// <param name="traitType">The type of the trait hook to search for.</param>
         /// <returns>A trait hook assignable to a variable of the specified <paramref name="traitType"/>, if found; otherwise, <see langword="default"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
-        public static IHook<Trait>? GetTrait(this Agent agent, Type traitType)
+        public static IHook? GetTrait(this Agent agent, Type traitType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.TraitList.SelectMany(static t => t.GetHooks<IHook<Trait>>()).FirstOrDefault(traitType.IsInstanceOfType);
+            return agent.statusEffects.TraitList.SelectMany(static t => t.GetHooks()).FirstOrDefault(traitType.IsInstanceOfType);
         }
         /// <summary>
         ///   <para>Finds all trait hooks that are assignable to a variable of the specified <paramref name="traitType"/> on the current <paramref name="agent"/>.</para>
@@ -327,10 +324,10 @@ namespace RogueLibsCore
         /// <param name="traitType">The type of the trait hook to search for.</param>
         /// <returns>An enumerable collection of trait hooks that are assignable to a variable of the specified <paramref name="traitType"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
-        public static IEnumerable<IHook<Trait>> GetTraits(this Agent agent, Type traitType)
+        public static IEnumerable<IHook> GetTraits(this Agent agent, Type traitType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.TraitList.SelectMany(static t => t.GetHooks<IHook<Trait>>()).Where(traitType.IsInstanceOfType).ToArray();
+            return agent.statusEffects.TraitList.SelectMany(static t => t.GetHooks()).Where(traitType.IsInstanceOfType).ToArray();
         }
         /// <summary>
         ///   <para>Determines whether the current <paramref name="agent"/> has a trait with a hook that is assignable to a variable of the specified <paramref name="traitType"/>.</para>
@@ -342,7 +339,7 @@ namespace RogueLibsCore
         public static bool HasTrait(this Agent agent, Type traitType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.TraitList.Exists(t => t.GetHooks<IHook<Trait>>().Any(traitType.IsInstanceOfType));
+            return agent.statusEffects.TraitList.Exists(t => t.GetHooks().Any(traitType.IsInstanceOfType));
         }
 
         /// <summary>
@@ -435,8 +432,8 @@ namespace RogueLibsCore
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
             string effectName = CustomEffectMetadata.Get<TEffect>().Name;
-            agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent,
-                agent.objectMult.IsFromClient(), info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
+            agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent, agent.objectMult.IsFromClient(),
+                                                info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
             return agent.GetEffect<TEffect>();
         }
 
@@ -448,11 +445,13 @@ namespace RogueLibsCore
         /// <param name="info">The struct containing effect initialization info.</param>
         /// <returns>The added effect, if found on the character; otherwise, <see langword="null"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="effectType"/> is not a <see cref="CustomEffect"/>.</exception>
         public static CustomEffect? AddEffect(this Agent agent, Type effectType, CreateEffectInfo info)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
             string effectName = CustomEffectMetadata.Get(effectType).Name;
-            agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent, agent.objectMult.IsFromClient(), info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
+            agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent, agent.objectMult.IsFromClient(),
+                                                info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
             return (CustomEffect?)agent.GetEffect(effectType);
         }
 
@@ -466,8 +465,8 @@ namespace RogueLibsCore
         public static TEffect? GetEffect<TEffect>(this Agent agent)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            StatusEffect? effect = agent.statusEffects.StatusEffectList.Find(static s => !s.GetHook<TEffect>().IsDefault());
-            return effect != null ? effect.GetHook<TEffect>() : default;
+            StatusEffect? effect = agent.statusEffects.StatusEffectList.Find(static s => s.HasHook<TEffect>());
+            return effect is not null ? effect.GetHook<TEffect>() : default;
         }
         /// <summary>
         ///   <para>Finds all effect hooks that are assignable to a variable of <typeparamref name="TEffect"/> type on the current <paramref name="agent"/>.</para>
@@ -479,7 +478,7 @@ namespace RogueLibsCore
         public static IEnumerable<TEffect> GetEffects<TEffect>(this Agent agent)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.StatusEffectList.SelectMany(static s => s.GetHooks<TEffect>()).Where(static e => !e.IsDefault()).ToArray();
+            return agent.statusEffects.StatusEffectList.SelectMany(static s => s.GetHooks<TEffect>()).ToArray();
         }
         /// <summary>
         ///   <para>Determines whether the current <paramref name="agent"/> has an effect with a hook that is assignable to a variable of <typeparamref name="TEffect"/> type.</para>
@@ -491,7 +490,7 @@ namespace RogueLibsCore
         public static bool HasEffect<TEffect>(this Agent agent)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.StatusEffectList.Exists(static s => !s.GetHook<TEffect>().IsDefault());
+            return agent.statusEffects.StatusEffectList.Exists(static s => s.HasHook<TEffect>());
         }
 
         /// <summary>
@@ -501,11 +500,10 @@ namespace RogueLibsCore
         /// <param name="effectType">The type of the effect hook to search for.</param>
         /// <returns>An effect hook assignable to a variable of the specified <paramref name="effectType"/>, if found; otherwise, <see langword="default"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
-        public static IHook<StatusEffect>? GetEffect(this Agent agent, Type effectType)
+        public static IHook? GetEffect(this Agent agent, Type effectType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.StatusEffectList.SelectMany(static s => s.GetHooks<IHook<StatusEffect>>())
-                        .FirstOrDefault(effectType.IsInstanceOfType);
+            return agent.statusEffects.StatusEffectList.SelectMany(static s => s.GetHooks()).FirstOrDefault(effectType.IsInstanceOfType);
         }
         /// <summary>
         ///   <para>Finds all effect hooks that are assignable to a variable of the specified <paramref name="effectType"/> on the current <paramref name="agent"/>.</para>
@@ -514,11 +512,10 @@ namespace RogueLibsCore
         /// <param name="effectType">The type of the effect hook to search for.</param>
         /// <returns>An enumerable collection of effect hooks that are assignable to a variable of the specified <paramref name="effectType"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <see langword="null"/>.</exception>
-        public static IEnumerable<IHook<StatusEffect>> GetEffects(this Agent agent, Type effectType)
+        public static IEnumerable<IHook> GetEffects(this Agent agent, Type effectType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.StatusEffectList.SelectMany(static s => s.GetHooks<IHook<StatusEffect>>())
-                        .Where(effectType.IsInstanceOfType).ToArray();
+            return agent.statusEffects.StatusEffectList.SelectMany(static s => s.GetHooks()).Where(effectType.IsInstanceOfType).ToArray();
         }
         /// <summary>
         ///   <para>Determines whether the current <paramref name="agent"/> has an effect with a hook that is assignable to a variable of the specified <paramref name="effectType"/>.</para>
@@ -530,7 +527,7 @@ namespace RogueLibsCore
         public static bool HasEffect(this Agent agent, Type effectType)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            return agent.statusEffects.StatusEffectList.Any(s => s.GetHooks<IHook<StatusEffect>>().Any(effectType.IsInstanceOfType));
+            return agent.statusEffects.StatusEffectList.Exists(s => s.GetHooks().Any(effectType.IsInstanceOfType));
         }
 
         /// <summary>
@@ -584,8 +581,8 @@ namespace RogueLibsCore
         public static StatusEffect? AddEffect(this Agent agent, string effectName, CreateEffectInfo info)
         {
             if (agent is null) throw new ArgumentNullException(nameof(agent));
-            agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent,
-                agent.objectMult.IsFromClient(), info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
+            agent.statusEffects.AddStatusEffect(effectName, !info.DontShowText, info.CauserAgent, agent.objectMult.IsFromClient(),
+                                                info.IgnoreElectronic, info.SpecificTime != 0 ? info.SpecificTime : -1);
             return agent.GetEffect(effectName);
         }
 
@@ -646,5 +643,6 @@ namespace RogueLibsCore
             if (agent is null) throw new ArgumentNullException(nameof(agent));
             return agent.GetHook<LastFiredBulletHook>()?.LastFiredBullet;
         }
+
     }
 }

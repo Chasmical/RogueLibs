@@ -11,7 +11,7 @@ namespace RogueLibsCore
     {
         private static IHook AddHookShared(IHookController controller, IHook hook)
         {
-            if (hook.IsDefault()) throw new ArgumentNullException(nameof(hook));
+            if (hook is null) throw new ArgumentNullException(nameof(hook));
             controller.AddHook(hook);
             return hook;
         }
@@ -130,7 +130,7 @@ namespace RogueLibsCore
         {
             if (controller is null) return false;
             THook? hook = controller.GetHook<THook>();
-            return !hook.IsDefault() && controller.RemoveHook(hook);
+            return hook is not null && controller.RemoveHook(hook);
         }
 
         /// <summary>
@@ -238,7 +238,7 @@ namespace RogueLibsCore
         private static THook GetOrAddHookShared<THook>(IHookController controller) where THook : class, IHook, new()
         {
             THook? hook = controller.GetHook<THook>();
-            if (hook.IsDefault()) controller.AddHook(hook = new THook());
+            if (hook is null) controller.AddHook(hook = new THook());
             return hook;
         }
 
@@ -286,7 +286,7 @@ namespace RogueLibsCore
         /// <param name="instance">The instance of a hookable type.</param>
         /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
         public static bool HasHook<THook>(this InvItem instance)
-            => !GetHook<THook>(instance).IsDefault();
+            => GetHook<THook>(instance) is not null;
         /// <summary>
         ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -294,7 +294,7 @@ namespace RogueLibsCore
         /// <param name="instance">The instance of a hookable type.</param>
         /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
         public static bool HasHook<THook>(this PlayfieldObject instance)
-            => !GetHook<THook>(instance).IsDefault();
+            => GetHook<THook>(instance) is not null;
         /// <summary>
         ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -302,7 +302,7 @@ namespace RogueLibsCore
         /// <param name="instance">The instance of a hookable type.</param>
         /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
         public static bool HasHook<THook>(this StatusEffect instance)
-            => !GetHook<THook>(instance).IsDefault();
+            => GetHook<THook>(instance) is not null;
         /// <summary>
         ///   <para>Determines whether the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -310,7 +310,7 @@ namespace RogueLibsCore
         /// <param name="instance">The instance of a hookable type.</param>
         /// <returns><see langword="true"/>, if the current instance contains a hook, that is assignable to a variable of the <typeparamref name="THook"/> type; otherwise, <see langword="false"/>.</returns>
         public static bool HasHook<THook>(this Trait instance)
-            => !GetHook<THook>(instance).IsDefault();
+            => GetHook<THook>(instance) is not null;
 
         private static IEnumerable<THook> GetHooksShared<THook>(IHookController? controller)
             => controller?.GetHooks().OfType<THook>() ?? Enumerable.Empty<THook>();
