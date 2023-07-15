@@ -352,6 +352,42 @@ namespace RogueLibsCore
         public static IEnumerable<THook> GetHooks<THook>(this Trait instance)
             => GetHooksShared<THook>(instance.GetHookControllerIfExists());
 
+        private static IEnumerable<IHook> GetHooksShared(IHookController? controller)
+            => controller?.GetHooks() ?? Enumerable.Empty<IHook>();
+
+        /// <summary>
+        ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>.</para>
+        /// </summary>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns>An enumerable collection of hooks attached to the current <paramref name="instance"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
+        public static IEnumerable<IHook> GetHooks(this InvItem instance)
+            => GetHooksShared(instance.GetHookControllerIfExists());
+        /// <summary>
+        ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>.</para>
+        /// </summary>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns>An enumerable collection of hooks attached to the current <paramref name="instance"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
+        public static IEnumerable<IHook> GetHooks(this PlayfieldObject instance)
+            => GetHooksShared(instance.GetHookControllerIfExists());
+        /// <summary>
+        ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>.</para>
+        /// </summary>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns>An enumerable collection of hooks attached to the current <paramref name="instance"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
+        public static IEnumerable<IHook> GetHooks(this StatusEffect instance)
+            => GetHooksShared(instance.GetHookControllerIfExists());
+        /// <summary>
+        ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>.</para>
+        /// </summary>
+        /// <param name="instance">The instance of a hookable type.</param>
+        /// <returns>An enumerable collection of hooks attached to the current <paramref name="instance"/>.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
+        public static IEnumerable<IHook> GetHooks(this Trait instance)
+            => GetHooksShared(instance.GetHookControllerIfExists());
+
         // TODO: refactor these two methods
         /// <summary>
         ///   <para>Returns the <see cref="StatusEffects"/> instance containing the current <paramref name="statusEffect"/>.</para>

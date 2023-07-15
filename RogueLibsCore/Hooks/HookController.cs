@@ -53,6 +53,9 @@ namespace RogueLibsCore
         public THook? GetHook<THook>()
             => (THook?)hooks.Find(static hook => hook is THook);
         /// <inheritdoc/>
+        public IHook[] GetHooks()
+            => hooks.ToArray();
+        /// <inheritdoc/>
         public THook[] GetHooks<THook>()
         {
             List<THook> results = new();

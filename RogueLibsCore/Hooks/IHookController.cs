@@ -29,6 +29,11 @@
         /// <returns>A hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="null"/>.</returns>
         THook? GetHook<THook>();
         /// <summary>
+        ///   <para>Returns an enumerable collection of all hooks in the collection.</para>
+        /// </summary>
+        /// <returns>An enumerable collection of hooks.</returns>
+        IHook[] GetHooks();
+        /// <summary>
         ///   <para>Returns an enumerable collection of all hooks in the collection that are assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
         /// <typeparam name="THook">The type of the hooks to search for.</typeparam>
