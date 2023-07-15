@@ -1,4 +1,6 @@
-﻿namespace RogueLibsCore
+﻿using System.Collections.Generic;
+
+namespace RogueLibsCore
 {
     /// <summary>
     ///   <para>Represents a collection of hooks, attached to a single object.</para>
@@ -32,13 +34,7 @@
         ///   <para>Returns an enumerable collection of all hooks in the collection.</para>
         /// </summary>
         /// <returns>An enumerable collection of hooks.</returns>
-        IHook[] GetHooks();
-        /// <summary>
-        ///   <para>Returns an enumerable collection of all hooks in the collection that are assignable to a variable of <typeparamref name="THook"/> type.</para>
-        /// </summary>
-        /// <typeparam name="THook">The type of the hooks to search for.</typeparam>
-        /// <returns>An enumerable collection of hooks that are assignable to a variable of <typeparamref name="THook"/> type.</returns>
-        THook[] GetHooks<THook>();
+        IEnumerable<IHook> GetHooks();
     }
     /// <summary>
     ///   <para>Represents a collection of hooks, attached to a single instance of type <typeparamref name="T"/>.</para>

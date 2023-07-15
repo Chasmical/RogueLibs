@@ -53,17 +53,8 @@ namespace RogueLibsCore
         public THook? GetHook<THook>()
             => (THook?)hooks.Find(static hook => hook is THook);
         /// <inheritdoc/>
-        public IHook[] GetHooks()
-            => hooks.ToArray();
-        /// <inheritdoc/>
-        public THook[] GetHooks<THook>()
-        {
-            List<THook> results = new();
-            foreach (IHook hook in hooks)
-                if (hook is THook hookT)
-                    results.Add(hookT);
-            return results.ToArray();
-        }
+        public IEnumerable<IHook> GetHooks()
+            => Hooks;
 
         // ReSharper disable once StaticMemberInGenericType
         private static readonly Dictionary<Type, bool> validHookTypes = new();

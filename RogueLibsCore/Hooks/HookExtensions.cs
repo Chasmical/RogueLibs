@@ -313,7 +313,7 @@ namespace RogueLibsCore
             => !GetHook<THook>(instance).IsDefault();
 
         private static IEnumerable<THook> GetHooksShared<THook>(IHookController? controller)
-            => controller?.GetHooks<THook>() ?? Enumerable.Empty<THook>();
+            => controller?.GetHooks().OfType<THook>() ?? Enumerable.Empty<THook>();
 
         /// <summary>
         ///   <para>Returns an enumerable collection of all hooks attached to the current <paramref name="instance"/>, that are assignable to a variable of <typeparamref name="THook"/> type.</para>
