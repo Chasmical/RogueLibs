@@ -2,16 +2,6 @@
 using System.Linq;
 using System.Collections.Generic;
 
-namespace System.Diagnostics.CodeAnalysis // shim for the NotNullAttribute
-{
-    [AttributeUsage(AttributeTargets.Parameter)]
-    internal class NotNullWhenAttribute : Attribute
-    {
-        // ReSharper disable once UnusedParameter.Local
-        public NotNullWhenAttribute(bool _) { }
-    }
-}
-
 namespace RogueLibsCore
 {
     /// <summary>

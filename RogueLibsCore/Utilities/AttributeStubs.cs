@@ -11,4 +11,10 @@ namespace System.Diagnostics.CodeAnalysis
     public sealed class MaybeNullWhenAttribute : Attribute { }
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, AllowMultiple = true)]
     public sealed class NotNullIfNotNullAttribute : Attribute { }
+    [AttributeUsage(AttributeTargets.Parameter)]
+    public sealed class NotNullWhenAttribute : Attribute
+    {
+        // ReSharper disable once UnusedParameter.Local
+        public NotNullWhenAttribute(bool _) { }
+    }
 }
