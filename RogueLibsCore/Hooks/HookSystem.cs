@@ -37,14 +37,26 @@ namespace RogueLibsCore
             return controller;
         }
 
-        public static IHookController<InvItem>? GetHookControllerIfExists(this InvItem obj)
-            => (IHookController<InvItem>?)(OptimizedWithPatcher ? Ref(obj) : Lookup(obj));
-        public static IHookController<Trait>? GetHookControllerIfExists(this Trait obj)
-            => (IHookController<Trait>?)(OptimizedWithPatcher ? Ref(obj) : Lookup(obj));
-        public static IHookController<StatusEffect>? GetHookControllerIfExists(this StatusEffect obj)
-            => (IHookController<StatusEffect>?)(OptimizedWithPatcher ? Ref(obj) : Lookup(obj));
-        public static IHookController<TObject>? GetHookControllerIfExists<TObject>(this TObject obj) where TObject : PlayfieldObject
-            => (IHookController<TObject>?)(OptimizedWithPatcher ? Ref(obj) : Lookup(obj));
+        public static IHookController<InvItem>? GetHookControllerIfExists(this InvItem instance)
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            return (IHookController<InvItem>?)(OptimizedWithPatcher ? Ref(instance) : Lookup(instance));
+        }
+        public static IHookController<Trait>? GetHookControllerIfExists(this Trait instance)
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            return (IHookController<Trait>?)(OptimizedWithPatcher ? Ref(instance) : Lookup(instance));
+        }
+        public static IHookController<StatusEffect>? GetHookControllerIfExists(this StatusEffect instance)
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            return (IHookController<StatusEffect>?)(OptimizedWithPatcher ? Ref(instance) : Lookup(instance));
+        }
+        public static IHookController<TObject>? GetHookControllerIfExists<TObject>(this TObject instance) where TObject : PlayfieldObject
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            return (IHookController<TObject>?)(OptimizedWithPatcher ? Ref(instance) : Lookup(instance));
+        }
 
         private static object AttachController(InvItem obj, IHookController controller)
             => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
@@ -55,14 +67,14 @@ namespace RogueLibsCore
         private static object AttachController(PlayfieldObject obj, IHookController controller)
             => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
 
-        public static IHookController<InvItem> GetHookController(this InvItem obj)
-            => obj.GetHookControllerIfExists() ?? (IHookController<InvItem>)AttachController(obj, CreateController(obj));
-        public static IHookController<Trait> GetHookController(this Trait obj)
-            => obj.GetHookControllerIfExists() ?? (IHookController<Trait>)AttachController(obj, CreateController(obj));
-        public static IHookController<StatusEffect> GetHookController(this StatusEffect obj)
-            => obj.GetHookControllerIfExists() ?? (IHookController<StatusEffect>)AttachController(obj, CreateController(obj));
-        public static IHookController<TObject> GetHookController<TObject>(this TObject obj) where TObject : PlayfieldObject
-            => obj.GetHookControllerIfExists() ?? (IHookController<TObject>)AttachController(obj, CreateController(obj));
+        public static IHookController<InvItem> GetHookController(this InvItem instance)
+            => instance.GetHookControllerIfExists() ?? (IHookController<InvItem>)AttachController(instance, CreateController(instance));
+        public static IHookController<Trait> GetHookController(this Trait instance)
+            => instance.GetHookControllerIfExists() ?? (IHookController<Trait>)AttachController(instance, CreateController(instance));
+        public static IHookController<StatusEffect> GetHookController(this StatusEffect instance)
+            => instance.GetHookControllerIfExists() ?? (IHookController<StatusEffect>)AttachController(instance, CreateController(instance));
+        public static IHookController<TObject> GetHookController<TObject>(this TObject instance) where TObject : PlayfieldObject
+            => instance.GetHookControllerIfExists() ?? (IHookController<TObject>)AttachController(instance, CreateController(instance));
 
     }
 }
