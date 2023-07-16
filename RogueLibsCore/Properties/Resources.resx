@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">text/microsoft-resx</resheader>
+  <resheader name="version">2.0</resheader>
+  <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms</resheader>
+  <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms</resheader>
+
+  <data name="RogueLibsPatcher" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\RogueLibsPatcher.dll;System.Byte[], mscorlib</value>
+  </data>
+</root>

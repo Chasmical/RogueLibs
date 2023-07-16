@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using BepInEx;
+using RogueLibsCore.Properties;
 
 namespace RogueLibsCore
 {
@@ -23,24 +25,13 @@ namespace RogueLibsCore
                 return;
             }
 
+#if DEBUG
+            Logger.LogWarning($"Running RogueLibs v{RogueLibs.CompiledSemanticVersion}. (DEBUG CONFIGURATION)");
+#else
             Logger.LogInfo($"Running RogueLibs v{RogueLibs.CompiledSemanticVersion}.");
+#endif
 
-            try
-            {
-                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-                static void TryUsingPatchedFields() => _ = new InvItem().__RogueLibsHooks;
-
-                TryUsingPatchedFields();
-                Logger.LogInfo("RogueLibsPatcher successfully detected.");
-                HookSystem.OptimizedWithPatcher = true;
-            }
-            catch (MissingFieldException)
-            {
-                Logger.LogWarning("RogueLibsPatcher could not be detected. Attempting to install it...");
-                HookSystem.OptimizedWithPatcher = false;
-
-                // TODO: attempt to install RogueLibsPatcher.dll automatically (try-catch)
-            }
+            CheckPatcherInstallation();
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -70,6 +61,42 @@ namespace RogueLibsCore
 #endif
             sw.Stop();
             Logger.LogDebug($"RogueLibs took {sw.ElapsedMilliseconds,5:#####} ms to initialize.");
+        }
+
+        private void CheckPatcherInstallation()
+        {
+            try
+            {
+                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
+                static void TryUsingPatchedFields() => _ = new InvItem().__RogueLibsHooks;
+
+                TryUsingPatchedFields();
+                Logger.LogInfo("RogueLibsPatcher successfully detected.");
+                HookSystem.OptimizedWithPatcher = true;
+            }
+            catch (MissingFieldException)
+            {
+                Logger.LogWarning("RogueLibsPatcher could not be detected. Attempting to install it...");
+                HookSystem.OptimizedWithPatcher = false;
+                InstallPatcher();
+            }
+        }
+        private void InstallPatcher()
+        {
+            try
+            {
+                byte[] patcherBytes = Resources.RogueLibsPatcher;
+                string patcherPath = Path.Combine(Paths.PatcherPluginPath, "RogueLibsPatcher.dll");
+                Logger.LogMessage($"\"{patcherPath}\"");
+                File.WriteAllBytes(patcherPath, patcherBytes);
+                Logger.LogMessage("RogueLibsPatcher installed successfully!");
+                Logger.LogMessage("Hook system optimizations will be applied after a restart.");
+            }
+            catch (Exception e)
+            {
+                Logger.LogError("RogueLibsPatcher could not be installed!");
+                Logger.LogError(e);
+            }
         }
 
         private void OnDestroy()

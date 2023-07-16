@@ -31,7 +31,6 @@ namespace RogueLibsCore
         /// </summary>
         public const string Name = "RogueLibsCore";
 
-        internal const string AssemblyVersion = "4.0.0.0";
         /// <summary>
         ///   <para>Version of RogueLibs that the current assembly is compiled with.</para>
         /// </summary>
