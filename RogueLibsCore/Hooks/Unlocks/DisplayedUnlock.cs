@@ -225,7 +225,7 @@ namespace RogueLibsCore
                 description += $"<color=orange>{gc.nameDB.GetName("Cancels", NameTypes.Interface)}:</color>\n" +
                     string.Join(", ", Unlock.cancellations.Select(static unlockName =>
                     {
-                        UnlockWrapper? unlock = (UnlockWrapper?)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+                        UnlockWrapper? unlock = gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.GetHook();
                         if (unlock is { ShowInCancellations: true })
                         {
                             bool nameIsKnown = unlock.IsUnlocked || unlock.Unlock.nowAvailable || unlock.DisplayNameInCancellations;
@@ -249,7 +249,7 @@ namespace RogueLibsCore
                 description += $"<color=cyan>{gc.nameDB.GetName("Recommends", NameTypes.Interface)}:</color>\n" +
                     string.Join(", ", Unlock.recommendations.ConvertAll(static unlockName =>
                     {
-                        UnlockWrapper? unlock = (UnlockWrapper?)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+                        UnlockWrapper? unlock = gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.GetHook();
                         if (unlock != null)
                             return unlock.IsUnlocked || unlock.Unlock.nowAvailable ? unlock.GetName() : "?????";
                         return unlockName;
@@ -267,7 +267,7 @@ namespace RogueLibsCore
             {
                 prerequisites.Add(string.Join(", ", Unlock.prerequisites.Select(static unlockName =>
                 {
-                    UnlockWrapper? unlock = (UnlockWrapper?)gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.__RogueLibsCustom;
+                    UnlockWrapper? unlock = gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.GetHook();
                     if (unlock is { ShowInPrerequisites: true })
                     {
                         bool nameIsKnown = unlock.IsUnlocked || unlock.Unlock.nowAvailable || unlock.DisplayNameInPrerequisites;

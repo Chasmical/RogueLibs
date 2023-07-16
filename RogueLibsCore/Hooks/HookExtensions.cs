@@ -210,31 +210,6 @@ namespace RogueLibsCore
         public static THook? GetHook<THook>(this Trait instance)
             => GetHookShared<THook>(instance.GetHookControllerIfExists());
 
-        // TODO: refactor/reimplement these two methods
-        /// <summary>
-        ///   <para>Returns the <see cref="UnlockWrapper"/> attached to the current <paramref name="instance"/>.</para>
-        /// </summary>
-        /// <param name="instance">The instance of a hookable type.</param>
-        /// <returns>The attached <see cref="UnlockWrapper"/> hook, if found; otherwise, <see langword="null"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
-        public static UnlockWrapper GetHook(this Unlock instance)
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return (UnlockWrapper)instance.__RogueLibsCustom;
-        }
-        /// <summary>
-        ///   <para>Returns a hook attached to the current <paramref name="instance"/>, that is assignable to a variable of <typeparamref name="THook"/> type.</para>
-        /// </summary>
-        /// <typeparam name="THook">The type of a hook to search for.</typeparam>
-        /// <param name="instance">The instance of a hookable type.</param>
-        /// <returns>The hook that is assignable to a variable of <typeparamref name="THook"/> type, if found; otherwise, <see langword="default"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
-        public static THook? GetHook<THook>(this Unlock instance) where THook : UnlockWrapper
-        {
-            if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return instance.__RogueLibsCustom as THook ?? null;
-        }
-
         private static THook GetOrAddHookShared<THook>(IHookController controller) where THook : class, IHook, new()
         {
             THook? hook = controller.GetHook<THook>();
@@ -387,30 +362,6 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static IEnumerable<IHook> GetHooks(this Trait instance)
             => GetHooksShared(instance.GetHookControllerIfExists());
-
-        // TODO: refactor these two methods
-        /// <summary>
-        ///   <para>Returns the <see cref="StatusEffects"/> instance containing the current <paramref name="statusEffect"/>.</para>
-        /// </summary>
-        /// <param name="statusEffect">The current instance of <see cref="StatusEffect"/>.</param>
-        /// <returns>The <see cref="StatusEffects"/> instance containing the current <paramref name="statusEffect"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="statusEffect"/> is <see langword="null"/>.</exception>
-        public static StatusEffects GetStatusEffects(this StatusEffect statusEffect)
-        {
-            if (statusEffect is null) throw new ArgumentNullException(nameof(statusEffect));
-            return (StatusEffects)statusEffect.__RogueLibsContainer;
-        }
-        /// <summary>
-        ///   <para>Returns the <see cref="StatusEffects"/> instance containing the current <paramref name="trait"/>.</para>
-        /// </summary>
-        /// <param name="trait">The current instance of <see cref="Trait"/>.</param>
-        /// <returns>The <see cref="StatusEffects"/> instance containing the current <paramref name="trait"/>.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="trait"/> is <see langword="null"/>.</exception>
-        public static StatusEffects GetStatusEffects(this Trait trait)
-        {
-            if (trait is null) throw new ArgumentNullException(nameof(trait));
-            return (StatusEffects)trait.__RogueLibsContainer;
-        }
 
     }
 }

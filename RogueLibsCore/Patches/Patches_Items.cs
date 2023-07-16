@@ -55,8 +55,7 @@ namespace RogueLibsCore
                 case "Laptop": __instance.Categories.Add("Internal:HackInteract"); break;
             }
 
-            (__instance.__RogueLibsHooks as IDisposable)?.Dispose();
-            __instance.__RogueLibsHooks = null;
+            HookSystem.DestroyHookController(__instance);
 
             foreach (IHookFactory<InvItem> factory in RogueFramework.ItemFactories)
                 if (factory.TryCreate(__instance, out IHook<InvItem>? hook))

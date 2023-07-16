@@ -59,7 +59,7 @@ namespace RogueLibsCore
             else if (__instance.menuType == "Floors")
             {
                 List<DisplayedUnlock> displayedUnlocks = GameController.gameController.sessionDataBig.floorUnlocks
-                                                                       .Select(static u => (DisplayedUnlock)u.__RogueLibsCustom)
+                                                                       .Select(static u => (DisplayedUnlock)u.GetHook()!)
                                                                        .OrderBy(static d => d).ToList();
                 CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedUnlocks);
 
@@ -79,7 +79,7 @@ namespace RogueLibsCore
             {
                 __instance.numButtons = __instance.smallTraitList.Count;
                 List<DisplayedUnlock> displayedUnlocks = __instance.smallTraitList
-                                                                   .Select(static u => (DisplayedUnlock)u.__RogueLibsCustom)
+                                                                   .Select(static u => (DisplayedUnlock)u.GetHook()!)
                                                                    .OrderBy(static d => d).ToList();
                 CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedUnlocks);
 
@@ -93,7 +93,7 @@ namespace RogueLibsCore
             {
                 __instance.numButtons = __instance.customTraitList.Count;
                 List<DisplayedUnlock> displayedUnlocks = __instance.customTraitList
-                                                                   .Select(static u => (DisplayedUnlock)u.__RogueLibsCustom)
+                                                                   .Select(static u => (DisplayedUnlock)u.GetHook()!)
                                                                    .OrderBy(static d => d).ToList();
                 CustomScrollingMenu menu = new CustomScrollingMenu(__instance, displayedUnlocks);
 
@@ -144,7 +144,8 @@ namespace RogueLibsCore
 
         public static bool SetupUnlocks(ButtonData myButtonData, Unlock myUnlock)
         {
-            DisplayedUnlock du = (DisplayedUnlock)(myButtonData.__RogueLibsCustom = myUnlock.__RogueLibsCustom);
+            DisplayedUnlock du = (DisplayedUnlock)myUnlock.GetHook()!;
+            HookSystem.SetHook(myButtonData, du);
             du.ButtonData = myButtonData;
 
             myButtonData.scrollingButtonUnlock = myUnlock;
@@ -164,7 +165,7 @@ namespace RogueLibsCore
 
         public static bool ScrollingMenu_SortUnlocks(ScrollingMenu __instance, List<Unlock> myUnlockList, List<Unlock> ___listUnlocks)
         {
-            List<DisplayedUnlock> displayedList = myUnlockList.ConvertAll(static u => (DisplayedUnlock)u.__RogueLibsCustom);
+            List<DisplayedUnlock> displayedList = myUnlockList.ConvertAll(static u => (DisplayedUnlock)u.GetHook()!);
             if (__instance.menuType == "FreeItems")
                 displayedList.RemoveAll(static u => u is ItemUnlock { IsAvailableInItemTeleporter: false });
 
@@ -211,7 +212,7 @@ namespace RogueLibsCore
             if (__instance.menuType.EndsWith("Configs", StringComparison.Ordinal)) return true;
 
             ButtonData buttonData = __instance.buttonsData[myButton.scrollingButtonNum];
-            DisplayedUnlock du = (DisplayedUnlock)buttonData.__RogueLibsCustom;
+            DisplayedUnlock du = (DisplayedUnlock)buttonData.GetHook()!;
 
             try { du.OnPushedButton(); }
             catch (Exception e) { RogueFramework.LogError(e, "DisplayedUnlock.OnPushedButton", du, du.Menu); }
@@ -222,7 +223,7 @@ namespace RogueLibsCore
         {
             if (__instance.agent != null && myButton.scrollingButtonUnlock?.unlockType == "Trait" && __instance.agent.addedEndLevelTrait || !string.IsNullOrEmpty(myButton.scrollingButtonLevelFeeling) || !string.IsNullOrEmpty(myButton.scrollingButtonConfigName) || !string.IsNullOrEmpty(myButton.scrollingButtonAgentName))
                 return true;
-            DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock!.__RogueLibsCustom;
+            DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock!.GetHook()!;
 
             bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu!.ShowLockedUnlocks;
             __instance.detailsTitle.text = show ? du.GetName() : "?????";
@@ -259,12 +260,12 @@ namespace RogueLibsCore
             ___loadoutList.RemoveAt(0);
             foreach (Unlock unlock in ___loadoutList.ToArray())
             {
-                if (unlock.__RogueLibsCustom is null)
+                if (unlock.GetHook() is null)
                 {
                     Unlock? normalized = GameController.gameController.sessionDataBig.unlocks
                                                        .Find(u => u.unlockName == unlock.unlockName && u.unlockType == unlock.unlockType);
                     if (normalized is null) ___loadoutList.Remove(unlock);
-                    else unlock.__RogueLibsCustom = normalized.__RogueLibsCustom;
+                    else HookSystem.SetHook(unlock, normalized.GetHook()!);
                 }
             }
         }

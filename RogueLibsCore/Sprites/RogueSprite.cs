@@ -259,7 +259,7 @@ namespace RogueLibsCore
                 tk2dSpriteDefinition def = CreateDefinition(texture!, region, 64f / PixelsPerUnit / coll.invOrthoSize / coll.halfTargetHeight);
                 def.name = name;
                 AddDefinition(coll, def);
-                def.__RogueLibsCustom = this;
+                HookSystem.SetHook(def, this);
                 definitions!.Add(new CustomTk2dDefinition(coll, def, targetScope));
 
                 Material ??= def.material;
@@ -480,7 +480,7 @@ namespace RogueLibsCore
             collection.InitMaterialIds();
             collection.ClearDictionary();
             collection.InitDictionary();
-            definition.__RogueLibsCustom = null;
+            HookSystem.RemoveHook(definition);
             return true;
         }
 

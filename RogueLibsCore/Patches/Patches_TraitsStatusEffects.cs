@@ -75,7 +75,7 @@ namespace RogueLibsCore
         private static readonly FieldInfo statusEffectCausingAgent = typeof(StatusEffect).GetField(nameof(StatusEffect.causingAgent));
         public static void SetupEffectHook(StatusEffect effect, StatusEffects parent)
         {
-            effect.__RogueLibsContainer = parent;
+            HookSystem.SetStatusEffects(effect, parent);
             foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
                 if (factory.TryCreate(effect, out IHook<StatusEffect>? hook))
                 {
@@ -111,7 +111,7 @@ namespace RogueLibsCore
         public static void SetupTraitHook(Trait trait, StatusEffects parent)
         {
             bool updateable = false;
-            trait.__RogueLibsContainer = parent;
+            HookSystem.SetStatusEffects(trait, parent);
             foreach (IHookFactory<Trait> factory in RogueFramework.TraitFactories)
                 if (factory.TryCreate(trait, out IHook<Trait>? hook))
                 {
@@ -161,7 +161,8 @@ namespace RogueLibsCore
                 });
         public static int GetStatusEffectTime(StatusEffects instance, string name)
         {
-            StatusEffect effect = new StatusEffect { statusEffectName = name, __RogueLibsContainer = instance };
+            StatusEffect effect = new StatusEffect { statusEffectName = name };
+            HookSystem.SetStatusEffects(effect, instance);
 
             CustomEffect? custom = null;
             foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
@@ -174,7 +175,8 @@ namespace RogueLibsCore
         }
         public static void StatusEffects_GetStatusEffectHate(StatusEffects __instance, string statusEffectName, ref int __result)
         {
-            StatusEffect effect = new StatusEffect { statusEffectName = statusEffectName, __RogueLibsContainer = __instance };
+            StatusEffect effect = new StatusEffect { statusEffectName = statusEffectName };
+            HookSystem.SetStatusEffects(effect, __instance);
 
             CustomEffect? custom = null;
             foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)

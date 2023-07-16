@@ -18,7 +18,7 @@ namespace RogueLibsCore
         protected UnlockWrapper(string name, string type, bool unlockedFromStart) : this(new Unlock(name, type, unlockedFromStart)) { }
         internal UnlockWrapper(Unlock unlock)
         {
-            unlock.__RogueLibsCustom = this;
+            HookSystem.SetHook(unlock, this);
             ((IHook)this).Initialize(unlock);
         }
 

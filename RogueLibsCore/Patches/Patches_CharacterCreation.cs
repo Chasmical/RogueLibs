@@ -33,7 +33,7 @@ namespace RogueLibsCore
         {
             if (unlockType == UnlockTypes.BigQuest) myUnlockList = __instance.gc.sessionDataBig.bigQuestUnlocks;
 
-            List<DisplayedUnlock> displayedList = myUnlockList.Select(static u => u.__RogueLibsCustom).OfType<DisplayedUnlock>().ToList();
+            List<DisplayedUnlock> displayedList = myUnlockList.Select(static u => u.GetHook()).OfType<DisplayedUnlock>().ToList();
             if (unlockType is UnlockTypes.Ability or UnlockTypes.BigQuest)
                 displayedList.RemoveAll(static u => u is IUnlockInCC { IsAvailableInCC: false });
 
@@ -88,7 +88,7 @@ namespace RogueLibsCore
             };
 
             ButtonData buttonData = buttonsData[myButton.scrollingButtonNum];
-            DisplayedUnlock du = (DisplayedUnlock)buttonData.__RogueLibsCustom;
+            DisplayedUnlock du = (DisplayedUnlock)buttonData.GetHook()!;
 
             try { du.OnPushedButton(); }
             catch (Exception e) { RogueFramework.LogError(e, "DisplayedUnlock.OnPushedButton", du, du.Menu); }
@@ -133,7 +133,7 @@ namespace RogueLibsCore
 
             if (image != null)
             {
-                DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock.__RogueLibsCustom;
+                DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock.GetHook()!;
 
                 bool show = du.IsUnlocked || du.Unlock.nowAvailable || du.Menu!.ShowLockedUnlocks;
                 title!.text = show ? du.GetName() : "?????";

@@ -190,8 +190,7 @@ namespace RogueLibsCore
 
         public static void PlayfieldObject_RecycleAwake(PlayfieldObject __instance)
         {
-            (__instance.__RogueLibsHooks as IDisposable)?.Dispose();
-            __instance.__RogueLibsHooks = null;
+            HookSystem.DestroyHookController(__instance);
 
             GetOrCreateModel(__instance);
 

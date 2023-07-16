@@ -801,7 +801,6 @@ namespace RogueLibsCore
 
         public static Unlock CloneUnlock(Unlock unlock) => new Unlock(unlock.unlockName, unlock.unlockType, unlock.unlocked)
         {
-            __RogueLibsCustom = null,
             agents = unlock.agents.ToList(),
             cancellations = unlock.cancellations.ToList(),
             cantLose = unlock.cantLose,
