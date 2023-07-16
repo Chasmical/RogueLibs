@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Mono.Cecil;
 
 namespace RogueLibsPatcher
@@ -9,8 +8,8 @@ namespace RogueLibsPatcher
         // ReSharper disable once InconsistentNaming
         public static IEnumerable<string> TargetDLLs { get; } = new string[1] { "Assembly-CSharp.dll" };
 
-        private static ModuleDefinition? module;
-        private static TypeReference? objRef;
+        private static ModuleDefinition module = null!;
+        private static TypeReference objRef = null!;
 
         public static void Patch(AssemblyDefinition assembly)
         {
@@ -19,41 +18,40 @@ namespace RogueLibsPatcher
             if (!module.TryGetTypeReference(typeof(object).FullName, out objRef))
                 objRef = module.ImportReference(typeof(object));
 
-            TypeDefinition invItem = module.GetType("InvItem");
-            PatchHooks(invItem);
+            const string rlHooks = "__RogueLibsHooks";
+            const string rlContainer = "__RogueLibsContainer";
+            const string rlCustom = "__RogueLibsCustom";
 
-            TypeDefinition playfieldObject = module.GetType("PlayfieldObject");
-            PatchHooks(playfieldObject);
+            PatchField(nameof(InvItem), rlHooks);
 
-            TypeDefinition statusEffect = module.GetType("StatusEffect");
-            PatchHooks(statusEffect);
-            PatchContainer(statusEffect);
+            PatchField(nameof(PlayfieldObject), rlHooks);
 
-            TypeDefinition trait = module.GetType("Trait");
-            PatchHooks(trait);
-            PatchContainer(trait);
+            PatchField(nameof(StatusEffect), rlHooks);
+            PatchField(nameof(StatusEffect), rlContainer);
 
-            TypeDefinition buttonData = module.GetType("ButtonData");
-            PatchCustom(buttonData);
+            PatchField(nameof(Trait), rlHooks);
+            PatchField(nameof(Trait), rlContainer);
 
-            TypeDefinition unlock = module.GetType("Unlock");
-            PatchCustom(unlock);
+            PatchField(nameof(Unlock), rlCustom);
 
-            TypeDefinition tk2dDef = module.GetType("tk2dSpriteDefinition");
-            PatchCustom(tk2dDef);
+            PatchField(nameof(ButtonData), rlCustom);
+
+            PatchField(nameof(tk2dSpriteDefinition), rlCustom);
         }
 
-        public static void PatchHooks(TypeDefinition type) => Patch(type, "__RogueLibsHooks");
-        public static void PatchContainer(TypeDefinition type) => Patch(type, "__RogueLibsContainer");
-        public static void PatchCustom(TypeDefinition type) => Patch(type, "__RogueLibsCustom");
-        public static void Patch(TypeDefinition type, string fieldName)
+        public static void PatchField(string typeName, string fieldName)
         {
+            TypeDefinition type = module.GetType(typeName);
+
+            // Note: Do not use LINQ here. Apparently, some versions of Mono may be missing System.Func and System.Action.
+            // (see https://github.com/SugarBarrel/ECTD/issues/4)
             for (int i = 0, count = type.Fields.Count; i < count; i++)
-				if (type.Fields[i].Name == fieldName)
-					return;
-			FieldDefinition container = new FieldDefinition(fieldName,
-                                                            FieldAttributes.Public | FieldAttributes.NotSerialized, objRef);
-            type.Fields.Add(container);
+                if (type.Fields[i].Name == fieldName)
+                    return;
+
+            const FieldAttributes attr = FieldAttributes.Public | FieldAttributes.NotSerialized;
+            type.Fields.Add(new FieldDefinition(fieldName, attr, objRef));
         }
+
     }
 }
