@@ -219,7 +219,7 @@ namespace RogueLibsCore
                 {
                     foreach (ButtonData buttonData4 in menu.buttonsData)
                         buttonData4.isActive = false;
-                    menu.Invoke("OpenScrollingMenu", 0.1f);
+                    menu.Invoke(nameof(ScrollingMenu.OpenScrollingMenu), 0.1f);
                 }
             }
             else if (Menu.Type == UnlocksMenuType.AB_UpgradeTrait)

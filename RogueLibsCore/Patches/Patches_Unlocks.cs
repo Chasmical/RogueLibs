@@ -341,7 +341,7 @@ namespace RogueLibsCore
             List<Unlock> available = new List<Unlock>();
             foreach (Unlock unlock in sdb.unlocks)
             {
-                UnlockWrapper wrapper = unlock.GetHook();
+                UnlockWrapper? wrapper = unlock.GetHook();
                 if (wrapper is MutatorUnlock { IsAvailableInDailyRun: true })
                 {
                     Unlock copy = new Unlock(unlock.unlockName, unlock.unlockType, true) { cancellations = unlock.cancellations };

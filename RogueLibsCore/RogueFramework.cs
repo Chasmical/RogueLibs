@@ -33,7 +33,7 @@ namespace RogueLibsCore
         internal static void LogError(string message) => Logger.LogError(message);
         internal static void LogError(Exception e, string methodName, object hookObj, object? container = null)
         {
-            object? instance = hookObj is IHook hook ? hook.Instance : string.Empty;
+            object? instance = hookObj is IHook hook ? (object?)hook.Instance : string.Empty;
 
             string instanceName = instance switch
             {

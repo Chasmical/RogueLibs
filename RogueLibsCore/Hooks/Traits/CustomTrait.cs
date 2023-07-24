@@ -12,11 +12,11 @@
         /// <summary>
         ///   <para>Gets the trait's <see cref="StatusEffects"/> instance.</para>
         /// </summary>
-        public StatusEffects StatusEffects => Trait.GetStatusEffects();
+        public StatusEffects StatusEffects => Trait.GetStatusEffects()!;
         /// <summary>
         ///   <para>Gets the trait's owner.</para>
         /// </summary>
-        public Agent Owner => Trait.GetStatusEffects().agent;
+        public Agent Owner => StatusEffects.agent;
 
         /// <summary>
         ///   <para>Gets the currently used instance of <see cref="GameController"/>.</para>

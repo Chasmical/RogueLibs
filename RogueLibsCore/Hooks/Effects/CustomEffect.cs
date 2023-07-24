@@ -12,15 +12,15 @@
         /// <summary>
         ///   <para>Gets the status effect's <see cref="global::StatusEffects"/> instance.</para>
         /// </summary>
-        public StatusEffects StatusEffects => Effect.GetStatusEffects();
+        public StatusEffects StatusEffects => Effect.GetStatusEffects()!;
         /// <summary>
         ///   <para>Gets the status effect's owner.</para>
         /// </summary>
-        public Agent Owner => Effect.GetStatusEffects().agent;
+        public Agent Owner => StatusEffects.agent;
         /// <summary>
         ///   <para>Gets the agent that caused the status effect.</para>
         /// </summary>
-        public Agent CausedBy => Effect.causingAgent;
+        public Agent? CausedBy => Effect.causingAgent;
 
         /// <summary>
         ///   <para>Gets or sets the status effect's current time.</para>
