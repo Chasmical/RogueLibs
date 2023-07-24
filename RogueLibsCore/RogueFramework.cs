@@ -69,19 +69,19 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>The list of item hook factories, used by RogueLibs.</para>
         /// </summary>
-        public static readonly List<IHookFactory<InvItem>> ItemFactories = new List<IHookFactory<InvItem>>();
+        public static readonly List<IHookFactory> ItemFactories = new List<IHookFactory>();
         /// <summary>
         ///   <para>The list of trait hook factories, used by RogueLibs.</para>
         /// </summary>
-        public static readonly List<IHookFactory<Trait>> TraitFactories = new List<IHookFactory<Trait>>();
+        public static readonly List<IHookFactory> TraitFactories = new List<IHookFactory>();
         /// <summary>
         ///   <para>The list of effect hook factories, used by RogueLibs.</para>
         /// </summary>
-        public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new List<IHookFactory<StatusEffect>>();
+        public static readonly List<IHookFactory> EffectFactories = new List<IHookFactory>();
         /// <summary>
         ///   <para>The list of object hook factories, used by RogueLibs.</para>
         /// </summary>
-        public static readonly List<IHookFactory<PlayfieldObject>> ObjectFactories = new List<IHookFactory<PlayfieldObject>>();
+        public static readonly List<IHookFactory> ObjectFactories = new List<IHookFactory>();
 
         /// <summary>
         ///   <para>The list of name providers, used by RogueLibs.</para>

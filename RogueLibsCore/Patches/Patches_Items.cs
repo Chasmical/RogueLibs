@@ -57,9 +57,12 @@ namespace RogueLibsCore
 
             HookSystem.DestroyHookController(__instance);
 
-            foreach (IHookFactory<InvItem> factory in RogueFramework.ItemFactories)
-                if (factory.TryCreate(__instance, out IHook<InvItem>? hook))
-                    __instance.AddHook(hook);
+            IHookController controller = __instance.GetHookController();
+            foreach (IHookFactory factory in RogueFramework.ItemFactories)
+            {
+                IHook? hook = factory.TryCreateHook(__instance);
+                if (hook is not null) controller.AddHook(hook);
+            }
         }
 
         public static bool ItemFunctions_UseItem(InvItem item, Agent agent)

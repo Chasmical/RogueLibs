@@ -76,14 +76,19 @@ namespace RogueLibsCore
         public static void SetupEffectHook(StatusEffect effect, StatusEffects parent)
         {
             HookSystem.SetStatusEffects(effect, parent);
-            foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
-                if (factory.TryCreate(effect, out IHook<StatusEffect>? hook))
+
+            IHookController controller = effect.GetHookController();
+            foreach (IHookFactory factory in RogueFramework.EffectFactories)
+            {
+                IHook? hook = factory.TryCreateHook(effect);
+                if (hook is not null)
                 {
-                    effect.AddHook(hook);
+                    controller.AddHook(hook);
                     // CustomEffect does not call OnAdded when initialized,
                     // because of the GetStatusEffectTime/Hate patches
                     if (hook is CustomEffect custom) custom.OnAdded();
                 }
+            }
         }
         public static void RefreshEffect(StatusEffect effect, int newTime)
         {
@@ -110,15 +115,16 @@ namespace RogueLibsCore
         private static readonly FieldInfo traitTraitName = typeof(Trait).GetField(nameof(Trait.traitName));
         public static void SetupTraitHook(Trait trait, StatusEffects parent)
         {
-            bool updateable = false;
             HookSystem.SetStatusEffects(trait, parent);
-            foreach (IHookFactory<Trait> factory in RogueFramework.TraitFactories)
-                if (factory.TryCreate(trait, out IHook<Trait>? hook))
-                {
-                    trait.AddHook(hook);
-                    if (hook is CustomTrait and ITraitUpdateable)
-                        updateable = true;
-                }
+
+            IHookController controller = trait.GetHookController();
+            foreach (IHookFactory factory in RogueFramework.TraitFactories)
+            {
+                IHook? hook = factory.TryCreateHook(trait);
+                if (hook is not null) controller.AddHook(hook);
+            }
+
+            bool updateable = controller.GetHook<CustomTrait>() is ITraitUpdateable;
 
             if (updateable && parent.agent.name != "DummyAgent" && !parent.agent.name.Contains("Backup"))
             {
@@ -161,35 +167,40 @@ namespace RogueLibsCore
                 });
         public static int GetStatusEffectTime(StatusEffects instance, string name)
         {
-            StatusEffect effect = new StatusEffect { statusEffectName = name };
-            HookSystem.SetStatusEffects(effect, instance);
+            StatusEffect tempEffect = new StatusEffect { statusEffectName = name };
+            HookSystem.SetStatusEffects(tempEffect, instance);
 
-            CustomEffect? custom = null;
-            foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
-                if (factory.TryCreate(effect, out IHook<StatusEffect>? hook) && hook is CustomEffect custom2)
-                {
-                    custom = custom2;
-                    effect.AddHook(custom);
-                }
-            return custom?.GetEffectTime() ?? 9999;
+            IHookController controller = tempEffect.GetHookController();
+            foreach (IHookFactory factory in RogueFramework.EffectFactories)
+            {
+                IHook? hook = factory.TryCreateHook(tempEffect);
+                if (hook is not null) controller.AddHook(hook);
+            }
+
+            CustomEffect? custom = controller.GetHook<CustomEffect>();
+            int statusEffectTime = custom?.GetEffectTime() ?? 9999;
+            HookSystem.DestroyHookController(tempEffect);
+            return statusEffectTime;
         }
         public static void StatusEffects_GetStatusEffectHate(StatusEffects __instance, string statusEffectName, ref int __result)
         {
-            StatusEffect effect = new StatusEffect { statusEffectName = statusEffectName };
-            HookSystem.SetStatusEffects(effect, __instance);
+            StatusEffect tempEffect = new StatusEffect { statusEffectName = statusEffectName };
+            HookSystem.SetStatusEffects(tempEffect, __instance);
 
-            CustomEffect? custom = null;
-            foreach (IHookFactory<StatusEffect> factory in RogueFramework.EffectFactories)
-                if (factory.TryCreate(effect, out IHook<StatusEffect>? hook) && hook is CustomEffect custom2)
-                {
-                    custom = custom2;
-                    effect.AddHook(custom);
-                }
-            if (custom != null)
+            IHookController controller = tempEffect.GetHookController();
+            foreach (IHookFactory factory in RogueFramework.EffectFactories)
+            {
+                IHook? hook = factory.TryCreateHook(tempEffect);
+                if (hook is not null) controller.AddHook(hook);
+            }
+
+            CustomEffect? custom = controller.GetHook<CustomEffect>();
+            if (custom is not null)
             {
                 __result = custom.GetEffectHate();
-                __instance.agent.dontHate = __result is 0;
+                __instance.agent.dontHate = __result == 0;
             }
+            HookSystem.DestroyHookController(tempEffect);
         }
 
         public static bool StatusEffects_UpdateStatusEffect(StatusEffects __instance, StatusEffect myStatusEffect, bool showTextOnRemoval, ref IEnumerator __result)

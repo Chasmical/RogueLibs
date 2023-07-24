@@ -133,9 +133,12 @@ namespace RogueLibsCore
 
             GetOrCreateModel(__instance);
 
-            foreach (IHookFactory<PlayfieldObject> factory in RogueFramework.ObjectFactories)
-                if (factory.TryCreate(__instance, out IHook<PlayfieldObject>? hook))
-                    __instance.AddHook(hook);
+            IHookController controller = __instance.GetHookController();
+            foreach (IHookFactory factory in RogueFramework.ObjectFactories)
+            {
+                IHook? hook = factory.TryCreateHook(__instance);
+                if (hook is not null) controller.AddHook(hook);
+            }
         }
 
         public static bool MenuGUI_PressedDiscordButton()
