@@ -10,7 +10,7 @@ namespace RogueLibsCore
     /// <summary>
     ///   <para>Represents the internal workings of RogueLibs.</para>
     /// </summary>
-    public static class RogueFramework
+    public static partial class RogueFramework
     {
         /// <summary>
         ///   <para>The RogueLibs' plugin instance.</para>
