@@ -11,7 +11,7 @@ namespace RogueLibsCore
     /// <summary>
     ///   <para>Main RogueLibs class, that is used to initialize custom content.</para>
     /// </summary>
-    public static class RogueLibs
+    public static partial class RogueLibs
     {
         static RogueLibs()
         {
