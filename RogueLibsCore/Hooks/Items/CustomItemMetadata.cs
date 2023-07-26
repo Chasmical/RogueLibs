@@ -21,10 +21,11 @@ namespace RogueLibsCore
         /// </summary>
         public ReadOnlyCollection<string> Categories { get; }
 
+        private static readonly ReadOnlyCollection<string> emptyCollection = new(Array.Empty<string>());
         /// <summary>
         ///   <para>Gets the collection of inventory checks, ignored by the custom item.</para>
         /// </summary>
-        public ReadOnlyCollection<string> IgnoredChecks { get; } = RogueUtilities.Empty;
+        public ReadOnlyCollection<string> IgnoredChecks { get; } = emptyCollection;
 
         /// <summary>
         ///   <para>Returns a <see cref="CustomName"/> associated with this item's name.</para>
