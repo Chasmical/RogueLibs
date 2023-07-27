@@ -1,12 +1,14 @@
-﻿using System;
+﻿﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Collections.ObjectModel;
 using System.Threading;
 using System.Linq;
 using BepInEx;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace RogueLibsCore
 {
@@ -15,6 +17,9 @@ namespace RogueLibsCore
     /// </summary>
     public static class RogueUtilities
     {
+        private static readonly ConditionalWeakTable<byte[], SpriteList> spriteCache = new();
+        private static readonly ConditionalWeakTable<byte[], AudioClip> audioCache = new();
+
         /// <summary>
         ///   <para>Creates a readable copy of the specified <paramref name="texture"/>.</para>
         /// </summary>
@@ -49,14 +54,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="rawData"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public static Sprite ConvertToSprite(byte[] rawData, float ppu = 64f)
-        {
-            if (rawData is null) throw new ArgumentNullException(nameof(rawData));
-            if (ppu <= 0f) throw new ArgumentOutOfRangeException(nameof(ppu), ppu, $"{nameof(ppu)} is less than or equal to 0.");
-            Texture2D texture = new Texture2D(15, 9);
-            texture.LoadImage(rawData);
-            Rect region = new Rect(0, 0, texture.width, texture.height);
-            return Sprite.Create(texture, region, 0.5f * region.size, ppu);
-        }
+            => ConvertToSprite(rawData, null, ppu);
         /// <summary>
         ///   <para>Creates a <see cref="Sprite"/> with a texture from <paramref name="rawData"/> with the specified <paramref name="ppu"/>.</para>
         /// </summary>
@@ -67,13 +65,35 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="rawData"/> is <see langword="null"/>.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public static Sprite ConvertToSprite(byte[] rawData, Rect region, float ppu = 64f)
+            => ConvertToSprite(rawData, (Rect?)region, ppu);
+        /// <summary>
+        ///   <para>Creates a <see cref="Sprite"/> with a texture from <paramref name="rawData"/> with the specified <paramref name="ppu"/>.</para>
+        /// </summary>
+        /// <param name="rawData">The byte array containing a raw PNG- or JPEG-encoded image.</param>
+        /// <param name="region">The region of the texture for the sprite to use, or <see langword="null"/> to use the entire texture.</param>
+        /// <param name="ppu">The pixels-per-unit of the custom sprite's texture.</param>
+        /// <returns>The created sprite.</returns>
+        /// <exception cref="ArgumentNullException"><paramref name="rawData"/> is <see langword="null"/>.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
+        public static Sprite ConvertToSprite(byte[] rawData, Rect? region, float ppu = 64f)
         {
             if (rawData is null) throw new ArgumentNullException(nameof(rawData));
             if (ppu <= 0f) throw new ArgumentOutOfRangeException(nameof(ppu), ppu, $"{nameof(ppu)} is less than or equal to 0.");
-            Texture2D texture = new Texture2D(15, 9);
-            texture.LoadImage(rawData);
-            return Sprite.Create(texture, region, 0.5f * region.size, ppu);
+
+            if (!spriteCache.TryGetValue(rawData, out SpriteList? spriteList) || !spriteList.TryGet(ppu, out Sprite? sprite))
+            {
+                Texture2D texture = new Texture2D(15, 9);
+                texture.LoadImage(rawData);
+                Rect rect = region ?? new Rect(0f, 0f, texture.width, texture.height);
+                sprite = Sprite.Create(texture, rect, 0.5f * rect.size, ppu);
+
+                if (spriteList is null)
+                    spriteCache.Add(rawData, spriteList = new SpriteList());
+                spriteList.Add(sprite);
+            }
+            return sprite;
         }
+
         /// <summary>
         ///   <para>Creates a <see cref="Sprite"/> with a texture created from a file at the specified <paramref name="filePath"/> with the specified <paramref name="ppu"/>.</para>
         /// </summary>
@@ -83,11 +103,7 @@ namespace RogueLibsCore
         /// <exception cref="FileNotFoundException">A file at the specified <paramref name="filePath"/> does not exist.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public static Sprite ConvertToSprite(string filePath, float ppu = 64f)
-        {
-            if (!File.Exists(filePath)) throw new FileNotFoundException($"The specified {nameof(filePath)} does not exist.", filePath);
-            if (ppu <= 0f) throw new ArgumentOutOfRangeException(nameof(ppu), ppu, $"{nameof(ppu)} is less than or equal to 0.");
-            return ConvertToSprite(File.ReadAllBytes(filePath), ppu);
-        }
+            => ConvertToSprite(filePath, null, ppu);
         /// <summary>
         ///   <para>Creates a <see cref="Sprite"/> with a texture created from a file at the specified <paramref name="filePath"/> with the specified <paramref name="ppu"/>.</para>
         /// </summary>
@@ -98,6 +114,17 @@ namespace RogueLibsCore
         /// <exception cref="FileNotFoundException">A file at the specified <paramref name="filePath"/> does not exist.</exception>
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
         public static Sprite ConvertToSprite(string filePath, Rect region, float ppu = 64f)
+            => ConvertToSprite(filePath, (Rect?)region, ppu);
+        /// <summary>
+        ///   <para>Creates a <see cref="Sprite"/> with a texture created from a file at the specified <paramref name="filePath"/> with the specified <paramref name="ppu"/>.</para>
+        /// </summary>
+        /// <param name="filePath">The path to the PNG- or JPEG-encoded image file.</param>
+        /// <param name="region">The region of the texture for the sprite to use, or <see langword="null"/> to use the entire texture.</param>
+        /// <param name="ppu">The pixels-per-unit of the custom sprite's texture.</param>
+        /// <returns>The created sprite.</returns>
+        /// <exception cref="FileNotFoundException">A file at the specified <paramref name="filePath"/> does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="ppu"/> is less than or equal to 0.</exception>
+        public static Sprite ConvertToSprite(string filePath, Rect? region, float ppu = 64f)
         {
             if (!File.Exists(filePath)) throw new FileNotFoundException($"The specified {nameof(filePath)} does not exist.", filePath);
             if (ppu <= 0f) throw new ArgumentOutOfRangeException(nameof(ppu), ppu, $"{nameof(ppu)} is less than or equal to 0.");
@@ -144,18 +171,24 @@ namespace RogueLibsCore
         {
             if (format is not AudioType.MPEG and not AudioType.WAV and not AudioType.OGGVORBIS)
                 throw new NotSupportedException($"{format} is not supported. Supported audio formats: {AudioType.MPEG}, {AudioType.WAV} and {AudioType.OGGVORBIS}.");
-            string name = ".audio-request." + Convert.ToString(new System.Random().Next(), 16).ToLowerInvariant();
-            string filePath = Path.Combine(Paths.CachePath, name);
 
-            try
+            if (!audioCache.TryGetValue(rawData, out AudioClip? audioClip))
             {
-                File.WriteAllBytes(filePath, rawData);
-                return ConvertToAudioClip(filePath, format);
+                string name = ".audio-request." + Convert.ToString(new System.Random().Next(), 16).ToLowerInvariant();
+                string filePath = Path.Combine(Paths.CachePath, name);
+
+                try
+                {
+                    File.WriteAllBytes(filePath, rawData);
+                    audioClip = ConvertToAudioClip(filePath, format);
+                    audioCache.Add(rawData, audioClip);
+                }
+                finally
+                {
+                    File.Delete(filePath);
+                }
             }
-            finally
-            {
-                File.Delete(filePath);
-            }
+            return audioClip;
         }
         /// <summary>
         ///   <para>Converts an audio file from the specified <paramref name="filePath"/> into an <see cref="AudioClip"/> using the specified audio <paramref name="format"/>.</para>
@@ -238,6 +271,16 @@ namespace RogueLibsCore
                 methods[i] = mapping.TargetMethods[index];
             }
             return methods;
+        }
+
+        private sealed class SpriteList
+        {
+            private readonly List<Sprite> sprites = new List<Sprite>(1);
+
+            public bool TryGet(float ppu, [NotNullWhen(true)] out Sprite? sprite)
+                => (sprite = sprites.Find(s => s.pixelsPerUnit == ppu)) is not null;
+            public void Add(Sprite sprite)
+                => sprites.Add(sprite);
         }
     }
 }
