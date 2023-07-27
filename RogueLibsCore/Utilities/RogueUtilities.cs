@@ -85,7 +85,7 @@ namespace RogueLibsCore
                 Texture2D texture = new Texture2D(15, 9);
                 texture.LoadImage(rawData);
                 Rect rect = region ?? new Rect(0f, 0f, texture.width, texture.height);
-                sprite = Sprite.Create(texture, rect, 0.5f * rect.size, ppu);
+                sprite = Sprite.Create(texture, rect, 0.5f * rect.size, ppu, 0u, SpriteMeshType.FullRect, Vector4.zero, false);
 
                 if (spriteList is null)
                     spriteCache.Add(rawData, spriteList = new SpriteList());
