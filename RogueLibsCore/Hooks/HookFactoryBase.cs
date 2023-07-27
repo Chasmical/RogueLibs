@@ -6,7 +6,11 @@ namespace RogueLibsCore
     ///   <para>Represents a hook factory base. Implements the interfaces, leaving only one abstract method to implement.</para>
     /// </summary>
     /// <typeparam name="T">The type of objects that the created hooks can be attached to.</typeparam>
-    public abstract class HookFactoryBase<T> : IHookFactory where T : notnull
+    public abstract class HookFactoryBase<T>
+#pragma warning disable CS0618
+        : IHookFactory<object>
+#pragma warning restore CS0618
+        where T : notnull
     {
         /// <summary>
         ///   <para>Tries to create a hook for the specified <paramref name="instance"/> of type <typeparamref name="T"/>, and returns a value that indicates whether a hook was created successfully.</para>

@@ -66,22 +66,24 @@ namespace RogueLibsCore
 
         internal const int SpecialInt = -488755541;
 
+#pragma warning disable CS0618
         /// <summary>
         ///   <para>The list of item hook factories, used by RogueLibs.</para>
         /// </summary>
-        public static readonly List<IHookFactory> ItemFactories = new List<IHookFactory>();
+        public static readonly List<IHookFactory<InvItem>> ItemFactories = new();
         /// <summary>
         ///   <para>The list of trait hook factories, used by RogueLibs.</para>
         /// </summary>
-        public static readonly List<IHookFactory> TraitFactories = new List<IHookFactory>();
+        public static readonly List<IHookFactory<Trait>> TraitFactories = new();
         /// <summary>
         ///   <para>The list of effect hook factories, used by RogueLibs.</para>
         /// </summary>
-        public static readonly List<IHookFactory> EffectFactories = new List<IHookFactory>();
+        public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new();
         /// <summary>
         ///   <para>The list of object hook factories, used by RogueLibs.</para>
         /// </summary>
-        public static readonly List<IHookFactory> ObjectFactories = new List<IHookFactory>();
+        public static readonly List<IHookFactory<PlayfieldObject>> ObjectFactories = new();
+#pragma warning restore CS0618
 
         /// <summary>
         ///   <para>The list of name providers, used by RogueLibs.</para>
