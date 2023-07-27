@@ -236,29 +236,22 @@ namespace RogueLibsCore
             const BindingFlags allFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
             foreach (MethodInfo method in type.GetMethods(allFlags))
             {
-                if (method.GetCustomAttributes<RLSetupAttribute>().Any())
+                if (method.GetCustomAttribute<RLSetupAttribute>() is null) continue;
+                if (method.GetParameters().Length != 0)
                 {
-                    if (method.GetParameters().Length != 0)
-                    {
-                        RogueFramework.LogError($"{type.FullName}: Methods marked with [RLSetup] cannot have any parameters!");
-                        continue;
-                    }
-                    if (!method.IsStatic)
-                    {
-                        RogueFramework.LogError($"{type.FullName}: Methods marked with [RLSetup] must be static!");
-                        ConstructorInfo? ctor = method.DeclaringType!.GetConstructor(Type.EmptyTypes);
-                        if (ctor != null)
-                        {
-                            object instance = ctor.Invoke(null);
-                            try { method.Invoke(instance, null); }
-                            catch (Exception e) { RogueFramework.LogError(e.ToString()); }
-                            RogueFramework.LogWarning($"The issue was temporarily resolved by creating an instance of {type.FullName} type.");
-                        }
-                        continue;
-                    }
-                    try { method.Invoke(null, null); }
-                    catch (Exception e) { RogueFramework.LogError(e.ToString()); }
+                    RogueFramework.LogError($"{type.FullName}: Methods marked with [RLSetup] cannot have any parameters!");
+                    continue;
                 }
+                object? instance = null;
+                if (!method.IsStatic)
+                {
+                    RogueFramework.LogError($"{type.FullName}: Methods marked with [RLSetup] must be static!");
+                    RogueFramework.LogWarning($"The issue will be temporarily resolved by creating an instance of {type.Name} type.");
+                    instance = FormatterServices.GetUninitializedObject(method.DeclaringType!);
+                    type.GetConstructor(allFlags, null, Type.EmptyTypes, null)?.Invoke(instance, null);
+                }
+                try { method.Invoke(instance, null); }
+                catch (Exception e) { RogueFramework.LogError(e.ToString()); }
             }
         }
         private static bool PatchResourceManager(Type type)
