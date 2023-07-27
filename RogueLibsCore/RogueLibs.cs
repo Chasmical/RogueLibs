@@ -1,10 +1,12 @@
 ﻿using System;
-using System.Linq;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Reflection;
 using UnityEngine;
 using System.IO;
+using System.Resources;
+using System.Runtime.Serialization;
+using System.Linq;
 
 namespace RogueLibsCore
 {
@@ -215,39 +217,61 @@ namespace RogueLibsCore
             => (TUnlock?)RogueFramework.Unlocks.Find(u => u is TUnlock && u.Name == name);
 
         /// <summary>
-        ///   <para>Invokes all static methods marked with a <see cref="RLSetupAttribute"/> in the current assembly.</para>
+        ///   <para>Invokes all static methods marked with a <see cref="RLSetupAttribute"/> in the current assembly, and adds caching behavior to a <see cref="ResourceManager"/> in the generated <c>Properties.Resources</c> class.</para>
         /// </summary>
         public static void LoadFromAssembly()
         {
             MethodBase caller = new StackTrace().GetFrame(1).GetMethod();
             Assembly assembly = caller.ReflectedType!.Assembly;
-            foreach (Type type in assembly.GetTypes())
-                foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            Type[] types = assembly.GetTypes();
+
+            Type resourcesType = Array.Find(types, static t => t.IsPublic && t.Name.EndsWith("Resources", StringComparison.Ordinal));
+            if (resourcesType is not null) _ = PatchResourceManager(resourcesType);
+
+            foreach (Type type in types)
+                InvokeSetupMethods(type);
+        }
+        private static void InvokeSetupMethods(Type type)
+        {
+            const BindingFlags allFlags = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+            foreach (MethodInfo method in type.GetMethods(allFlags))
+            {
+                if (method.GetCustomAttributes<RLSetupAttribute>().Any())
                 {
-                    if (method.GetCustomAttributes<RLSetupAttribute>().Any())
+                    if (method.GetParameters().Length != 0)
                     {
-                        if (method.GetParameters().Length != 0)
-                        {
-                            RogueFramework.LogError($"{assembly.FullName}: Methods marked with [RLSetup] cannot have any parameters!");
-                            continue;
-                        }
-                        if (!method.IsStatic)
-                        {
-                            RogueFramework.LogError($"{assembly.FullName}: Methods marked with [RLSetup] must be static!");
-                            ConstructorInfo? ctor = method.DeclaringType!.GetConstructor(Type.EmptyTypes);
-                            if (ctor != null)
-                            {
-                                object instance = ctor.Invoke(null);
-                                try { method.Invoke(instance, null); }
-                                catch (Exception e) { RogueFramework.LogError(e.ToString()); }
-                                RogueFramework.LogWarning($"The issue was temporarily resolved by creating an instance of {method.DeclaringType} type.");
-                            }
-                            continue;
-                        }
-                        try { method.Invoke(null, null); }
-                        catch (Exception e) { RogueFramework.LogError(e.ToString()); }
+                        RogueFramework.LogError($"{type.FullName}: Methods marked with [RLSetup] cannot have any parameters!");
+                        continue;
                     }
+                    if (!method.IsStatic)
+                    {
+                        RogueFramework.LogError($"{type.FullName}: Methods marked with [RLSetup] must be static!");
+                        ConstructorInfo? ctor = method.DeclaringType!.GetConstructor(Type.EmptyTypes);
+                        if (ctor != null)
+                        {
+                            object instance = ctor.Invoke(null);
+                            try { method.Invoke(instance, null); }
+                            catch (Exception e) { RogueFramework.LogError(e.ToString()); }
+                            RogueFramework.LogWarning($"The issue was temporarily resolved by creating an instance of {type.FullName} type.");
+                        }
+                        continue;
+                    }
+                    try { method.Invoke(null, null); }
+                    catch (Exception e) { RogueFramework.LogError(e.ToString()); }
                 }
+            }
+        }
+        private static bool PatchResourceManager(Type type)
+        {
+            FieldInfo? field = type.GetField("resourceMan", BindingFlags.NonPublic | BindingFlags.Static);
+            PropertyInfo? property = type.GetProperty("ResourceManager", BindingFlags.Public | BindingFlags.Static);
+            if (field is null || property is null || !property.CanRead) return false;
+
+            ResourceManager manager = (ResourceManager)property.GetValue(null)!;
+            if (manager is BetterResourceManager) return false;
+
+            field.SetValue(null, new BetterResourceManager(manager.BaseName, type.Assembly));
+            return true;
         }
 
     }
