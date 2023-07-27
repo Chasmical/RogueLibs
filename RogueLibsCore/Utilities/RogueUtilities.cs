@@ -148,7 +148,7 @@ namespace RogueLibsCore
         /// <exception cref="System.Security.SecurityException">The caller does not have the required permission.</exception>
         public static AudioClip ConvertToAudioClip(string filePath)
         {
-            string extLow = Path.GetExtension(filePath);
+            string extLow = Path.GetExtension(filePath).ToLowerInvariant();
             AudioType type = extLow == ".mp3" ? AudioType.MPEG
                 : extLow is ".wav" or ".wave" ? AudioType.WAV
                 : extLow is ".ogg" or ".ogv" or ".oga" or ".ogx" or ".ogm" or ".spx" or ".opus" ? AudioType.OGGVORBIS
