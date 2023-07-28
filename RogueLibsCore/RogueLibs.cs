@@ -6,7 +6,6 @@ using UnityEngine;
 using System.IO;
 using System.Resources;
 using System.Runtime.Serialization;
-using System.Linq;
 
 namespace RogueLibsCore
 {
@@ -31,7 +30,7 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>RogueLibs' Name.</para>
         /// </summary>
-        public const string Name = "RogueLibsCore";
+        internal const string Name = "RogueLibs";
 
         /// <summary>
         ///   <para>Version of RogueLibs that the current assembly is compiled with.</para>
