@@ -229,6 +229,7 @@ namespace RogueLibsCore
                 if (custom is IItemTargetable targetable)
                 {
                     CustomTooltip tooltip = targetable.TargetCursorText(item.agent.target.playfieldObject);
+                    __instance.cursorTextBackgroundCanvas2.enabled = !string.IsNullOrEmpty(tooltip.Text);
                     __instance.cursorTextCanvas3.enabled = !string.IsNullOrEmpty(tooltip.Text);
                     __instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
                     __instance.cursorTextString3.color = tooltip.Color ?? Color.white;
@@ -243,6 +244,7 @@ namespace RogueLibsCore
             if (custom is IItemTargetable targetable)
             {
                 CustomTooltip tooltip = targetable.TargetCursorText(myPlayfieldObject);
+                __instance.cursorTextBackgroundCanvas2.enabled = !string.IsNullOrEmpty(tooltip.Text);
                 __instance.cursorTextCanvas3.enabled = !string.IsNullOrEmpty(tooltip.Text);
                 __instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
                 __instance.cursorTextString3.color = tooltip.Color ?? Color.white;
@@ -254,6 +256,7 @@ namespace RogueLibsCore
             if (custom is IItemTargetable targetable)
             {
                 CustomTooltip tooltip = targetable.TargetCursorText(null);
+                __instance.cursorTextBackgroundCanvas2.enabled = !string.IsNullOrEmpty(tooltip.Text);
                 __instance.cursorTextCanvas3.enabled = !string.IsNullOrEmpty(tooltip.Text);
                 __instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
                 __instance.cursorTextString3.color = tooltip.Color ?? Color.white;
@@ -385,6 +388,7 @@ namespace RogueLibsCore
                     __instance.mainGUI.agent.targetImage.tr.localScale = Vector3.one;
 
                     CustomTooltip tooltip = targetable.TargetCursorText(myPos);
+                    __instance.cursorTextBackgroundCanvas2.enabled = !string.IsNullOrEmpty(tooltip.Text);
                     __instance.cursorTextCanvas3.enabled = !string.IsNullOrEmpty(tooltip.Text);
                     __instance.cursorTextString3.text = tooltip.Text ?? string.Empty;
                     __instance.cursorTextString3.color = tooltip.Color ?? Color.white;
