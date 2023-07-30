@@ -10,6 +10,7 @@ namespace RogueLibsCore
     /// </summary>
     public sealed class CustomDisasterMetadata
     {
+        public Type Type { get; }
         /// <summary>
         ///   <para>Gets the custom disaster's name.</para>
         /// </summary>
@@ -56,6 +57,7 @@ namespace RogueLibsCore
             if (!typeof(CustomDisaster).IsAssignableFrom(type))
                 throw new ArgumentException($"The specified type is not a {nameof(CustomDisaster)}!", nameof(type));
 
+            Type = type;
             DisasterNameAttribute? nameAttr = type.GetCustomAttributes<DisasterNameAttribute>().FirstOrDefault();
             Name = nameAttr?.Name ?? type.Name;
         }

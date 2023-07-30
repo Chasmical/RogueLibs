@@ -12,6 +12,7 @@ namespace RogueLibsCore
     /// </summary>
     public sealed class CustomItemMetadata
     {
+        public Type Type { get; }
         /// <summary>
         ///   <para>Gets the custom item's name.</para>
         /// </summary>
@@ -69,6 +70,7 @@ namespace RogueLibsCore
             if (!typeof(CustomItem).IsAssignableFrom(type))
                 throw new ArgumentException($"{nameof(type)} does not inherit from {nameof(CustomItem)}!", nameof(type));
 
+            Type = type;
             ItemNameAttribute? nameAttr = type.GetCustomAttributes<ItemNameAttribute>().FirstOrDefault();
             Name = nameAttr?.Name ?? type.Name;
 

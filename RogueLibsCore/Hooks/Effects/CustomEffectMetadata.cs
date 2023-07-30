@@ -11,6 +11,7 @@ namespace RogueLibsCore
     /// </summary>
     public sealed class CustomEffectMetadata
     {
+        public Type Type { get; }
         /// <summary>
         ///   <para>Gets the custom effect's name.</para>
         /// </summary>
@@ -69,6 +70,7 @@ namespace RogueLibsCore
             if (!typeof(CustomEffect).IsAssignableFrom(type))
                 throw new ArgumentException($"The specified {nameof(type)} is not a {nameof(CustomEffect)}.", nameof(type));
 
+            Type = type;
             EffectNameAttribute? attr = type.GetCustomAttributes<EffectNameAttribute>().FirstOrDefault();
             Name = attr?.Name ?? type.Name;
 

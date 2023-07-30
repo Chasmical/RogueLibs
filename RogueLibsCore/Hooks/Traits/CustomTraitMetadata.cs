@@ -11,6 +11,7 @@ namespace RogueLibsCore
     /// </summary>
     public sealed class CustomTraitMetadata
     {
+        public Type Type { get; }
         /// <summary>
         ///   <para>Gets the custom trait's name.</para>
         /// </summary>
@@ -58,6 +59,7 @@ namespace RogueLibsCore
             if (!typeof(CustomTrait).IsAssignableFrom(type))
                 throw new ArgumentException($"The specified type is not a {nameof(CustomTrait)}!", nameof(type));
 
+            Type = type;
             TraitNameAttribute? nameAttr = type.GetCustomAttributes<TraitNameAttribute>().FirstOrDefault();
             Name = nameAttr?.Name ?? type.Name;
         }
