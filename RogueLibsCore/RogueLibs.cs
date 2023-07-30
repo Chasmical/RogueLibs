@@ -157,9 +157,23 @@ namespace RogueLibsCore
         /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission.</exception>
         /// <exception cref="NotSupportedException">The specified <paramref name="format"/> is not supported.</exception>
         /// <exception cref="System.Security.SecurityException">The caller does not have the required permission.</exception>
+        [Obsolete("Use the overload without the AudioType parameter. RogueLibs v4.0.0 now auto-detects the audio format.")]
         public static AudioClip CreateCustomAudio(string name, byte[] rawData, AudioType format)
+            => CreateCustomAudio(name, rawData);
+        /// <summary>
+        ///   <para>Creates a custom <see cref="AudioClip"/> from <paramref name="rawData"/> and adds it to the game under the specified <paramref name="name"/>. Automatically detects the audio format.</para>
+        ///   <para>Supported audio formats: MP3 (.mp3), WAV (.wav, .wave) and Ogg (.ogg, .spx, .opus, .og_).</para>
+        /// </summary>
+        /// <param name="name">The name of the clip.</param>
+        /// <param name="rawData">The byte array containing a raw audio file.</param>
+        /// <returns>The created <see cref="AudioClip"/>.</returns>
+        /// <exception cref="IOException">An I/O error occurred while opening the file.</exception>
+        /// <exception cref="UnauthorizedAccessException">The caller does not have the required permission.</exception>
+        /// <exception cref="NotSupportedException">The audio format could not be identified.</exception>
+        /// <exception cref="System.Security.SecurityException">The caller does not have the required permission.</exception>
+        public static AudioClip CreateCustomAudio(string name, byte[] rawData)
         {
-            AudioClip clip = RogueUtilities.ConvertToAudioClip(rawData, format);
+            AudioClip clip = RogueUtilities.ConvertToAudioClip(rawData);
             clip.name = name;
             if (GameController.gameController?.audioHandler != null)
             {
