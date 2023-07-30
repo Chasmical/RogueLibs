@@ -47,6 +47,7 @@ namespace RogueLibsCore
             PatchCharacterCreation();
             PatchItems();
             PatchMisc();
+            PatchMainGUI();
             PatchScrollingMenu();
             PatchSprites();
             PatchTraitsAndStatusEffects();

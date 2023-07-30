@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -362,6 +363,21 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static IEnumerable<IHook> GetHooks(this Trait instance)
             => GetHooksShared(instance.GetHookControllerIfExists());
+
+        public static TInterface Get<TInterface>(this MainGUI mainGUI) where TInterface : CustomUserInterface
+        {
+            string uiName = typeof(TInterface).FullName;
+            Transform? tr = mainGUI.transform.Find(uiName);
+            if (tr) return tr.GetComponent<TInterface>();
+
+            GameObject go = new GameObject(uiName, typeof(RectTransform));
+            RectTransform rect = go.GetComponent<RectTransform>();
+            rect.SetParent(mainGUI.transform);
+            TInterface ui = go.AddComponent<TInterface>();
+            IHookController controller = mainGUI.GetHookController();
+            controller.AddHook(ui);
+            return ui;
+        }
 
     }
 }
