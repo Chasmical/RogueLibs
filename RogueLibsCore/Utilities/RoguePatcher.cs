@@ -135,7 +135,7 @@ namespace RogueLibsCore
         }
 
         private const BindingFlags All = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-        private static MethodInfo? GetMethod(Type type, string methodName, Type[]? parameterTypes)
+        private static MethodInfo? FindMethod(Type type, string methodName, Type[]? parameterTypes)
         {
             if (parameterTypes is not null) return type.GetMethod(methodName, All, null, parameterTypes, null);
 
@@ -164,11 +164,7 @@ namespace RogueLibsCore
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
         public bool Prefix(Type targetType, string targetMethod, Type[]? targetParameterTypes = null)
-        {
-            if (targetType is null) throw new ArgumentNullException(nameof(targetType));
-            if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
-            return Prefix(targetType, targetMethod, $"{targetType.Name}_{targetMethod}", targetParameterTypes);
-        }
+            => PatchShared(HarmonyPatchType.Prefix, targetType, targetMethod, targetParameterTypes);
         /// <summary>
         ///   <para>Prefix-patches the specified <paramref name="targetType"/>'s <paramref name="targetMethod"/>, optionally with the specified <paramref name="targetParameterTypes"/>, with the specified <paramref name="patchMethod"/>.</para>
         /// </summary>
@@ -178,52 +174,7 @@ namespace RogueLibsCore
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
         public bool Prefix(Type targetType, string targetMethod, string patchMethod, Type[]? targetParameterTypes = null)
-        {
-            if (targetType is null) throw new ArgumentNullException(nameof(targetType));
-            if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
-            if (patchMethod is null) throw new ArgumentNullException(nameof(patchMethod));
-            Stopwatch? sw = null;
-            MethodInfo? target = null;
-            MethodInfo? patch = null;
-            try
-            {
-                if (EnableStopwatch)
-                {
-                    sw = new Stopwatch();
-                    sw.Start();
-                    target = GetMethod(targetType, targetMethod, targetParameterTypes)
-                        ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-                    patch = GetMethod(TypeWithPatches, patchMethod, null)
-                        ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, new HarmonyMethod(patch));
-                    sw.Stop();
-
-                    results.Add(new PatchRecord("Prefix", target, patch, sw.Elapsed, true));
-                }
-                else
-                {
-                    target = GetMethod(targetType, targetMethod, targetParameterTypes)
-                        ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-                    patch = GetMethod(TypeWithPatches, patchMethod, null)
-                        ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, new HarmonyMethod(patch));
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                if (sw != null)
-                {
-                    sw.Stop();
-                    results.Add(new PatchRecord("Prefix", target, patch, sw.Elapsed, false));
-                    sw.Reset();
-                }
-                log.LogError($"Could not patch {targetType.Name}.{targetMethod}() with {patchMethod}().");
-                log.LogError(e);
-                hasErrors = true;
-                return false;
-            }
-        }
+            => PatchShared(HarmonyPatchType.Prefix, targetType, targetMethod, patchMethod, targetParameterTypes);
 
         /// <summary>
         ///   <para>Postfix-patches the specified <paramref name="targetType"/>'s <paramref name="targetMethod"/>, optionally with the specified <paramref name="targetParameterTypes"/>, with a patch method called "&lt;<paramref name="targetType"/>&gt;_&lt;<paramref name="targetMethod"/>&gt;".</para>
@@ -233,11 +184,7 @@ namespace RogueLibsCore
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
         public bool Postfix(Type targetType, string targetMethod, Type[]? targetParameterTypes = null)
-        {
-            if (targetType is null) throw new ArgumentNullException(nameof(targetType));
-            if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
-            return Postfix(targetType, targetMethod, $"{targetType.Name}_{targetMethod}", targetParameterTypes);
-        }
+            => PatchShared(HarmonyPatchType.Postfix, targetType, targetMethod, targetParameterTypes);
         /// <summary>
         ///   <para>Postfix-patches the specified <paramref name="targetType"/>'s <paramref name="targetMethod"/>, optionally with the specified <paramref name="targetParameterTypes"/>, with the specified <paramref name="patchMethod"/>.</para>
         /// </summary>
@@ -247,52 +194,7 @@ namespace RogueLibsCore
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
         public bool Postfix(Type targetType, string targetMethod, string patchMethod, Type[]? targetParameterTypes = null)
-        {
-            if (targetType is null) throw new ArgumentNullException(nameof(targetType));
-            if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
-            if (patchMethod is null) throw new ArgumentNullException(nameof(patchMethod));
-            Stopwatch? sw = null;
-            MethodInfo? target = null;
-            MethodInfo? patch = null;
-            try
-            {
-                if (EnableStopwatch)
-                {
-                    sw = new Stopwatch();
-                    sw.Start();
-                    target = GetMethod(targetType, targetMethod, targetParameterTypes)
-                        ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-                    patch = GetMethod(TypeWithPatches, patchMethod, null)
-                        ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, null, new HarmonyMethod(patch));
-                    sw.Stop();
-
-                    results.Add(new PatchRecord("Postfix", target, patch, sw.Elapsed, true));
-                }
-                else
-                {
-                    target = GetMethod(targetType, targetMethod, targetParameterTypes)
-                        ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-                    patch = GetMethod(TypeWithPatches, patchMethod, null)
-                        ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, null, new HarmonyMethod(patch));
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                if (sw != null)
-                {
-                    sw.Stop();
-                    results.Add(new PatchRecord("Prefix", target, patch, sw.Elapsed, false));
-                    sw.Reset();
-                }
-                log.LogError($"Could not patch {targetType.Name}.{targetMethod}() with {patchMethod}().");
-                log.LogError(e);
-                hasErrors = true;
-                return false;
-            }
-        }
+            => PatchShared(HarmonyPatchType.Postfix, targetType, targetMethod, patchMethod, targetParameterTypes);
 
         /// <summary>
         ///   <para>Transpiler-patches the specified <paramref name="targetType"/>'s <paramref name="targetMethod"/>, optionally with the specified <paramref name="targetParameterTypes"/>, with a patch method called "&lt;<paramref name="targetType"/>&gt;_&lt;<paramref name="targetMethod"/>&gt;".</para>
@@ -302,11 +204,7 @@ namespace RogueLibsCore
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
         public bool Transpiler(Type targetType, string targetMethod, Type[]? targetParameterTypes = null)
-        {
-            if (targetType is null) throw new ArgumentNullException(nameof(targetType));
-            if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
-            return Transpiler(targetType, targetMethod, $"{targetType.Name}_{targetMethod}", targetParameterTypes);
-        }
+            => PatchShared(HarmonyPatchType.Transpiler, targetType, targetMethod, targetParameterTypes);
         /// <summary>
         ///   <para>Transpiler-patches the specified <paramref name="targetType"/>'s <paramref name="targetMethod"/>, optionally with the specified <paramref name="targetParameterTypes"/>, with the specified <paramref name="patchMethod"/>.</para>
         /// </summary>
@@ -316,52 +214,7 @@ namespace RogueLibsCore
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
         public bool Transpiler(Type targetType, string targetMethod, string patchMethod, Type[]? targetParameterTypes = null)
-        {
-            if (targetType is null) throw new ArgumentNullException(nameof(targetType));
-            if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
-            if (patchMethod is null) throw new ArgumentNullException(nameof(patchMethod));
-            Stopwatch? sw = null;
-            MethodInfo? target = null;
-            MethodInfo? patch = null;
-            try
-            {
-                if (EnableStopwatch)
-                {
-                    sw = new Stopwatch();
-                    sw.Start();
-                    target = GetMethod(targetType, targetMethod, targetParameterTypes)
-                        ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-                    patch = GetMethod(TypeWithPatches, patchMethod, null)
-                        ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, null, null, new HarmonyMethod(patch));
-                    sw.Stop();
-
-                    results.Add(new PatchRecord("Transpiler", target, patch, sw.Elapsed, true));
-                }
-                else
-                {
-                    target = GetMethod(targetType, targetMethod, targetParameterTypes)
-                        ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-                    patch = GetMethod(TypeWithPatches, patchMethod, null)
-                        ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, null, null, new HarmonyMethod(patch));
-                }
-                return true;
-            }
-            catch (Exception e)
-            {
-                if (sw != null)
-                {
-                    sw.Stop();
-                    results.Add(new PatchRecord("Prefix", target, patch, sw.Elapsed, false));
-                    sw.Reset();
-                }
-                log.LogError($"Could not patch {targetType.Name}.{targetMethod}() with {patchMethod}().");
-                log.LogError(e);
-                hasErrors = true;
-                return false;
-            }
-        }
+            => PatchShared(HarmonyPatchType.Transpiler, targetType, targetMethod, patchMethod, targetParameterTypes);
 
         /// <summary>
         ///   <para>Finalizer-patches the specified <paramref name="targetType"/>'s <paramref name="targetMethod"/>, optionally with the specified <paramref name="targetParameterTypes"/>, with a patch method called "&lt;<paramref name="targetType"/>&gt;_&lt;<paramref name="targetMethod"/>&gt;".</para>
@@ -371,11 +224,7 @@ namespace RogueLibsCore
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
         public bool Finalizer(Type targetType, string targetMethod, Type[]? targetParameterTypes = null)
-        {
-            if (targetType is null) throw new ArgumentNullException(nameof(targetType));
-            if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
-            return Finalizer(targetType, targetMethod, $"{targetType.Name}_{targetMethod}", targetParameterTypes);
-        }
+            => PatchShared(HarmonyPatchType.Finalizer, targetType, targetMethod, targetParameterTypes);
         /// <summary>
         ///   <para>Finalizer-patches the specified <paramref name="targetType"/>'s <paramref name="targetMethod"/>, optionally with the specified <paramref name="targetParameterTypes"/>, with the specified <paramref name="patchMethod"/>.</para>
         /// </summary>
@@ -385,45 +234,48 @@ namespace RogueLibsCore
         /// <param name="targetParameterTypes">The target method's parameter types.</param>
         /// <returns><see langword="true"/>, if the patching was successful; otherwise, <see langword="false"/>.</returns>
         public bool Finalizer(Type targetType, string targetMethod, string patchMethod, Type[]? targetParameterTypes = null)
+            => PatchShared(HarmonyPatchType.Finalizer, targetType, targetMethod, patchMethod, targetParameterTypes);
+
+        private bool PatchShared(HarmonyPatchType type, Type targetType, string targetMethod, Type[]? targetParameterTypes)
+        {
+            if (targetType is null) throw new ArgumentNullException(nameof(targetType));
+            if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
+
+            return PatchShared(type, targetType, targetMethod, $"{targetType.Name}_{targetMethod}", targetParameterTypes);
+        }
+        private bool PatchShared(HarmonyPatchType type, Type targetType, string targetMethod, string patchMethod, Type[]? targetParameterTypes)
         {
             if (targetType is null) throw new ArgumentNullException(nameof(targetType));
             if (targetMethod is null) throw new ArgumentNullException(nameof(targetMethod));
             if (patchMethod is null) throw new ArgumentNullException(nameof(patchMethod));
+
             Stopwatch? sw = null;
             MethodInfo? target = null;
             MethodInfo? patch = null;
             try
             {
-                if (EnableStopwatch)
-                {
-                    sw = new Stopwatch();
-                    sw.Start();
-                    target = GetMethod(targetType, targetMethod, targetParameterTypes)
-                        ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-                    patch = GetMethod(TypeWithPatches, patchMethod, null)
-                        ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, null, null, null, new HarmonyMethod(patch), null);
-                    sw.Stop();
+                if (EnableStopwatch) (sw = new Stopwatch()).Start();
 
-                    results.Add(new PatchRecord("Finalizer", target, patch, sw.Elapsed, true));
-                }
-                else
+                target = FindMethod(targetType, targetMethod, targetParameterTypes)
+                      ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
+                patch = FindMethod(TypeWithPatches, patchMethod, null)
+                     ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
+
+                _ = ApplyPatch(type, target, new HarmonyMethod(patch));
+
+                if (sw is not null)
                 {
-                    target = GetMethod(targetType, targetMethod, targetParameterTypes)
-                        ?? throw new MemberNotFoundException($"Target method {targetType.FullName}.{targetMethod} could not be found.");
-                    patch = GetMethod(TypeWithPatches, patchMethod, null)
-                        ?? throw new MemberNotFoundException($"Patch method {TypeWithPatches.FullName}.{patchMethod} could not be found.");
-                    harmony.Patch(target, null, null, null, new HarmonyMethod(patch), null);
+                    sw.Stop();
+                    results.Add(new PatchRecord(type.ToString(), target, patch, sw.Elapsed, true));
                 }
                 return true;
             }
             catch (Exception e)
             {
-                if (sw != null)
+                if (sw is not null)
                 {
                     sw.Stop();
-                    results.Add(new PatchRecord("Prefix", target, patch, sw.Elapsed, false));
-                    sw.Reset();
+                    results.Add(new PatchRecord(type.ToString(), target, patch, sw.Elapsed, false));
                 }
                 log.LogError($"Could not patch {targetType.Name}.{targetMethod}() with {patchMethod}().");
                 log.LogError(e);
@@ -431,5 +283,14 @@ namespace RogueLibsCore
                 return false;
             }
         }
+        private MethodInfo ApplyPatch(HarmonyPatchType type, MethodInfo target, HarmonyMethod patch) => type switch
+        {
+            HarmonyPatchType.Prefix => harmony.Patch(target, patch),
+            HarmonyPatchType.Postfix => harmony.Patch(target, null, patch),
+            HarmonyPatchType.Transpiler => harmony.Patch(target, null, null, patch),
+            HarmonyPatchType.Finalizer => harmony.Patch(target, null, null, null, patch, null),
+            HarmonyPatchType.ILManipulator => harmony.Patch(target, null, null, null, null, patch),
+        };
+
     }
 }
