@@ -224,8 +224,9 @@ namespace RogueLibsCore
             Assembly assembly = caller.ReflectedType!.Assembly;
             Type[] types = assembly.GetTypes();
 
-            Type resourcesType = Array.Find(types, static t => t.IsPublic && t.Name.EndsWith("Resources", StringComparison.Ordinal));
-            if (resourcesType is not null) _ = PatchResourceManager(resourcesType);
+            foreach (Type type in types)
+                if (type.IsNotPublic && type.Name == "Resources")
+                    _ = PatchResourceManager(type);
 
             foreach (Type type in types)
                 InvokeSetupMethods(type);
