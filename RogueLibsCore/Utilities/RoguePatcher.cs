@@ -135,8 +135,26 @@ namespace RogueLibsCore
         }
 
         private const BindingFlags All = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
-        private static MethodInfo GetMethod(Type type, string methodName, Type[]? parameterTypes)
-            => parameterTypes is null ? type.GetMethod(methodName, All)! : type.GetMethod(methodName, All, null, parameterTypes, null)!;
+        private static MethodInfo? GetMethod(Type type, string methodName, Type[]? parameterTypes)
+        {
+            if (parameterTypes is not null) return type.GetMethod(methodName, All, null, parameterTypes, null);
+
+            MethodInfo? match = null;
+            int maxParamCount = -1;
+
+            foreach (MethodInfo method in type.GetMethods(All))
+            {
+                if (method.Name != methodName) continue;
+                if (match is null) match = method;
+                else
+                {
+                    if (maxParamCount == -1) maxParamCount = match.GetParameters().Length;
+                    int paramCount = method.GetParameters().Length;
+                    if (paramCount > maxParamCount) match = method;
+                }
+            }
+            return match;
+        }
 
         /// <summary>
         ///   <para>Prefix-patches the specified <paramref name="targetType"/>'s <paramref name="targetMethod"/>, optionally with the specified <paramref name="targetParameterTypes"/>, with a patch method called "&lt;<paramref name="targetType"/>&gt;_&lt;<paramref name="targetMethod"/>&gt;".</para>
