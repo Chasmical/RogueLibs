@@ -8,6 +8,7 @@ namespace RogueLibsCore
     public static class HookSystem
     {
         public static bool OptimizedWithPatcher { get; internal set; }
+        public static bool OptimizedWithPatcherGen2 { get; internal set; } // second generation of patches
 
         private static readonly ConditionalWeakTable<object, object> controllers = new();
         private static readonly ConditionalWeakTable<object, object> extraLookup = new();
@@ -29,6 +30,7 @@ namespace RogueLibsCore
         [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(PlayfieldObject obj) => ref obj.__RogueLibsHooks;
         [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(StatusEffect obj) => ref obj.__RogueLibsHooks;
         [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(Trait obj) => ref obj.__RogueLibsHooks;
+        [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(MainGUI obj) => ref obj.__RogueLibsHooks;
 
         private static object? Lookup(object obj)
             => controllers.TryGetValue(obj, out object? value) ? value : null;
@@ -58,6 +60,11 @@ namespace RogueLibsCore
             if (instance is null) throw new ArgumentNullException(nameof(instance));
             return (IHookController<TObject>?)(OptimizedWithPatcher ? Ref(instance) : Lookup(instance));
         }
+        public static IHookController<MainGUI>? GetHookControllerIfExists(this MainGUI instance)
+        {
+            if (instance is null) throw new ArgumentNullException(nameof(instance));
+            return (IHookController<MainGUI>?)(OptimizedWithPatcherGen2 ? Ref(instance) : Lookup(instance));
+        }
 
         private static object AttachController(InvItem obj, IHookController controller)
             => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
@@ -67,6 +74,8 @@ namespace RogueLibsCore
             => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
         private static object AttachController(PlayfieldObject obj, IHookController controller)
             => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
+        private static object AttachController(MainGUI obj, IHookController controller)
+            => OptimizedWithPatcherGen2 ? Ref(obj) = controller : Associate(obj, controller);
 
         public static IHookController<InvItem> GetHookController(this InvItem instance)
             => instance.GetHookControllerIfExists() ?? (IHookController<InvItem>)AttachController(instance, CreateController(instance));
@@ -76,6 +85,8 @@ namespace RogueLibsCore
             => instance.GetHookControllerIfExists() ?? (IHookController<StatusEffect>)AttachController(instance, CreateController(instance));
         public static IHookController<TObject> GetHookController<TObject>(this TObject instance) where TObject : PlayfieldObject
             => instance.GetHookControllerIfExists() ?? (IHookController<TObject>)AttachController(instance, CreateController(instance));
+        public static IHookController<MainGUI> GetHookController(this MainGUI instance)
+            => instance.GetHookControllerIfExists() ?? (IHookController<MainGUI>)AttachController(instance, CreateController(instance));
 
         private static bool RemoveController(ref object? field)
         {
@@ -100,6 +111,8 @@ namespace RogueLibsCore
             => _ = OptimizedWithPatcher ? RemoveController(ref Ref(instance)) : RemoveController(instance);
         public static void DestroyHookController(PlayfieldObject instance)
             => _ = OptimizedWithPatcher ? RemoveController(ref Ref(instance)) : RemoveController(instance);
+        public static void DestroyHookController(MainGUI instance)
+            => _ = OptimizedWithPatcherGen2 ? RemoveController(ref Ref(instance)) : RemoveController(instance);
 
 
 

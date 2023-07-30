@@ -37,6 +37,11 @@ namespace RogueLibsPatcher
             PatchField(nameof(ButtonData), rlCustom);
 
             PatchField(nameof(tk2dSpriteDefinition), rlCustom);
+
+            // 2nd generation of patches
+
+            PatchField(nameof(MainGUI), rlHooks);
+            PatchField(nameof(WorldSpaceGUI), rlHooks);
         }
 
         public static void PatchField(string typeName, string fieldName)
