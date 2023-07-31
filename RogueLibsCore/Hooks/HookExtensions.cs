@@ -364,7 +364,7 @@ namespace RogueLibsCore
         public static IEnumerable<IHook> GetHooks(this Trait instance)
             => GetHooksShared(instance.GetHookControllerIfExists());
 
-        public static TInterface Get<TInterface>(this MainGUI mainGUI) where TInterface : CustomUserInterface
+        public static TInterface Get<TInterface>(this MainGUI mainGUI) where TInterface : CustomUiBase
         {
             string uiName = typeof(TInterface).FullName;
             Transform? tr = mainGUI.transform.Find(uiName);

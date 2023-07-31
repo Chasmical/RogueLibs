@@ -78,7 +78,8 @@ namespace RogueLibsCore
             IHookController? controller = mainGUI.GetHookControllerIfExists();
             if (controller is null) return;
             foreach (IHook hook in controller.GetHooks())
-                (hook as CustomUserInterface)?.HideInterface();
+                if (hook is CustomUserInterface ui)
+                    ui.HideInterface();
         }
 
         private static readonly FieldInfo openedInventoryField = AccessTools.Field(typeof(MainGUI), nameof(MainGUI.openedInventory));
@@ -112,7 +113,7 @@ namespace RogueLibsCore
             if (mainGUI.openedInventory) return true;
             IHookController? controller = mainGUI.GetHookControllerIfExists();
             if (controller is null) return false;
-            return controller.GetHooks().Any(static h => h is CustomUserInterface ui && ui.IsOpened && ui.LocksCamera);
+            return controller.GetHooks().Any(static h => h is CustomUserInterface ui && ui.IsOpened && ui.CameraLock is not null);
         }
 
     }

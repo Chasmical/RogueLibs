@@ -1,94 +1,90 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿using System.Collections;
+using UnityEngine;
 
 namespace RogueLibsCore
 {
-    public abstract class CustomUserInterface : CustomUiElement, IHook<MainGUI>
+    public abstract class CustomUserInterface : CustomUiBase
     {
-        public MainGUI MainGUI { get; private set; } = null!;
-        protected Canvas canvas { get; private set; } = null!;
-        protected GraphicRaycaster graphicRaycaster { get; private set; } = null!;
-
         public bool IsOpened => canvas.enabled;
-        public virtual bool LocksCamera => true;
-
-        object IHook.Instance => MainGUI;
-        MainGUI IHook<MainGUI>.Instance => MainGUI;
-        void IHook.Initialize(object _) { }
-
-        /// <summary>
-        ///   <para>Gets the currently used instance of <see cref="GameController"/>.</para>
-        /// </summary>
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Usage of gc fields in SoR")]
-        // ReSharper disable once InconsistentNaming
-        public static GameController gc => GameController.gameController;
+        public virtual Vector2? CameraLock => Vector2.zero;
 
         public sealed override void Awake()
         {
-            MainGUI = gameObject.GetComponentInParent<MainGUI>();
-            SetNormalizedPosition(gameObject, transform.parent, new Rect(0f, 0f, 1920f, 1080f));
-
-            canvas = gameObject.AddComponent<Canvas>();
+            base.Awake();
             canvas.enabled = false;
-
-            graphicRaycaster = gameObject.AddComponent<GraphicRaycaster>();
+            graphicRaycaster.enabled = false;
+            canvasGroup.alpha = 0f;
             Setup();
         }
         public abstract void Setup();
 
+        private Coroutine? animatingCoroutine;
         public void ShowInterface()
         {
             if (canvas.enabled) return;
-            gc.audioHandler.Play(MainGUI.agent, "ShowInterface");
-            canvas.enabled = true;
+
+            if (animatingCoroutine is not null)
+                StopCoroutine(animatingCoroutine);
+            animatingCoroutine = StartCoroutine(WrapShowAnimation());
+
             OnOpened();
         }
         public void HideInterface()
         {
             if (!canvas.enabled) return;
-            gc.audioHandler.Play(MainGUI.agent, "HideInterface");
-            canvas.enabled = false;
+
+            if (animatingCoroutine is not null)
+                StopCoroutine(animatingCoroutine);
+            animatingCoroutine = StartCoroutine(WrapHideAnimation());
+
             OnClosed();
         }
 
         public abstract void OnOpened();
-        public virtual void OnClosed() { }
+        public abstract void OnClosed();
 
-    }
-    public abstract class CustomUiElement : MonoBehaviour
-    {
-        private RectTransform? _rect;
-        public RectTransform rect => _rect ??= GetComponent<RectTransform>();
-
-        public abstract void Awake();
-
-        public static TElement Create<TElement>(Transform parent, string gameObjectName, Rect rectangle) where TElement : Component
+        private IEnumerator WrapShowAnimation()
         {
-            GameObject go = new GameObject(gameObjectName, typeof(RectTransform));
-            RectTransform rect = SetNormalizedPosition(go, parent, rectangle);
-            return go.AddComponent<TElement>();
+            canvas.enabled = true;
+            graphicRaycaster.enabled = false;
+            yield return ShowAnimation();
+            animatingCoroutine = null;
+            graphicRaycaster.enabled = true;
         }
-        public static TImage Create<TImage>(Transform parent, string gameObjectName, Vector2 position, byte[] spriteData, float scale = 1f) where TImage : Image
+        private IEnumerator WrapHideAnimation()
         {
-            Sprite sprite = RogueUtilities.ConvertToSprite(spriteData);
-            TImage img = Create<TImage>(parent, gameObjectName, new Rect(position, sprite.rect.size * scale));
-            img.sprite = sprite;
-            return img;
+            canvas.enabled = true;
+            graphicRaycaster.enabled = false;
+            yield return HideAnimation();
+            animatingCoroutine = null;
+            canvas.enabled = false;
         }
 
-        protected static RectTransform SetNormalizedPosition(GameObject go, Transform parent, Rect rectangle)
+        protected virtual IEnumerator ShowAnimation()
         {
-            RectTransform rect = go.GetComponent<RectTransform>();
-            rect.SetParent(parent);
+            gc.audioHandler.Play(MainGUI.agent, "ShowInterface");
 
-            rect.localScale = Vector3.one;
-            rect.anchorMin = new Vector2(0f, 1f);
-            rect.anchorMax = new Vector2(0f, 1f);
-            rect.pivot = new Vector2(0f, 1f);
-            rect.anchoredPosition = new Vector2(rectangle.x, -rectangle.y);
-            rect.sizeDelta = rectangle.size;
+            float x = canvasGroup.alpha;
+            while (x < 1f)
+            {
+                x = Mathf.Clamp01(x + 5f * Time.deltaTime);
+                canvasGroup.alpha = x;
+                rect.localScale = new Vector3(x, x, x);
+                yield return null;
+            }
+        }
+        protected virtual IEnumerator HideAnimation()
+        {
+            gc.audioHandler.Play(MainGUI.agent, "HideInterface");
 
-            return rect;
+            float x = canvasGroup.alpha;
+            while (x > 0f)
+            {
+                x = Mathf.Clamp01(x - 5f * Time.deltaTime);
+                canvasGroup.alpha = x;
+                rect.localScale = new Vector3(x, x, x);
+                yield return null;
+            }
         }
 
     }
