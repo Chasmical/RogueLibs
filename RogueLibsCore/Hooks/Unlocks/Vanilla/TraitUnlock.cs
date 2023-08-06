@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using HarmonyLib;
 using UnityEngine;
 
 namespace RogueLibsCore
@@ -204,11 +206,13 @@ namespace RogueLibsCore
                 {
                     if (gc.fourPlayerMode || gc.coopMode)
                     {
-                        menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("PersonalMenuDelay")!.Invoke(menu, Array.Empty<object>()));
+                        MethodInfo method = AccessTools.Method(typeof(ScrollingMenu), "PersonalMenuDelay");
+                        menu.StartCoroutine((IEnumerator)method!.Invoke(menu, null));
                     }
                     else if (gc.levelFeelingsScript.DoesNextLevelHaveFeeling(false) && (gc.sessionDataBig.twitchOn || gc.twitchMode) && (gc.sessionDataBig.twitchLevelFeelings || gc.twitchMode) && (gc.sessionData.nextLevelFeeling?.Length is 0 || gc.sessionData.nextLevelFeeling is null) && !gc.challenges.Contains("NoLevelFeelings") && !gc.levelFeelingsScript.CanceledAllLevelFeelings() && gc.serverPlayer && gc.levelFeelingsScript.GetLevelFeeling() != "")
                     {
-                        menu.StartCoroutine((IEnumerator)typeof(ScrollingMenu).GetMethod("ShowMenuDelay")!.Invoke(menu, new object[2] { "LevelFeelings", Menu.Agent }));
+                        MethodInfo method = AccessTools.Method(typeof(ScrollingMenu), "ShowMenuDelay");
+                        menu.StartCoroutine((IEnumerator)method.Invoke(menu, new object[2] { "LevelFeelings", Menu.Agent }));
                     }
                     else
                     {
