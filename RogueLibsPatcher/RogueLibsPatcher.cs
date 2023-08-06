@@ -3,9 +3,9 @@ using Mono.Cecil;
 
 namespace RogueLibsPatcher
 {
-    public static class RogueLibsPatcher
+    // ReSharper disable once InconsistentNaming
+    public static class RogueLibsPatcher_Gen2
     {
-        // ReSharper disable once InconsistentNaming
         public static IEnumerable<string> TargetDLLs { get; } = new string[1] { "Assembly-CSharp.dll" };
 
         private static ModuleDefinition module = null!;

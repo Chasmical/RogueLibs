@@ -7,8 +7,29 @@ namespace RogueLibsCore
 {
     public static class HookSystem
     {
-        public static bool OptimizedWithPatcher { get; internal set; }
-        public static bool OptimizedWithPatcherGen2 { get; internal set; } // second generation of patches
+        public static int PatcherGeneration { get; private set; }
+
+        public static int LatestPatcherGeneration
+        {
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            get => 2;
+        }
+
+        public static bool PatcherOptimizedGen1 => PatcherGeneration >= 1;
+        public static bool PatcherOptimizedGen2 => PatcherGeneration >= 2;
+
+        public static void DeterminePatcherOptimizations()
+        {
+            static bool CheckPatcherOptimization(Action action)
+            {
+                try { action(); return true; } catch (Exception e) { return e is not MemberAccessException; }
+            }
+
+            PatcherGeneration
+                = CheckPatcherOptimization(static () => Ref((MainGUI)null!)) ? 2
+                : CheckPatcherOptimization(static () => Ref((InvItem)null!)) ? 1
+                : 0;
+        }
 
         private static readonly ConditionalWeakTable<object, object> controllers = new();
         private static readonly ConditionalWeakTable<object, object> extraLookup = new();
@@ -31,6 +52,7 @@ namespace RogueLibsCore
         [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(StatusEffect obj) => ref obj.__RogueLibsHooks;
         [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(Trait obj) => ref obj.__RogueLibsHooks;
         [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(MainGUI obj) => ref obj.__RogueLibsHooks;
+        [MethodImpl(MethodImplOptions.NoInlining)] private static ref object? Ref(WorldSpaceGUI obj) => ref obj.__RogueLibsHooks;
 
         private static object? Lookup(object obj)
             => controllers.TryGetValue(obj, out object? value) ? value : null;
@@ -43,39 +65,39 @@ namespace RogueLibsCore
         public static IHookController<InvItem>? GetHookControllerIfExists(this InvItem instance)
         {
             if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return (IHookController<InvItem>?)(OptimizedWithPatcher ? Ref(instance) : Lookup(instance));
+            return (IHookController<InvItem>?)(PatcherOptimizedGen1 ? Ref(instance) : Lookup(instance));
         }
         public static IHookController<Trait>? GetHookControllerIfExists(this Trait instance)
         {
             if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return (IHookController<Trait>?)(OptimizedWithPatcher ? Ref(instance) : Lookup(instance));
+            return (IHookController<Trait>?)(PatcherOptimizedGen1 ? Ref(instance) : Lookup(instance));
         }
         public static IHookController<StatusEffect>? GetHookControllerIfExists(this StatusEffect instance)
         {
             if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return (IHookController<StatusEffect>?)(OptimizedWithPatcher ? Ref(instance) : Lookup(instance));
+            return (IHookController<StatusEffect>?)(PatcherOptimizedGen1 ? Ref(instance) : Lookup(instance));
         }
         public static IHookController<TObject>? GetHookControllerIfExists<TObject>(this TObject instance) where TObject : PlayfieldObject
         {
             if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return (IHookController<TObject>?)(OptimizedWithPatcher ? Ref(instance) : Lookup(instance));
+            return (IHookController<TObject>?)(PatcherOptimizedGen1 ? Ref(instance) : Lookup(instance));
         }
         public static IHookController<MainGUI>? GetHookControllerIfExists(this MainGUI instance)
         {
             if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return (IHookController<MainGUI>?)(OptimizedWithPatcherGen2 ? Ref(instance) : Lookup(instance));
+            return (IHookController<MainGUI>?)(PatcherOptimizedGen2 ? Ref(instance) : Lookup(instance));
         }
 
         private static object AttachController(InvItem obj, IHookController controller)
-            => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
+            => PatcherOptimizedGen1 ? Ref(obj) = controller : Associate(obj, controller);
         private static object AttachController(Trait obj, IHookController controller)
-            => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
+            => PatcherOptimizedGen1 ? Ref(obj) = controller : Associate(obj, controller);
         private static object AttachController(StatusEffect obj, IHookController controller)
-            => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
+            => PatcherOptimizedGen1 ? Ref(obj) = controller : Associate(obj, controller);
         private static object AttachController(PlayfieldObject obj, IHookController controller)
-            => OptimizedWithPatcher ? Ref(obj) = controller : Associate(obj, controller);
+            => PatcherOptimizedGen1 ? Ref(obj) = controller : Associate(obj, controller);
         private static object AttachController(MainGUI obj, IHookController controller)
-            => OptimizedWithPatcherGen2 ? Ref(obj) = controller : Associate(obj, controller);
+            => PatcherOptimizedGen2 ? Ref(obj) = controller : Associate(obj, controller);
 
         public static IHookController<InvItem> GetHookController(this InvItem instance)
             => instance.GetHookControllerIfExists() ?? (IHookController<InvItem>)AttachController(instance, CreateController(instance));
@@ -104,15 +126,15 @@ namespace RogueLibsCore
         }
 
         public static void DestroyHookController(InvItem instance)
-            => _ = OptimizedWithPatcher ? RemoveController(ref Ref(instance)) : RemoveController(instance);
+            => _ = PatcherOptimizedGen1 ? RemoveController(ref Ref(instance)) : RemoveController(instance);
         public static void DestroyHookController(Trait instance)
-            => _ = OptimizedWithPatcher ? RemoveController(ref Ref(instance)) : RemoveController(instance);
+            => _ = PatcherOptimizedGen1 ? RemoveController(ref Ref(instance)) : RemoveController(instance);
         public static void DestroyHookController(StatusEffect instance)
-            => _ = OptimizedWithPatcher ? RemoveController(ref Ref(instance)) : RemoveController(instance);
+            => _ = PatcherOptimizedGen1 ? RemoveController(ref Ref(instance)) : RemoveController(instance);
         public static void DestroyHookController(PlayfieldObject instance)
-            => _ = OptimizedWithPatcher ? RemoveController(ref Ref(instance)) : RemoveController(instance);
+            => _ = PatcherOptimizedGen1 ? RemoveController(ref Ref(instance)) : RemoveController(instance);
         public static void DestroyHookController(MainGUI instance)
-            => _ = OptimizedWithPatcherGen2 ? RemoveController(ref Ref(instance)) : RemoveController(instance);
+            => _ = PatcherOptimizedGen2 ? RemoveController(ref Ref(instance)) : RemoveController(instance);
 
 
 
@@ -131,9 +153,9 @@ namespace RogueLibsCore
         }
 
         public static void SetStatusEffects(Trait instance, StatusEffects parent)
-            => _ = OptimizedWithPatcher ? RefExtra(instance) = parent : AssociateExtra(instance, parent);
+            => _ = PatcherOptimizedGen1 ? RefExtra(instance) = parent : AssociateExtra(instance, parent);
         public static void SetStatusEffects(StatusEffect instance, StatusEffects parent)
-            => _ = OptimizedWithPatcher ? RefExtra(instance) = parent : AssociateExtra(instance, parent);
+            => _ = PatcherOptimizedGen1 ? RefExtra(instance) = parent : AssociateExtra(instance, parent);
 
         /// <summary>
         ///   <para>Returns the <see cref="StatusEffects"/> instance containing the current <paramref name="instance"/>.</para>
@@ -144,7 +166,7 @@ namespace RogueLibsCore
         public static StatusEffects? GetStatusEffects(this Trait instance)
         {
             if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return (StatusEffects?)(OptimizedWithPatcher ? RefExtra(instance) : LookupExtra(instance));
+            return (StatusEffects?)(PatcherOptimizedGen1 ? RefExtra(instance) : LookupExtra(instance));
         }
         /// <summary>
         ///   <para>Returns the <see cref="StatusEffects"/> instance containing the current <paramref name="instance"/>.</para>
@@ -155,13 +177,13 @@ namespace RogueLibsCore
         public static StatusEffects? GetStatusEffects(this StatusEffect instance)
         {
             if (instance is null) throw new ArgumentNullException(nameof(instance));
-            return (StatusEffects?)(OptimizedWithPatcher ? RefExtra(instance) : LookupExtra(instance));
+            return (StatusEffects?)(PatcherOptimizedGen1 ? RefExtra(instance) : LookupExtra(instance));
         }
 
         public static void SetHook(Unlock instance, UnlockWrapper wrapper)
-            => _ = OptimizedWithPatcher ? RefExtra(instance) = wrapper : AssociateExtra(instance, wrapper);
+            => _ = PatcherOptimizedGen1 ? RefExtra(instance) = wrapper : AssociateExtra(instance, wrapper);
         public static void SetHook(ButtonData instance, UnlockWrapper wrapper)
-            => _ = OptimizedWithPatcher ? RefExtra(instance) = wrapper : AssociateExtra(instance, wrapper);
+            => _ = PatcherOptimizedGen1 ? RefExtra(instance) = wrapper : AssociateExtra(instance, wrapper);
 
         /// <summary>
         ///   <para>Returns the <see cref="UnlockWrapper"/> attached to the current <paramref name="instance"/>.</para>
@@ -170,7 +192,7 @@ namespace RogueLibsCore
         /// <returns>The attached <see cref="UnlockWrapper"/> hook, if found; otherwise, <see langword="null"/>.</returns>
         /// <exception cref="ArgumentNullException"><paramref name="instance"/> is <see langword="null"/>.</exception>
         public static UnlockWrapper? GetHook(this Unlock instance)
-            => (UnlockWrapper?)(OptimizedWithPatcher ? RefExtra(instance) : LookupExtra(instance));
+            => (UnlockWrapper?)(PatcherOptimizedGen1 ? RefExtra(instance) : LookupExtra(instance));
         /// <summary>
         ///   <para>Returns a hook attached to the current <paramref name="instance"/>, that is assignable to a variable of <typeparamref name="THook"/> type.</para>
         /// </summary>
@@ -181,15 +203,15 @@ namespace RogueLibsCore
         public static THook? GetHook<THook>(this Unlock instance) where THook : UnlockWrapper
             => instance.GetHook() as THook;
         public static UnlockWrapper? GetHook(this ButtonData instance)
-            => (UnlockWrapper?)(OptimizedWithPatcher ? RefExtra(instance) : LookupExtra(instance));
+            => (UnlockWrapper?)(PatcherOptimizedGen1 ? RefExtra(instance) : LookupExtra(instance));
 
         public static void SetHook(tk2dSpriteDefinition instance, RogueSprite wrapper)
-            => _ = OptimizedWithPatcher ? RefExtra(instance) = wrapper : AssociateExtra(instance, wrapper);
+            => _ = PatcherOptimizedGen1 ? RefExtra(instance) = wrapper : AssociateExtra(instance, wrapper);
         public static void RemoveHook(tk2dSpriteDefinition instance)
-            => _ = OptimizedWithPatcher ? RefExtra(instance) = null : extraLookup.Remove(instance);
+            => _ = PatcherOptimizedGen1 ? RefExtra(instance) = null : extraLookup.Remove(instance);
 
         public static RogueSprite? GetHook(this tk2dSpriteDefinition instance)
-            => (RogueSprite?)(OptimizedWithPatcher ? RefExtra(instance) : LookupExtra(instance));
+            => (RogueSprite?)(PatcherOptimizedGen1 ? RefExtra(instance) : LookupExtra(instance));
 
     }
 }

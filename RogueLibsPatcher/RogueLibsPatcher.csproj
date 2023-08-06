@@ -25,6 +25,12 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>..\..\.ref\Assembly-CSharp.dll</HintPath>
     </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>..\..\.ref\static\BepInEx.dll</HintPath>
+    </Reference>
+    <Reference Include="BepInEx.Preloader">
+      <HintPath>..\..\.ref\static\BepInEx.Preloader.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

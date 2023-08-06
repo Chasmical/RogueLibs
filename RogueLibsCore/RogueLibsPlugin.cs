@@ -4,7 +4,6 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using BepInEx;
-using RogueLibsCore.Properties;
 
 namespace RogueLibsCore
 {
@@ -66,37 +65,58 @@ namespace RogueLibsCore
 
         private void CheckPatcherInstallation()
         {
-            try
-            {
-                [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
-                static void TryUsingPatchedFields() => _ = new InvItem().__RogueLibsHooks;
+            HookSystem.DeterminePatcherOptimizations();
 
-                TryUsingPatchedFields();
-                Logger.LogInfo("RogueLibsPatcher successfully detected.");
-                HookSystem.OptimizedWithPatcher = true;
-            }
-            catch (MissingFieldException)
-            {
-                Logger.LogWarning("RogueLibsPatcher could not be detected. Attempting to install it...");
-                HookSystem.OptimizedWithPatcher = false;
-                InstallPatcher();
-            }
+            if (HookSystem.PatcherGeneration == HookSystem.LatestPatcherGeneration)
+                Logger.LogInfo($"RogueLibsPatcher successfully detected. (gen. {HookSystem.PatcherGeneration})");
+            else
+                InstallOrUpgradePatcher();
+
+            DeleteOutdatedPatchers();
         }
-        private void InstallPatcher()
+        private void InstallOrUpgradePatcher()
         {
+            bool upgrading = HookSystem.PatcherGeneration > 0;
+            Logger.LogWarning(upgrading
+                                  ? $"RogueLibsPatcher is outdated (gen. {HookSystem.PatcherGeneration}). Attempting to upgrade it..."
+                                  : "RogueLibsPatcher could not be detected. Attempting to install it...");
             try
             {
-                byte[] patcherBytes = Resources.RogueLibsPatcher;
-                string patcherPath = Path.Combine(Paths.PatcherPluginPath, "RogueLibsPatcher.dll");
+                byte[] patcherBytes = Properties.Resources.RogueLibsPatcher;
+                string patcherPath = Path.Combine(Paths.PatcherPluginPath, $"RogueLibsPatcher.Gen{HookSystem.LatestPatcherGeneration}.dll");
                 Logger.LogMessage($"\"{patcherPath}\"");
                 File.WriteAllBytes(patcherPath, patcherBytes);
-                Logger.LogMessage("RogueLibsPatcher installed successfully!");
+                Logger.LogMessage($"RogueLibsPatcher {(upgrading ? "upgraded" : "installed")} successfully! (gen. {HookSystem.LatestPatcherGeneration})");
                 Logger.LogMessage("Hook system optimizations will be applied after a restart.");
             }
             catch (Exception e)
             {
-                Logger.LogError("RogueLibsPatcher could not be installed!");
+                Logger.LogError($"RogueLibsPatcher could not be {(upgrading ? "upgraded" : "installed")}!");
                 Logger.LogError(e);
+            }
+        }
+        private void DeleteOutdatedPatchers()
+        {
+            // Only works when the game is launched as administrator
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                [MethodImpl(MethodImplOptions.NoInlining)]
+                static void DeletePatcherOnReboot(string fileName)
+                {
+                    string path = Path.Combine(Paths.PatcherPluginPath, fileName);
+                    if (File.Exists(path)) WindowsNativeMethods.MoveFileEx(path, null, MoveFileFlags.DelayUntilReboot);
+                }
+
+                try
+                {
+                    DeletePatcherOnReboot("RogueLibsPatcher.dll");
+                    for (int i = 1; i < HookSystem.LatestPatcherGeneration; i++)
+                        DeletePatcherOnReboot($"RogueLibsPatcher.Gen{i}.dll");
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e);
+                }
             }
         }
 
