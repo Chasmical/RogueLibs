@@ -6,21 +6,26 @@ namespace RogueLibsCore
     /// <summary>
     ///   <para>The implementation of the <see cref="IName"/> interface, used by the <see cref="CustomNameProvider"/>. Provides properties for getting and setting the 8 default languages' localization texts.</para>
     /// </summary>
-    public class CustomName : IName
+    public class CustomName : IName, IUsesNameContainer
     {
         internal CustomName(string name, string type, string english)
         {
             Name = name;
             Type = type;
-            English = english;
+            container = english;
         }
         internal CustomName(string name, string type, IEnumerable<KeyValuePair<LanguageCode, string>> dictionary)
         {
             Name = name;
             Type = type;
-            foreach (KeyValuePair<LanguageCode, string> pair in dictionary)
-                if (pair.Value is not null)
-                    translations[pair.Key] = pair.Value;
+
+            if (dictionary is IUsesNameContainer nameCont)
+                container = NameContainer.Clone(nameCont.GetNameContainer());
+            else
+            {
+                foreach (KeyValuePair<LanguageCode, string> entry in dictionary)
+                    container = NameContainer.Set(container, entry.Key, entry.Value);
+            }
         }
 
         /// <summary>
@@ -65,20 +70,19 @@ namespace RogueLibsCore
         /// </summary>
         public string? Korean { get => this[LanguageCode.Korean]; set => this[LanguageCode.Korean] = value; }
 
-        private readonly Dictionary<LanguageCode, string> translations = new Dictionary<LanguageCode, string>(1);
+        private object? container;
+        object? IUsesNameContainer.GetNameContainer() => container;
+
         /// <inheritdoc/>
         public string? this[LanguageCode language]
         {
-            get => translations.TryGetValue(language, out string str) ? str : null;
-            set
-            {
-                if (value is not null) translations[language] = value;
-                else translations.Remove(language);
-            }
+            get => NameContainer.Get(container, language);
+            set => container = NameContainer.Set(container, language, value);
         }
 
         /// <inheritdoc/>
-        public IEnumerator<KeyValuePair<LanguageCode, string>> GetEnumerator() => translations.GetEnumerator();
+        public IEnumerator<KeyValuePair<LanguageCode, string>> GetEnumerator()
+            => NameContainer.Enumerate(container);
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

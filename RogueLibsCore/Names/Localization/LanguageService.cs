@@ -78,18 +78,20 @@ namespace RogueLibsCore
         public static string? GetLanguageName(LanguageCode code)
             => languageNames.TryGetValue(code, out string? name) ? name : null;
         /// <summary>
-        ///   <para>Adds the specified <paramref name="languageName"/> to the game, and sets its language <paramref name="code"/>.</para>
+        ///   <para>Adds the specified <paramref name="languageName"/> to the game, and returns its registered <see cref="LanguageCode"/> value.</para>
         /// </summary>
         /// <param name="languageName">The language name to add into the game.</param>
-        /// <param name="code">The language code that will be used to represent the language.</param>
-        public static void RegisterLanguageCode(string languageName, LanguageCode code)
+        /// <returns>The language code that will be used to represent the language.</returns>
+        public static LanguageCode RegisterLanguageCode(string languageName)
         {
             if (languageName is null) throw new ArgumentNullException(nameof(languageName));
             if (languages.ContainsKey(languageName))
                 throw new ArgumentException($"The specified {nameof(languageName)} is already taken.", nameof(languageName));
 
+            LanguageCode code = (LanguageCode)languages.Count;
             languages.Add(languageName, code);
             languageNames.Add(code, languageName);
+            return code;
         }
 
         /// <summary>

@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace RogueLibsCore
 {
     /// <summary>
     ///   <para>The <see langword="struct"/> implementation of the <see cref="IName"/> interface. Provides properties for getting and setting the 8 default languages' localization texts.</para>
     /// </summary>
-    public struct CustomNameInfo : IName
+    public struct CustomNameInfo : IName, IUsesNameContainer
     {
         /// <summary>
         ///   <para>Initializes a new instance of <see cref="CustomNameInfo"/> structure with the specified <paramref name="english"/> localization text.</para>
         /// </summary>
         /// <param name="english">The English localization text.</param>
         public CustomNameInfo(string english)
-        {
-            if (english is null) throw new ArgumentNullException(nameof(english));
-            _texts = new Dictionary<LanguageCode, string>(1) { [LanguageCode.English] = english };
-        }
+            => container = english ?? throw new ArgumentNullException(nameof(english));
         /// <summary>
         ///   <para>Initializes a new instance of <see cref="CustomNameInfo"/> structure with localization texts from the specified <paramref name="dictionary"/>.</para>
         /// </summary>
@@ -26,11 +22,13 @@ namespace RogueLibsCore
         public CustomNameInfo(IEnumerable<KeyValuePair<LanguageCode, string>> dictionary)
         {
             if (dictionary is null) throw new ArgumentNullException(nameof(dictionary));
-            IEnumerable<KeyValuePair<LanguageCode, string>> pairs = dictionary.ToArray();
-            _texts = new Dictionary<LanguageCode, string>(pairs.Count());
-            foreach (KeyValuePair<LanguageCode, string> pair in pairs)
-                if (pair.Value != null)
-                    _texts[pair.Key] = pair.Value;
+            if (dictionary is IUsesNameContainer name)
+                container = NameContainer.Clone(name.GetNameContainer());
+            else
+            {
+                foreach (KeyValuePair<LanguageCode, string> entry in dictionary)
+                    container = NameContainer.Set(container, entry.Key, entry.Value);
+            }
         }
 
         /// <summary>
@@ -66,22 +64,19 @@ namespace RogueLibsCore
         /// </summary>
         public string? Korean { readonly get => this[LanguageCode.Korean]; set => this[LanguageCode.Korean] = value; }
 
-        private Dictionary<LanguageCode, string> _texts;
-        private Dictionary<LanguageCode, string> Texts => _texts ??= new Dictionary<LanguageCode, string>(1);
+        private object? container;
+        readonly object? IUsesNameContainer.GetNameContainer() => container;
+
         /// <inheritdoc/>
         public string? this[LanguageCode language]
         {
-            readonly get => _texts != null && _texts.TryGetValue(language, out string str) ? str : null;
-            set
-            {
-                if (value != null) Texts[language] = value;
-                else _texts?.Remove(language);
-            }
+            readonly get => NameContainer.Get(container, language);
+            set => container = NameContainer.Set(container, language, value);
         }
 
         /// <inheritdoc/>
         public IEnumerator<KeyValuePair<LanguageCode, string>> GetEnumerator()
-            => (_texts ?? Enumerable.Empty<KeyValuePair<LanguageCode, string>>()).GetEnumerator();
+            => NameContainer.Enumerate(container);
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }
