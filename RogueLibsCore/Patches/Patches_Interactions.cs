@@ -173,12 +173,13 @@ namespace RogueLibsCore
             __instance.playerInvDatabase = agent.GetComponent<InvDatabase>();
             #endregion
 
-            RecentTargetItemHook? hook = agent.GetHook<RecentTargetItemHook>();
-            if (hook?.Item?.Categories.Contains("Internal:HackInteract") is true)
+            if (
+                __instance is ObjectReal real &&
+                (__instance.functional || __instance is SecurityCam or Turret) && !__instance.tempNoOperating &&
+                agent.GetHook<RecentTargetItemHook>()?.Item?.Categories.Contains("Internal:HackInteract") is true
+                )
             {
-                if ((__instance.functional || __instance is SecurityCam or Turret)
-                    && !__instance.tempNoOperating && __instance is ObjectReal real)
-                    real.HackObject(agent);
+                real.HackObject(agent);
             }
             else if (__instance.buttons.Count > 0)
                 __instance.ShowObjectButtons();
