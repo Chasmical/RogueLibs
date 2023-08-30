@@ -46,10 +46,9 @@ body:
     attributes:
       label: What version of the game are you running?
       options:
+        - v98
         - v97
         - v96
-        - v95
-        - v94
     validations:
       required: true
   - type: input
