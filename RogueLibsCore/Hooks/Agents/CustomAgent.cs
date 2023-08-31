@@ -1,16 +1,14 @@
 using System;
-using UnityEngine;
 
 namespace RogueLibsCore
 {
     /// <summary>
-    ///   <para>Represents a custom item.</para>
+    ///   <para>Represents a custom agent.</para>
     /// </summary>
-
     public abstract class CustomAgent : HookBase<Agent>
     {
         /// <summary>
-        ///   <para>Gets the current <see cref="InvItem"/> instance.</para>
+        ///   <para>Gets the current <see cref="Agent"/> instance.</para>
         /// </summary>
         public Agent Agent => Instance;
         /// <summary>

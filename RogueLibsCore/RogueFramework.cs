@@ -80,6 +80,10 @@ namespace RogueLibsCore
         /// </summary>
         public static readonly List<IHookFactory<StatusEffect>> EffectFactories = new();
         /// <summary>
+        ///   <para>The list of agent hook factories, used by RogueLibs.</para>
+        /// </summary>
+        public static readonly List<IHookFactory<Agent>> AgentFactories = new List<IHookFactory<Agent>>();
+        /// <summary>
         ///   <para>The list of object hook factories, used by RogueLibs.</para>
         /// </summary>
         public static readonly List<IHookFactory<PlayfieldObject>> ObjectFactories = new();

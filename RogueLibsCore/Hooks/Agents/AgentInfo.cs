@@ -6,7 +6,6 @@ namespace RogueLibsCore
     /// <summary>
     ///   <para>Represents the <see cref="CustomAgent"/> type metadata.</para>
     /// </summary>
-
     public sealed class AgentInfo
     {
         /// <summary>
@@ -50,6 +49,8 @@ namespace RogueLibsCore
         {
             if (!typeof(CustomAgent).IsAssignableFrom(type))
                 throw new ArgumentException($"{nameof(type)} does not inherit from {nameof(CustomAgent)}!", nameof(type));
+
+            Name = type.Name;
         }
     }
 }

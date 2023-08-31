@@ -59,6 +59,11 @@ namespace RogueLibsCore
         Objects      = 1 << 10,
 
         /// <summary>
+        ///   <para>Specifies that agent stuff should be logged.</para>
+        /// </summary>
+        Agents = 1 << 11,
+
+        /// <summary>
         ///   <para>Specifies that various potentially annoying debug hints should be enabled, such as "I am patched!" buttons in the interactions.</para>
         /// </summary>
         EnableHints  = 1 << 30,
