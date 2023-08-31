@@ -1,3 +1,9 @@
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+
+namespace RogueLibsCore
+{
     /// <summary>
     ///   <para>Represents a factory of <see cref="CustomAgent"/> hooks.</para>
     /// </summary>
@@ -37,3 +43,4 @@
             public AgentInfo AgentInfo;
         }
     }
+}
