@@ -7,7 +7,7 @@ namespace RogueLibsCore
     public static class RogueCategories
     {
         /// <summary>
-        ///   <para>The category for items, that are related to food.
+        ///   <para>The category for items, that are related to food. The category for agents specifies that the agent can defense yourself.
         ///   <br/>Examples: Fud, Ham Sandwich, Bacon Cheeseburger, Banana, Mini Fridge.</para>
         /// </summary>
         public const string Food = "Food";
@@ -123,49 +123,56 @@ namespace RogueLibsCore
         /// <summary>
         ///   <para>The category for everything, that is in some way related to melee weapons.
         ///   <br/>Examples (items): Melee Durability Doubler, Bracelet of Strength, Kill Profiter, Electro Pill, Critter Upper.
-        ///   <br/>Examples (traits): Harmless, Tank-Like, Increased Crit Chance, No In-Fighting, Wall Walloper.</para>
+        ///   <br/>Examples (traits): Harmless, Tank-Like, Increased Crit Chance, No In-Fighting, Wall Walloper.
+        ///   <br/>Examples (agents): Businessman, Doctor, Firefighter, GangbangerB, Gorilla, Mafia.</para>
         /// </summary>
         public const string Melee = "Melee";
         /// <summary>
         ///   <para>The category for everything, that is in some way related to guns, ammo and sometimes explosives.
         ///   <br/>Examples (items): Ammo Processor, Kill Profiter, Ammo Capacity Mod, Ammo Stealer, Bomb Maker.
-        ///   <br/>Examples (traits): Big Bullets, Blaster Survivor, Ammo Scavenger, No In-Fighting, Burning Bullets.</para>
+        ///   <br/>Examples (traits): Big Bullets, Blaster Survivor, Ammo Scavenger, No In-Fighting, Burning Bullets.
+        ///   <br/>Examples (agents): Werewolf, Bartender, Businessman, MechPilot, Shopkeeper.</para>
         /// </summary>
         public const string Guns = "Guns";
         /// <summary>
         ///   <para>The category for everything, that is in some way related to social interaction.
         ///   <br/>Examples (items): Necronomicon, Haterator, Drink Mixer, Cocktail, Slave Helmet Remover, Body Swapper.
-        ///   <br/>Examples (traits): Class Solidarity, Clumsiness Forgiven, Low-Cost Jobs, Disturbing Facial Expressions, Share the Health.</para>
+        ///   <br/>Examples (traits): Class Solidarity, Clumsiness Forgiven, Low-Cost Jobs, Disturbing Facial Expressions, Share the Health.
+        ///   <br/>Examples (agents): Mafia, RobotPlayer, Scientist, Shopkeeper, Slavemaster, Soldier.</para>
         /// </summary>
         public const string Social = "Social";
         /// <summary>
         ///   <para>The category for everything, that is in some way related to stealth.
         ///   <br/>Examples (items): Safe Buster, Haterator, EMP Grenade, Boombox, Silencer.
-        ///   <br/>Examples (traits): Backstabber, Blends In Nicely, Secret Vandalizer, Intrusion Artist, Honor Among Thieves.</para>
+        ///   <br/>Examples (traits): Backstabber, Blends In Nicely, Secret Vandalizer, Intrusion Artist, Honor Among Thieves.
+        ///   <br/>Examples (agents): Alien, Athlete, Cannibal, Courier, Hacker, Thief.</para>
         /// </summary>
         public const string Stealth = "Stealth";
         /// <summary>
         ///   <para>The category for everything, that is in some way related to movement.
         ///   <br/>Examples (items): Quick Escape Teleporter, Sugar, Antidote.
-        ///   <br/>Examples (traits): Skinny Nerdlinger, Kneecapper, Roller Skates, Slippery Target, Bulky.</para>
+        ///   <br/>Examples (traits): Skinny Nerdlinger, Kneecapper, Roller Skates, Slippery Target, Bulky.
+        ///   <br/>Examples (agents): Vampire, Worker, Wrestler, Zombie, Athlete, Bouncer.</para>
         /// </summary>
         public const string Movement = "Movement";
         /// <summary>
         ///   <para>The category for everything, that is in some way related to defense.
         ///   <br/>Examples (items): Armor Durability Doubler, Quick Escape Teleporter, Mini Fridge, Kill Healthenizer, Resurrection Shampoo.
-        ///   <br/>Examples (traits): I'm Outtie, Un-Crits, Fireproof Skin, Medical Professional, Disturbing Facial Expressions.</para>
+        ///   <br/>Examples (traits): I'm Outtie, Un-Crits, Fireproof Skin, Medical Professional, Disturbing Facial Expressions.
+        ///   <br/>Examples (agents): Alien, Athlete, Bouncer, Comedian, Cop.</para>
         /// </summary>
         public const string Defense = "Defense";
         /// <summary>
         ///   <para>The category for everything, that is in some way related to trading.
         ///   <br/>Examples (items): Free Item Voucher, Cube of Lampey, Portable Sell-O-Matic, Hiring Voucher.
-        ///   <br/>Examples (traits): Drug-a-lug, Shrewd Negotiator, Moocher, Shop Drops, Banana Lover.</para>
+        ///   <br/>Examples (traits): Drug-a-lug, Shrewd Negotiator, Moocher, Shop Drops, Banana Lover.
+        ///   <br/>Examples (agents): Werewolf, Bartender, Businessman, MechPilot, Shopkeeper.</para>
         /// </summary>
         public const string Trade = "Trade";
 
         /// <summary>
-        ///   <para>The category for traits, that are non-beneficial to the agent that has these traits.
-        ///   <br/>Examples: Corruption Costs, Bodyguard, No Teleports, Fair Game, Sausage Fingers.</para>
+        ///   <para>Info (traits):The category for traits, that are non-beneficial to the agent that has these traits.
+        ///   <br/>Examples (traits): Corruption Costs, Bodyguard, No Teleports, Fair Game, Sausage Fingers.</para>
         /// </summary>
         public const string Negative = "Negative";
     }

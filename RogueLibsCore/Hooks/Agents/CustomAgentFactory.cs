@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using UnityEngine.Profiling.Memory.Experimental;
 
 namespace RogueLibsCore
 {
@@ -17,7 +18,7 @@ namespace RogueLibsCore
             {
                 hook = entry.Initializer();
                 if (hook is CustomAgent custom)
-                    custom.AgentInfo = entry.AgentInfo;
+                    custom.Metadata = entry.Metadata;
                 return true;
             }
             hook = null;
@@ -28,19 +29,19 @@ namespace RogueLibsCore
         /// </summary>
         /// <typeparam name="TAgent">The <see cref="CustomAgent"/> type to add.</typeparam>
         /// <returns>The added agent's metadata.</returns>
-        public AgentInfo AddAgent<TAgent>() where TAgent : CustomAgent, new()
+        public CustomAgentMetadata AddAgent<TAgent>() where TAgent : CustomAgent, new()
         {
-            AgentInfo info = AgentInfo.Get<TAgent>();
+            CustomAgentMetadata metadata = CustomAgentMetadata.Get<TAgent>();
             if (RogueFramework.IsDebugEnabled(DebugFlags.Agents))
-                RogueFramework.LogDebug($"Created custom agent {typeof(TAgent)} ({info.Name}).");
-            agentsDict.Add(info.Name, new AgentEntry { Initializer = static () => new TAgent(), AgentInfo = info });
-            return info;
+                RogueFramework.LogDebug($"Created custom agent {typeof(TAgent)} ({metadata.Name}).");
+            agentsDict.Add(metadata.Name, new AgentEntry { Initializer = static () => new TAgent(), Metadata = metadata });
+            return metadata;
         }
 
         private struct AgentEntry
         {
             public Func<IHook<Agent>> Initializer;
-            public AgentInfo AgentInfo;
+            public CustomAgentMetadata Metadata;
         }
     }
 }

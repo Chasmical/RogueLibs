@@ -9,14 +9,14 @@ namespace RogueLibsCore
     public class AgentBuilder
     {
         /// <summary>
-        ///   <para>Initializes a new instance of the <see cref="AgentBuilder"/> class with the specified <paramref name="info"/>.</para>
+        ///   <para>Initializes a new instance of the <see cref="AgentBuilder"/> class with the specified <paramref name="metadata"/>.</para>
         /// </summary>
-        /// <param name="info">The agent metadata to use.</param>
-        public AgentBuilder(AgentInfo info) => Info = info;
+        /// <param name="metadata">The agent metadata to use.</param>
+        public AgentBuilder(CustomAgentMetadata metadata) => MetaData = metadata;
         /// <summary>
         ///   <para>The used agent metadata.</para>
         /// </summary>
-        public AgentInfo Info { get; }
+        public CustomAgentMetadata MetaData { get; }
         /// <summary>
         ///   <para>Gets the agent's localizable name.</para>
         /// </summary>
@@ -37,7 +37,7 @@ namespace RogueLibsCore
         /// <exception cref="ArgumentException">A localizable string that acts as the agent's name already exists.</exception>
         public AgentBuilder WithName(CustomNameInfo info)
         {
-            Name = RogueLibs.CreateCustomName(Info.Name, NameTypes.Agent, info);
+            Name = RogueLibs.CreateCustomName(MetaData.Name, NameTypes.Agent, info);
             return this;
         }
         /// <summary>
@@ -52,14 +52,14 @@ namespace RogueLibsCore
 
             headSprite = new RogueSprite[]
             {
-                RogueLibs.CreateCustomSprite(Info.Name + "Head" + "N", SpriteScope.Hair, rawData, Area(1, 0), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Head" + "NE", SpriteScope.Hair, rawData, Area(2, 0), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Head" + "E", SpriteScope.Hair, rawData, Area(2, 1), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Head" + "SE", SpriteScope.Hair, rawData, Area(2, 2), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Head" + "S", SpriteScope.Hair, rawData, Area(1, 2), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Head" + "SW", SpriteScope.Hair, rawData, Area(0, 2), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Head" + "W", SpriteScope.Hair, rawData, Area(0, 1), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Head" + "NW", SpriteScope.Hair, rawData, Area(0, 0), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Head" + "N", SpriteScope.Hair, rawData, Area(1, 0), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Head" + "NE", SpriteScope.Hair, rawData, Area(2, 0), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Head" + "E", SpriteScope.Hair, rawData, Area(2, 1), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Head" + "SE", SpriteScope.Hair, rawData, Area(2, 2), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Head" + "S", SpriteScope.Hair, rawData, Area(1, 2), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Head" + "SW", SpriteScope.Hair, rawData, Area(0, 2), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Head" + "W", SpriteScope.Hair, rawData, Area(0, 1), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Head" + "NW", SpriteScope.Hair, rawData, Area(0, 0), 64f),
             };
             return this;
         }
@@ -75,14 +75,14 @@ namespace RogueLibsCore
 
             bodySprite = new RogueSprite[]
             {
-                RogueLibs.CreateCustomSprite(Info.Name + "Body" + "N", SpriteScope.Hair, rawData, Area(1, 0), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Body" + "NE", SpriteScope.Hair, rawData, Area(2, 0), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Body" + "E", SpriteScope.Hair, rawData, Area(2, 1), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Body" + "SE", SpriteScope.Hair, rawData, Area(2, 2), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Body" + "S", SpriteScope.Hair, rawData, Area(1, 2), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Body" + "SW", SpriteScope.Hair, rawData, Area(0, 2), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Body" + "W", SpriteScope.Hair, rawData, Area(0, 1), 64f),
-                RogueLibs.CreateCustomSprite(Info.Name + "Body" + "NW", SpriteScope.Hair, rawData, Area(0, 0), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Body" + "N", SpriteScope.Hair, rawData, Area(1, 0), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Body" + "NE", SpriteScope.Hair, rawData, Area(2, 0), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Body" + "E", SpriteScope.Hair, rawData, Area(2, 1), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Body" + "SE", SpriteScope.Hair, rawData, Area(2, 2), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Body" + "S", SpriteScope.Hair, rawData, Area(1, 2), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Body" + "SW", SpriteScope.Hair, rawData, Area(0, 2), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Body" + "W", SpriteScope.Hair, rawData, Area(0, 1), 64f),
+                RogueLibs.CreateCustomSprite(MetaData.Name + "Body" + "NW", SpriteScope.Hair, rawData, Area(0, 0), 64f),
             };
             return this;
         }
