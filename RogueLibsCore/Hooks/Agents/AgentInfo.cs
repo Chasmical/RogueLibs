@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Reflection;
-using UnityEngine;
 
 namespace RogueLibsCore
 {
@@ -24,28 +20,17 @@ namespace RogueLibsCore
         public CustomName? GetName() => RogueLibs.NameProvider.FindEntry(Name, NameTypes.Agent);
         internal RogueSprite[]? headSprite;
         internal RogueSprite[]? bodySprite;
-        internal RogueSprite[]? animatedHeadSprite;
-        internal RogueSprite[]? animatedBodySprite;
         /// <summary>
-        ///   <para>Returns a array <see cref="RogueSprite"/> that represents this agent head. Note that it works only on sprites initialized with <see cref="AgentBuilder.WithHeadSprite(byte[] rawData)"/> or one of its overloads.</para>
+        ///   <para>Returns a array <see cref="RogueSprite"/> that represents this agent head. Note that it works only on sprites initialized with <see cref="AgentBuilder.WithHeadSprite(byte[])"/> or one of its overloads.</para>
         /// </summary>
         /// <returns>The array <see cref="RogueSprite"/> that represents this agent head, if found; otherwise, <see langword="null"/>.</returns>
         public RogueSprite[]? GetHeadSprites() => headSprite;
         /// <summary>
-        ///   <para>Returns a array <see cref="RogueSprite"/> that represents this agent body. Note that it works only on sprites initialized with <see cref="AgentBuilder.WithBodySprite(byte[] rawData)"/> or one of its overloads.</para>
+        ///   <para>Returns a array <see cref="RogueSprite"/> that represents this agent body. Note that it works only on sprites initialized with <see cref="AgentBuilder.WithBodySprite(byte[])"/> or one of its overloads.</para>
         /// </summary>
         /// <returns>The array <see cref="RogueSprite"/> that represents this agent body, if found; otherwise, <see langword="null"/>.</returns>
         public RogueSprite[]? GetBodySprites() => bodySprite;
-        /// <summary>
-        ///   <para>Returns a array of arrays <see cref="RogueSprite"/> that represents this agent animated head. Note that it works only on sprites initialized with <see cref="AgentBuilder.WithAnimatedHeadSprite(int animationFrames, string spriteNames)"/> or one of its overloads.</para>
-        /// </summary>
-        /// <returns>The array of arrays <see cref="RogueSprite"/> that represents this agent animated head, if found; otherwise, <see langword="null"/>.</returns>
-        public RogueSprite[][]? GetAnimatedHeadSprites() => animatedHeadSprite;
-        /// <summary>
-        ///   <para>Returns a array of arrays <see cref="RogueSprite"/> that represents this agent animated body. Note that it works only on sprites initialized with <see cref="AgentBuilder.WithAnimatedBodySprite(int animationFrames, string spriteNames)"/> or one of its overloads.</para>
-        /// </summary>
-        /// <returns>The array of arrays <see cref="RogueSprite"/> that represents this agent animated body, if found; otherwise, <see langword="null"/>.</returns>
-        public RogueSprite[][]? GetAnimatedBodySprites() => animatedBodySprite;
+
 
         private static readonly Dictionary<Type, AgentInfo> infos = new Dictionary<Type, AgentInfo>();
         /// <summary>
