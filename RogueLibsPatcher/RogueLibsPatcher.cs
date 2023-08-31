@@ -33,6 +33,10 @@ namespace RogueLibsPatcher
             PatchHooks(trait);
             PatchContainer(trait);
 
+            TypeDefinition agent = module.GetType("Agent");
+            PatchHooks(agent);
+            PatchContainer(agent);
+
             TypeDefinition buttonData = module.GetType("ButtonData");
             PatchCustom(buttonData);
 
