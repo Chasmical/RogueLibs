@@ -117,8 +117,8 @@ namespace RogueLibsCore
         /// <returns>An <see cref="AgentBuilder"/> with the specified agent's metadata.</returns>
         public static AgentBuilder CreateCustomAgent<TAgent>() where TAgent : CustomAgent, new()
         {
-            AgentInfo info = AgentFactory.AddAgent<TAgent>();
-            return new AgentBuilder(info);
+            CustomAgentMetadata metadata = AgentFactory.AddAgent<TAgent>();
+            return new AgentBuilder(metadata);
         }
 
         /// <summary>

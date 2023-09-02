@@ -23,7 +23,7 @@ namespace RogueLibsCore
             LastFiredBulletHook hook = __instance.agent.GetHook<LastFiredBulletHook>() ?? __instance.agent.AddHook<LastFiredBulletHook>();
             hook.LastFiredBullet = __result;
         }
-        public static void Agent_SetupAgentStats(InvItem __instance)
+        public static void Agent_SetupAgentStats(Agent __instance)
         {
             HookSystem.DestroyHookController(__instance);
 

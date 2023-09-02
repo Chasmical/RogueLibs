@@ -51,14 +51,23 @@ namespace RogueLibsCore
 
             Agent.agentHitboxScript.hasSetup = true;
 
+            Agent.customCharacterData.facialHair = "None";
+
+            Agent.agentHitboxScript.skinColor = new Color32(255, 255, 255, 255);
+            Agent.agentHitboxScript.legsColor = new Color32(255, 255, 255, 255);
+
             if (Metadata.headSprite != null)
             {
                 Agent.agentHitboxScript.SetUsesNewHead();
-                Agent.agentHitboxScript.hairType = $"{Metadata.Name}Head";
-                Agent.customCharacterData.hairType = $"{Metadata.Name}Head";
-                Agent.agentHitboxScript.hairColor = new Color32(255, 255, 255, 255);
+                Agent.agentHitboxScript.head.SetSprite($"{Metadata.Name}HeadS");
+                Agent.agentHitboxScript.head.color = new Color32(255, 255, 255, 255);
+                Agent.agentHitboxScript.hairColor = new Color32(0, 0, 0, 0);
+                Agent.agentHitboxScript.facialHairColor = new Color32(0, 0, 0, 0);
+                Agent.agentHitboxScript.eyesColor = new Color32(0, 0, 0, 0);
 
                 Agent.AddHook<AgentHeadSprite_Hook>();
+                Agent.AddHook<AgentHairSprite_Hook>();
+                Agent.AddHook<AgentEyesSprite_Hook>();
             }
             else
             {
@@ -67,24 +76,17 @@ namespace RogueLibsCore
 
             if (Metadata.bodySprite != null)
             {
-                Agent.agentHitboxScript.body.SetSprite($"{Metadata.Name}Body");
-                Agent.customCharacterData.bodyType = $"{Metadata.Name}Body";
+                Agent.agentHitboxScript.body.SetSprite($"{Metadata.Name}BodyS");
+                Agent.customCharacterData.bodyType = $"{Metadata.Name}BodyS";
                 Agent.agentHitboxScript.bodyColor = new Color32(255, 255, 255, 255);
 
                 Agent.AddHook<AgentBodySprite_Hook>();
+                Agent.AddHook<AgentWBHSprite_Hook>();
             }
             else
             {
                 RogueFramework.LogWarning($"Custom agent {GetType()} doesn't have body sprite!");
             }
-
-            Agent.customCharacterData.facialHair = "None";
-
-            Agent.agentHitboxScript.skinColor = new Color32(255, 255, 255, 255);
-            Agent.agentHitboxScript.legsColor = new Color32(255, 255, 255, 255);
-
-            Agent.agentActive = true;
-            Agent.SetBrainActive(true);
 
             try
             {
@@ -133,10 +135,13 @@ namespace RogueLibsCore
                 RogueFramework.LogWarning($"Custom agent {GetType()} doesn't have any agent categories!");
                 Agent.setInitialCategories = true;
             }
-            if (Agent.Desires is null)
+            if (!Agent.Desires.Any())
             {
                 RogueFramework.LogWarning($"Custom agent {GetType()} doesn't have any agent desires!");
             }
+
+            Agent.agentActive = true;
+            Agent.SetBrainActive(true);
         }
         /// <summary>
         ///   <para>The method that is called when the agent's stats are set up.</para>
