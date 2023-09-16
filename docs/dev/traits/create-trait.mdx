@@ -1,0 +1,150 @@
+# Creating a Custom Trait
+
+RogueLibs provides classes and methods to create custom traits, and an interface to make traits updateable. Just like items, custom traits derive from a hook class, `CustomTrait`, and their functionality can be expanded with interfaces: `ITraitUpdateable`, just one in this case. If you want the trait to have some kind of a passive effect, then you might need to patch that in yourself.
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `CustomTrait` class {#customtrait}
+
+To make a custom trait, you need to create a class deriving from `CustomTrait`:
+
+```csharp title="MyCustomTrait.cs"
+// highlight-next-line
+public class MyCustomTrait : CustomTrait
+{
+    /* ... */
+}
+```
+
+There are 2 methods that you need to implement:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    // highlight-start
+    public override void OnAdded() { /* ... */ }
+    public override void OnRemoved() { /* ... */ }
+    // highlight-end
+}
+```
+
+`OnAdded` is called when the trait is added to a character, and `OnRemoved` is called when it's removed from a character.
+
+## Updating {#updating}
+
+You can make your trait updateable by implementing the `ITraitUpdateable` interface:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait, ITraitUpdateable
+{
+    public void OnUpdated(TraitUpdatedArgs e) { /* ... */ }
+}
+```
+
+`OnUpdated` works like Unity's `Update`, but with a settable interval (default is 1 second):
+
+```csharp
+    public void OnUpdated(TraitUpdatedArgs e)
+    {
+        // highlight-next-line
+        e.UpdateDelay = 0.5f; // 2 updates per second
+        /* ... */
+    }
+```
+
+## Initialization {#initialization}
+
+Just call the `CreateCustomTrait` method with your trait's type as a parameter:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomTrait<MyCustomTrait>();
+    }
+}
+```
+
+:::note
+See more about the `RLSetup` attribute [here](../patching-utilities#rlsetup).
+:::
+
+You can set your trait's name and description using `WithName` and `WithDescription` methods:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomTrait<MyCustomTrait>()
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Trait"))
+            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
+}
+```
+
+You can do the same with sprites and unlocks:
+
+```csharp title="MyCustomTrait.cs"
+public class MyCustomTrait : CustomTrait
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomTrait<MyCustomTrait>()
+            .WithName(new CustomNameInfo("My Custom Trait"))
+            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"))
+            // highlight-start
+            // the sprite will be displayed only in the menus (optional)
+            .WithSprite(Properties.Resources.MyCustomTrait)
+            .WithUnlock(new TraitUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
+            // highlight-end
+    }
+}
+```
+
+:::info
+See [Custom Names](../names/custom-names), [Custom Sprites](../custom-sprites) for more info.
+:::
+
+## Unlock Properties {#unlock-properties}
+
+You can use the following properties when initializing `TraitUnlock`s:
+
+Property                | Default | Description
+------------------------|---------|------------
+`UnlockCost`            | `0`     | Unlock cost of the trait, in nuggets. If set to 0, it will unlock automatically, once all prerequisites are unlocked.
+`CharacterCreationCost` | `1`     | Cost of the trait in Character Creation, in points.
+`IsAvailable`           | `true`  | Determines whether the trait is available in the Traits menu and on level-ups. If the trait is negative, set it to `false`.
+`IsAvailableInCC`       | `true`  | Determines whether the trait is available in the Character Creation menu.
+`Cancellations`         |         | Determines what traits cannot co-exist with this trait.
+`Prerequisites`         |         | Determines what unlocks must be unlocked in order to unlock this trait.
+`Recommendations`       |         | Just shows these unlocks in a separate Recommendations paragraph in the menus.
+
+Other properties should not be used during initialization.
+
+## Examples {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import Smoker from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Traits/Smoker.cs';
+
+<Tabs
+    defaultValue="smoker"
+    values={[
+        {label:'Smoker', value:'smoker'},
+    ]}>
+<TabItem value="smoker">
+
+<CodeSnippet>{Smoker}</CodeSnippet>
+
+</TabItem>
+</Tabs>

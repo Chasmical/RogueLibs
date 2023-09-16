@@ -1,0 +1,106 @@
+# Custom Sprites and Resources
+
+Adding image resources to a plugin is a bit tricky. Visual Studio loads any image resources as bitmaps, but we don't want that. You'll need to modify the resources manifest yourself, and add your images as binary files (or byte arrays). RogueLibs supports cropping and resizing your sprites, so, technically, you could even upload a spritesheet, and cut sprites out of it, but the performance gain would not be worth it (loading all of the 1204 64x64 sprites from [Sidi's spritepack](https://sugarbarrel.github.io/SoRModHub/) takes about 350 milliseconds, while patching methods is significantly slower - RogueLibs takes about 5 seconds to load).
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Adding binary resources {#binary-resources}
+
+First of all, encode your images in PNG or JPG format, and audioclips in MP3, OGG or WAV.
+
+Then go to your project's Properties and create a resource file, if it doesn't exist already.
+
+<img src={useBaseUrl('/img/setup/resources.png')} width='600'/>
+
+Open your project's `Resources.resx` in an **external** editor and add the following element to the end:
+
+```xml
+  <!-- ... -->
+// highlight-start
+  <data name="MyAwesomeSprite" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MyAwesomeSprite.png;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+// highlight-end
+</root>
+```
+
+You only need to change the `name` attribute and the first part of the `value` element for your resources. Then you should be able to reference them like this: `Properties.Resources.MyAwesomeSprite`. You can do the same thing with other types of files as well, like audioclips, fonts and models.
+
+After changing the `.resx` file, go to your solution and rebuild the resources code by right-clicking on Resources.resx and selecting "Run Custom Tool".
+
+<img src={useBaseUrl('img/custom-sprites/run-custom-tool.png')} width='400'/>
+
+## `RogueSprite` {#roguesprite}
+
+:::note
+If you're wondering, why it's called `RogueSprite` and not `CustomSprite`, like most of the things in RogueLibs (`CustomItem`, `CustomTrait`, `CustomEffect`), well, that's because it behaves slightly differently from others. `CustomItem`, `CustomTrait` and etc. are hooks, while `RogueSprite`, technically, is a collection of hooks. Also, it took an incredible amount of time and work to figure out that TK2D stuff and I just wanted to distinguish it from other classes.
+:::
+
+Normally, new instances of `RogueSprite` are created like this:
+
+```csharp
+RogueLibs.CreateCustomItem<MyCustomItem>()
+    ...
+    // highlight-next-line
+    .WithSprite(Properties.Resources.MyCustomItem);
+```
+
+But you can create them directly too, although you'll have to specify a name and a scope. Scope of the sprite determines what areas of the game the sprite will be available in. `SpriteScope.Items` will work only on items, `SpriteScope.Objects` - only on objects, and etc. You can specify multiple scopes too by combining them with `|` operator.
+
+```csharp
+RogueLibs.CreateCustomSprite("name", SpriteScope.Items, Properties.Resources.ResourceName);
+```
+
+By default, RogueLibs uses the entire file as a texture. You can specify the region of the texture to use with a `Rect` parameter (for example, if you included a color palette used in the image by its side and don't want to display it in the game):
+
+```csharp
+RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceName,
+                                // highlight-next-line
+                                new Rect(0f, 0f, 64f, 64f));
+```
+
+<img src={useBaseUrl('img/custom-sprites/coordinate-system.png')} width='400'/>
+
+If you're going to use non-64x64 textures, then you need to specify the PPU (pixels-per-unit) parameter too:
+
+```csharp
+RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceName,
+                                // highlight-next-line
+                                new Rect(64f, 64f, 128f, 128f), 128f);
+```
+
+## Sprite variations {#sprite-variations}
+
+If you have more than 1 sprite for your item, use `InvItem.LoadItemSprite` in your item's `SetupDetails`:
+
+```csharp
+public class Present : CustomItem, IItemUsable
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomItem<Present>()
+            /* ... */
+            .WithSprite(Properties.Resources.Present);
+
+        RogueLibs.CreateCustomSprite("Present2", SpriteScope.Items, Properties.Resources.Present2);
+        RogueLibs.CreateCustomSprite("Present3", SpriteScope.Items, Properties.Resources.Present3);
+    }
+
+    public override void SetupDetails()
+    {
+        /* ... */
+        int rnd = new Random().Next(3) + 1;
+        // random integer x, such that 1 ≤ x ≤ 3
+
+        if (rnd != 1) // load a different sprite if it's 2 or 3
+        Item.LoadItemSprite($"Present{rnd}");
+
+        // if it's 1, then the default "Present" will be used
+    }
+}
+```
+
+This example works only if an item actually exists. In the Loadout and Rewards menus it will always have the `Present` sprite. If you want the sprite in the menus to be randomly selected too, you'll have to [override the `DisplayedUnlock.GetImage` method](./unlocks/configuring-unlocks#examples).

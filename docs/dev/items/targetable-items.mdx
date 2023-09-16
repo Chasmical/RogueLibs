@@ -1,0 +1,50 @@
+# Targetable Items
+
+Custom items can be made targetable by implementing the `IItemTargetable` interface. You can define what kind of objects, agents, items on the ground, projectiles or whatever, your item is compatible with, what happens when you use the item on that thing, and what text to display under the mouse cursor when hovering over something.
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+import ColorSquare from '@site/src/components/ColorSquare';
+
+## Making items targetable {#making-targetable}
+
+Just implement the `IItemTargetable` interface in your item's class:
+
+```csharp title="MyTargetableItem.cs"
+// highlight-next-line
+public class MyTargetableItem : CustomItem, IItemTargetable
+{
+    // highlight-start
+    public bool TargetFilter(PlayfieldObject target) { /* ... */ }
+    public bool TargetObject(PlayfieldObject target) { /* ... */ }
+    public CustomTooltip TargetCursorText(PlayfieldObject target) { /* ... */ }
+    // highlight-end
+}
+```
+
+`TargetFilter` determines what objects will be highlighted, when using the current item.
+
+`TargetObject` uses the current item on the target. The return value indicates whether it was a success or not. You can play a `"CantDo"` sound and make the player say something, if the item cannot be used. Returning `true` will also play an animation.
+
+`TargetCursorText` determines the text under the cursor when hovering over the specified object. `Text` set to `null` will default to "Use", and `Color` set to `null` will default to <ColorSquare color='#FFFFFF'/>.
+
+## Examples {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import SPYTRON3000 from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/SPYTRON3000.cs';
+
+<Tabs
+  defaultValue="spytron3000"
+  values={[
+    {label:'SPYTRON 3000', value:'spytron3000'},
+  ]}>
+<TabItem value="spytron3000">
+
+SPYTRON 3000 from Team Fortress 2. Makes you look like the selected person and copies their relationships.
+
+<CodeSnippet>{SPYTRON3000}</CodeSnippet>
+
+</TabItem>
+</Tabs>

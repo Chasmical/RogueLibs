@@ -1,0 +1,92 @@
+# Hook Factories
+
+**Hook factories** are responsible for the creation of hooks. Custom content classes use hook factories internally, so there's basically no need for you to create your own. But, if you want to semi-automate the creation of a lot of different items/traits with slightly differing functionality, you can create a class, that will handle everything, and turn its parts on/off conditionally after initializing the hook.
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `IHookFactory` interface {#ihookfactory}
+
+You can create hook factories by deriving either from `IHookFactory<T>` or from `HookFactoryBase<T>`. The hook factory in the example below will attach a new `MyCustomHook` hook to all items that have a "Food" category:
+
+```csharp title="MyCustomHookFactory.cs"
+public class MyCustomHookFactory : HookFactoryBase<InvItem>
+{
+    public override bool TryCreate(InvItem instance, out IHook<InvItem> hook)
+    {
+        if (instance.Categories.Contains("Food"))
+        {
+            hook = new MyCustomHook();
+            return true;
+        }
+        hook = null;
+        return false;
+    }
+}
+```
+
+:::caution
+You only need to create a hook object. Don't attach it to the instance. That's the external code's responsibility.
+
+```csharp
+if (factory.TryCreate(item, out IHook<InvItem> hook))
+    item.AddHook(hook);
+```
+:::
+
+
+## Initialization {#initialization}
+
+You can either implement your own way of using factories or add it to the RogueLibs' `RogueFramework` class:
+
+```csharp
+RogueFramework.ItemFactories.Add(new MyCustomHookFactory());
+```
+
+## Examples {#examples}
+
+RogueLibs uses `CustomItemFactory` and other similar classes to initialize custom items and other hooks:
+
+```csharp
+public sealed class CustomItemFactory : HookFactoryBase<InvItem>
+{
+    private readonly Dictionary<string, ItemEntry> itemsDict = new Dictionary<string, ItemEntry>();
+    
+    public override bool TryCreate(InvItem instance, out IHook<InvItem> hook)
+    {
+        if (instance != null && itemsDict.TryGetValue(instance.invItemName, out ItemEntry entry))
+        {
+            hook = entry.Initializer();
+            if (hook is CustomItem custom)
+                custom.ItemInfo = entry.ItemInfo;
+            return true;
+        }
+        hook = null;
+        return false;
+    }
+    public ItemInfo AddItem<TItem>() where TItem : CustomItem, new()
+    {
+        ItemInfo info = ItemInfo.Get<TItem>();
+        itemsDict.Add(info.Name, new ItemEntry { Initializer = () => new TItem(), ItemInfo = info });
+        return info;
+    }
+
+    private struct ItemEntry
+    {
+        public Func<IHook<InvItem>> Initializer;
+        public ItemInfo ItemInfo;
+    }
+}
+```
+
+```csharp
+public static void InvItem_SetupDetails(InvItem __instance)
+{
+    foreach (IHookFactory<InvItem> factory in RogueFramework.ItemFactories)
+        if (factory.TryCreate(__instance, out IHook<InvItem> hook))
+        {
+            __instance.AddHook(hook);
+        }
+}
+```

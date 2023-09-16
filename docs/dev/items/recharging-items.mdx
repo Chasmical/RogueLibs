@@ -1,0 +1,157 @@
+# Recharging Items
+
+RogueLibs doesn't provide any explicit functionality for rechargeable items, but you can easily implement that yourself, using the `IDoUpdate` interface. You'll find some useful code snippets below, that you can reuse for your own items.
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## Making items rechargeable {#making-rechargeable}
+
+Make your custom item's class implement the [`IDoUpdate` interface](../extra#update-interfaces):
+
+```csharp title="MyRechargeableItem.cs"
+// highlight-next-line
+public class MyRechargeableItem : CustomItem, IDoUpdate
+{
+    /* ... */
+}
+```
+
+## Presets {#presets}
+
+<Tabs defaultValue="cooldown"
+    values={[
+        {label:'Cooldown', value:'cooldown'},
+        {label:'Charge', value:'charge'},
+    ]}>
+<TabItem value="cooldown">
+
+`Cooldown` represents the amount of seconds to wait until full recharge.
+
+```csharp
+    public float Cooldown { get; private set; }
+    public void Update() => Cooldown = Mathf.Max(Cooldown - Time.deltaTime, 0f);
+```
+
+With adjustable recharging speed:
+
+```csharp
+    public float RechargeSpeed = 1f;
+
+    public float Cooldown { get; private set; }
+    public void Update() => Cooldown = Mathf.Max(Cooldown - Time.deltaTime * RechargeSpeed, 0f);
+```
+
+Usage:
+
+```csharp
+    public bool UseItem()
+    {
+        if (Cooldown != 0f) return false;
+        /* ... */
+        Cooldown = 1.5f;
+        return true;
+    }
+```
+
+:::info
+You can use other activation methods too, like `CombineItems`, `TargetObject`, `TargetPosition` and etc.
+:::
+
+If you want to display `Cooldown` as the item's count, then override the `GetCountString` method:
+
+```csharp
+    public override CustomTooltip GetCountString()
+    {
+        if (Cooldown != 0f) return new CustomTooltip(Cooldown, Color.red);
+        return base.GetCountString(); // display default count
+    }
+```
+
+</TabItem>
+<TabItem value="charge">
+
+`Charge` represents the amount of seconds of "stored up energy".
+
+```csharp
+    public float Charge { get; private set; } = 5f;
+    public void Update() => Charge = Mathf.Min(Charge + Time.deltaTime, 5f);
+```
+
+With adjustable charging speed and maximum charge:
+
+```csharp
+    public float ChargeSpeed = 1f, MaxCharge = 5f;
+
+    public float Charge { get; private set; } = 5f;
+    public void Update() => Charge = Mathf.Min(Charge + Time.deltaTime * ChargeSpeed, MaxCharge);
+```
+
+Plus, with a charging delay:
+
+```csharp
+    public float DelayThreshold = 3f, ChargeSpeed = 1f, MaxCharge = 5f;
+
+    private float lastUsage;
+    public float Charge { get; private set; } = 5f;
+    public void Update()
+    {
+        if (lastUsage + DelayThreshold < Time.time)
+            Charge = Mathf.Min(Charge + Time.deltaTime * ChargeSpeed, MaxCharge);
+    }
+```
+
+Usage:
+
+```csharp
+    public bool UseItem()
+    {
+        if (Charge < 1.5f) return false;
+        /* ... */
+        Charge -= 1.5f;
+        lastUsage = Time.time;
+        return true;
+    }
+```
+
+:::info
+You can use other activation methods too, like `CombineItems`, `TargetObject`, `TargetPosition` and etc.
+:::
+
+If you want to display `Charge` as the item's count, then override the `GetCountString` method:
+
+```csharp
+    public override CustomTooltip GetCountString()
+    {
+        string text = $"{Charge} ({base.GetCountString()})"; // display both charge and count
+        Color color = Color.Lerp(Color.red, Color.white, Charge / MaxCharge);
+        // color between red and white: red - no charge, white - full charge
+        return new CustomTooltip(text, color);
+    }
+```
+
+</TabItem>
+</Tabs>
+
+:::note
+There's also a vanilla way of recharging items, but it's really messy and unreliable.
+:::
+
+## Examples {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import QuantumFud from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/QuantumFud.cs';
+
+<Tabs
+  defaultValue="quantumfud"
+  values={[
+    {label:'Quantum Fud', value:'quantumfud'},
+  ]}>
+<TabItem value="quantumfud">
+
+<CodeSnippet>{QuantumFud}</CodeSnippet>
+
+</TabItem>
+</Tabs>

@@ -1,0 +1,131 @@
+# Creating a Custom Effect
+
+RogueLibs provides classes and methods to create custom effects, and an interface to make status effects updateable. Just like items and traits, custom effects derive from a hook class, `CustomEffect`. If you want the effect to have some kind of a passive effect, then you might need to patch that in yourself.
+
+import Tabs from '@site/src/components/Tabs';
+import TabItem from '@site/src/components/TabItem';
+import useBaseUrl from '@docusaurus/useBaseUrl';
+
+## `CustomEffect` class {#customeffect}
+
+To make a custom effect, you need to create a class deriving from `CustomEffect`:
+
+```csharp title="MyCustomEffect.cs"
+// highlight-next-line
+public class MyCustomEffect : CustomEffect
+{
+    /* ... */
+}
+```
+
+There are 5 methods that you need to implement:
+
+```csharp title="MyCustomEffect.cs"
+public class MyCustomEffect : CustomEffect
+{
+    // highlight-start
+    public override int GetEffectTime() { /* ... */ }
+    public override int GetEffectHate() { /* ... */ }
+    public override void OnAdded() { /* ... */ }
+    public override void OnRemoved() { /* ... */ }
+    public override void OnUpdated(EffectUpdatedArgs e) { /* ... */ }
+    // highlight-end
+}
+```
+
+`GetEffectTime` determines the default status effect time. Traits like "Longer Status Effects", "Longer Status Effects +" and "Shorter Status Effects" are applied after calling this method.
+
+`GetEffectHate` determines how much hate other characters will get towards the character who inflicted the status effect on them. Usually, it's 5 for negative effects and 0 for positive effects.
+
+:::caution
+`GetEffectTime` and `GetEffectHate` are called on partially initialized hooks, so the effect's owner might not actually have the effect. Do not initialize any effect-specific variables in these methods.
+:::
+
+`OnAdded` is called when the effect is added to a character, and `OnRemoved` is called when it's removed from a character.
+
+`OnUpdated` works like Unity's `Update`, but with a settable interval (default is 1 second):
+
+```csharp
+    public override void OnUpdated(EffectUpdatedArgs e)
+    {
+        // highlight-next-line
+        e.UpdateDelay = 0.5f; // 2 updates per second
+        /* ... */
+        // highlight-next-line
+        CurrentTime--;
+    }
+```
+
+:::info
+You're responsible for decrementing the effect's `CurrentTime`. So, don't forget to do that.
+:::
+
+All custom effect classes should have an `EffectParameters` attribute. You can specify whether your effect should be removed on death, on knockout or between levels. Default is `RemoveOnDeath`.
+
+```csharp
+[EffectParameters(EffectLimitations.RemoveOnDeath | EffectLimitations.RemoveOnKnockOut)]
+public class MyCustomEffect : CustomEffect
+{
+    /* ... */
+}
+```
+
+## Initialization {#initialization}
+
+Just call the `CreateCustomEffect` method with your effect's type as a parameter:
+
+```csharp title="MyCustomEffect.cs"
+public class MyCustomEffect : CustomEffect
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        // highlight-next-line
+        RogueLibs.CreateCustomEffect<MyCustomEffect>();
+    }
+}
+```
+
+:::note
+See more about the `RLSetup` attribute [here](../patching-utilities#rlsetup).
+:::
+
+You can set your effect's name and description using `WithName` and `WithDescription` methods:
+
+```csharp title="MyCustomEffect.cs"
+public class MyCustomEffect : CustomEffect
+{
+    [RLSetup]
+    public static void Setup()
+    {
+        RogueLibs.CreateCustomEffect<MyCustomEffect>()
+            // highlight-start
+            .WithName(new CustomNameInfo("My Custom Effect"))
+            .WithDescription(new CustomNameInfo("My Custom Effect is very cool and does a lot of great stuff"));
+            // highlight-end
+    }
+}
+```
+
+:::info
+See [Custom Names](../names/custom-names) for more info.
+:::
+
+## Examples {#examples}
+
+import CodeSnippet from '@site/src/components/CodeSnippet';
+
+import Adrenaline from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Effects/Adrenaline.cs';
+
+<Tabs defaultValue="adrenaline"
+  values={[
+    {label:'Adrenaline', value:'adrenaline'},
+  ]}>
+<TabItem value="adrenaline">
+
+A simple effect that just gives a temporary boost to some stats. You can see Adrenaline Shot's (item that gives this effect) implementation in [Usable Items: Examples](../items/usable-items#examples).
+
+<CodeSnippet>{Adrenaline}</CodeSnippet>
+
+</TabItem>
+</Tabs>
