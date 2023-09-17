@@ -1,0 +1,71 @@
+---
+section: Getting Started
+pages:
+
+- getting-started:
+  - introduction
+  - installation
+  - main-features
+
+---
+section: Custom Content
+pages:
+
+- custom-items:
+  - create-item
+  - usable-items
+  - combinable-items
+  - targetable-items
+  - targetable-items-plus
+  - rechargeable-items
+  - inventory-checks
+
+- custom-weapons:
+  - create-weapon
+  - melee-weapons
+  - thrown-weapons
+  - ranged-weapons
+  - custom-projectiles
+
+- custom-abilities:
+  - create-ability
+  - usable-abilities
+  - rechargeable-abilities
+  - chargeable-abilities
+  - targetable-abilities
+
+- custom-traits-effects:
+  - custom-traits
+  - custom-effects
+
+- custom-mutators:
+  - create-mutator
+
+- custom-interactions:
+  - create-interaction
+
+- custom-disasters:
+  - create-disaster
+
+- custom-unlocks:
+  - custom-unlocks
+  - configuring-unlocks
+
+---
+section: Extra Stuff
+pages:
+
+- localization:
+  - custom-names
+  - custom-languages
+  - custom-name-providers
+- resources
+- utilities
+
+---
+section: Advanced
+pages:
+
+- advanced:
+  - hook-factories
+  - patching
