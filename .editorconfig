@@ -1,15 +1,29 @@
 ﻿root = true
 
-# C# files
-[*.cs]
-
-#### Core EditorConfig Options ####
-
-# Indentation and spacing
-indent_size = 4
-indent_style = space
-tab_width = 4
+# All files
+[*]
 
 # New line preferences
 end_of_line = lf
 insert_final_newline = true
+
+# Indentation and spacing
+indent_style = space
+
+
+
+# C# files
+[*.cs]
+
+# Indentation and spacing
+indent_size = 4
+tab_width = 4
+
+
+
+# Markdown files
+[*.{md,mdx}]
+
+# Indentation and spacing
+indent_size = 2
+tab_width = 2

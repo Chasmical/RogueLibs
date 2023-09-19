@@ -1,10 +1,11 @@
+---
+title: Creating a Custom Item
+description: "RogueLibs provides classes and methods to create: usable, combinable, targetable (and targetable+) items. All custom items derive from the CustomItem class, which provides all of the basic item functionality. You can derive your custom item's class from specialized interfaces to expand its functionality (IItemUsable, IItemCombinable, IItemTargetable, IItemTargetableAnywhere). Custom items are initialized and integrated into the game using the RogueLibs.CreateCustomItem<TItem>() method."
+---
+
 # Creating a Custom Item
 
 RogueLibs provides classes and methods to create: usable, combinable, targetable (and targetable+) items. All custom items derive from the `CustomItem` class, which provides all of the basic item functionality. You can derive your custom item's class from specialized interfaces to expand its functionality ([`IItemUsable`](./usable-items.mdx), [`IItemCombinable`](./combinable-items.mdx), [`IItemTargetable`](./targetable-items.mdx), [`IItemTargetableAnywhere`](./targetable-items-plus.mdx)). Custom items are initialized and integrated into the game using the `RogueLibs.CreateCustomItem<TItem>()` method.
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## `CustomItem` class {#customitem}
 
@@ -49,7 +50,7 @@ public class MyCustomItem : CustomItem
 }
 ```
 
-:::tip Pro-tip: String consts
+:::tip{title="Pro-tip: String consts"}
 Use static types with string consts, like `RogueCategories` and `ItemTypes`. This way you won't make a typo. Typos can be critical sometimes, since neither the game nor RogueLibs track all existing item categories *([although it's an interesting idea, maybe I'll do something like that](https://github.com/SugarBarrel/RogueLibs/issues/26))*.
 :::
 
@@ -143,7 +144,7 @@ Field name      | Description
 **`stackable`** | **Determines whether the item is stackable or has charges or something like that. If not set, the item's count is not displayed.**
 *`noCountText`* | *(optional) Determines whether the item's count should not be displayed, even if the field above is set to `true`.*
 
-<Tabs defaultValue="foodconsumable"
+<Tabs
   values={[
     {label: 'Food/Consumable', value:'foodconsumable'},
     {label: 'Tool', value:'tool'},
@@ -182,7 +183,7 @@ Field name           | Description
 `contents`           | Determines the list of effects that the wearer will get, when worn.
 `stackableContents`  | ???
 
-<Tabs defaultValue="body"
+<Tabs
   values={[
     {label:'Body', value:'body'},
     {label:'Head', value:'head'},
@@ -216,7 +217,7 @@ Field name         | Description
 `weaponCode`       | Set this to your weapon type's code.
 `weaponToBeLoaded` | Determines whether initially the item is not loaded, and has to be loaded/charged (like Water Pistol).
 
-<Tabs defaultValue="weaponmelee"
+<Tabs
   values={[
     {label: 'Melee Weapon', value:'weaponmelee'},
     {label: 'Thrown Weapon', value:'weaponthrown'},
@@ -240,7 +241,7 @@ Field name       | Description
 `throwDistance`  | Maximum distance that the item can be thrown at.
 `throwExtraDist` | Determines whether the item should be thrown a little bit further than aimed at. Set this to `true`, if your item is a regular thrown weapon. Set this to `false`, if it's a trap, so it stays exactly in the position that you want to throw it in.
 
-<Tabs defaultValue="thrown"
+<Tabs
   values={[
     {label:'Thrown', value:'thrown'},
     {label:'Trap', value:'trap'},
@@ -293,7 +294,7 @@ Field name        | Description
 </TabItem>
 </Tabs>
 
-<Tabs defaultValue="limitations"
+<Tabs
   values={[
     {label:'Limitations', value:'limitations'},
     {label:'Graphics', value:'graphics'},
