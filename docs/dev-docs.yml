@@ -1,4 +1,11 @@
 ---
+section: User Guide
+pages:
+
+- user-guide/installation
+- user-guide/troubleshooting
+
+---
 section: Getting Started
 pages:
 
@@ -59,8 +66,8 @@ pages:
   - custom-names
   - custom-languages
   - custom-name-providers
-- resources
-- utilities
+- misc/resources
+- misc/utilities
 
 ---
 section: Advanced

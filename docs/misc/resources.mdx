@@ -1,10 +1,11 @@
+---
+title: Custom Sprites and Resources
+description: "Adding image resources to a plugin is a bit tricky. Visual Studio loads any image resources as bitmaps, but we don't want that. You'll need to modify the resources manifest yourself, and add your images as binary files (or byte arrays). RogueLibs supports cropping and resizing your sprites, so, technically, you could even upload a spritesheet, and cut sprites out of it, but the performance gain would not be worth it (loading all of the 1204 64x64 sprites from Sidi's spritepack takes about 350 milliseconds, while patching methods is significantly slower - RogueLibs takes about 5 seconds to load)."
+---
+
 # Custom Sprites and Resources
 
-Adding image resources to a plugin is a bit tricky. Visual Studio loads any image resources as bitmaps, but we don't want that. You'll need to modify the resources manifest yourself, and add your images as binary files (or byte arrays). RogueLibs supports cropping and resizing your sprites, so, technically, you could even upload a spritesheet, and cut sprites out of it, but the performance gain would not be worth it (loading all of the 1204 64x64 sprites from [Sidi's spritepack](https://sugarbarrel.github.io/SoRModHub/) takes about 350 milliseconds, while patching methods is significantly slower - RogueLibs takes about 5 seconds to load).
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
+Adding image resources to a plugin is a bit tricky. Visual Studio loads any image resources as bitmaps, but we don't want that. You'll need to modify the resources manifest yourself, and add your images as binary files (or byte arrays). RogueLibs supports cropping and resizing your sprites, so, technically, you could even upload a spritesheet, and cut sprites out of it, but the performance gain would not be worth it (loading all of the 1204 64x64 sprites from [Sidi's spritepack](/mods/Sidis_Resprite_Project) takes about 350 milliseconds, while patching methods is significantly slower - RogueLibs takes about 5 seconds to load).
 
 ## Adding binary resources {#binary-resources}
 
@@ -12,11 +13,12 @@ First of all, encode your images in PNG or JPG format, and audioclips in MP3, OG
 
 Then go to your project's Properties and create a resource file, if it doesn't exist already.
 
-<img src={useBaseUrl('/img/setup/resources.png')} width='600'/>
+<img src="/docs/img/misc/resources.png" width="600" />
 
 Open your project's `Resources.resx` in an **external** editor and add the following element to the end:
 
 ```xml
+<root>
   <!-- ... -->
 // highlight-start
   <data name="MyAwesomeSprite" type="System.Resources.ResXFileRef, System.Windows.Forms">
@@ -30,7 +32,7 @@ You only need to change the `name` attribute and the first part of the `value` e
 
 After changing the `.resx` file, go to your solution and rebuild the resources code by right-clicking on Resources.resx and selecting "Run Custom Tool".
 
-<img src={useBaseUrl('img/custom-sprites/run-custom-tool.png')} width='400'/>
+<img src="/docs/img/misc/run-custom-tool.png" width="400" />
 
 ## `RogueSprite` {#roguesprite}
 
@@ -61,7 +63,7 @@ RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceN
                                 new Rect(0f, 0f, 64f, 64f));
 ```
 
-<img src={useBaseUrl('img/custom-sprites/coordinate-system.png')} width='400'/>
+<img src="/docs/img/misc/coordinate-system.png" width="400" />
 
 If you're going to use non-64x64 textures, then you need to specify the PPU (pixels-per-unit) parameter too:
 
@@ -96,11 +98,11 @@ public class Present : CustomItem, IItemUsable
         // random integer x, such that 1 ≤ x ≤ 3
 
         if (rnd != 1) // load a different sprite if it's 2 or 3
-        Item.LoadItemSprite($"Present{rnd}");
+            Item.LoadItemSprite($"Present{rnd}");
 
         // if it's 1, then the default "Present" will be used
     }
 }
 ```
 
-This example works only if an item actually exists. In the Loadout and Rewards menus it will always have the `Present` sprite. If you want the sprite in the menus to be randomly selected too, you'll have to [override the `DisplayedUnlock.GetImage` method](./unlocks/configuring-unlocks#examples).
+This example works only if an item actually exists. In the Loadout and Rewards menus it will always have the `Present` sprite. If you want the sprite in the menus to be randomly selected too, you'll have to [override the `DisplayedUnlock.GetImage` method](../custom-unlocks/configuring-unlocks#examples).
