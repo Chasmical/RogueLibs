@@ -92,7 +92,7 @@ namespace RogueLibsCore
         /// </summary>
         public virtual void UpdateUnlock()
         {
-            if ((Unlock.nowAvailable = !Unlock.unlocked && CanBeUnlocked()) && UnlockCost is 0)
+            if ((Unlock.nowAvailable = !Unlock.unlocked && CanBeUnlocked()) && UnlockCost == 0)
                 gc.unlocks.DoUnlockForced(Name, Type);
         }
 

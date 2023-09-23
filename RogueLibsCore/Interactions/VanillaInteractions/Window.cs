@@ -27,7 +27,7 @@
                     h.AddButton("UseWindowCutter", $" ({windowCutter.invItemCount})",
                                 static m => m.StartOperating("WindowCutter", 2f, true, "Cutting"));
                 }
-                if (h.Object.broken && h.gc.levelType is not "Tutorial")
+                if (h.Object.broken && h.gc.levelType != "Tutorial")
                 {
                     h.AddButton("SlipThroughWindow", h.gc.challenges.Contains("LowHealth") ? " - 7 HP" : " - 15 HP",
                                 static m => m.Object.SlipThroughWindow(m.Agent));

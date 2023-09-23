@@ -97,7 +97,7 @@ namespace RogueLibsCore
         public bool RemoveInteraction(Predicate<Interaction> predicate)
         {
             int index = interactions.FindIndex(predicate);
-            if (index is -1) return false;
+            if (index == -1) return false;
             interactions.RemoveAt(index);
             return true;
         }
@@ -212,7 +212,7 @@ namespace RogueLibsCore
             SideEffect?.Invoke();
 
             // if there are no buttons, or one of them cancelled the entire interaction
-            if (interactions.Count is 0 || shouldStop || forcedStop)
+            if (interactions.Count == 0 || shouldStop || forcedStop)
             {
                 StopCallback?.Invoke(); // TODO: try-catch
                 if (!forcedStop)
@@ -220,7 +220,7 @@ namespace RogueLibsCore
                 return;
             }
             // if there's only one button and its action is implicit
-            if (interactions.Count is 1 && interactions[0].ImplicitAction && initialInteract) // TODO: try-catch
+            if (interactions.Count == 1 && interactions[0].ImplicitAction && initialInteract) // TODO: try-catch
             {
                 interactions[0].OnPressedImplicitly(); // TODO: try-catch
                 if (IsControlIntercepted()) return;
@@ -259,7 +259,7 @@ namespace RogueLibsCore
             AddDoneButton = true;
 
             // handle the default "Done" button
-            if (buttonName is "Done")
+            if (buttonName == "Done")
             {
                 OriginalStopInteraction(Instance);
                 return;

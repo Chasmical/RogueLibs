@@ -13,19 +13,19 @@
             {
                 if (!h.Helper.interactingFar) return;
 
-                h.AddButton("TurretAttackOwners", h.Object.targets is "Owners" ? " *" : null, static m =>
+                h.AddButton("TurretAttackOwners", h.Object.targets == "Owners" ? " *" : null, static m =>
                 {
                     m.Object.targets = "Owners";
                     if (m.gc.serverPlayer) m.Object.SetTargetRelationships();
                     else m.Agent.objectMult.ObjectAction(m.Object.objectNetID, "TurretAttackOwners");
                 });
-                h.AddButton("TurretAttackNonOwners", h.Object.targets is "NonOwners" ? " *" : null, static m =>
+                h.AddButton("TurretAttackNonOwners", h.Object.targets == "NonOwners" ? " *" : null, static m =>
                 {
                     m.Object.targets = "NonOwners";
                     if (m.gc.serverPlayer) m.Object.SetTargetRelationships();
                     else m.Agent.objectMult.ObjectAction(m.Object.objectNetID, "TurretAttackNonOwners");
                 });
-                h.AddButton("TurretAttackEveryone", h.Object.targets is "Everyone" ? " *" : null, static m =>
+                h.AddButton("TurretAttackEveryone", h.Object.targets == "Everyone" ? " *" : null, static m =>
                 {
                     m.Object.targets = "Everyone";
                     if (m.gc.serverPlayer) m.Object.SetTargetRelationships();

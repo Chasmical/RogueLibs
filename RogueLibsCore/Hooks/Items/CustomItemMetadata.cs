@@ -76,7 +76,7 @@ namespace RogueLibsCore
 
             string[] categories = type.GetCustomAttributes<ItemCategoriesAttribute>()
                                       .SelectMany(static c => c.Categories).Distinct().ToArray();
-            if (categories.Length is 0 && !typeof(CustomAbility).IsAssignableFrom(type))
+            if (categories.Length == 0 && !typeof(CustomAbility).IsAssignableFrom(type))
                 RogueFramework.LogWarning($"Type {type} does not have any {nameof(ItemCategoriesAttribute)}!");
             Categories = new ReadOnlyCollection<string>(categories);
 
@@ -153,7 +153,7 @@ namespace RogueLibsCore
         public ItemCategoriesAttribute(params string[] categories)
         {
             if (categories is null) throw new ArgumentNullException(nameof(categories));
-            Categories = new ReadOnlyCollection<string>(Array.FindAll(categories, static c => c != null));
+            Categories = new ReadOnlyCollection<string>(Array.FindAll(categories, static c => c is not null));
         }
     }
     /// <summary>
@@ -173,7 +173,7 @@ namespace RogueLibsCore
         public IgnoreChecksAttribute(params string[] ignoreChecks)
         {
             if (ignoreChecks is null) throw new ArgumentNullException(nameof(ignoreChecks));
-            IgnoredChecks = new ReadOnlyCollection<string>(Array.FindAll(ignoreChecks, static c => c != null));
+            IgnoredChecks = new ReadOnlyCollection<string>(Array.FindAll(ignoreChecks, static c => c is not null));
         }
     }
 }

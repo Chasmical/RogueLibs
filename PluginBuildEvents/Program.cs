@@ -18,7 +18,7 @@ namespace PluginBuildEvents
                 if (Directory.Exists(steamPath)) return steamPath;
             }
             steamPath = FindSteam();
-            if (steamPath != null)
+            if (steamPath is not null)
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(steamPathFile)!);
                 File.WriteAllText(steamPathFile, steamPath);

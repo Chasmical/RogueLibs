@@ -294,7 +294,7 @@ namespace RogueLibsCore
 
             if (__instance.slotType is "Player" or "Toolbar" or "Chest" or "NPCChest")
             {
-                if (combinee.invItemName != null && combiner.itemType == ItemTypes.Combine)
+                if (combinee.invItemName is not null && combiner.itemType == ItemTypes.Combine)
                 {
                     if (combiner.CombineItems(combinee, __instance.slotNumber, string.Empty, __instance.agent) && __instance.slotType != "NPCChest")
                     {
@@ -318,7 +318,7 @@ namespace RogueLibsCore
                         __instance.toolbarNumText.color = tooltip.Color ?? new Color32(255, 237, 0, 255);
                     }
                 }
-                else if (__instance.slotType != "NPCChest" && (combinee.invItemName != null || combiner.itemType != ItemTypes.Combine))
+                else if (__instance.slotType != "NPCChest" && (combinee.invItemName is not null || combiner.itemType != ItemTypes.Combine))
                 {
                     __instance.myImage.color = __instance.overSlot
                         ? new Color32(0, __instance.br, __instance.br, __instance.standardAlpha)
@@ -350,7 +350,7 @@ namespace RogueLibsCore
         public static void InvSlot_UpdateInvSlot(InvSlot __instance, Text ___itemText)
         {
             CustomItem? custom = __instance.item?.GetHook<CustomItem>();
-            if (custom != null)
+            if (custom is not null)
             {
                 ___itemText.enabled = true;
                 CustomTooltip tooltip = custom.GetCountString();
@@ -361,7 +361,7 @@ namespace RogueLibsCore
         public static void EquippedItemSlot_LateUpdateEquippedItemSlot(EquippedItemSlot __instance)
         {
             CustomItem? custom = __instance.item?.GetHook<CustomItem>();
-            if (custom != null)
+            if (custom is not null)
             {
                 __instance.countText.enabled = true;
                 __instance.countText.rectTransform.localScale = new Vector3(0.2f, 0.2f, 1f);
@@ -376,7 +376,7 @@ namespace RogueLibsCore
             __instance.cursorTextString3.color = Color.white;
 
             InvItem invItem = __instance.mainGUI.targetItem;
-            if (invItem != null)
+            if (invItem is not null)
             {
                 CustomItem? custom = invItem.GetHook<CustomItem>();
                 __instance.cursorHighlightTargetObjects = custom is IItemTargetable;

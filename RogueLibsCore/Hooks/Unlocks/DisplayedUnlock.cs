@@ -250,7 +250,7 @@ namespace RogueLibsCore
                     string.Join(", ", Unlock.recommendations.ConvertAll(static unlockName =>
                     {
                         UnlockWrapper? unlock = gc.sessionDataBig.unlocks.Find(u => u.unlockName == unlockName)?.GetHook();
-                        if (unlock != null)
+                        if (unlock is not null)
                             return unlock.IsUnlocked || unlock.Unlock.nowAvailable ? unlock.GetName() : "?????";
                         return unlockName;
                     }));
@@ -277,7 +277,7 @@ namespace RogueLibsCore
                     return null;
                 }).Where(static u => u is not null)));
             }
-            if (Unlock.cost is -2)
+            if (Unlock.cost == -2)
             {
                 prerequisites.Add(gc.unlocks.GetSpecialUnlockInfo(Name, Unlock));
             }

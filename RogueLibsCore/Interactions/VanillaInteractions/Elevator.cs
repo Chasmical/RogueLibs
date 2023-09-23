@@ -26,9 +26,9 @@ namespace RogueLibsCore
             {
                 if (h.Helper.interactingFar) return;
 
-                if (h.gc.levelType is "HomeBase")
+                if (h.gc.levelType == "HomeBase")
                 {
-                    if (h.Object.extraVar is 1)
+                    if (h.Object.extraVar == 1)
                     {
                         h.AddImplicitButton("OpenFloorsMenu", static m =>
                         {
@@ -36,7 +36,7 @@ namespace RogueLibsCore
                             m.StopInteraction();
                         });
                     }
-                    else if (h.Object.extraVar is 2)
+                    else if (h.Object.extraVar == 2)
                     {
                         h.SetStopCallback(static m => m.Agent.SayDialogue("ElevatorWontGoDown"));
                     }
@@ -60,7 +60,7 @@ namespace RogueLibsCore
 
                     }
                 }
-                else if (h.gc.levelType is "Tutorial")
+                else if (h.gc.levelType == "Tutorial")
                 {
                     if (h.Object.extraVar == 1)
                     {
@@ -77,7 +77,7 @@ namespace RogueLibsCore
                 }
                 else
                 {
-                    if (h.Object.elevatorLocation is 1)
+                    if (h.Object.elevatorLocation == 1)
                     {
                         if (!h.gc.exitPoint.DetermineIfCanBodyguardExit(h.Agent))
                         {

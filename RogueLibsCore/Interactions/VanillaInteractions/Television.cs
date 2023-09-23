@@ -14,7 +14,7 @@ namespace RogueLibsCore
             {
                 if (!h.Helper.interactingFar) return;
 
-                if (!h.Object.isHighVolume && h.gc.levelType is not "Tutorial")
+                if (!h.Object.isHighVolume && h.gc.levelType != "Tutorial")
                 {
                     h.AddButton("IncreaseVolume", static m => m.Object.IncreaseVolume());
                 }

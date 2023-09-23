@@ -108,7 +108,7 @@ namespace RogueLibsCore
             }
             if (item.invItemName == VanillaItems.Money)
             {
-                if (item.invItemCount is 1)
+                if (item.invItemCount == 1)
                 {
                     itemImage.SetSprite(itemImage.GetSpriteIdByName("MoneyA"));
                     item.shadowOffset = 6;
@@ -257,7 +257,7 @@ namespace RogueLibsCore
             else __instance.agent.objectMult.DropItem(item, amount, actionsAfterDrop, teleportingItemLocation);
 
             __instance.SubtractFromItemCount(item, amount);
-            if (gc.serverPlayer && dropped?.owner != null && dropped.owner.isPlayer > 0 && dropped.owner.localPlayer)
+            if (gc.serverPlayer && dropped?.owner is not null && dropped.owner.isPlayer > 0 && dropped.owner.localPlayer)
                 dropped.owner.mainGUI.invInterface.justPressedAttackOnInterface = true;
             if (gc.serverPlayer && teleportingItemLocation == Vector2.zero)
                 gc.audioHandler.Play(__instance.agent, "DropItem");
@@ -299,7 +299,7 @@ namespace RogueLibsCore
         {
             try
             {
-                if (__instance.spr != null)
+                if (__instance.spr is not null)
                     __instance.ChangeSprite(__instance.spr.CurrentSprite.name);
                 __instance.objectSprite?.RefreshRenderer();
                 __instance.RefreshShader();
@@ -314,7 +314,7 @@ namespace RogueLibsCore
             while (enumerator.MoveNext())
                 yield return enumerator.Current;
 
-            if (__instance.objectShadow != null)
+            if (__instance.objectShadow is not null)
             {
                 __instance.objectShadow.SetSprite(__instance.spr.CurrentSprite.name);
                 Material mat = __instance.objectShadow.CurrentSprite.material;
@@ -324,7 +324,7 @@ namespace RogueLibsCore
                 foreach (Renderer renderer in __instance.objectShadow.GetComponentsInChildren<Renderer>(true))
                     renderer.sharedMaterial = mat;
             }
-            if (__instance.objectShadowCustom != null)
+            if (__instance.objectShadowCustom is not null)
             {
                 __instance.objectShadowCustom.SetSprite(__instance.spr.CurrentSprite.name);
                 Material mat = __instance.objectShadowCustom.CurrentSprite.material;

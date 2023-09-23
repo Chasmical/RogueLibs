@@ -82,7 +82,7 @@ namespace RogueLibsCore
                         backup.ReadXml(reader);
                     }
                     SessionDataBig? sdb = GameController.gameController?.sessionDataBig;
-                    if (sdb?.nuggets is 99 && backup.Nuggets > 99)
+                    if (sdb?.nuggets == 99 && backup.Nuggets > 99)
                         sdb.nuggets = backup.Nuggets;
                 }
                 unlocksBackup = backup;
@@ -117,7 +117,7 @@ namespace RogueLibsCore
 
         public static void Unlocks_AddUnlock(Unlock? createdUnlock, Unlock __result)
         {
-            if (createdUnlock != null)
+            if (createdUnlock is not null)
             {
                 __result.unavailable = createdUnlock.unavailable;
                 __result.onlyInCharacterCreation = createdUnlock.onlyInCharacterCreation;
@@ -416,7 +416,7 @@ namespace RogueLibsCore
                     for (int i = 0; i < sdb.loadoutList.Length; i++)
                     {
                         unlockSaveData.loadoutList[i] = new List<Unlock>();
-                        if (sdb.loadoutList[i] != null)
+                        if (sdb.loadoutList[i] is not null)
                         {
                             for (int j = 0; j < sdb.loadoutList[i].Count; j++)
                             {
@@ -441,7 +441,7 @@ namespace RogueLibsCore
                         for (int k = 0; k < sdb.rewardConfigConsoleList.Length; k++)
                         {
                             unlockSaveData.rewardConfigConsoleList[k] = new List<string>();
-                            if (sdb.rewardConfigConsoleList[k] != null)
+                            if (sdb.rewardConfigConsoleList[k] is not null)
                             {
                                 for (int l = 0; l < sdb.rewardConfigConsoleList[k].Count; l++)
                                 {
@@ -453,7 +453,7 @@ namespace RogueLibsCore
                         for (int m = 0; m < sdb.traitConfigConsoleList.Length; m++)
                         {
                             unlockSaveData.traitConfigConsoleList[m] = new List<string>();
-                            if (sdb.traitConfigConsoleList[m] != null)
+                            if (sdb.traitConfigConsoleList[m] is not null)
                             {
                                 for (int n = 0; n < sdb.traitConfigConsoleList[m].Count; n++)
                                 {
@@ -465,7 +465,7 @@ namespace RogueLibsCore
                         for (int num = 0; num < sdb.mutatorConfigConsoleList.Length; num++)
                         {
                             unlockSaveData.mutatorConfigConsoleList[num] = new List<string>();
-                            if (sdb.mutatorConfigConsoleList[num] != null)
+                            if (sdb.mutatorConfigConsoleList[num] is not null)
                             {
                                 for (int num2 = 0; num2 < sdb.mutatorConfigConsoleList[num].Count; num2++)
                                 {
@@ -541,7 +541,7 @@ namespace RogueLibsCore
                 try
                 {
                     UnlockSaveData? unlockSaveData;
-                    if ((GameController.gameController.consoleVersion || GameController.gameController.usingUWP || mySaveObject != null) && !GameController.gameController.fakeConsole)
+                    if ((GameController.gameController.consoleVersion || GameController.gameController.usingUWP || mySaveObject is not null) && !GameController.gameController.fakeConsole)
                     {
                         unlockSaveData = (UnlockSaveData)mySaveObject!;
                     }
@@ -558,15 +558,15 @@ namespace RogueLibsCore
                     }
                     __instance.tempUnlocks = unlockSaveData.unlocks;
                     string currentVersion = unlockSaveData.currentVersion;
-                    if (currentVersion != GameController.gameController.version && (__instance.buildsToBeCleared.Contains(currentVersion) || currentVersion == null))
+                    if (currentVersion != GameController.gameController.version && (__instance.buildsToBeCleared.Contains(currentVersion) || currentVersion is null))
                     {
                         __instance.tempUnlocks.Clear();
                     }
-                    if (currentVersion != null)
+                    if (currentVersion is not null)
                     {
                         GameController.gameController.sessionDataBig.highScores = unlockSaveData.highScores;
                         GameController.gameController.sessionDataBig.customCharacterSlots = unlockSaveData.customCharacterSlots;
-                        if (GameController.gameController.sessionDataBig.customCharacterSlots == null)
+                        if (GameController.gameController.sessionDataBig.customCharacterSlots is null)
                         {
                             GameController.gameController.sessionDataBig.customCharacterSlots = new List<string>();
                             GameController.gameController.sessionDataBig.customCharacterSlotsDetails = new List<SaveCharacterData>();
@@ -601,7 +601,7 @@ namespace RogueLibsCore
                             for (int k = 0; k < unlockSaveData.loadoutList.Length; k++)
                             {
                                 GameController.gameController.sessionDataBig.loadoutList[k] = new List<Unlock>();
-                                if (unlockSaveData.loadoutList[k] != null)
+                                if (unlockSaveData.loadoutList[k] is not null)
                                 {
                                     for (int l = 0; l < unlockSaveData.loadoutList[k].Count; l++)
                                     {
@@ -623,7 +623,7 @@ namespace RogueLibsCore
                                 for (int m = 0; m < unlockSaveData.rewardConfigConsoleList.Length; m++)
                                 {
                                     GameController.gameController.sessionDataBig.rewardConfigConsoleList[m] = new List<string>();
-                                    if (unlockSaveData.rewardConfigConsoleList[m] != null)
+                                    if (unlockSaveData.rewardConfigConsoleList[m] is not null)
                                         for (int n = 0; n < unlockSaveData.rewardConfigConsoleList[m].Count; n++)
                                         {
                                             string item2 = unlockSaveData.rewardConfigConsoleList[m][n];
@@ -633,7 +633,7 @@ namespace RogueLibsCore
                                 for (int num = 0; num < unlockSaveData.traitConfigConsoleList.Length; num++)
                                 {
                                     GameController.gameController.sessionDataBig.traitConfigConsoleList[num] = new List<string>();
-                                    if (unlockSaveData.traitConfigConsoleList[num] != null)
+                                    if (unlockSaveData.traitConfigConsoleList[num] is not null)
                                         for (int num2 = 0; num2 < unlockSaveData.traitConfigConsoleList[num].Count; num2++)
                                         {
                                             string item3 = unlockSaveData.traitConfigConsoleList[num][num2];
@@ -643,7 +643,7 @@ namespace RogueLibsCore
                                 for (int num3 = 0; num3 < unlockSaveData.mutatorConfigConsoleList.Length; num3++)
                                 {
                                     GameController.gameController.sessionDataBig.mutatorConfigConsoleList[num3] = new List<string>();
-                                    if (unlockSaveData.mutatorConfigConsoleList[num3] != null)
+                                    if (unlockSaveData.mutatorConfigConsoleList[num3] is not null)
                                         for (int num4 = 0; num4 < unlockSaveData.mutatorConfigConsoleList[num3].Count; num4++)
                                         {
                                             string item4 = unlockSaveData.mutatorConfigConsoleList[num3][num4];
@@ -714,7 +714,7 @@ namespace RogueLibsCore
                     for (int num5 = 0; num5 < GameController.gameController.sessionDataBig.loadoutList.Length; num5++)
                     {
                         unlockSaveData2.loadoutList[num5] = new List<Unlock>();
-                        if (GameController.gameController.sessionDataBig.loadoutList[num5] != null)
+                        if (GameController.gameController.sessionDataBig.loadoutList[num5] is not null)
                             for (int num6 = 0; num6 < GameController.gameController.sessionDataBig.loadoutList[num5].Count; num6++)
                             {
                                 Unlock item5 = GameController.gameController.sessionDataBig.loadoutList[num5][num6];
@@ -735,7 +735,7 @@ namespace RogueLibsCore
                         for (int num7 = 0; num7 < GameController.gameController.sessionDataBig.rewardConfigConsoleList.Length; num7++)
                         {
                             unlockSaveData2.rewardConfigConsoleList[num7] = new List<string>();
-                            if (GameController.gameController.sessionDataBig.rewardConfigConsoleList[num7] != null)
+                            if (GameController.gameController.sessionDataBig.rewardConfigConsoleList[num7] is not null)
                                 for (int num8 = 0; num8 < GameController.gameController.sessionDataBig.rewardConfigConsoleList[num7].Count; num8++)
                                 {
                                     string item6 = GameController.gameController.sessionDataBig.rewardConfigConsoleList[num7][num8];
@@ -746,7 +746,7 @@ namespace RogueLibsCore
                         for (int num9 = 0; num9 < GameController.gameController.sessionDataBig.traitConfigConsoleList.Length; num9++)
                         {
                             unlockSaveData2.traitConfigConsoleList[num9] = new List<string>();
-                            if (GameController.gameController.sessionDataBig.traitConfigConsoleList[num9] != null)
+                            if (GameController.gameController.sessionDataBig.traitConfigConsoleList[num9] is not null)
                                 for (int num10 = 0; num10 < GameController.gameController.sessionDataBig.traitConfigConsoleList[num9].Count; num10++)
                                 {
                                     string item7 = GameController.gameController.sessionDataBig.traitConfigConsoleList[num9][num10];
@@ -757,7 +757,7 @@ namespace RogueLibsCore
                         for (int num11 = 0; num11 < GameController.gameController.sessionDataBig.mutatorConfigConsoleList.Length; num11++)
                         {
                             unlockSaveData2.mutatorConfigConsoleList[num11] = new List<string>();
-                            if (GameController.gameController.sessionDataBig.mutatorConfigConsoleList[num11] != null)
+                            if (GameController.gameController.sessionDataBig.mutatorConfigConsoleList[num11] is not null)
                                 for (int num12 = 0; num12 < GameController.gameController.sessionDataBig.mutatorConfigConsoleList[num11].Count; num12++)
                                 {
                                     string item8 = GameController.gameController.sessionDataBig.mutatorConfigConsoleList[num11][num12];

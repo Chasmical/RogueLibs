@@ -44,7 +44,7 @@ namespace RogueLibsCore
                     {
                         h.AddButton("PlayMayorEvidence", static m => m.Object.PlayMayorEvidence(m.Agent));
                     }
-                    if (h.Object.startingChunkRealDescription is not "MayorHouse")
+                    if (h.Object.startingChunkRealDescription != "MayorHouse")
                     {
                         List<Agent> agentsSpun = (List<Agent>)turntablesAgentsSpun.GetValue(h.Object);
                         if (agentsSpun.Contains(h.Agent))

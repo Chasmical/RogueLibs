@@ -90,7 +90,7 @@ namespace RogueLibsCore
 
         public static bool RandomSelection_RandomSelect(RandomSelection __instance, string rName, string rCategory, ref string __result)
         {
-            if (rName is not "LevelFeelings" || rCategory is not "Scenarios") return true;
+            if (rName != "LevelFeelings" || rCategory != "Scenarios") return true;
 
             RandomList random = __instance.randomListTable[rName];
             CustomDisaster? forced = RogueFramework.CustomDisasters.FindLast(static d => d.TestForced());

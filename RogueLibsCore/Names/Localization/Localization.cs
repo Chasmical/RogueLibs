@@ -114,7 +114,7 @@ namespace RogueLibsCore
         {
             reader.MoveToContent();
             string? versionAttr = reader.GetAttribute("Version");
-            return versionAttr != null && int.TryParse(versionAttr, out int version) ? version : -1;
+            return versionAttr is not null && int.TryParse(versionAttr, out int version) ? version : -1;
         }
         private static void UpdateLanguage(string language, string filePath, int newVersion)
         {
@@ -203,7 +203,7 @@ namespace RogueLibsCore
             set
             {
                 if (currentWatcher == value) return;
-                if (currentWatcher != null)
+                if (currentWatcher is not null)
                 {
                     currentWatcher.Created -= ReloadCurrent;
                     currentWatcher.Changed -= ReloadCurrent;
@@ -211,7 +211,7 @@ namespace RogueLibsCore
                     currentWatcher.Deleted -= ReloadCurrent;
                 }
                 currentWatcher = value;
-                if (value != null)
+                if (value is not null)
                 {
                     value.Created += ReloadCurrent;
                     value.Changed += ReloadCurrent;
@@ -229,7 +229,7 @@ namespace RogueLibsCore
             set
             {
                 if (fallBackWatcher == value) return;
-                if (fallBackWatcher != null)
+                if (fallBackWatcher is not null)
                 {
                     fallBackWatcher.Created -= ReloadFallBack;
                     fallBackWatcher.Changed -= ReloadFallBack;
@@ -237,7 +237,7 @@ namespace RogueLibsCore
                     fallBackWatcher.Deleted -= ReloadFallBack;
                 }
                 fallBackWatcher = value;
-                if (value != null)
+                if (value is not null)
                 {
                     value.Created += ReloadFallBack;
                     value.Changed += ReloadFallBack;

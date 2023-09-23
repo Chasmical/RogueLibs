@@ -83,9 +83,9 @@ namespace RogueLibsCore
         }
 
         private List<string> GetMyLoadouts()
-            => Menu!.Agent.isPlayer is 1 ? gc.sessionDataBig.loadouts1
-            : Menu.Agent.isPlayer is 2 ? gc.sessionDataBig.loadouts2
-            : Menu.Agent.isPlayer is 3 ? gc.sessionDataBig.loadouts3
+            => Menu!.Agent.isPlayer == 1 ? gc.sessionDataBig.loadouts1
+            : Menu.Agent.isPlayer == 2 ? gc.sessionDataBig.loadouts2
+            : Menu.Agent.isPlayer == 3 ? gc.sessionDataBig.loadouts3
             : gc.sessionDataBig.loadouts4;
 
         /// <inheritdoc/>
@@ -164,7 +164,7 @@ namespace RogueLibsCore
                     if (selected is not null) availableNuggets += selected.LoadoutCost;
                     if (LoadoutCost <= availableNuggets)
                     {
-                        if (selected != null)
+                        if (selected is not null)
                         {
                             gc.sessionDataBig.nuggets += selected.LoadoutCost;
                             selected.IsSelectedLoadout = false;

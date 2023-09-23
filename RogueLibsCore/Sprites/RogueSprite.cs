@@ -28,7 +28,7 @@ namespace RogueLibsCore
                 if (defined && value is null) throw new ArgumentNullException(nameof(value));
                 Undefine();
                 texture = value;
-                if (value != null)
+                if (value is not null)
                 {
                     value.name = Name;
                     value.filterMode = FilterMode.Point;
@@ -74,7 +74,7 @@ namespace RogueLibsCore
                 if (defined && value is null) throw new ArgumentNullException(nameof(value));
                 Undefine();
                 name = value;
-                if (Sprite != null) Sprite.name = value;
+                if (Sprite is not null) Sprite.name = value;
                 if (defined) Define();
             }
         }
@@ -123,7 +123,7 @@ namespace RogueLibsCore
         /// <exception cref="InvalidOperationException"><see cref="Name"/> or <see cref="Texture"/> is <see langword="null"/>, or <see cref="PixelsPerUnit"/> is less than or equal to 0. Only thrown when setting the property value.</exception>
         public bool IsDefined
         {
-            get => definitions != null;
+            get => definitions is not null;
             set
             {
                 if (value) Define();
@@ -254,7 +254,7 @@ namespace RogueLibsCore
         internal Material? LightUpMaterial { get; private set; }
         internal void DefineInternal(tk2dSpriteCollectionData? coll, SpriteScope targetScope)
         {
-            if (coll != null)
+            if (coll is not null)
             {
                 tk2dSpriteDefinition def = CreateDefinition(texture!, region, 64f / PixelsPerUnit / coll.invOrthoSize / coll.halfTargetHeight);
                 def.name = name;
@@ -275,7 +275,7 @@ namespace RogueLibsCore
             {
                 GameController gc = GameController.gameController;
                 if (gc is null) GameController.gameController = gc = GameObject.Find("GameController").GetComponent<GameController>();
-                if (GameObject.Find("GameResources") == null)
+                if (GameObject.Find("GameResources") is null)
                 {
                     Debug.Log("Instantiate GameResources");
                     gc.gameResources = Object.Instantiate(gc.gameResourcesPrefab);
@@ -331,7 +331,7 @@ namespace RogueLibsCore
         }
         private void UndefineInternal(CustomTk2dDefinition def)
         {
-            if (def.Collection != null)
+            if (def.Collection is not null)
                 RemoveDefinition(def.Collection, def.Definition!);
 
             GameResources gr = GameResources.gameResources;
@@ -431,14 +431,14 @@ namespace RogueLibsCore
             Array.Copy(collection.materials, 0, newMats, 0, collection.materials.Length);
             newMats[newMats.Length - 1] = definition.material;
             if (Array.IndexOf(newMats, null) != -1)
-                newMats = Array.FindAll(newMats, static m => m != null);
+                newMats = Array.FindAll(newMats, static m => m is not null);
             collection.materials = newMats;
 
             Texture[] newTextures = new Texture[collection.textures.Length + 1];
             Array.Copy(collection.textures, 0, newTextures, 0, collection.textures.Length);
             newTextures[newTextures.Length - 1] = definition.material.mainTexture;
             if (Array.IndexOf(newTextures, null) != -1)
-                newTextures = Array.FindAll(newTextures, static m => m != null);
+                newTextures = Array.FindAll(newTextures, static m => m is not null);
             collection.textures = newTextures;
 
             collection.inst.materialIdsValid = false;
@@ -459,7 +459,7 @@ namespace RogueLibsCore
                 throw new ArgumentNullException(collection is null ? nameof(collection) : nameof(definition));
 
             int index = Array.IndexOf(collection.spriteDefinitions, definition);
-            if (index is -1) return false;
+            if (index == -1) return false;
 
             tk2dSpriteDefinition[] newDefinitions = new tk2dSpriteDefinition[collection.spriteDefinitions.Length - 1];
             Array.Copy(collection.spriteDefinitions, 0, newDefinitions, 0, index);

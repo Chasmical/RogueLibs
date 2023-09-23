@@ -25,7 +25,7 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public void GetName(string? name, string? type, ref string? result)
         {
-            if (name != null && type != null
+            if (name is not null && type is not null
                 && CustomNames.TryGetValue(type, out Dictionary<string, CustomName> category)
                 && category.TryGetValue(name, out CustomName customName))
                 result = customName.GetCurrentOrDefault();

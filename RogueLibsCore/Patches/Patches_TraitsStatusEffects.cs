@@ -153,7 +153,7 @@ namespace RogueLibsCore
             => codeEnumerable.ReplaceRegion(
                 new Func<CodeInstruction, bool>[]
                 {
-                    static i => i.opcode == OpCodes.Ldc_I4 && (int)i.operand is 9999,
+                    static i => i.opcode == OpCodes.Ldc_I4 && (int)i.operand == 9999,
                     static i => i.IsStloc(),
                     static i => i.opcode == OpCodes.Ldarg_0,
                 },
@@ -217,7 +217,7 @@ namespace RogueLibsCore
             bool firstTick = true;
             if (!GameController.gameController.multiplayerMode || (!GameController.gameController.serverPlayer || __instance.agent.isPlayer <= 0 || __instance.agent.localPlayer) && (GameController.gameController.serverPlayer || __instance.agent.localPlayer))
             {
-                if (__instance.StatusEffectList != null)
+                if (__instance.StatusEffectList is not null)
                 {
                     while (customEffect.CurrentTime > 0 && __instance.hasStatusEffect(customEffect.Metadata.Name) && (!__instance.agent.disappeared || __instance.agent.oma.notReadyToEnterLevel || __instance.agent.FellInHole() || __instance.agent.teleporting) || __instance.agent.FellInHole() || __instance.agent.teleporting || __instance.agent.KnockedOut())
                     {
@@ -267,7 +267,7 @@ namespace RogueLibsCore
             float countSpeed = 1f;
             if (!GameController.gameController.multiplayerMode || (!GameController.gameController.serverPlayer || __instance.agent.isPlayer <= 0 || __instance.agent.localPlayer) && (GameController.gameController.serverPlayer || __instance.agent.localPlayer))
             {
-                if (__instance.TraitList != null)
+                if (__instance.TraitList is not null)
                 {
                     while (__instance.TraitList.Contains(customTrait.Trait))
                     {

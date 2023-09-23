@@ -65,7 +65,7 @@ namespace RogueLibsCore
             for (int i = 0; i < list.Count && !args.Handled; i++)
             {
                 RogueEventSubscriber<TArgs> sub = list[i];
-                if (sub.Name != null && ignoreList?.Contains(sub.Name) == true) continue;
+                if (sub.Name is not null && ignoreList?.Contains(sub.Name) == true) continue;
                 list[i].Handler(args);
             }
             return !args.Cancel;

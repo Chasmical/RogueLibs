@@ -117,7 +117,7 @@ namespace RogueLibsCore
                 else
                 { bar = null; numButtons = 0f; }
 
-                if (bar != null)
+                if (bar is not null)
                     bar.value = Mathf.Clamp01(1f - __instance.yOffset / ((numButtons - __instance.numButtonsOnScreen + 2f) * __instance.yOffset) * (myButton.scrollingButtonNum - (__instance.numButtonsOnScreen / 2f - 1f)));
             }
 
@@ -131,7 +131,7 @@ namespace RogueLibsCore
             else if (myButton.scrollingButtonUnlock.unlockType == UnlockTypes.BigQuest)
             { image = __instance.detailsImageBigQuests; title = __instance.detailsTitleBigQuests; text = __instance.detailsTextBigQuests; }
 
-            if (image != null)
+            if (image is not null)
             {
                 DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock.GetHook()!;
 
@@ -139,7 +139,7 @@ namespace RogueLibsCore
                 title!.text = show ? du.GetName() : "?????";
                 text!.text = du.GetFancyDescription();
                 image.sprite = show ? du.GetImage() : null;
-                image.gameObject.SetActive(image.sprite != null);
+                image.gameObject.SetActive(image.sprite is not null);
             }
 
             __instance.curSelectedButton = myButton;

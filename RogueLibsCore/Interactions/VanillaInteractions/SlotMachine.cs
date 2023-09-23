@@ -18,7 +18,7 @@
                 }
                 if (h.Helper.interactingFar)
                 {
-                    if (h.Object.advantage is 0)
+                    if (h.Object.advantage == 0)
                     {
                         h.AddButton("IncreaseSlotMachineOdds", static m =>
                         {

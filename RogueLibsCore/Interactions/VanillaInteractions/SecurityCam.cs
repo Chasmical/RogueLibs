@@ -30,17 +30,17 @@
                         });
                     }
 
-                    h.AddButton("CamerasCaptureOwners", h.Object.targets is "Owners" ? " *" : null, static m =>
+                    h.AddButton("CamerasCaptureOwners", h.Object.targets == "Owners" ? " *" : null, static m =>
                     {
                         m.Object.targets = "Owners";
                         if (!m.gc.serverPlayer) m.Agent.objectMult.ObjectAction(m.Object.objectNetID, "CamerasCaptureOwners");
                     });
-                    h.AddButton("CamerasCaptureNonOwners", h.Object.targets is "NonOwners" ? " *" : null, static m =>
+                    h.AddButton("CamerasCaptureNonOwners", h.Object.targets == "NonOwners" ? " *" : null, static m =>
                     {
                         m.Object.targets = "NonOwners";
                         if (!m.gc.serverPlayer) m.Agent.objectMult.ObjectAction(m.Object.objectNetID, "CamerasCaptureNonOwners");
                     });
-                    h.AddButton("CamerasCaptureEveryone", h.Object.targets is "Everyone" ? " *" : null, static m =>
+                    h.AddButton("CamerasCaptureEveryone", h.Object.targets == "Everyone" ? " *" : null, static m =>
                     {
                         m.Object.targets = "Everyone";
                         if (!m.gc.serverPlayer) m.Agent.objectMult.ObjectAction(m.Object.objectNetID, "CamerasCaptureEveryone");

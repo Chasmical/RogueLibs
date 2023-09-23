@@ -15,7 +15,7 @@
 
             RogueInteractions.CreateProvider<Item>(static h =>
             {
-                if (h.Object.cantPickUp || h.Object.invItem.itemType is "NonItem" || h.Object.airborne) return;
+                if (h.Object.cantPickUp || h.Object.invItem.itemType == "NonItem" || h.Object.airborne) return;
 
                 h.AddImplicitButton("PickUp", static m =>
                 {

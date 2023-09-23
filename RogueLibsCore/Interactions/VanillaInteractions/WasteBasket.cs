@@ -9,9 +9,9 @@
 
             RogueInteractions.CreateProvider<WasteBasket>(static h =>
             {
-                if (h.Helper.interactingFar || h.gc.levelType is "HomeBase") return;
+                if (h.Helper.interactingFar || h.gc.levelType == "HomeBase") return;
 
-                Quest? quest = h.Object.useForQuest ?? h.gc.quests.unchangingQuestList.Find(static q => q.questType is "PlantItem");
+                Quest? quest = h.Object.useForQuest ?? h.gc.quests.unchangingQuestList.Find(static q => q.questType == "PlantItem");
                 if (quest is not null)
                 {
                     InvItem? item = h.Agent.inventory.FindItem(quest.startingItem1.invItemName);

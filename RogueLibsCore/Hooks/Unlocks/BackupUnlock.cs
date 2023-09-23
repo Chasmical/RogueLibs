@@ -45,9 +45,9 @@ namespace RogueLibsCore
             UnlockName = xml.GetAttribute("N") ?? xml.GetAttribute("Name");
             UnlockType = xml.GetAttribute("T") ?? xml.GetAttribute("Type");
             string unlockedStr = xml.GetAttribute("U") ?? xml.GetAttribute("Unlocked")!;
-            Unlocked = unlockedStr.Length is 1 ? unlockedStr == "1" : bool.Parse(unlockedStr);
+            Unlocked = unlockedStr.Length == 1 ? unlockedStr == "1" : bool.Parse(unlockedStr);
             string notActiveStr = xml.GetAttribute("D") ?? xml.GetAttribute("NotActive")!;
-            NotActive = notActiveStr.Length is 1 ? notActiveStr == "1" : bool.Parse(notActiveStr);
+            NotActive = notActiveStr.Length == 1 ? notActiveStr == "1" : bool.Parse(notActiveStr);
             ProgressCount = int.Parse(xml.GetAttribute("P") ?? xml.GetAttribute("ProgressCount")!);
 
             bool nonEmpty = !xml.IsEmptyElement;

@@ -13,7 +13,7 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public override bool TryCreate(Trait? instance, [NotNullWhen(true)] out IHook<Trait>? hook)
         {
-            if (instance != null && traitsDict.TryGetValue(instance.traitName, out TraitEntry entry))
+            if (instance is not null && traitsDict.TryGetValue(instance.traitName, out TraitEntry entry))
             {
                 hook = entry.Initializer();
                 if (hook is CustomTrait custom)

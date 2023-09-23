@@ -37,7 +37,7 @@
 
                     if (h.Object.locked)
                     {
-                        if (h.Agent.inventory.InvItemList.Exists(i => i.invItemName is "SafeCombination"
+                        if (h.Agent.inventory.InvItemList.Exists(i => i.invItemName == "SafeCombination"
                                                                       && i.chunks.Contains(h.Object.startingChunk)))
                         {
                             h.AddButton("UseSafeCombination", static m =>

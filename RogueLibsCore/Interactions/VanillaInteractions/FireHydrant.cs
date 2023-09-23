@@ -15,7 +15,7 @@
                 h.SetStopCallback(static m => m.Agent.SayDialogue("CantUseFireHydrant"));
 
                 InvItem? waterCannon = h.Agent.inventory.equippedSpecialAbility;
-                if (waterCannon?.invItemName is "WaterCannon" && waterCannon.invItemCount < waterCannon.initCount)
+                if (waterCannon?.invItemName == "WaterCannon" && waterCannon.invItemCount < waterCannon.initCount)
                 {
                     h.AddButton("RefillWaterCannon", static m => m.Object.RefillWaterCannon());
                 }

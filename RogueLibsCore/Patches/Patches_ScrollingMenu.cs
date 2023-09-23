@@ -221,7 +221,7 @@ namespace RogueLibsCore
 
         public static bool ScrollingMenu_ShowDetails(ScrollingMenu __instance, ButtonHelper myButton)
         {
-            if (__instance.agent != null && myButton.scrollingButtonUnlock?.unlockType == "Trait" && __instance.agent.addedEndLevelTrait || !string.IsNullOrEmpty(myButton.scrollingButtonLevelFeeling) || !string.IsNullOrEmpty(myButton.scrollingButtonConfigName) || !string.IsNullOrEmpty(myButton.scrollingButtonAgentName))
+            if (__instance.agent is not null && myButton.scrollingButtonUnlock?.unlockType == "Trait" && __instance.agent.addedEndLevelTrait || !string.IsNullOrEmpty(myButton.scrollingButtonLevelFeeling) || !string.IsNullOrEmpty(myButton.scrollingButtonConfigName) || !string.IsNullOrEmpty(myButton.scrollingButtonAgentName))
                 return true;
             DisplayedUnlock du = (DisplayedUnlock)myButton.scrollingButtonUnlock!.GetHook()!;
 
@@ -229,7 +229,7 @@ namespace RogueLibsCore
             __instance.detailsTitle.text = show ? du.GetName() : "?????";
             __instance.detailsText.text = du.GetFancyDescription();
             __instance.detailsImage.sprite = show ? du.GetImage() : null;
-            __instance.detailsImage.gameObject.SetActive(__instance.detailsImage.sprite != null);
+            __instance.detailsImage.gameObject.SetActive(__instance.detailsImage.sprite is not null);
 
             // Gamepad scrolling fix
             __instance.curSelectedButtonNum = myButton.scrollingButtonNum;

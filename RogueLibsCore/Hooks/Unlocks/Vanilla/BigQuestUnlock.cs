@@ -110,7 +110,7 @@ namespace RogueLibsCore
         public override void SetupUnlock()
         {
             Agent = (AgentUnlock)RogueFramework.Unlocks.Find(u => u is AgentUnlock a && a.Name == AgentName);
-            if (Agent != null)
+            if (Agent is not null)
             {
                 Agent.BigQuest = this;
                 IsAvailableInCC = !Agent.IsSSA;

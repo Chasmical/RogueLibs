@@ -30,7 +30,7 @@ namespace RogueLibsCore
             set
             {
                 int delta = value - Item.invItemCount;
-                if (delta < 0 && Inventory != null)
+                if (delta < 0 && Inventory is not null)
                     Inventory.SubtractFromItemCount(Item, -delta);
                 else
                     Item.invItemCount += delta;

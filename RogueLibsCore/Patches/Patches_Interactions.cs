@@ -86,7 +86,7 @@ namespace RogueLibsCore
         public static bool PressedButtonHook1(PlayfieldObject __instance, string buttonText)
         {
             #region Re-implementing base.PressedButton()
-            if (__instance.interactingAgent != null && (__instance.interactingAgent.controllerType != "Keyboard" || __instance.interactingAgent.controllerType == "Keyboard" && __instance.gc.playerControl.keyCheck(buttonType.Interact, __instance.interactingAgent)) && __instance.interactingAgent.localPlayer)
+            if (__instance.interactingAgent is not null && (__instance.interactingAgent.controllerType != "Keyboard" || __instance.interactingAgent.controllerType == "Keyboard" && __instance.gc.playerControl.keyCheck(buttonType.Interact, __instance.interactingAgent)) && __instance.interactingAgent.localPlayer)
             {
                 __instance.interactingAgent.mainGUI.invInterface.justPressedInteract = true;
             }
@@ -98,7 +98,7 @@ namespace RogueLibsCore
         public static bool PressedButtonHook2(PlayfieldObject __instance, string buttonText, int buttonPrice)
         {
             #region Re-implementing base.PressedButton()
-            if (__instance.interactingAgent != null && (__instance.interactingAgent.controllerType != "Keyboard" || __instance.interactingAgent.controllerType == "Keyboard" && __instance.gc.playerControl.keyCheck(buttonType.Interact, __instance.interactingAgent)) && __instance.interactingAgent.localPlayer)
+            if (__instance.interactingAgent is not null && (__instance.interactingAgent.controllerType != "Keyboard" || __instance.interactingAgent.controllerType == "Keyboard" && __instance.gc.playerControl.keyCheck(buttonType.Interact, __instance.interactingAgent)) && __instance.interactingAgent.localPlayer)
             {
                 __instance.interactingAgent.mainGUI.invInterface.justPressedInteract = true;
             }
@@ -119,7 +119,7 @@ namespace RogueLibsCore
             __instance.someoneInteracting = true;
             __instance.DetermineButtons();
 
-            if (__instance.playfieldObjectReal != null)
+            if (__instance.playfieldObjectReal is not null)
                 __instance.gc.playerAgent.SetCheckUseWithItemsAgain(__instance.playfieldObjectReal);
 
             float size = !__instance.gc.serverPlayer && __instance.playfieldObjectType == "Agent" ? 1.7f : 1.3f;
@@ -132,7 +132,7 @@ namespace RogueLibsCore
             {
                 agent.rb.velocity = Vector2.zero;
             }
-            if (__instance.playfieldObjectAgent != null && __instance.gc.serverPlayer && (__instance.playfieldObjectAgent.movement.curPhysicsType == "Ice" || __instance.playfieldObjectAgent.statusEffects.hasTrait("RollerSkates") || __instance.playfieldObjectAgent.statusEffects.hasTrait("RollerSkates2")))
+            if (__instance.playfieldObjectAgent is not null && __instance.gc.serverPlayer && (__instance.playfieldObjectAgent.movement.curPhysicsType == "Ice" || __instance.playfieldObjectAgent.statusEffects.hasTrait("RollerSkates") || __instance.playfieldObjectAgent.statusEffects.hasTrait("RollerSkates2")))
             {
                 __instance.playfieldObjectAgent.rb.velocity = Vector2.zero;
             }
@@ -160,7 +160,7 @@ namespace RogueLibsCore
             __instance.someoneInteracting = true;
             agent.interactionHelper.interactingFar = true;
             __instance.DetermineButtons();
-            if (__instance.playfieldObjectReal != null)
+            if (__instance.playfieldObjectReal is not null)
                 __instance.gc.playerAgent.SetCheckUseWithItemsAgain(__instance.playfieldObjectReal);
             agent.interactionHelper.interactionObject = __instance.objectSprite.go;
             // agent.worldSpaceGUI.ShowObjectNameDisplay();
@@ -260,7 +260,7 @@ namespace RogueLibsCore
             => original.ReplaceRegion(new Func<CodeInstruction, bool>[]
             {
                 static i => i.opcode == OpCodes.Ldarg_2,
-                static i => i.opcode == OpCodes.Ldstr && (string)i.operand is "Done",
+                static i => i.opcode == OpCodes.Ldstr && (string)i.operand == "Done",
                 static i => i.Calls(stringListAddMethod),
             }, new Func<CodeInstruction[], CodeInstruction>[]
             {

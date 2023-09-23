@@ -175,7 +175,7 @@ namespace RogueLibsCore
         {
             AudioClip clip = RogueUtilities.ConvertToAudioClip(rawData);
             clip.name = name;
-            if (GameController.gameController?.audioHandler != null)
+            if (GameController.gameController?.audioHandler is not null)
             {
                 GameController.gameController.audioHandler.audioClipList.Add(name);
                 GameController.gameController.audioHandler.audioClipRealList.Add(clip);
@@ -207,7 +207,7 @@ namespace RogueLibsCore
             if (unlock is null) throw new ArgumentNullException(nameof(unlock));
             RogueFramework.Unlocks.Add(unlock);
             RogueFramework.CustomUnlocks.Add(unlock);
-            if (GameController.gameController?.unlocks != null)
+            if (GameController.gameController?.unlocks is not null)
                 RogueLibsPlugin.AddUnlockFull(unlock);
             return new UnlockBuilder(unlock);
         }

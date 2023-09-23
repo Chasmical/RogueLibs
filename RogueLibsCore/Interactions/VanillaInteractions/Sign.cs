@@ -24,19 +24,19 @@
                         text = m.Object.extraVarString;
                     else if (!m.gc.serverPlayer && !string.IsNullOrEmpty(m.Object.signTextOnline))
                         text = m.Object.signTextOnline;
-                    else if (m.Object.signLocation is 0)
+                    else if (m.Object.signLocation == 0)
                     {
-                        if (m.gc.levelTheme is 5)
+                        if (m.gc.levelTheme == 5)
                             text = string.Join("\n\n",
                                                m.gc.nameDB.GetName("Sign_MayorOffice1", NameTypes.Dialogue),
                                                m.gc.nameDB.GetName("Sign_MayorOffice2", NameTypes.Dialogue),
                                                m.gc.nameDB.GetName("Sign_MayorOffice3", NameTypes.Dialogue),
                                                m.gc.nameDB.GetName("Sign_MayorOffice4", NameTypes.Dialogue));
-                        else if (m.gc.sessionDataBig.curLevelEndless is 1)
+                        else if (m.gc.sessionDataBig.curLevelEndless == 1)
                             text = string.Join("\n\n",
                                                m.gc.nameDB.GetName("Sign_StartGame", NameTypes.Dialogue),
                                                m.gc.nameDB.GetName("Sign_StartGame2", NameTypes.Dialogue));
-                        else if (m.gc.sessionDataBig.curLevelEndless is 2)
+                        else if (m.gc.sessionDataBig.curLevelEndless == 2)
                             text = string.Join("\n",
                                                m.gc.nameDB.GetName("Sign_CopRules", NameTypes.Dialogue),
                                                m.gc.nameDB.GetName("Sign_CopRules2", NameTypes.Dialogue),
@@ -69,11 +69,11 @@
                                                m.gc.nameDB.GetName("Sign_Uptown4", NameTypes.Dialogue));
                         else text = string.Empty;
                     }
-                    else if (m.Object.signLocation is 1)
+                    else if (m.Object.signLocation == 1)
                     {
                         text = m.gc.nameDB.GetName("Sign_FirstElevator", NameTypes.Dialogue);
                     }
-                    else if (m.Object.signLocation is 2)
+                    else if (m.Object.signLocation == 2)
                     {
                         text = string.Join("\n\n",
                                            m.gc.nameDB.GetName("Sign_InvestMoney", NameTypes.Dialogue),

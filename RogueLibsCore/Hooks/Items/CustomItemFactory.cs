@@ -13,7 +13,7 @@ namespace RogueLibsCore
         /// <inheritdoc/>
         public override bool TryCreate(InvItem? instance, [NotNullWhen(true)] out IHook<InvItem>? hook)
         {
-            if (instance?.invItemName != null && itemsDict.TryGetValue(instance.invItemName, out ItemEntry entry))
+            if (instance?.invItemName is not null && itemsDict.TryGetValue(instance.invItemName, out ItemEntry entry))
             {
                 hook = entry.Initializer();
                 if (hook is CustomItem custom)

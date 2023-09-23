@@ -18,7 +18,7 @@
                 }
                 if (h.Helper.interactingFar)
                 {
-                    if (h.Object.hacked is 0)
+                    if (h.Object.hacked == 0)
                     {
                         h.AddButton("IncreasePawnShopMachinePrices", static m =>
                         {

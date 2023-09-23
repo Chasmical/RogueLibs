@@ -15,7 +15,7 @@ namespace RogueLibsCore
             {
                 if (h.Helper.interactingFar) // hacking remotely
                 {
-                    if (h.Object.placedDetonatorInitial is 1)
+                    if (h.Object.placedDetonatorInitial == 1)
                     {
                         h.AddButton("AttemptDisarmDoorDetonator", $" ({h.Object.FindDisarmPercentage(false)}%)",
                                     static m => m.Object.AttemptDisarm());
@@ -47,7 +47,7 @@ namespace RogueLibsCore
                 // the door's closed, set the stop callback
                 h.SetStopCallback(static m => m.Agent.SayDialogue("CantOpenDoor"));
 
-                if (h.Object.placedDetonatorInitial is 1 && !h.Agent.isHoisting) // if there's a detonator, add the "Disarm" button
+                if (h.Object.placedDetonatorInitial == 1 && !h.Agent.isHoisting) // if there's a detonator, add the "Disarm" button
                 {
                     h.AddButton("AttemptDisarmDoorDetonator", $" ({h.Object.FindDisarmPercentage(false)}%)",
                                 static m => m.StartOperating(2f, true, "DisarmingDetonator"));
@@ -69,7 +69,7 @@ namespace RogueLibsCore
 
                 if (h.Object.locked) // the door is locked
                 {
-                    if (onInside && h.gc.levelShape is 0 && !isSpecialLevel)
+                    if (onInside && h.gc.levelShape == 0 && !isSpecialLevel)
                     {
                         // if the player's inside of a locked room, add an implicit "Open" button
                         h.AddImplicitButton("Open", OpenButton);
@@ -77,9 +77,9 @@ namespace RogueLibsCore
                     }
                     // can't open, the door is locked
                 }
-                else if (h.Object.doorType is "DoorNoEntry") // the door leads to a prohibited area
+                else if (h.Object.doorType == "DoorNoEntry") // the door leads to a prohibited area
                 {
-                    if (onInside && h.gc.levelShape is 0 || isSpecialLevel || !h.Object.outsideDoor)
+                    if (onInside && h.gc.levelShape == 0 || isSpecialLevel || !h.Object.outsideDoor)
                     {
                         // if the player is inside the prohibited area, or if the door is IN the prohibited area
                         // (in either case we wouldn't want to prompt the player to open the door)
@@ -96,7 +96,7 @@ namespace RogueLibsCore
 
                 // at this point, the "Open" button either is not present or is explicit
 
-                if (h.Object.prisonObject is 0 && h.gc.levelShape is 0 && h.Object.extraVar is not 7 && !isSpecialLevel)
+                if (h.Object.prisonObject == 0 && h.gc.levelShape == 0 && h.Object.extraVar != 7 && !isSpecialLevel)
                 {
                     h.AddButton("Knock", static m =>
                     {
@@ -109,7 +109,7 @@ namespace RogueLibsCore
                 {
                     if (h.Agent.inventory.InvItemList.Exists(i => i.invItemName is "Key" or "KeyCard"
                                                                   && (i.chunks.Contains(h.Object.startingChunk)
-                                                                      || h.Object.startingSector is not 0
+                                                                      || h.Object.startingSector != 0
                                                                       && i.sectors.Contains(h.Object.startingSector))))
                     {
                         // if there's a key for this specific door, show it as an only option

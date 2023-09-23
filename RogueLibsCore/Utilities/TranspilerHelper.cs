@@ -21,7 +21,7 @@ namespace RogueLibsCore
             if (code is null) throw new ArgumentNullException(nameof(code));
             if (begin is null) throw new ArgumentNullException(nameof(begin));
             if (end is null) throw new ArgumentNullException(nameof(end));
-            if (begin.Length is 0) throw new ArgumentException($"{nameof(begin)} cannot be empty.", nameof(begin));
+            if (begin.Length == 0) throw new ArgumentException($"{nameof(begin)} cannot be empty.", nameof(begin));
             if (Array.Exists(begin, static b => b is null)) throw new ArgumentException($"Delegates in {nameof(begin)} cannot be null.", nameof(begin));
             if (Array.Exists(end, static b => b is null)) throw new ArgumentException($"Delegates in {nameof(end)} cannot be null.", nameof(end));
 
@@ -90,7 +90,7 @@ namespace RogueLibsCore
             if (code is null) throw new ArgumentNullException(nameof(code));
             if (after is null) throw new ArgumentNullException(nameof(after));
             if (region is null) throw new ArgumentNullException(nameof(region));
-            if (after.Length is 0) throw new ArgumentException($"{nameof(after)} cannot be empty.", nameof(after));
+            if (after.Length == 0) throw new ArgumentException($"{nameof(after)} cannot be empty.", nameof(after));
             if (Array.Exists(after, static a => a is null)) throw new ArgumentException($"Delegates in {nameof(after)} cannot be null.", nameof(after));
 
             return AddRegionAfter2();
@@ -148,7 +148,7 @@ namespace RogueLibsCore
             if (code is null) throw new ArgumentNullException(nameof(code));
             if (before is null) throw new ArgumentNullException(nameof(before));
             if (region is null) throw new ArgumentNullException(nameof(region));
-            if (before.Length is 0) throw new ArgumentException($"{nameof(before)} cannot be empty.", nameof(before));
+            if (before.Length == 0) throw new ArgumentException($"{nameof(before)} cannot be empty.", nameof(before));
             if (Array.Exists(before, static b => b is null)) throw new ArgumentException($"Delegates in {nameof(before)} cannot be null.", nameof(before));
 
             return AddRegionBefore2();
@@ -218,7 +218,7 @@ namespace RogueLibsCore
             if (begin is null) throw new ArgumentNullException(nameof(begin));
             if (end is null) throw new ArgumentNullException(nameof(end));
             if (replacer is null) throw new ArgumentNullException(nameof(replacer));
-            if (begin.Length is 0) throw new ArgumentException($"{nameof(begin)} cannot be empty.", nameof(begin));
+            if (begin.Length == 0) throw new ArgumentException($"{nameof(begin)} cannot be empty.", nameof(begin));
             if (Array.Exists(begin, static b => b is null)) throw new ArgumentException($"Delegates in {nameof(begin)} cannot be null.", nameof(begin));
             if (Array.Exists(end, static e => e is null)) throw new ArgumentException($"Delegates in {nameof(end)} cannot be null.", nameof(end));
 

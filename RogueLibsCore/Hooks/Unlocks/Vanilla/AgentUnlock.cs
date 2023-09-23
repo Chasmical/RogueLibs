@@ -69,7 +69,7 @@
         {
             string bigQuest = Name + "_BQ";
             BigQuest = (BigQuestUnlock)RogueFramework.Unlocks.Find(u => u is BigQuestUnlock bq && bq.Name == bigQuest);
-            if (BigQuest != null)
+            if (BigQuest is not null)
             {
                 BigQuest.Agent = this;
                 BigQuest.IsAvailableInCC = !IsSSA;

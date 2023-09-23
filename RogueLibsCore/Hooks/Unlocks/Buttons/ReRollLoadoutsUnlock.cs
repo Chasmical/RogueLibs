@@ -47,13 +47,13 @@ namespace RogueLibsCore
                 gc.sessionDataBig.nuggets += gc.sessionDataBig.loadoutNuggetsSpent;
                 gc.sessionDataBig.loadoutNuggetsSpent = 0;
 
-                if (menu.agent.isPlayer is 1)
+                if (menu.agent.isPlayer == 1)
                     gc.sessionDataBig.loadouts1.Clear();
-                else if (menu.agent.isPlayer is 2)
+                else if (menu.agent.isPlayer == 2)
                     gc.sessionDataBig.loadouts2.Clear();
-                else if (menu.agent.isPlayer is 3)
+                else if (menu.agent.isPlayer == 3)
                     gc.sessionDataBig.loadouts3.Clear();
-                else if (menu.agent.isPlayer is 4)
+                else if (menu.agent.isPlayer == 4)
                     gc.sessionDataBig.loadouts4.Clear();
 
                 PlaySound(VanillaAudio.BuyItem);

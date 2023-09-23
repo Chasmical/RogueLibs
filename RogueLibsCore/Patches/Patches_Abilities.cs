@@ -75,7 +75,7 @@ namespace RogueLibsCore
             if (custom.Item.invItemName != __instance.agent.specialAbility) return;
 
             float prevHeld = custom.lastHeld;
-            if (prevHeld is 0f) return;
+            if (prevHeld == 0f) return;
 
             custom.lastHeld = 0f;
             try { chargeable.OnReleased(new AbilityReleasedArgs(prevHeld)); }
@@ -142,10 +142,10 @@ namespace RogueLibsCore
 
                 ability.CurrentTarget = ((IAbilityTargetable)ability).FindTarget();
 
-                if (GameController.gameController.loadComplete && __instance.agent.specialAbilityIndicator != null && !__instance.agent.disappearedArcade && __instance.agent.inventory.buffDisplay.specialAbilitySlot != null && !__instance.agent.ghost)
+                if (GameController.gameController.loadComplete && __instance.agent.specialAbilityIndicator is not null && !__instance.agent.disappearedArcade && __instance.agent.inventory.buffDisplay.specialAbilitySlot is not null && !__instance.agent.ghost)
                 {
                     if ((item.invItemCount == 0 || ability is not IAbilityRechargeable) && __instance.CanShowSpecialAbilityIndicator()
-                                                                                        && ability.CurrentTarget != null)
+                                                                                        && ability.CurrentTarget is not null)
                     {
                         abilitySlot = __instance.agent.inventory.buffDisplay.specialAbilitySlot;
                         __instance.agent.specialAbilityIndicator.ShowIndicator(ability.CurrentTarget, ability.Item.invItemName);
@@ -166,11 +166,11 @@ namespace RogueLibsCore
         public static void SpecialAbilityIndicator_ShowIndicator(SpecialAbilityIndicator __instance)
         {
             CustomAbility? ability = abilitySlot?.item.GetHook<CustomAbility>();
-            if (ability != null)
+            if (ability is not null)
             {
                 Sprite? spr = ability.GetIndicator();
                 __instance.image.sprite = spr;
-                __instance.image.enabled = spr != null;
+                __instance.image.enabled = spr is not null;
             }
         }
     }

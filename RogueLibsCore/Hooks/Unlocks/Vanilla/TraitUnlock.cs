@@ -202,14 +202,14 @@ namespace RogueLibsCore
                 PlaySound(VanillaAudio.AddTrait);
                 Menu.Agent.objectMult.SendChatAnnouncement("ChoseTrait", Name, "");
                 menu.canPressButtons = false;
-                if (Menu.Agent.skillPoints.levelsGained is 0)
+                if (Menu.Agent.skillPoints.levelsGained == 0)
                 {
                     if (gc.fourPlayerMode || gc.coopMode)
                     {
                         MethodInfo method = AccessTools.Method(typeof(ScrollingMenu), "PersonalMenuDelay");
                         menu.StartCoroutine((IEnumerator)method!.Invoke(menu, null));
                     }
-                    else if (gc.levelFeelingsScript.DoesNextLevelHaveFeeling(false) && (gc.sessionDataBig.twitchOn || gc.twitchMode) && (gc.sessionDataBig.twitchLevelFeelings || gc.twitchMode) && (gc.sessionData.nextLevelFeeling?.Length is 0 || gc.sessionData.nextLevelFeeling is null) && !gc.challenges.Contains("NoLevelFeelings") && !gc.levelFeelingsScript.CanceledAllLevelFeelings() && gc.serverPlayer && gc.levelFeelingsScript.GetLevelFeeling() != "")
+                    else if (gc.levelFeelingsScript.DoesNextLevelHaveFeeling(false) && (gc.sessionDataBig.twitchOn || gc.twitchMode) && (gc.sessionDataBig.twitchLevelFeelings || gc.twitchMode) && (gc.sessionData.nextLevelFeeling?.Length == 0 || gc.sessionData.nextLevelFeeling is null) && !gc.challenges.Contains("NoLevelFeelings") && !gc.levelFeelingsScript.CanceledAllLevelFeelings() && gc.serverPlayer && gc.levelFeelingsScript.GetLevelFeeling() != "")
                     {
                         MethodInfo method = AccessTools.Method(typeof(ScrollingMenu), "ShowMenuDelay");
                         menu.StartCoroutine((IEnumerator)method.Invoke(menu, new object[2] { "LevelFeelings", Menu.Agent }));
@@ -255,9 +255,9 @@ namespace RogueLibsCore
                 List<Unlock> list = Unlock.isUpgrade
                     ? gc.sessionDataBig.unlocks.FindAll(u => u.isUpgrade && Unlock.isUpgrade && !Menu.Agent.statusEffects.hasTrait(u.unlockName) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)))
                     : CharacterCreationCost < 0
-                        ? gc.sessionDataBig.traitUnlocksCharacterCreation.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)) && u.recommendations.Count is 0)
+                        ? gc.sessionDataBig.traitUnlocksCharacterCreation.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)) && u.recommendations.Count == 0)
                         : gc.sessionDataBig.traitUnlocks.FindAll(u => u.cost3 == CharacterCreationCost && menu.TraitOK(u) && menu.HasNoCancellations(u) && !u.cantSwap && !u.removal && u.specialAbilities.All(ab => Menu.Agent.statusEffects.hasSpecialAbility(ab)));
-                if (list.Count is 0)
+                if (list.Count == 0)
                 {
                     Menu.Agent.SayDialogue("CantChangeTraitRandomEquivalent");
                     PlaySound(VanillaAudio.CantDo);
