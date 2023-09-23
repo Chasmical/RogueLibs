@@ -1,4 +1,4 @@
-<Language Id="german" Version="10">
+<Language Id="german" Version="11">
   <Category Id="Agent">
     <Entry Id="Playerr">Spieler</Entry>
     <Entry Id="Actor">Schauspieler</Entry>
@@ -705,6 +705,7 @@
     <Entry Id="MallLight">Einkaufszentrum</Entry>
     <Entry Id="TVStationLight">Fernsehstation</Entry>
     <Entry Id="testobject"></Entry>
+    <Entry Id="Counter">Ladentisch</Entry>
   </Category>
   <Category Id="StatusEffect">
     <Entry Id="AboveTheLaw">Über dem Gesetz</Entry>

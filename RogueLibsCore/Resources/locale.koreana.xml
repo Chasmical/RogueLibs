@@ -1,4 +1,4 @@
-<Language Id="koreana" Version="10">
+<Language Id="koreana" Version="11">
   <Category Id="Agent">
     <Entry Id="Playerr">플레이어</Entry>
     <Entry Id="Actor">배우</Entry>
@@ -705,6 +705,7 @@
     <Entry Id="MallLight">쇼핑 센터</Entry>
     <Entry Id="TVStationLight">TV 역</Entry>
     <Entry Id="testobject"></Entry>
+    <Entry Id="Counter">카운터</Entry>
   </Category>
   <Category Id="StatusEffect">
     <Entry Id="AboveTheLaw">법 위에</Entry>

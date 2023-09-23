@@ -1,4 +1,4 @@
-<Language Id="english" Version="10">
+<Language Id="english" Version="11">
   <Category Id="Agent">
     <Entry Id="Playerr">Player</Entry>
     <Entry Id="Actor">Actor</Entry>
@@ -705,6 +705,7 @@
     <Entry Id="MallLight">Mall</Entry>
     <Entry Id="TVStationLight">TV Station</Entry>
     <Entry Id="testobject">xx</Entry>
+    <Entry Id="Counter">Counter</Entry>
   </Category>
   <Category Id="StatusEffect">
     <Entry Id="AboveTheLaw">Above the Law</Entry>

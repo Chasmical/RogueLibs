@@ -1,4 +1,4 @@
-<Language Id="schinese" Version="10">
+<Language Id="schinese" Version="11">
   <Category Id="Agent">
     <Entry Id="Playerr">玩家</Entry>
     <Entry Id="Actor">演员</Entry>
@@ -705,6 +705,7 @@
     <Entry Id="MallLight">购物中心</Entry>
     <Entry Id="TVStationLight">电视台</Entry>
     <Entry Id="testobject"></Entry>
+    <Entry Id="Counter">柜台</Entry>
   </Category>
   <Category Id="StatusEffect">
     <Entry Id="AboveTheLaw">践踏法律</Entry>

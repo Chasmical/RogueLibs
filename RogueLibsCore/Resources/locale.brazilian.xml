@@ -1,4 +1,4 @@
-<Language Id="brazilian" Version="10">
+<Language Id="brazilian" Version="11">
   <Category Id="Agent">
     <Entry Id="Playerr">Jogador</Entry>
     <Entry Id="Actor">Ator</Entry>
@@ -705,6 +705,7 @@
     <Entry Id="MallLight">Shopping</Entry>
     <Entry Id="TVStationLight">Estação de TV</Entry>
     <Entry Id="testobject"></Entry>
+    <Entry Id="Counter">Contador</Entry>
   </Category>
   <Category Id="StatusEffect">
     <Entry Id="AboveTheLaw">Acima da Lei</Entry>

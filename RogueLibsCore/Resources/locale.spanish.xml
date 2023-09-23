@@ -1,4 +1,4 @@
-<Language Id="spanish" Version="10">
+<Language Id="spanish" Version="11">
   <Category Id="Agent">
     <Entry Id="Playerr">Jugador</Entry>
     <Entry Id="Actor">Actor</Entry>
@@ -705,6 +705,7 @@
     <Entry Id="MallLight">Centro comercial</Entry>
     <Entry Id="TVStationLight">Estación de televisión</Entry>
     <Entry Id="testobject"></Entry>
+    <Entry Id="Counter">Mostrador</Entry>
   </Category>
   <Category Id="StatusEffect">
     <Entry Id="AboveTheLaw">Por encima de la ley</Entry>
