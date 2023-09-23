@@ -381,30 +381,48 @@ namespace RogueLibsCore
         // ReSharper disable once InconsistentNaming
         public GameController gc => GameController.gameController;
 
+        private bool loggedAdapterWarning;
+
         Interaction[] IInteractionProvider.GetInteractions(InteractionModel model)
         {
-            if (model is InteractionModel<T> tModel)
+            if (model is not InteractionModel<T> tModel)
             {
-                try
+                if (model.Instance is T)
                 {
-                    _model = tModel;
-                    _handler(this);
+                    if (!loggedAdapterWarning)
+                    {
+                        loggedAdapterWarning = true;
+                        RogueFramework.LogWarning(
+                            $"\nDetected a base type ({typeof(T)}) interaction provider {_handler.Method.Name}." +
+                            "\nYou shouldn't use ObjectReal or PlayfieldObject as type parameters for CreateProvider<T>." +
+                            "\nEither use more specific type parameters, or use the non-generic version of CreateProvider." +
+                            "\nThe code will work for now through an adapter pattern, but there may be issues."
+                        );
+                    }
+                    InteractionModel<T> adapter = new();
+                    ((IHook)adapter).Initialize(model.Instance);
+                    tModel = adapter;
                 }
-                catch (Exception e)
-                {
-                    RogueFramework.LogError($"SimpleInteractionProvider's handler on {Object} threw an exception.");
-                    RogueFramework.LogError(e.ToString());
-                    RogueFramework.LogError(_handler.Method);
-                }
-                finally
-                {
-                    _model = null;
-                }
-                Interaction[] array = interactions.ToArray();
-                interactions.Clear();
-                return array;
+                else return Array.Empty<Interaction>();
             }
-            return Array.Empty<Interaction>();
+            try
+            {
+                _model = tModel;
+                _handler(this);
+            }
+            catch (Exception e)
+            {
+                RogueFramework.LogError($"SimpleInteractionProvider's handler on {Object} threw an exception.");
+                RogueFramework.LogError(e.ToString());
+                RogueFramework.LogError(_handler.Method);
+            }
+            finally
+            {
+                _model = null;
+            }
+            Interaction[] array = interactions.ToArray();
+            interactions.Clear();
+            return array;
         }
 
     }
