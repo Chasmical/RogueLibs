@@ -32,6 +32,7 @@ namespace RogueLibsCore
                             helper.interactingCounter = true;
                             helper.clientInteracting = true;
                             counterAgent.Interact(agent);
+                            helper.AfterInteract(m.Object);
                         }
                     });
                 }

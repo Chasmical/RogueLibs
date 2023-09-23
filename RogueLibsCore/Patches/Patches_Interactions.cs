@@ -41,6 +41,9 @@ namespace RogueLibsCore
 
             Patcher.Transpiler(typeof(WorldSpaceGUI), nameof(WorldSpaceGUI.ShowObjectButtons));
 
+            Patcher.Prefix(typeof(WorldSpaceGUI), nameof(WorldSpaceGUI.WorldSpaceGUILateUpdate), nameof(WorldSpaceGUI_WorldSpaceGUILateUpdate_Prefix));
+            Patcher.Finalizer(typeof(WorldSpaceGUI), nameof(WorldSpaceGUI.WorldSpaceGUILateUpdate), nameof(WorldSpaceGUI_WorldSpaceGUILateUpdate_Finalizer));
+
             VanillaInteractions.PatchAll();
 
             Patcher.AnyErrors();
@@ -275,8 +278,19 @@ namespace RogueLibsCore
             if (model.AddDoneButton) buttons.Add("Done");
         }
 
-
-
+        public static void WorldSpaceGUI_WorldSpaceGUILateUpdate_Prefix(WorldSpaceGUI __instance, ref bool? __state)
+        {
+            if (__instance.agent?.interactionHelper is not null)
+            {
+                __state = __instance.agent.interactionHelper.interactingCounter;
+                __instance.agent.interactionHelper.interactingCounter = false;
+            }
+        }
+        public static void WorldSpaceGUI_WorldSpaceGUILateUpdate_Finalizer(WorldSpaceGUI __instance, ref bool? __state)
+        {
+            if (__instance.agent?.interactionHelper is not null && __state.HasValue)
+                __instance.agent.interactionHelper.interactingCounter = __state.Value;
+        }
 
     }
 }
