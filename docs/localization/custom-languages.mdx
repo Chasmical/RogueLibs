@@ -1,28 +1,32 @@
-# Custom Languages*
+---
+title: Custom Languages
+description: You can add your custom languages to the game using the LanguageService.RegisterLanguageCode method. There hasn't been much progress on actually implementing custom languages. No one has ever translated the entire game to a different language, not yet included with SoR. When that time comes, feel free to create an issue on GitHub.
+---
+
+# Custom Languages
 
 You can add your custom languages to the game using the `LanguageService.RegisterLanguageCode` method.
 
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-```csharp
-LanguageService.RegisterLanguageCode("japanese", (LanguageCode)123);
+```csharp title="/MyAwesomeProject/MyAwesomeLanguages.cs"
+LanguageCode code = LanguageService.RegisterLanguageCode("japanese");
 ```
 
-:::info Work-In-Progress
+:::info{title="Work-In-Progress"}
 There hasn't been much progress on actually implementing custom languages. No one has ever translated the entire game to a different language, not yet included with SoR. When that time comes, feel free to [create an issue on GitHub](https://github.com/SugarBarrel/RogueLibs/issues/new/choose).
 :::
 
 ## `LanguageService` {#languageservice}
 
-`LanguageService` is a static class, that contains all of the things related to localization.
+`LanguageService` is a static class, that contains all things related to localization.
 
-:::info Work-In-Progress
+:::info{title="Work-In-Progress"}
+TODO: Waiting for custom languages implementation in RogueLibs
 :::
 
 ## Adding localizations for mods {#localizations}
 
-:::info Work-In-Progress
 Eh. Just ask the creator(s) of the mod, that you want to translate, to include your localization.
+
+:::info{title="Work-In-Progress"}
+TODO: Waiting for custom languages implementation in RogueLibs
 :::

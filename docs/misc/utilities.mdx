@@ -1,13 +1,51 @@
 ---
 title: Extra Utilities
-description: "RogueLibs provides a couple of extra interfaces that you can use for any supported custom content hooks: IDoUpdate, IDoFixedUpdate and IDoLateUpdate. These interfaces correspond to the Update, FixedUpdate and LateUpdate Unity methods (not directly, but through the game's Updater class)."
+description: "Since RogueLibs handles custom stuff as classes, you might forget to initialize a new class in your plugin's `Awake`. That's why `RLSetup` attribute is here. You can just add it to a static method, and initialize your custom thing in there. Also, RogueLibs provides interfaces for your custom hooks to use Unity's Update, FixedUpdate and LateUpdate events."
 ---
 
 # Extra Utilities
 
-RogueLibs provides a couple of extra interfaces that you can use for any supported custom content hooks: `IDoUpdate`, `IDoFixedUpdate` and `IDoLateUpdate`. These interfaces correspond to the `Update`, `FixedUpdate` and `LateUpdate` Unity methods (not directly, but through the game's `Updater` class).
+## `RLSetup` attribute {#rlsetup}
+
+Since RogueLibs handles custom stuff as classes, you might forget to initialize a new class in your plugin's `Awake`. That's why `RLSetup` attribute is here. You can just add it to a static method, and initialize your custom thing in there.
+
+```csharp title="/MyAwesomeProject/MyAwesomeItem.cs"
+public class MyAwesomeItem : CustomItem
+{
+    // highlight-start
+    [RLSetup]
+    public static void Setup()
+    // highlight-end
+    {
+        RogueLibs.CreateCustomItem<MyAwesomeItem>()
+            .WithName(new CustomNameInfo("My Awesome Item"))
+            .WithDescription(new CustomNameInfo("My Awesome Item is very cool and does a lot of great stuff, and it's also awesome."))
+            .WithSprite(Properties.Resources.MyAwesomeItem)
+            .WithUnlock(new ItemUnlock());
+        
+        RogueLibs.CreateCustomName("MyAwesomeName", NameTypes.Dialogue, new CustomNameInfo("That's awesome!"));
+    }
+}
+```
+
+You'll just have to call the following method in your plugin's `Awake`:
+
+```csharp title="/MyAwesomeProject/MyAwesomePlugin.cs"
+    public void Awake()
+    {
+        // highlight-next-line
+        RogueLibs.LoadFromAssembly();
+        /* ... */
+    }
+```
+
+:::tip{title="Pro-tip"}
+Seriously, you should use it. It helps with versioning too. All of the logic in one place.
+:::
 
 ## `IDoUpdate`/`IDoFixedUpdate`/`IDoLateUpdate` {#update-interfaces}
+
+RogueLibs provides a couple of extra interfaces that you can use for any supported custom content hooks: `IDoUpdate`, `IDoFixedUpdate` and `IDoLateUpdate`. These interfaces correspond to the `Update`, `FixedUpdate` and `LateUpdate` Unity methods (not directly, but through the game's `Updater` class).
 
 If you want to update your items/traits/effects/objects with Unity's `Update`, `FixedUpdate` or `LateUpdate`, implement these interfaces:
 
@@ -61,41 +99,3 @@ public class MyAwesomeItem : CustomItem, IDoLateUpdate
 
 </TabItem>
 </Tabs>
-
-## `RLSetup` attribute {#rlsetup}
-
-Since RogueLibs handles custom stuff as classes, you might forget to initialize a new class in your plugin's `Awake`. That's why `RLSetup` attribute is here. You can just add it to a static method, and initialize your custom thing in there.
-
-```csharp title="/MyAwesomeProject/MyAwesomeItem.cs"
-public class MyAwesomeItem : CustomItem
-{
-    // highlight-start
-    [RLSetup]
-    public static void Setup()
-    // highlight-end
-    {
-        RogueLibs.CreateCustomItem<MyAwesomeItem>()
-            .WithName(new CustomNameInfo("My Awesome Item"))
-            .WithDescription(new CustomNameInfo("My Awesome Item is very cool and does a lot of great stuff, and it's also awesome."))
-            .WithSprite(Properties.Resources.MyAwesomeItem)
-            .WithUnlock(new ItemUnlock());
-        
-        RogueLibs.CreateCustomName("MyAwesomeName", NameTypes.Dialogue, new CustomNameInfo("That's awesome!"));
-    }
-}
-```
-
-You'll just have to call the following method in your plugin's `Awake`:
-
-```csharp title="/MyAwesomeProject/MyAwesomePlugin.cs"
-    public void Awake()
-    {
-        // highlight-next-line
-        RogueLibs.LoadFromAssembly();
-        /* ... */
-    }
-```
-
-:::tip{title="Pro-tip"}
-Seriously, you should use it. It helps with versioning too. All of the logic in one place.
-:::

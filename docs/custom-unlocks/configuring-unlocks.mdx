@@ -1,10 +1,11 @@
+---
+title: Configuring Unlocks
+description: Custom unlocks' displayed names, descriptions, images, buttons and their order in the list can be configured. You can even determine your own unlock conditions, change the displayed text and sprites conditionally and stuff like that.
+---
+
 # Configuring Unlocks
 
 Custom unlocks' displayed names, descriptions, images, buttons and their order in the list can be configured. You can even determine your own unlock conditions, change the displayed text and sprites conditionally and stuff like that.
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## Sorting {#sorting}
 
@@ -36,44 +37,50 @@ Here's an example of how this sorting would work:
 The menu might get weird or even crash if not all unlocks on the current `SortingOrder` have `IgnoreStateSorting` set to the same value. So make sure that all other unlocks have `IgnoreStateSorting` set to `true` too.
 :::
 
-## Overrideable methods {#methods}
+## Overrideable methods {#overrideable-methods}
 
-### `UnlockWrapper`
+### `UnlockWrapper` {#unlockwrapper}
 
-```csharp title="UnlockWrapper.cs"
+```csharp title="/RogueLibsCore/Hooks/Unlocks/UnlockWrapper.cs"
 // called when the unlock is initialized and integrated into the game
 public virtual void SetupUnlock() { }
 
 // called pretty often to determine if it can be unlocked right now
 public virtual void UpdateUnlock()
 {
-    if ((Unlock.nowAvailable = !Unlock.unlocked && CanBeUnlocked()) && UnlockCost is 0)
+    if ((Unlock.nowAvailable = !Unlock.unlocked && CanBeUnlocked()) && UnlockCost == 0)
         gc.unlocks.DoUnlockForced(Name, Type);
 }
 
 // determines whether the unlock can be unlocked right now
-public virtual bool CanBeUnlocked() => UnlockCost > -1
-    && Unlock.prerequisites.TrueForAll(c => gc.sessionDataBig.unlocks.Exists(u => u.unlockName == c && u.unlocked));
+public virtual bool CanBeUnlocked()
+    => UnlockCost > -1 && Unlock.prerequisites.TrueForAll(
+        c => gc.sessionDataBig.unlocks.Exists(u => u.unlockName == c && u.unlocked)
+    );
 
 // gets the unlock's raw name, without any rich text, costs and values
-public virtual string GetName() => gc.nameDB.GetName(Name, Unlock.unlockNameType);
+public virtual string GetName()
+    => gc.nameDB.GetName(Name, Unlock.unlockNameType);
 
 // gets the unlock's raw description, without any rich text, costs and values
-public virtual string GetDescription() => gc.nameDB.GetName(Name, Unlock.unlockDescriptionType);
+public virtual string GetDescription()
+    => gc.nameDB.GetName(Name, Unlock.unlockDescriptionType);
 
 // gets the unlock's image (displayed in the menus)
-public virtual Sprite GetImage() => RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image;
+public virtual Sprite GetImage()
+    => RogueFramework.ExtraSprites.TryGetValue(Name, out Sprite image) ? image;
 ```
 
-:::tip Pro-tip
+:::note
 You can see for yourself how these methods are implemented in [RogueLibs' source code](https://github.com/SugarBarrel/RogueLibs/blob/main/RogueLibsCore/Hooks/Unlocks/UnlockWrapper.cs).
 :::
 
-### `DisplayedUnlock`
+### `DisplayedUnlock` {#displayedunlock}
 
-```csharp title="DisplayedUnlock.cs"
+```csharp title="/RogueLibsCore/Hooks/Unlocks/DisplayedUnlock.cs"
 // called when the button is updated. `UpdateUnlock` is called right before this.
-public virtual void UpdateButton() => UpdateButton(IsEnabled, UnlockButtonState.Selected, UnlockButtonState.Normal);
+public virtual void UpdateButton()
+    => UpdateButton(IsEnabled, UnlockButtonState.Selected, UnlockButtonState.Normal);
 
 protected void UpdateButton(bool isEnabledOrSelected, UnlockButtonState selected, UnlockButtonState normal)
 {
@@ -99,25 +106,20 @@ public virtual string GetFancyDescription()
 }
 ```
 
-:::tip Pro-tip
+:::note
 You can see for yourself how these methods are implemented in [RogueLibs' source code](https://github.com/SugarBarrel/RogueLibs/blob/main/RogueLibsCore/Hooks/Unlocks/DisplayedUnlock.cs).
 :::
 
 ## Examples {#examples}
 
-<Tabs defaultValue="present"
-  values={[
-    {label:'Present (sprite variations)', value:'present'},
-    {label:'Random Items Button', value:'randomitems'},
-    {label:'Categories', value:'categories'},
-  ]}>
-<TabItem value="present">
+<Tabs>
+<TabItem value="Present (sprite variations)">
 
-Let's say, you want to make an [item called Present, and it has 3 different sprites](../custom-sprites#sprite-variations).
+Let's say, you want to make an [item called Present, and it has 3 different sprites](../misc/resources#sprite-variations).
 
 First of all, you'll need to create an unlock class deriving from `ItemUnlock`:
 
-```csharp title="PresentUnlock.cs"
+```csharp title="/MyAwesomeProject/PresentUnlock.cs"
 // highlight-next-line
 public class PresentUnlock : ItemUnlock
 {
@@ -126,7 +128,7 @@ public class PresentUnlock : ItemUnlock
 
 Now you can override the `DisplayedUnlock`'s `GetImage` method:
 
-```csharp title="PresentUnlock.cs"
+```csharp title="/MyAwesomeProject/PresentUnlock.cs"
 public class PresentUnlock : ItemUnlock
 {
     public override Sprite GetImage()
@@ -139,7 +141,7 @@ public class PresentUnlock : ItemUnlock
 
 Then just use your custom unlock in the custom item's initialization:
 
-```csharp title="Present.cs"
+```csharp title="/MyAwesomeProject/Present.cs"
 public class Present : CustomItem, IItemUsable
 {
     [RLSetup]
@@ -161,11 +163,11 @@ public class Present : CustomItem, IItemUsable
 ```
 
 </TabItem>
-<TabItem value="randomitems">
+<TabItem value="Random Items Button">
 
 A simple example - a button in the Item Teleporter's menu, that gives you 5 random items.
 
-```csharp title="RandomItemsButton.cs"
+```csharp title="/MyAwesomeProject/RandomItemsButton.cs"
 public class RandomItemsButton : ItemUnlock
 {
     [RLSetup]
@@ -207,20 +209,20 @@ public class RandomItemsButton : ItemUnlock
 ```
 
 </TabItem>
-<TabItem value="categories">
+<TabItem value="Categories">
 
-So, you want to make categories, like in [aToM](https://github.com/SugarBarrel/aToM)? Here you go!
+So, you want to make categories, like in [aToM](/mods/aToM)? Here you go!
 
-```csharp title="MyCategory.cs"
-public class MyCategory : MutatorUnlock
+```csharp title="/MyAwesomeProject/MyAwesomeCategory.cs"
+public class MyAwesomeCategory : MutatorUnlock
 {
     [RLSetup]
     public static void Setup()
     {
-        MyCategory category = new MyCategory("MyCustomCategory1");
+        MyAwesomeCategory category = new MyAwesomeCategory("MyAwesomeCategory1");
         RogueLibs.CreateCustomUnlock(category)
-            .WithName(new CustomNameInfo("My Custom Category 1"))
-            .WithDescription(new CustomNameInfo("My Custom Category 1 is very cool and does a lot of great stuff"));
+            .WithName(new CustomNameInfo("My Awesome Category 1"))
+            .WithDescription(new CustomNameInfo("My Awesome Category 1 is very cool and does a lot of great stuff, and it's also awesome."));
 
         category.SortingOrder = -59;
         category.SortingIndex = -1;
@@ -233,10 +235,10 @@ public class MyCategory : MutatorUnlock
         }
         Categories.Add(category);
         
-        category = new MyCategory("MyCustomCategory2");
+        category = new MyAwesomeCategory("MyAwesomeCategory2");
         RogueLibs.CreateCustomUnlock(category)
-            .WithName(new CustomNameInfo("My Custom Category 2"))
-            .WithDescription(new CustomNameInfo("My Custom Category 2 is really great and accomplishes a ton of cool things"));
+            .WithName(new CustomNameInfo("My Awesome Category 2"))
+            .WithDescription(new CustomNameInfo("My Awesome Category 2 is really great and accomplishes a ton of cool things, and it's awesome too."));
 
         category.SortingOrder = -58;
         category.SortingIndex = -1;
@@ -253,10 +255,10 @@ public class MyCategory : MutatorUnlock
         RogueLibs.CreateCustomName("CategoryHide", "Interface", new CustomNameInfo("Hide"));
     }
 
-    public MyCategory(string name) : base(name) { }
+    public MyAwesomeCategory(string name) : base(name) { }
 
     public List<UnlockWrapper> Contents = new List<UnlockWrapper>();
-    public static List<MyCategory> Categories = new List<MyCategory>();
+    public static List<MyAwesomeCategory> Categories = new List<MyAwesomeCategory>();
 
     private bool isExpanded;
     public bool IsExpanded
@@ -272,7 +274,7 @@ public class MyCategory : MutatorUnlock
                 
                 // if it was expanded, close all other categories
                 if (value)
-                    foreach (MyCategory category in Categories)
+                    foreach (MyAwesomeCategory category in Categories)
                         if (category != this) category.IsExpanded = false;
             }
         }
@@ -301,4 +303,3 @@ public class MyCategory : MutatorUnlock
 
 </TabItem>
 </Tabs>
-

@@ -1,16 +1,17 @@
+---
+title: Chargeable Abilities
+description: Custom abilities can be made chargeable by implementing the IAbilityChargeable interface. Ability's Count here works as the amount of stored up energy/charges. This interface makes use of some of the game's charging mechanics, but it doesn't completely rely on it. I'd recommend taking a look at Rechargeable Items, if you need finer control.
+---
+
 # Chargeable Abilities
 
-Custom abilities can be made chargeable by implementing the `IAbilityChargeable` interface. Ability's `Count` here works as the amount of stored up energy/charges. This interface makes use of some of the game's charging mechanics, but it doesn't completely rely on it. I'd recommend taking a look at [Recharging Items](../recharging-items.mdx), if you need finer control.
+Custom abilities can be made chargeable by implementing the `IAbilityChargeable` interface. Ability's `Count` here works as the amount of stored up energy/charges. This interface makes use of some of the game's charging mechanics, but it doesn't completely rely on it. I'd recommend taking a look at [Rechargeable Items](../custom-items/rechargeable-items), if you need finer control.
 
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-## Making abilities chargeable {#making-chargeable}
+## Making abilities chargeable {#iabilitychargeable}
 
 Just implement the `IAbilityChargeable` interface in your ability's class:
 
-```csharp title="MyChargeableAbility.cs"
+```csharp title="/MyAwesomeProject/MyChargeableAbility.cs"
 // highlight-next-line
 public class MyChargeableAbility : CustomAbility, IAbilityChargeable
 {
@@ -29,17 +30,12 @@ public class MyChargeableAbility : CustomAbility, IAbilityChargeable
 
 ## Examples {#examples}
 
-import CodeSnippet from '@site/src/components/CodeSnippet';
+<Tabs>
+<TabItem value="Kamikaze">
 
-import Kamikaze from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Abilities/Kamikaze.cs';
-
-<Tabs defaultValue="kamikaze"
-  values={[
-    {label:'Kamikaze', value:'kamikaze'},
-  ]}>
-<TabItem value="kamikaze">
-
-<CodeSnippet>{Kamikaze}</CodeSnippet>
+:::info{title="Work-In-Progress"}
+TODO: `<CodeSnippet>{Kamikaze}</CodeSnippet>`
+:::
 
 </TabItem>
 </Tabs>

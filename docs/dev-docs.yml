@@ -74,5 +74,6 @@ section: Advanced
 pages:
 
 - advanced:
+  - hooks
   - hook-factories
   - patching

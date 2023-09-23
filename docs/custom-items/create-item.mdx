@@ -84,7 +84,7 @@ public class MyAwesomeItem : CustomItem
     {
         RogueLibs.CreateCustomItem<MyAwesomeItem>()
             // highlight-start
-            .WithName(new CustomNameInfo("My Custom Item"))
+            .WithName(new CustomNameInfo("My Awesome Item"))
             .WithDescription(new CustomNameInfo("My Awesome Item is very cool and does a lot of great stuff, and it's also awesome."));
             // highlight-end
     }
@@ -144,14 +144,8 @@ Field name      | Description
 **`stackable`** | **Determines whether the item is stackable or has charges or something like that. If not set, the item's count is not displayed.**
 *`noCountText`* | *(optional) Determines whether the item's count should not be displayed, even if the field above is set to `true`.*
 
-<Tabs values={{
-  foodconsumable: "Food/Consumable",
-  tool: "Tool",
-  wearable: "Wearable",
-  weapon: "Weapon",
-  quest: "Quest Item",
-}}>
-<TabItem value="foodconsumable">
+<Tabs>
+<TabItem value="Food/Consumable">
 
 Field name          | Description
 --------------------|------------
@@ -162,7 +156,7 @@ Field name          | Description
 `goesInToolbar`     | Determines whether the item can be set to the toolbar and then be used with 1-5 keys.
 
 </TabItem>
-<TabItem value="tool">
+<TabItem value="Tool">
 
 Field name         | Description
 -------------------|------------
@@ -171,7 +165,7 @@ Field name         | Description
 `canBeUsedOn_____` | Determines whether the item can be used on these objects.
 
 </TabItem>
-<TabItem value="wearable">
+<TabItem value="Wearable">
 
 Field name           | Description
 ---------------------|------------
@@ -182,15 +176,15 @@ Field name           | Description
 `contents`           | Determines the list of effects that the wearer will get, when worn.
 `stackableContents`  | ???
 
-<Tabs values="body,head">
-<TabItem value="body">
+<Tabs>
+<TabItem value="Body">
 
 Field name | Description
 -----------|------------
 `isArmor`  | If your item is a body armor, set this to `true`.
 
 </TabItem>
-<TabItem value="head">
+<TabItem value="Head">
 
 Field name           | Description
 ---------------------|------------
@@ -204,7 +198,7 @@ Field name           | Description
 </Tabs>
 
 </TabItem>
-<TabItem value="weapon">
+<TabItem value="Weapon">
 
 Field name         | Description
 -------------------|------------
@@ -212,12 +206,8 @@ Field name         | Description
 `weaponCode`       | Set this to your weapon type's code.
 `weaponToBeLoaded` | Determines whether initially the item is not loaded, and has to be loaded/charged (like Water Pistol).
 
-<Tabs values={{
-  melee: "Melee weapon",
-  thrown: "Thrown weapon",
-  projectile: "Projectile weapon",
-}}>
-<TabItem value="melee">
+<Tabs>
+<TabItem value="Melee weapon">
 
 Field name            | Description
 ----------------------|------------
@@ -228,22 +218,22 @@ Field name            | Description
 `specialMeleeTexture` | Determines whether to use special sprites when held(?).
 
 </TabItem>
-<TabItem value="thrown">
+<TabItem value="Thrown weapon">
 
 Field name       | Description
 -----------------|------------
 `throwDistance`  | Maximum distance that the item can be thrown at.
 `throwExtraDist` | Determines whether the item should be thrown a little bit further than aimed at. Set this to `true`, if your item is a regular thrown weapon. Set this to `false`, if it's a trap, so it stays exactly in the position that you want to throw it in.
 
-<Tabs values="thrown,trap">
-<TabItem value="thrown">
+<Tabs>
+<TabItem value="Thrown">
 
 Field name    | Description
 --------------|------------
 `throwDamage` | Set this to your weapon's damage.
 
 </TabItem>
-<TabItem value="trap">
+<TabItem value="Trap">
 
 Field name         | Description
 -------------------|------------
@@ -257,7 +247,7 @@ Field name         | Description
 </Tabs>
 
 </TabItem>
-<TabItem value="projectile">
+<TabItem value="Projectile weapon">
 
 Field name             | Description
 -----------------------|------------
@@ -274,7 +264,7 @@ Field name             | Description
 </Tabs>
 
 </TabItem>
-<TabItem value="quest">
+<TabItem value="Quest Item">
 
 Field name        | Description
 ------------------|------------
@@ -284,13 +274,8 @@ Field name        | Description
 </TabItem>
 </Tabs>
 
-<Tabs values={{
-  limitations: "Limitations",
-  graphics: "Graphics",
-  other: "Other",
-  ai: "AI and Automation",
-}}>
-<TabItem value="limitations">
+<Tabs>
+<TabItem value="Limitations">
 
 Field name                            | Description
 --------------------------------------|------------
@@ -308,7 +293,7 @@ Field name                            | Description
 `characterExclusiveSpecificCharacter` | Set this to the agent's name, if it's exclusive to a specific agent and custom characters.
 
 </TabItem>
-<TabItem value="graphics">
+<TabItem value="Graphics">
 
 Field name          | Description
 --------------------|------------
@@ -318,7 +303,7 @@ Field name          | Description
 `lowCountThreshold` | Determines below what count the text becomes red. Default: `0` - it doesn't become red.
 
 </TabItem>
-<TabItem value="other">
+<TabItem value="Other">
 
 Field name     | Description
 ---------------|------------
@@ -326,7 +311,7 @@ Field name     | Description
 `canCatchFire` | Determines whether the item can catch fire. In the game it's used only on Factory Meat.
 
 </TabItem>
-<TabItem value="ai">
+<TabItem value="AI and Automation">
 
 Field name                | Description
 --------------------------|------------

@@ -1,18 +1,19 @@
+---
+title: Creating a Custom Effect
+description: RogueLibs provides classes and methods to create custom effects, and an interface to make status effects updateable. Just like items and traits, custom effects derive from a hook class, CustomEffect. If you want the effect to have some kind of a passive effect, then you might need to patch that in yourself.
+---
+
 # Creating a Custom Effect
 
 RogueLibs provides classes and methods to create custom effects, and an interface to make status effects updateable. Just like items and traits, custom effects derive from a hook class, `CustomEffect`. If you want the effect to have some kind of a passive effect, then you might need to patch that in yourself.
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## `CustomEffect` class {#customeffect}
 
 To make a custom effect, you need to create a class deriving from `CustomEffect`:
 
-```csharp title="MyCustomEffect.cs"
+```csharp title="/MyAwesomeProject/MyAwesomeEffect.cs"
 // highlight-next-line
-public class MyCustomEffect : CustomEffect
+public class MyAwesomeEffect : CustomEffect
 {
     /* ... */
 }
@@ -20,8 +21,8 @@ public class MyCustomEffect : CustomEffect
 
 There are 5 methods that you need to implement:
 
-```csharp title="MyCustomEffect.cs"
-public class MyCustomEffect : CustomEffect
+```csharp title="/MyAwesomeProject/MyAwesomeEffect.cs"
+public class MyAwesomeEffect : CustomEffect
 {
     // highlight-start
     public override int GetEffectTime() { /* ... */ }
@@ -45,7 +46,7 @@ public class MyCustomEffect : CustomEffect
 
 `OnUpdated` works like Unity's `Update`, but with a settable interval (default is 1 second):
 
-```csharp
+```csharp title="/MyAwesomeProject/MyAwesomeEffect.cs"
     public override void OnUpdated(EffectUpdatedArgs e)
     {
         // highlight-next-line
@@ -62,9 +63,9 @@ You're responsible for decrementing the effect's `CurrentTime`. So, don't forget
 
 All custom effect classes should have an `EffectParameters` attribute. You can specify whether your effect should be removed on death, on knockout or between levels. Default is `RemoveOnDeath`.
 
-```csharp
+```csharp title="/MyAwesomeProject/MyAwesomeEffect.cs"
 [EffectParameters(EffectLimitations.RemoveOnDeath | EffectLimitations.RemoveOnKnockOut)]
-public class MyCustomEffect : CustomEffect
+public class MyAwesomeEffect : CustomEffect
 {
     /* ... */
 }
@@ -74,14 +75,14 @@ public class MyCustomEffect : CustomEffect
 
 Just call the `CreateCustomEffect` method with your effect's type as a parameter:
 
-```csharp title="MyCustomEffect.cs"
-public class MyCustomEffect : CustomEffect
+```csharp title="/MyAwesomeProject/MyAwesomeEffect.cs"
+public class MyAwesomeEffect : CustomEffect
 {
     [RLSetup]
     public static void Setup()
     {
         // highlight-next-line
-        RogueLibs.CreateCustomEffect<MyCustomEffect>();
+        RogueLibs.CreateCustomEffect<MyAwesomeEffect>();
     }
 }
 ```
@@ -92,40 +93,35 @@ See more about the `RLSetup` attribute [here](../misc/utilities#rlsetup).
 
 You can set your effect's name and description using `WithName` and `WithDescription` methods:
 
-```csharp title="MyCustomEffect.cs"
-public class MyCustomEffect : CustomEffect
+```csharp title="/MyAwesomeProject/MyAwesomeEffect.cs"
+public class MyAwesomeEffect : CustomEffect
 {
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomEffect<MyCustomEffect>()
+        RogueLibs.CreateCustomEffect<MyAwesomeEffect>()
             // highlight-start
-            .WithName(new CustomNameInfo("My Custom Effect"))
-            .WithDescription(new CustomNameInfo("My Custom Effect is very cool and does a lot of great stuff"));
+            .WithName(new CustomNameInfo("My Awesome Effect"))
+            .WithDescription(new CustomNameInfo("My Awesome Effect is very cool and does a lot of great stuff, and it's also awesome."));
             // highlight-end
     }
 }
 ```
 
 :::info
-See [Custom Names](../names/custom-names) for more info.
+See [Custom Names](../localization/custom-names) for more info.
 :::
 
 ## Examples {#examples}
 
-import CodeSnippet from '@site/src/components/CodeSnippet';
+<Tabs>
+<TabItem value="Adrenaline">
 
-import Adrenaline from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Effects/Adrenaline.cs';
+A simple effect that just gives a temporary boost to some stats. You can see Adrenaline Shot's (item that gives this effect) implementation in [Usable Items: Examples](../custom-items/usable-items#examples).
 
-<Tabs defaultValue="adrenaline"
-  values={[
-    {label:'Adrenaline', value:'adrenaline'},
-  ]}>
-<TabItem value="adrenaline">
-
-A simple effect that just gives a temporary boost to some stats. You can see Adrenaline Shot's (item that gives this effect) implementation in [Usable Items: Examples](../items/usable-items#examples).
-
-<CodeSnippet>{Adrenaline}</CodeSnippet>
+:::info{title="Work-In-Progress"}
+TODO: `<CodeSnippet>{Adrenaline}</CodeSnippet>`
+:::
 
 </TabItem>
 </Tabs>

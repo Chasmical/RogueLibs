@@ -1,16 +1,17 @@
+---
+title: Rechargeable Abilities
+description: Custom abilities can be made rechargeable by implementing the IAbilityRechargeable interface. Ability's Count here works as a cooldown and usually represents the amount of time to wait until full recharge. This interface makes use of some of the game's recharging mechanics, but it doesn't completely rely on it. I'd recommend taking a look at Recharging Items, if you need finer control.
+---
+
 # Rechargeable Abilities
 
-Custom abilities can be made rechargeable by implementing the `IAbilityRechargeable` interface. Ability's `Count` here works as a cooldown and usually represents the amount of time to wait until full recharge. This interface makes use of some of the game's recharging mechanics, but it doesn't completely rely on it. I'd recommend taking a look at [Recharging Items](../recharging-items.mdx), if you need finer control.
+Custom abilities can be made rechargeable by implementing the `IAbilityRechargeable` interface. Ability's `Count` here works as a cooldown and usually represents the amount of time to wait until full recharge. This interface makes use of some of the game's recharging mechanics, but it doesn't completely rely on it. I'd recommend taking a look at [Rechargeable Items](../custom-items/rechargeable-items), if you need finer control.
 
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-## Making abilities rechargeable {#making-rechargeable}
+## Making abilities rechargeable {#iabilityrechargeable}
 
 Just implement the `IAbilityRechargeable` interface in your ability's class:
 
-```csharp title="MyRechargeableAbility.cs"
+```csharp title="/MyAwesomeProject/MyRechargeableAbility.cs"
 // highlight-next-line
 public class MyRechargeableAbility : CustomAbility, IAbilityRechargeable
 {
@@ -19,13 +20,13 @@ public class MyRechargeableAbility : CustomAbility, IAbilityRechargeable
 }
 ```
 
-:::tip Pro-tip
-You can just set it to 0 when it's fully recharged and to 1 when it's recharging (you can override the displayed count if you want), and use your own cooldown mechanism instead. See [Recharging Items](../recharging-items) for more info.
+:::tip{title="Pro-tip"}
+You can just set it to 0 when it's fully recharged and to 1 when it's recharging (you can override the displayed count if you want), and use your own cooldown mechanism instead. See [Rechargeable Items](../custom-items/rechargeable-items) for more info.
 :::
 
 `OnRecharging` works like Unity's `Update`, but with a settable interval (default is 1 second):
 
-```csharp
+```csharp title="/MyAwesomeProject/MyRechargeableAbility.cs"
     public void OnRecharging(AbilityRechargingArgs e)
     {
         // highlight-next-line
@@ -35,23 +36,18 @@ You can just set it to 0 when it's fully recharged and to 1 when it's recharging
 ```
 
 :::info
-You're responsible for decrementing the ability's `Count`. So, don't forget to do that.  
+You're responsible for decrementing the ability's `Count`. So, don't forget to do that.
 Ability will stop recharging when `Count` reaches 0. To start recharging again, just set `Count` to any other value.
 :::
 
 ## Examples {#examples}
 
-import CodeSnippet from '@site/src/components/CodeSnippet';
+<Tabs>
+<TabItem value="Titan">
 
-import Titan from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Abilities/Titan.cs';
-
-<Tabs defaultValue="titan"
-  values={[
-    {label:'Titan', value:'titan'},
-  ]}>
-<TabItem value="titan">
-
-<CodeSnippet>{Titan}</CodeSnippet>
+:::info{title="Work-In-Progress"}
+TODO: `<CodeSnippet>{Titan}</CodeSnippet>`
+:::
 
 </TabItem>
 </Tabs>

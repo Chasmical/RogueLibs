@@ -1,10 +1,11 @@
+---
+title: Hooks
+description: A hook is an object that is attached to another object ("hook" is a really vague word, jsyk). In RogueLibs hook types derive from IHook and IHook<T>, and RogueLibs provides a mechanism to attach these hooks to vanilla types, such as InvItem, PlayfieldObject, Unlock, Trait and etc. Most custom content classes are based on hooks in one way or another.
+---
+
 # Hooks
 
 A **hook** is an object that is attached to another object ("hook" is a really vague word, jsyk). In RogueLibs hook types derive from `IHook` and `IHook<T>`, and RogueLibs provides a mechanism to attach these hooks to vanilla types, such as `InvItem`, `PlayfieldObject`, `Unlock`, `Trait` and etc. Most custom content classes are based on hooks in one way or another.
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## `IHook` interface {#ihook}
 
@@ -12,11 +13,13 @@ RogueLibsPatcher.dll creates fields called `__RogueLibsHooks` in all hookable ty
 
 You can create your own hooks by deriving either from `IHook<T>` or from `HookBase<T>`:
 
-```csharp title="MyCustomHook.cs"
-public class MyCustomHook : HookBase<InvItem>
+```csharp title="/MyAwesomeProject/MyAwesomeHook.cs"
+public class MyAwesomeHook : HookBase<InvItem>
 {
+    private string Data;
+
     protected override void Initialize() { }
-    
+
     public void StoreInfo(string data)
     {
         Debug.Log($"Stored {data}.");
@@ -27,7 +30,6 @@ public class MyCustomHook : HookBase<InvItem>
         Debug.Log($"Loaded {Data}.");
         return Data;
     }
-    private string Data;
 }
 ```
 
@@ -35,15 +37,15 @@ public class MyCustomHook : HookBase<InvItem>
 
 You can use hooks to store various stuff:
 
-```csharp
-MyCustomHook hook = item.AddHook<MyCustomHook>();
+```csharp title="/MyAwesomeProject/MyAwesomeHook.cs"
+MyAwesomeHook hook = item.AddHook<MyAwesomeHook>();
 hook.StoreInfo("some-information");
 ```
 
 Then you can use that stuff somewhere else:
 
-```csharp
-MyCustomHook hook = item.GetHook<MyCustomHook>();
+```csharp title="/MyAwesomeProject/MyAwesomeHook.cs"
+MyAwesomeHook? hook = item.GetHook<MyAwesomeHook>();
 if (hook != null)
 {
     string data = hook.LoadInfo();
@@ -52,23 +54,23 @@ if (hook != null)
 
 You can attach more than one hook of a type too:
 
-```csharp
-MyCustomHook hook = item.AddHook<MyCustomHook>();
+```csharp title="/MyAwesomeProject/MyAwesomeHook.cs"
+MyAwesomeHook hook = item.AddHook<MyAwesomeHook>();
 hook.StoreInfo("some-information");
-hook = item.AddHook<MyCustomHook>();
+hook = item.AddHook<MyAwesomeHook>();
 hook.StoreInfo("some-other-stuff");
-hook = item.AddHook<MyCustomHook>();
+hook = item.AddHook<MyAwesomeHook>();
 hook.StoreInfo("something-else");
 ```
 
-```csharp
-foreach (MyCustomHook hook in item.GetHooks<MyCustomHook>())
+```csharp title="/MyAwesomeProject/MyAwesomeHook.cs"
+foreach (MyAwesomeHook hook in item.GetHooks<MyAwesomeHook>())
 {
     string data = hook.LoadInfo();
 }
 ```
 
-:::tip Pro-tip: Hook Factories
+:::tip{title="Pro-tip: Hook Factories"}
 If you want to attach hooks to instances right when they are initialized, use [Hook Factories](./hook-factories).
 :::
 
@@ -78,22 +80,16 @@ If you want to attach hooks to instances right when they are initialized, use [H
 Custom content classes (`CustomItem`, `CustomTrait`, `CustomEffect`, `CustomAbility` and others) are hooks, by the way. You can see the custom classes' implementation in [RogueLibs' source code](https://github.com/SugarBarrel/RogueLibs/tree/main/RogueLibsCore/Hooks).
 :::
 
-import CodeSnippet from '@site/src/components/CodeSnippet';
-
-import SpiceRack from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/SpiceRack.cs';
-
-<Tabs
-    defaultValue="spicerack"
-    values={[
-        {label:'Spice Rack', value:'spicerack'},
-    ]}>
-<TabItem value="spicerack">
+<Tabs>
+<TabItem value="Spice Rack">
 
 A great example with custom hooks keeping track of seasoned items.
 
-See the combinable item example [here](../items/combinable-items#examples).
+See the combinable item example [here](../custom-items/combinable-items#examples).
 
-<CodeSnippet>{SpiceRack}</CodeSnippet>
+:::info{title="Work-In-Progress"}
+TODO: `<CodeSnippet>{SpiceRack}</CodeSnippet>`
+:::
 
 </TabItem>
 </Tabs>

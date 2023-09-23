@@ -1,13 +1,13 @@
 ---
 title: Usable Items
-description: "Custom items can be made usable by implementing the IItemUsable interface, that defines a single method, UseItem. Usable items can be used by right-clicking them in the inventory, or using them from the toolbar (1-5 keys)."
+description: Custom items can be made usable by implementing the IItemUsable interface, that defines a single method, UseItem. Usable items can be used by right-clicking them in the inventory, or using them from the toolbar (1-5 keys).
 ---
 
 # Usable Items
 
 Custom items can be made usable by implementing the `IItemUsable` interface, that defines a single method, `UseItem`. Usable items can be used by right-clicking them in the inventory, or using them from the toolbar (1-5 keys).
 
-## Making items usable {#making-usable}
+## Making items usable {#iitemusable}
 
 Just implement the `IItemUsable` interface in your item's class:
 
@@ -22,7 +22,7 @@ public class MyUsableItem : CustomItem, IItemUsable
 
 `UseItem`'s return value indicates whether the item was successfully used. Returning `true` will also play an animation. When returning `false`, you can play a `"CantDo"` sound, and optionally make the current owner say why the item cannot be used:
 
-```csharp
+```csharp title="/MyAwesomeProject/MyUsableItem.cs"
         if (cantUse)
         {
             gc.audioHandler.Play(Owner, "CantDo");
@@ -43,21 +43,27 @@ You're responsible for decrementing the item's `Count`. So, don't forget to do t
 
 A simple usable item that allows the player to use the Joke ability.
 
-{/* <CodeSnippet>{JokeBook}</CodeSnippet> */}
+:::info{title="Work-In-Progress"}
+TODO: `<CodeSnippet>{JokeBook}</CodeSnippet>`
+:::
 
 </TabItem>
 <TabItem value="Adrenaline Shot">
 
 A simple usable item that gives the player an effect called "Adrenaline". You can see Adrenaline effect's implementation in [Creating a Custom Effect: Examples](../traits/create-effect#examples).
 
-{/* <CodeSnippet>{AdrenalineShot}</CodeSnippet> */}
+:::info{title="Work-In-Progress"}
+TODO: `<CodeSnippet>{AdrenalineShot}</CodeSnippet>`
+:::
 
 </TabItem>
 <TabItem value="Wild Bypasser">
 
 A more complicated usable item, based on Wall Bypasser's code (see `ItemFunctions.UseItem`).
 
-{/* <CodeSnippet>{WildBypasser}</CodeSnippet> */}
+:::info{title="Work-In-Progress"}
+TODO: `<CodeSnippet>{WildBypasser}</CodeSnippet>`
+:::
 
 </TabItem>
 </Tabs>

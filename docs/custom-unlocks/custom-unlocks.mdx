@@ -1,10 +1,11 @@
+---
+title: Custom Unlocks
+description: Custom unlocks allow your custom content to be accessed through vanilla menus. Unlike other hooks, unlocks persist throughout the game, and get destroyed and created only when initially loading the game or changing save slots. RogueLibs also creates wrappers around vanilla unlocks, to ensure the compatibility of your unlocks with the vanilla ones.
+---
+
 # Custom Unlocks
 
 Custom unlocks allow your custom content to be accessed through vanilla menus. Unlike other hooks, unlocks persist throughout the game, and get destroyed and created only when initially loading the game or changing save slots. RogueLibs also creates wrappers around vanilla unlocks, to ensure the compatibility of your unlocks with the vanilla ones.
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 
 `UnlockWrapper` is a flexible wrapper around a `Unlock` class, and provides methods to get the unlock's name, description, image and other stuff. It is the base class for any and all custom or vanilla unlocks.
 
@@ -35,16 +36,16 @@ There's also a couple of classes that are in RogueLibs only for compatibility re
 
 You can initialize your unlocks like this:
 
-```csharp title="MyCustomItem.cs"
-public class MyCustomItem : CustomItem
+```csharp title="/MyAwesomeProject/MyAwesomeItem.cs"
+public class MyAwesomeItem : CustomItem
 {
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomItem<MyCustomItem>()
-            .WithName(new CustomNameInfo("My Custom Item"))
-            .WithDescription(new CustomNameInfo("My Custom Item is very cool and does a lot of great stuff"))
-            .WithSprite(Properties.Resources.MyCustomItem)
+        RogueLibs.CreateCustomItem<MyAwesomeItem>()
+            .WithName(new CustomNameInfo("My Awesome Item"))
+            .WithDescription(new CustomNameInfo("My Awesome Item is very cool and does a lot of great stuff, and it's also awesome."))
+            .WithSprite(Properties.Resources.MyAwesomeItem)
             // highlight-next-line
             .WithUnlock(new ItemUnlock
             {
@@ -56,10 +57,14 @@ public class MyCustomItem : CustomItem
 }
 ```
 
+:::info{title="Work-In-Progress"}
+TODO: The below is to be moved to [Creating a Custom Mutator](../custom-mutators/create-mutator).
+:::
+
 Or you can just initialize them directly (like in case of mutators):
 
-```csharp
-RogueLibs.CreateCustomUnlock(new MutatorUnlock("MyMutator"))
-    .WithName(new CustomNameInfo("Mutator Name"))
-    .WithDescription(new CustomNameInfo("Mutator Description"));
+```csharp title="/MyAwesomeProject/MyAwesomeMutators.cs"
+RogueLibs.CreateCustomUnlock(new MutatorUnlock("MyAwesomeMutator"))
+    .WithName(new CustomNameInfo("My Awesome Mutator"))
+    .WithDescription(new CustomNameInfo("My Awesome Mutator is very cool and does a lot of great stuff, and it's also awesome."));
 ```

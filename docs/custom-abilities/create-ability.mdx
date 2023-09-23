@@ -1,17 +1,18 @@
+---
+title: Creating a Custom Ability
+description: "Special abilities in SoR are actually implemented as items. They have SetupDetails, Count, and exist in the owner's inventory, just like items. The CustomAbility class provided by RogueLibs inherits from the CustomItem class and provides a default implementation of SetupDetails. Just like with custom items, you can use interfaces to expand your ability's functionality: IAbilityRechargeable, IAbilityChargeable, IAbilityTargetable."
+---
+
 # Creating a Custom Ability
 
-Special abilities in SoR are actually implemented as items. They have `SetupDetails`, `Count`, and exist in the owner's inventory, just like items. The `CustomAbility` class provided by RogueLibs inherits from the `CustomItem` class and provides a default implementation of `SetupDetails`. Just like with custom items, you can use interfaces to expand your ability's functionality: [`IAbilityRechargeable`](./rechargeable-abilities.mdx), [`IAbilityChargeable`](./chargeable-abilities.mdx), [`IAbilityTargetable`](./targetable-abilities.mdx).
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
+Special abilities in SoR are actually implemented as items. They have `SetupDetails`, `Count`, and exist in the owner's inventory, just like items. The `CustomAbility` class provided by RogueLibs inherits from the `CustomItem` class and provides a default implementation of `SetupDetails`. Just like with custom items, you can use interfaces to expand your ability's functionality: [`IAbilityRechargeable`](./rechargeable-abilities), [`IAbilityChargeable`](./chargeable-abilities), [`IAbilityTargetable`](./targetable-abilities).
 
 ## `CustomAbility` class {#customability}
 To make a custom ability, you need to create a class deriving from `CustomAbility`:
 
-```csharp title="MyCustomAbility.cs"
+```csharp title="/MyAwesomeProject/MyAwesomeAbility.cs"
 // highlight-next-line
-public class MyCustomAbility : CustomAbility
+public class MyAwesomeAbility : CustomAbility
 {
     /* ... */
 }
@@ -19,8 +20,8 @@ public class MyCustomAbility : CustomAbility
 
 You only need to implement 2 methods: `OnAdded` is called when a character receives this special ability, and `OnPressed` is called when the player uses the ability. There's no `OnRemoved` at the moment, because it's not implemented in SoR.
 
-```csharp title="MyCustomAbility.cs"
-public class MyCustomAbility : CustomAbility
+```csharp title="/MyAwesomeProject/MyAwesomeAbility.cs"
+public class MyAwesomeAbility : CustomAbility
 {
     // highlight-start
     public override void OnAdded() { /* ... */ }
@@ -33,7 +34,7 @@ public class MyCustomAbility : CustomAbility
 
 `SetupDetails` is overriden by `CustomAbility` and here's its implementation:
 
-```csharp
+```csharp title="/MyAwesomeProject/MyAwesomeAbility.cs"
     public override void SetupDetails()
     {
         Item.stackable = true;
@@ -48,14 +49,14 @@ This method should work for most abilities, but if you need something more sophi
 
 Just call the `CreateCustomAbility` method with your ability's type as a parameter:
 
-```csharp title="MyCustomAbility.cs"
-public class MyCustomAbility : CustomAbility
+```csharp title="/MyAwesomeProject/MyAwesomeAbility.cs"
+public class MyAwesomeAbility : CustomAbility
 {
     [RLSetup]
     public static void Setup()
     {
         // highlight-next-line
-        RogueLibs.CreateCustomAbility<MyCustomAbility>();
+        RogueLibs.CreateCustomAbility<MyAwesomeAbility>();
     }
 }
 ```
@@ -66,16 +67,16 @@ See more about the `RLSetup` attribute [here](../misc/utilities#rlsetup).
 
 You can set your ability's name and description using `WithName` and `WithDescription` methods:
 
-```csharp title="MyCustomAbility.cs"
-public class MyCustomAbility : CustomAbility
+```csharp title="/MyAwesomeProject/MyAwesomeAbility.cs"
+public class MyAwesomeAbility : CustomAbility
 {
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomAbility<MyCustomAbility>()
+        RogueLibs.CreateCustomAbility<MyAwesomeAbility>()
             // highlight-start
-            .WithName(new CustomNameInfo("My Custom Ability"))
-            .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"));
+            .WithName(new CustomNameInfo("My Awesome Ability"))
+            .WithDescription(new CustomNameInfo("My Awesome Item is very cool and does a lot of great stuff, and it's also awesome."));
             // highlight-end
     }
 }
@@ -83,17 +84,17 @@ public class MyCustomAbility : CustomAbility
 
 You can do the same with sprites and unlocks:
 
-```csharp title="MyCustomAbility.cs"
-public class MyCustomAbility : CustomAbility
+```csharp title="/MyAwesomeProject/MyAwesomeAbility.cs"
+public class MyAwesomeAbility : CustomAbility
 {
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomAbility<MyCustomAbility>()
-            .WithName(new CustomNameInfo("My Custom Ability"))
-            .WithDescription(new CustomNameInfo("My Custom Ability is very cool and does a lot of great stuff"));
+        RogueLibs.CreateCustomAbility<MyAwesomeAbility>()
+            .WithName(new CustomNameInfo("My Awesome Ability"))
+            .WithDescription(new CustomNameInfo("My Awesome Item is very cool and does a lot of great stuff, and it's also awesome."))
             // highlight-start
-            .WithSprite(Properties.Resources.MyCustomAbility)
+            .WithSprite(Properties.Resources.MyAwesomeAbility)
             .WithUnlock(new AbilityUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
             // highlight-end
     }
@@ -101,7 +102,7 @@ public class MyCustomAbility : CustomAbility
 ```
 
 :::info
-See [Custom Names](../../names/custom-names), [Custom Sprites](../../custom-sprites) for more info.
+See [Custom Names](../localization/custom-names), [Custom Sprites](../misc/resources) for more info.
 :::
 
 ## Unlock Properties {#unlock-properties}
@@ -121,14 +122,11 @@ Other properties **should not** be used during initialization.
 
 ## Examples {#examples}
 
-<Tabs defaultValue=""
-  values={[
-    {label:'', value:''},
-  ]}>
+<Tabs>
 <TabItem value="">
 
-```csharp title=""
-
+```csharp title="/MyAwesomeProject/"
+// TODO: Example needed
 ```
 
 </TabItem>

@@ -1,17 +1,18 @@
+---
+title: Custom Name Providers
+description: If you have some kind of a complicated localization logic, then you might want to create your own INameProvider. This way you can control what strings are returned by NameDB.GetName in a more generic way. You can even hook up your localization provider, if you don't like the localization system provided by RogueLibs.
+---
+
 # Custom Name Providers
 
 If you have some kind of a complicated localization logic, then you might want to create your own `INameProvider`. This way you can control what strings are returned by `NameDB.GetName` in a more generic way. You can even hook up your localization provider, if you don't like the localization system provided by RogueLibs.
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## `INameProvider` interface {#inameprovider}
 
 Just create a class implementing `INameProvider` and add it to `RogueFramework`:
 
-```csharp title="MyNameProvider.cs"
-public class MyNameProvider : INameProvider
+```csharp title="/MyAwesomeProject/MyAwesomeNameProvider.cs"
+public class MyAwesomeNameProvider : INameProvider
 {
     public void GetName(string name, string type, ref string? result)
     {
@@ -28,24 +29,30 @@ public class MyNameProvider : INameProvider
 If the original `NameDB.GetName` returned an error string (with `E_` prefix), `result` is set to `null`.
 :::
 
-```csharp
-RogueFramework.NameProviders.Add(new MyNameProvider());
+```csharp title="/MyAwesomeProject/MyAwesomeNameProvider.cs"
+[RLSetup]
+public static void Setup()
+{
+    RogueFramework.NameProviders.Add(new MyNameProvider());
+}
 ```
 
-Here's a more practical and useful example, that is already implemented in RogueLibs:
+## Examples {#examples}
 
-```csharp
+Here's a practical and useful example, that is already implemented in RogueLibs:
+
+```csharp title="/RogueLibsCore/Names/Provides/DialogueNameProvider.cs"
 public class DialogueNameProvider : INameProvider
 {
-	public void GetName(string name, string type, ref string? result)
-	{
-		if (result is null && type == "Dialogue" && name.StartsWith("NA_"))
-		{
-			string sub = name.Substring("NA_".Length);
-			string newResult = LanguageService.NameDB.GetName(sub, type);
-			if (!newResult.StartsWith("E_")) result = newResult;
-		}
-	}
+    public void GetName(string name, string type, ref string? result)
+    {
+        if (result is null && type == "Dialogue" && name.StartsWith("NA_"))
+        {
+            string sub = name.Substring("NA_".Length);
+            string newResult = LanguageService.NameDB.GetName(sub, type);
+            if (!newResult.StartsWith("E_")) result = newResult;
+        }
+    }
 }
 ```
 

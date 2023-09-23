@@ -1,18 +1,19 @@
+---
+title: Creating a Custom Effect
+description: "RogueLibs provides classes and methods to create custom traits, and an interface to make traits updateable. Just like items, custom traits derive from a hook class, CustomTrait, and their functionality can be expanded with interfaces: ITraitUpdateable, just one in this case. If you want the trait to have some kind of a passive effect, then you might need to patch that in yourself."
+---
+
 # Creating a Custom Trait
 
 RogueLibs provides classes and methods to create custom traits, and an interface to make traits updateable. Just like items, custom traits derive from a hook class, `CustomTrait`, and their functionality can be expanded with interfaces: `ITraitUpdateable`, just one in this case. If you want the trait to have some kind of a passive effect, then you might need to patch that in yourself.
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
 
 ## `CustomTrait` class {#customtrait}
 
 To make a custom trait, you need to create a class deriving from `CustomTrait`:
 
-```csharp title="MyCustomTrait.cs"
+```csharp title="/MyAwesomeProject/MyAwesomeTrait.cs"
 // highlight-next-line
-public class MyCustomTrait : CustomTrait
+public class MyAwesomeTrait : CustomTrait
 {
     /* ... */
 }
@@ -20,8 +21,8 @@ public class MyCustomTrait : CustomTrait
 
 There are 2 methods that you need to implement:
 
-```csharp title="MyCustomTrait.cs"
-public class MyCustomTrait : CustomTrait
+```csharp title="/MyAwesomeProject/MyAwesomeTrait.cs"
+public class MyAwesomeTrait : CustomTrait
 {
     // highlight-start
     public override void OnAdded() { /* ... */ }
@@ -36,8 +37,8 @@ public class MyCustomTrait : CustomTrait
 
 You can make your trait updateable by implementing the `ITraitUpdateable` interface:
 
-```csharp title="MyCustomTrait.cs"
-public class MyCustomTrait : CustomTrait, ITraitUpdateable
+```csharp title="/MyAwesomeProject/MyAwesomeTrait.cs"
+public class MyAwesomeTrait : CustomTrait, ITraitUpdateable
 {
     public void OnUpdated(TraitUpdatedArgs e) { /* ... */ }
 }
@@ -45,7 +46,7 @@ public class MyCustomTrait : CustomTrait, ITraitUpdateable
 
 `OnUpdated` works like Unity's `Update`, but with a settable interval (default is 1 second):
 
-```csharp
+```csharp title="/MyAwesomeProject/MyAwesomeTrait.cs"
     public void OnUpdated(TraitUpdatedArgs e)
     {
         // highlight-next-line
@@ -58,14 +59,14 @@ public class MyCustomTrait : CustomTrait, ITraitUpdateable
 
 Just call the `CreateCustomTrait` method with your trait's type as a parameter:
 
-```csharp title="MyCustomTrait.cs"
-public class MyCustomTrait : CustomTrait
+```csharp title="/MyAwesomeProject/MyAwesomeTrait.cs"
+public class MyAwesomeTrait : CustomTrait
 {
     [RLSetup]
     public static void Setup()
     {
         // highlight-next-line
-        RogueLibs.CreateCustomTrait<MyCustomTrait>();
+        RogueLibs.CreateCustomTrait<MyAwesomeTrait>();
     }
 }
 ```
@@ -76,16 +77,16 @@ See more about the `RLSetup` attribute [here](../misc/utilities#rlsetup).
 
 You can set your trait's name and description using `WithName` and `WithDescription` methods:
 
-```csharp title="MyCustomTrait.cs"
-public class MyCustomTrait : CustomTrait
+```csharp title="/MyAwesomeProject/MyAwesomeTrait.cs"
+public class MyAwesomeTrait : CustomTrait
 {
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomTrait<MyCustomTrait>()
+        RogueLibs.CreateCustomTrait<MyAwesomeTrait>()
             // highlight-start
-            .WithName(new CustomNameInfo("My Custom Trait"))
-            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"));
+            .WithName(new CustomNameInfo("My Awesome Trait"))
+            .WithDescription(new CustomNameInfo("My Awesome Trait is very cool and does a lot of great stuff, and it's also awesome."));
             // highlight-end
     }
 }
@@ -93,18 +94,18 @@ public class MyCustomTrait : CustomTrait
 
 You can do the same with sprites and unlocks:
 
-```csharp title="MyCustomTrait.cs"
-public class MyCustomTrait : CustomTrait
+```csharp title="/MyAwesomeProject/MyAwesomeTrait.cs"
+public class MyAwesomeTrait : CustomTrait
 {
     [RLSetup]
     public static void Setup()
     {
-        RogueLibs.CreateCustomTrait<MyCustomTrait>()
-            .WithName(new CustomNameInfo("My Custom Trait"))
-            .WithDescription(new CustomNameInfo("My Custom Trait is very cool and does a lot of great stuff"))
+        RogueLibs.CreateCustomTrait<MyAwesomeTrait>()
+            .WithName(new CustomNameInfo("My Awesome Trait"))
+            .WithDescription(new CustomNameInfo("My Awesome Trait is very cool and does a lot of great stuff, and it's also awesome."))
             // highlight-start
             // the sprite will be displayed only in the menus (optional)
-            .WithSprite(Properties.Resources.MyCustomTrait)
+            .WithSprite(Properties.Resources.MyAwesomeTrait)
             .WithUnlock(new TraitUnlock { UnlockCost = 10, CharacterCreationCost = 5 });
             // highlight-end
     }
@@ -112,7 +113,7 @@ public class MyCustomTrait : CustomTrait
 ```
 
 :::info
-See [Custom Names](../names/custom-names), [Custom Sprites](../custom-sprites) for more info.
+See [Custom Names](../localization/custom-names), [Custom Sprites](../misc/resources) for more info.
 :::
 
 ## Unlock Properties {#unlock-properties}
@@ -133,18 +134,12 @@ Other properties should not be used during initialization.
 
 ## Examples {#examples}
 
-import CodeSnippet from '@site/src/components/CodeSnippet';
+<Tabs>
+<TabItem value="Smoker">
 
-import Smoker from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Traits/Smoker.cs';
-
-<Tabs
-    defaultValue="smoker"
-    values={[
-        {label:'Smoker', value:'smoker'},
-    ]}>
-<TabItem value="smoker">
-
-<CodeSnippet>{Smoker}</CodeSnippet>
+:::info{title="Work-In-Progress"}
+TODO: `<CodeSnippet>{Smoker}</CodeSnippet>`
+:::
 
 </TabItem>
 </Tabs>

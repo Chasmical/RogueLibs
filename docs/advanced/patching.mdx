@@ -11,10 +11,10 @@ RogueLibs provides several utilities to help you with patching. Whether you use 
 
 `RoguePatcher` is a small helper class that makes writing patches a little bit faster and easier. If you need more control (patch order, priority, etc.), then you should use the original Harmony methods.
 
-<Tabs values="RoguePatcher,Harmony">
+<Tabs>
 <TabItem value="RoguePatcher">
 
-```csharp
+```csharp title="/MyAwesomeProject/MyAwesomePlugin.cs"
 RoguePatcher patcher = new RoguePatcher(this);
 
 patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
@@ -25,7 +25,7 @@ patcher.Postfix(typeof(InvDatabase), nameof(InvDatabase.ChooseArmor), new Type[1
 </TabItem>
 <TabItem value="Harmony">
 
-```csharp
+```csharp title="/MyAwesomeProject/MyAwesomePlugin.cs"
 Harmony harmony = new Harmony(pluginGUID);
 
 MethodInfo original = AccessTools.Method(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
@@ -40,15 +40,19 @@ harmony.Patch(original, new HarmonyMethod(patch));
 </TabItem>
 </Tabs>
 
-:::tip{title="Pro-tip"}
+:::tip{title="Pro-tip: Use nameof keyword"}
 Instead of specifying method names using strings, you should specify them using the `nameof` keyword. Use string names only if the method you're trying to patch is not public.
 :::
 
 Patch methods should have the following name: `<TargetType>_<TargetMethod>`. In the example above, `RoguePatcher` will search for patch methods called `StatusEffects_hasStatusEffect` and `InvDatabase_ChooseArmor` in your plugin's class.
 
+:::tip{title="Pro-tip: Parameter types are optional"}
+If you have several methods with the same name, but different parameter types, `RoguePatcher` will choose the one with the most parameters. That would usually be the correct way of patching the methods in the game.
+:::
+
 You can change the type to search patch methods in. Specify it in the constructor or set the property between patches:
 
-<Tabs values="RoguePatcher,Harmony">
+<Tabs>
 <TabItem value="RoguePatcher">
 
 ```csharp title="/MyAwesomeProject/MyAwesomePlugin.cs"
@@ -86,7 +90,7 @@ public class MyEvenMoreAwesomePatches
 </TabItem>
 <TabItem value="Harmony">
 
-```csharp
+```csharp title="/MyAwesomeProject/MyAwesomePlugin.cs"
 public class MyAwesomePlugin : BaseUnityPlugin
 {
     public void Awake()
@@ -125,10 +129,10 @@ public class MyEvenMoreAwesomePatches
 
 Transpilers are kind of complicated, since they use a low-level Intermediate Language (IL) instead of C# (branches, loops and conditions are the hardest part in here). As an example, here's one of the simplest transpilers from RogueLibs:
 
-<Tabs values={{ helper: "Helper methods", harmony: "Harmony" }}>
-<TabItem value="helper">
+<Tabs>
+<TabItem value="Helper methods">
 
-```csharp
+```csharp title="/RogueLibsCore/Patches/Patches_TraitsStatusEffects.cs"
 public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> codeEnumerable)
     => codeEnumerable.AddRegionAfter(
         new Func<CodeInstruction, bool>[]
@@ -148,9 +152,9 @@ private static readonly FieldInfo causingAgentField = typeof(StatusEffect).GetFi
 ```
 
 </TabItem>
-<TabItem value="harmony">
+<TabItem value="Harmony">
 
-```csharp
+```csharp title="/RogueLibsCore/Patches/Patches_TraitsStatusEffects.cs"
 public static IEnumerable<CodeInstruction> StatusEffects_AddStatusEffect(IEnumerable<CodeInstruction> code)
 {
     bool searching = true;
@@ -195,10 +199,10 @@ Heavy calculations like that can cost you **hundreds of milliseconds** of start-
 
 Here's another example from RogueLibs:
 
-<Tabs values={{ helper: "Helper methods", harmony: "Harmony" }}>
-<TabItem value="helper">
+<Tabs>
+<TabItem value="Helper methods">
 
-```csharp
+```csharp title="/RogueLibsCore/Patches/Patches_Unlocks.cs"
 public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> codeEnumerable)
     => codeEnumerable.ReplaceRegion(
         new Func<CodeInstruction, bool>[]
@@ -223,9 +227,9 @@ private static readonly MethodInfo List_Unlock_GetEnumerator = typeof(List<Unloc
 ```
 
 </TabItem>
-<TabItem value="harmony">
+<TabItem value="Harmony">
 
-```csharp
+```csharp title="/RogueLibsCore/Patches/Patches_Unlocks.cs"
 public static IEnumerable<CodeInstruction> Unlocks_LoadInitialUnlocks(IEnumerable<CodeInstruction> code)
 {
     int state = 0;

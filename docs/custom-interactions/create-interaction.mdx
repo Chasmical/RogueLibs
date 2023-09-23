@@ -1,3 +1,8 @@
+---
+title: Creating a Custom Interaction
+description: RogueLibs v3.5.0 introduced custom interactions with a pretty unique syntax. All of the code is condensed and basically can be put into a single method. You just need to keep in mind that the main function must be pure (mustn't do anything, except add/remove buttons and set callbacks), and that all of the side effects must be set using SetSideEffect or SetStopCallback.
+---
+
 # Creating a Custom Interaction
 
 RogueLibs v3.5.0 introduced custom interactions with a pretty unique syntax. All of the code is condensed and basically can be put into a single method. You just need to keep in mind that the main function must be pure (mustn't do anything, except add/remove buttons and set callbacks), and that all of the side effects must be set using `SetSideEffect` or `SetStopCallback`.
@@ -6,7 +11,7 @@ RogueLibs v3.5.0 introduced custom interactions with a pretty unique syntax. All
 
 The simplest way to create custom interactions is by using a `SimpleInteractionProvider` class. It allows you to utilize all of the object-oriented programming principles and keeps the code simple and straightforward. Use `RogueInteractions.CreateProvider<T>` methods to create instances of that class. You can add buttons using `h.AddButton` inside the handler.
 
-```cs
+```csharp title="/MyAwesomeProject/MyAwesomeInteractions.cs"
 // highlight-next-line
 RogueInteractions.CreateProvider<Crate>(static h => /* h - handler */
 {
@@ -33,15 +38,15 @@ RogueLibs.CreateCustomName("UseCrateOpener", NameTypes.Interface,
                            new CustomNameInfo("Use Crate Opener"));
 ```
 
-:::caution Handler purity
+:::caution{title="Handler purity"}
 Handler methods must be pure, that is, they shouldn't make any observable changes. All of the logic must be contained in buttons, [stop callbacks](#stop-callbacks) and [side effects](#side-effects).
 
-If you need something to happen immediately after interacting with something, use [side effects](#side-effects). **DO NOT** write that kind of logic in the interaction provider, because it's also used to determine whether an object is interactable and gets called a lot.
+If you need something to happen immediately after interacting with something, use [side effects](#side-effects). **DO NOT** write that kind of logic in the interaction provider, because it's also used to determine whether an object is interactable and gets called a lot!
 :::
 
 If you have complicated logic with buttons, you can delegate their actions to local or declared methods:
 
-```cs
+```csharp title="/MyAwesomeProject/MyAwesomeInteractions.cs"
 RogueInteractions.CreateProvider<Crate>(static h =>
 {
     // highlight-next-line
@@ -57,7 +62,7 @@ RogueInteractions.CreateProvider<Crate>(static h =>
 
 By specifying a type parameter to the method (like `CreateProvider<Crate>`), it will narrow down the type of objects that you want to add interactions to. If your action may affect multiple types of objects, you can use the more general `CreateProvider` method, that is triggered on all kinds of objects.
 
-```cs
+```csharp title="/MyAwesomeProject/MyAwesomeInteractions.cs"
 // highlight-next-line
 RogueInteractions.CreateProvider(static h =>
 {
@@ -70,7 +75,7 @@ RogueInteractions.CreateProvider(static h =>
 });
 ```
 
-:::caution Note the staticity of the lambdas
+:::caution{title="Note the staticity of the lambdas"}
 It is important that you do not reference `h` or other variables inside button actions, as they are called in different phases of the interaction process (an exception will be thrown). I recommend using the `static` keyword when writing lambda expressions to avoid that.
 :::
 
@@ -78,7 +83,7 @@ It is important that you do not reference `h` or other variables inside button a
 
 Sometimes buttons represent interactions so obvious that you don't want the player to explicitly press them. For example, doors. It would be a nuisance to press "Open" every time you interact with the door. An **implicit button** is pressed automatically if it's the only button in the menu; otherwise, it acts as a regular button.
 
-```cs
+```csharp title="/MyAwesomeProject/MyAwesomeInteractions.cs"
 RogueInteractions.CreateProvider<Crate>(static h =>
 {
     // highlight-next-line
@@ -101,7 +106,7 @@ If the player doesn't have a Crate Opener, the `"InspectWeirdCrate"` button will
 
 If your interaction failed miserably, not allowing the player to press any other buttons, or if you just want the player to go do something else right after this interaction, use `m.StopInteraction()`.
 
-```cs
+```csharp title="/MyAwesomeProject/MyAwesomeInteractions.cs"
 RogueInteractions.CreateProvider<Crate>(static h =>
 {
     if (h.Helper.interactingFar) return;
@@ -118,7 +123,7 @@ RogueInteractions.CreateProvider<Crate>(static h =>
 });
 ```
 
-:::note Forcibly stopping the interaction
+:::note{title="Forcibly stopping the interaction"}
 There's also an overload accepting a `forced: bool` parameter. By default, the interaction stop is delayed until after all of the interactions and side effects are executed. If you pass `true` as the argument, the interaction will be stopped by the time `StopInteraction(true)` returns.
 
 Use it when opening another menu or redirecting the interaction to a different object.
@@ -130,7 +135,7 @@ If your specific interaction failed, but some other interactions from other mods
 
 Stop callbacks are usually used to relay information as to why the interaction was unsuccessful.
 
-```cs
+```csharp title="/MyAwesomeProject/MyAwesomeInteractions.cs"
 RogueInteractions.CreateProvider<Crate>(static h =>
 {
     if (h.Helper.interactingFar) return;
@@ -149,7 +154,7 @@ RogueInteractions.CreateProvider<Crate>(static h =>
 });
 ```
 
-:::note Overriding stop callbacks
+:::note{title="Overriding stop callbacks"}
 By default, `SetStopCallback` overrides any previously defined stop callbacks. If you want to combine your stop callback with any previously defined ones, use `CombineStopCallback`.
 :::
 
@@ -157,7 +162,7 @@ By default, `SetStopCallback` overrides any previously defined stop callbacks. I
 
 Sometimes you want something to happen right after interacting with the object. For example, make the interacted agent react to you interacting with them, or make a bomb explode in your face when you touch it. **Side effects** are called right after the buttons are set up, but before stop callbacks. So, side effects get called even if the interaction failed or if there are no available buttons.
 
-```cs
+```csharp title="/MyAwesomeProject/MyAwesomeInteractions.cs"
 RogueInteractions.CreateProvider<Crate>(static h =>
 {
     // Make the interacting agent say something right after interacting
@@ -175,7 +180,7 @@ RogueInteractions.CreateProvider<Crate>(static h =>
 });
 ```
 
-:::note Overriding side effects
+:::note{title="Overriding side effects"}
 By default, `SetSideEffect` overrides any previously defined side effects. If you want to combine your side effect with any previously defined ones, use `CombineSideEffect`.
 :::
 
@@ -184,7 +189,7 @@ By default, `SetSideEffect` overrides any previously defined side effects. If yo
 The `SimpleInteractionProvider` class contains `HasButton` and `RemoveButton` methods.  
 Use them to augment or modify vanilla or other mods' interactions.
 
-```cs
+```csharp title="/MyAwesomeProject/MyAwesomeInteractions.cs"
 RogueInteractions.CreateProvider<Door>(static h =>
 {
     if (h.Agent.HasTrait("KeyIlliterate"))

@@ -1,16 +1,17 @@
+---
+title: Inventory Checks
+description: Custom usable items might have varying restrictions, and it will be hard to enforce a consistent standard for that kind of stuff. That's why RogueLibs introduces special inventory checks, that will run before and after any usable/combinable/targetable items in the game. You can use these checks to prevent the item's intended function, or maybe somehow augment it.
+---
+
 # Inventory Checks
 
 Custom usable items might have varying restrictions, and it will be hard to enforce a consistent standard for that kind of stuff. That's why RogueLibs introduces special **inventory checks**, that will run before and after any usable/combinable/targetable items in the game. You can use these checks to prevent the item's intended function, or maybe somehow augment it.
 
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-## `InventoryChecks` {#inventorychecks}
+## Inventory checks {#inventory-checks}
 
 With inventory checks, you can omit code like this:
 
-```csharp
+```csharp title="/MyAwesomeProject/MyUsableItem.cs"
 if (Owner.statusEffects.hasTrait("BloodRestoresHealth"))
 {
     Owner.SayDialogue("WontEatThis");
@@ -26,7 +27,7 @@ if (Owner.health == Owner.maxHealth)
     Owner.SayDialogue("NoImFull");
     return;
 }
-...
+/* ... */
 ```
 
 These inventory checks can also implement some common side effects, that modders sometimes forget to implement. For example, removing an item from the inventory or stopping the interaction, when the item's count reaches 0 (RogueLibs provides these checks).
@@ -37,7 +38,7 @@ Inventory checks can be ignored by using an `IgnoreChecks` attribute.
 
 You can put `IgnoreChecks` attributes on your item's class or on any of the interface methods.
 
-```csharp
+```csharp title="/MyAwesomeProject/MysteryFood.cs"
 [ItemCategories(RogueCategories.Food, RogueCategories.Weird, "Meat")]
 public class MysteryFood : CustomItem, IItemUsable
 {
@@ -59,11 +60,15 @@ See the table of inventory checks implemented by RogueLibs [later on this page](
 
 `RogueEventArgs` class has two properties: `Cancel` and `Handled`. If you set `Handled` to `true`, then all other checks will be skipped. If you set `Cancel` to `true`, then the action that was going to happen will not happen. Usually, they are set to `true` at the same time.
 
-For example, there's a trait called `"Vegetarian"` that should prohibit the player from consuming food with `"Meat"` category:
+For example, let's say there's a trait called `"Vegetarian"` that should prohibit the player from consuming food with `"Meat"` category:
 
-```csharp
-InventoryChecks.AddItemUsingCheck("VegetarianCheck", VegetarianCheck);
-...
+```csharp title="/MyAwesomeProject/VegetarianInventoryCheck.cs"
+[RLSetup]
+public static void Setup()
+{
+    InventoryChecks.AddItemUsingCheck("VegetarianCheck", VegetarianCheck);
+}
+
 public static void VegetarianCheck(OnItemUsingArgs e)
 {
     if (e.Item.itemType == ItemTypes.Food && e.User.HasTrait("Vegetarian") && e.Item.Categories.Contains("Meat"))

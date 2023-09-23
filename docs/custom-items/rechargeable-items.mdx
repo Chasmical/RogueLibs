@@ -1,16 +1,17 @@
+---
+title: Recharging Items
+description: RogueLibs doesn't provide any explicit functionality for rechargeable items, but you can easily implement that yourself, using the IDoUpdate interface. You'll find some useful code snippets below, that you can reuse for your own items.
+---
+
 # Recharging Items
 
 RogueLibs doesn't provide any explicit functionality for rechargeable items, but you can easily implement that yourself, using the `IDoUpdate` interface. You'll find some useful code snippets below, that you can reuse for your own items.
 
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
 ## Making items rechargeable {#making-rechargeable}
 
-Make your custom item's class implement the [`IDoUpdate` interface](../extra#update-interfaces):
+Make your custom item's class implement the [`IDoUpdate` interface](../misc/utilities#update-interfaces):
 
-```csharp title="MyRechargeableItem.cs"
+```csharp title="/MyAwesomeProject/MyRechargeableItem.cs"
 // highlight-next-line
 public class MyRechargeableItem : CustomItem, IDoUpdate
 {
@@ -20,23 +21,19 @@ public class MyRechargeableItem : CustomItem, IDoUpdate
 
 ## Presets {#presets}
 
-<Tabs defaultValue="cooldown"
-    values={[
-        {label:'Cooldown', value:'cooldown'},
-        {label:'Charge', value:'charge'},
-    ]}>
-<TabItem value="cooldown">
+<Tabs>
+<TabItem value="Cooldown">
 
 `Cooldown` represents the amount of seconds to wait until full recharge.
 
-```csharp
+```csharp title="/MyAwesomeProject/MyRechargeableItem.cs"
     public float Cooldown { get; private set; }
     public void Update() => Cooldown = Mathf.Max(Cooldown - Time.deltaTime, 0f);
 ```
 
 With adjustable recharging speed:
 
-```csharp
+```csharp title="/MyAwesomeProject/MyRechargeableItem.cs"
     public float RechargeSpeed = 1f;
 
     public float Cooldown { get; private set; }
@@ -45,7 +42,7 @@ With adjustable recharging speed:
 
 Usage:
 
-```csharp
+```csharp title="/MyAwesomeProject/MyRechargeableItem.cs"
     public bool UseItem()
     {
         if (Cooldown != 0f) return false;
@@ -61,7 +58,7 @@ You can use other activation methods too, like `CombineItems`, `TargetObject`, `
 
 If you want to display `Cooldown` as the item's count, then override the `GetCountString` method:
 
-```csharp
+```csharp title="/MyAwesomeProject/MyRechargeableItem.cs"
     public override CustomTooltip GetCountString()
     {
         if (Cooldown != 0f) return new CustomTooltip(Cooldown, Color.red);
@@ -70,18 +67,18 @@ If you want to display `Cooldown` as the item's count, then override the `GetCou
 ```
 
 </TabItem>
-<TabItem value="charge">
+<TabItem value="Charge">
 
 `Charge` represents the amount of seconds of "stored up energy".
 
-```csharp
+```csharp title="/MyAwesomeProject/MyChargeableItem.cs"
     public float Charge { get; private set; } = 5f;
     public void Update() => Charge = Mathf.Min(Charge + Time.deltaTime, 5f);
 ```
 
 With adjustable charging speed and maximum charge:
 
-```csharp
+```csharp title="/MyAwesomeProject/MyChargeableItem.cs"
     public float ChargeSpeed = 1f, MaxCharge = 5f;
 
     public float Charge { get; private set; } = 5f;
@@ -90,21 +87,21 @@ With adjustable charging speed and maximum charge:
 
 Plus, with a charging delay:
 
-```csharp
+```csharp title="/MyAwesomeProject/MyChargeableItem.cs"
     public float DelayThreshold = 3f, ChargeSpeed = 1f, MaxCharge = 5f;
 
     private float lastUsage;
     public float Charge { get; private set; } = 5f;
     public void Update()
     {
-        if (lastUsage + DelayThreshold < Time.time)
+        if (Time.time > lastUsage + DelayThreshold)
             Charge = Mathf.Min(Charge + Time.deltaTime * ChargeSpeed, MaxCharge);
     }
 ```
 
 Usage:
 
-```csharp
+```csharp title="/MyAwesomeProject/ChargeableItem.cs"
     public bool UseItem()
     {
         if (Charge < 1.5f) return false;
@@ -121,7 +118,7 @@ You can use other activation methods too, like `CombineItems`, `TargetObject`, `
 
 If you want to display `Charge` as the item's count, then override the `GetCountString` method:
 
-```csharp
+```csharp title="/MyAwesomeProject/ChargeableItem.cs"
     public override CustomTooltip GetCountString()
     {
         string text = $"{Charge} ({base.GetCountString()})"; // display both charge and count
@@ -140,18 +137,12 @@ There's also a vanilla way of recharging items, but it's really messy and unreli
 
 ## Examples {#examples}
 
-import CodeSnippet from '@site/src/components/CodeSnippet';
+<Tabs>
+<TabItem value="Quantum Fud">
 
-import QuantumFud from '!!raw-loader!@site/../RogueLibsCore.Test/Tests/Items/QuantumFud.cs';
-
-<Tabs
-  defaultValue="quantumfud"
-  values={[
-    {label:'Quantum Fud', value:'quantumfud'},
-  ]}>
-<TabItem value="quantumfud">
-
-<CodeSnippet>{QuantumFud}</CodeSnippet>
+:::info{title="Work-In-Progress"}
+TODO: `<CodeSnippet>{QuantumFud}</CodeSnippet>`
+:::
 
 </TabItem>
 </Tabs>
