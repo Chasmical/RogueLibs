@@ -17,7 +17,7 @@ Then go to your project's Properties and create a resource file, if it doesn't e
 
 Open your project's `Resources.resx` in an **external** editor and add the following element to the end:
 
-```xml
+```xml title="/MyAwesomeProject/Properties/Resources.resx"
 <root>
   <!-- ... -->
 // highlight-start
@@ -77,7 +77,7 @@ RogueLibs.CreateCustom("name", SpriteScope.Items, Properties.Resources.ResourceN
 
 If you have more than 1 sprite for your item, use `InvItem.LoadItemSprite` in your item's `SetupDetails`:
 
-```csharp
+```csharp title="/MyAwesomeProject/Present.cs"
 public class Present : CustomItem, IItemUsable
 {
     [RLSetup]

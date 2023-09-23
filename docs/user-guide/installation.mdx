@@ -15,7 +15,7 @@ To start using mods, first you need to install BepInEx, the modding framework th
 
 **[Go here](https://github.com/BepInEx/BepInEx/releases/latest) and download the version for your OS:**
 
-<Tabs id="os" values="Windows,Linux,macOS">
+<Tabs id="os" query>
 <TabItem value="Windows">
 
 Download the version of BepInEx for your game's executable's type:
@@ -31,7 +31,7 @@ Here's a few pointers:
 - Launch the game and open the Task Manager. If you see "(32 bit)" in the name of the game's process, then it's **32-bit**; otherwise, it's **64-bit**.
 
 </TabItem>
-<TabItem value="Linux,macOS">
+<TabItem values="Linux,macOS">
 
 Simply download **`BepInEx_unix_5.x.y.z.zip`.**
 
@@ -46,14 +46,10 @@ BepInEx v6 pre-release recently came out. Don't use it yet. All of the mods at t
 
 ### Extracting files {#extracting-bepinex}
 
-<Tabs
-  id="vendor"
-  values={[
-    { value: "none", label: "I know where my game is installed!" },
-    { value: "steam", label: "Steam", default: true },
-    { value: "gog", label: "GOG" },
-  ]}>
-<TabItem value="steam">
+<Tabs>
+<TabItem value="I know where my game is installed!">
+</TabItem>
+<TabItem value="Steam" default>
 
 Open Steam's game library, right-click on the game and click **Properties...**:
 
@@ -64,11 +60,11 @@ Go to **Local files** and click **Browse...**:
 <img src="/docs/img/installation/finding-the-game-2.png" width="600" />
 
 </TabItem>
-<TabItem value="gog">
+<TabItem value="GOG">
 
 Try looking at these paths:
 
-<Tabs id="os" values="Windows,Linux,macOS">
+<Tabs id="os" query>
 <TabItem value="Windows">
 
 - `C:\GOG Games`;
@@ -76,7 +72,7 @@ Try looking at these paths:
 - `C:\Program Files\GOGcom`;{/* yep, without the dot */}
 
 </TabItem>
-<TabItem value="Linux,macOS">
+<TabItem values="Linux,macOS">
 
 - `$HOME/GOG Games`;
 
@@ -88,7 +84,7 @@ Try looking at these paths:
 
 **Extract the contents of the .zip file into the game's root directory.**
 
-<Tabs id="os" values="Windows,Linux,macOS">
+<Tabs id="os" query>
 <TabItem value="Windows">
 
 Make sure you extract it the right way. There's a lot of wrong ways, apparently.
@@ -123,7 +119,7 @@ Make sure you extract it the right way. There's a lot of wrong ways, apparently.
 You need to run the game at least once, so that BepInEx can generate config files and directories!
 :::
 
-<Tabs id="os" values="Windows,Linux,macOS">
+<Tabs id="os" query>
 <TabItem value="Windows">
 
 Just run the game. Either through an executable, or any game launcher.
@@ -211,7 +207,7 @@ Now you can run BepInEx by executing the script:
 
 ### Running BepInEx through Steam {#bepinex-steam}
 
-<Tabs id="os" values="Windows,Linux,macOS">
+<Tabs id="os" query>
 <TabItem value="Windows">
 
 On Windows you can run BepInEx through Steam too. Nothing to worry about.
@@ -275,8 +271,8 @@ Click **OK** and run the game through Steam.
 
 ## Installing RogueLibs {#installing-roguelibs}
 
-<Tabs values={{ v3: "RogueLibs v3.x.x", v4: "RogueLibs v4.x.x" }}>
-<TabItem value="v3">
+<Tabs>
+<TabItem value="RogueLibs v3.x.x">
 
 **[Download the latest RogueLibs version](https://github.com/SugarBarrel/RogueLibs/releases/latest)**
 
@@ -297,7 +293,7 @@ The directory is called **`patchers`**, it's different from **`plugins`**.
 <img src="/docs/img/installation/drag-patchers.gif" width="600" />
 
 </TabItem>
-<TabItem value="v4">
+<TabItem value="RogueLibs v4.x.x">
 
 :::caution
 RogueLibs v4.0.0 is still in beta, and while it may have some problems and bugs fixed, new ones may also be introduced.

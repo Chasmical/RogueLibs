@@ -1,59 +1,18 @@
+---
+title: Patching Utilities
+description: "RogueLibs provides several utilities to help you with patching. Whether you use Harmony's attributes, Harmony instances directly, RogueLibs' stuff or something else, is your choice. All of them have their own pros and cons. You can learn more about Harmony here: https://harmony.pardeike.net/articles/intro.html."
+---
+
 # Patching Utilities
 
 RogueLibs provides several utilities to help you with patching. Whether you use Harmony's attributes, Harmony instances directly, RogueLibs' stuff or something else, is your choice. All of them have their own pros and cons. You can learn more [about Harmony here](https://harmony.pardeike.net/articles/intro.html).
-
-import Tabs from '@site/src/components/Tabs';
-import TabItem from '@site/src/components/TabItem';
-import useBaseUrl from '@docusaurus/useBaseUrl';
-
-## `RLSetup` attribute {#rlsetup}
-
-Since RogueLibs handles custom stuff as classes, you might forget to initialize a new class in your plugin's `Awake`. That's why `RLSetup` attribute is here. You can just add it to a static method, and initialize your custom thing in there.
-
-```csharp title="MyCustomItem.cs"
-public class MyCustomItem : CustomItem
-{
-    // highlight-start
-    [RLSetup]
-    public static void Setup()
-    // highlight-end
-    {
-        RogueLibs.CreateCustomItem<MyCustomItem>()
-            .WithName(new CustomNameInfo("Name"))
-            .WithDescription(new CustomNameInfo("Description"))
-            .WithSprite(Properties.Resources.Sprite)
-            .WithUnlock(new ItemUnlock());
-        
-        RogueLibs.CreateCustomName("SomeName", "Dialogue", new CustomNameInfo("Text"));
-    }
-}
-```
-
-You'll just have to call the following method in your plugin's `Awake`:
-
-```csharp title="MyCoolPlugin.cs"
-    public void Awake()
-    {
-        // highlight-next-line
-        RogueLibs.LoadFromAssembly();
-        /* ... */
-    }
-```
-
-:::tip Pro-tip
-Seriously, you should use it. It helps with versioning too. All of the logic in one place.
-:::
 
 ## `RoguePatcher` {#roguepatcher}
 
 `RoguePatcher` is a small helper class that makes writing patches a little bit faster and easier. If you need more control (patch order, priority, etc.), then you should use the original Harmony methods.
 
-<Tabs defaultValue="roguepatcher"
-    values={[
-        {label:'RoguePatcher', value:'roguepatcher'},
-        {label:'Harmony', value:'harmony'},
-    ]}>
-<TabItem value="roguepatcher">
+<Tabs values="RoguePatcher,Harmony">
+<TabItem value="RoguePatcher">
 
 ```csharp
 RoguePatcher patcher = new RoguePatcher(this);
@@ -64,24 +23,24 @@ patcher.Postfix(typeof(InvDatabase), nameof(InvDatabase.ChooseArmor), new Type[1
 ```
 
 </TabItem>
-<TabItem value="harmony">
+<TabItem value="Harmony">
 
 ```csharp
 Harmony harmony = new Harmony(pluginGUID);
 
 MethodInfo original = AccessTools.Method(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
-MethodInfo patch = AccessTools.Method(GetType(), nameof(MyPatchMethod));
+MethodInfo patch = AccessTools.Method(GetType(), nameof(MyAwesomePatchMethod));
 harmony.Patch(original, new HarmonyMethod(patch));
 
 original = AccessTools.Method(typeof(InvDatabase), nameof(InvDatabase.ChooseArmor), new Type[1] { typeof(string) });
-patch = AccessTools.Method(GetType(), nameof(MyPatchMethod2));
+patch = AccessTools.Method(GetType(), nameof(MyAwesomePatchMethod2));
 harmony.Patch(original, new HarmonyMethod(patch));
 ```
 
 </TabItem>
 </Tabs>
 
-:::tip Pro-tip
+:::tip{title="Pro-tip"}
 Instead of specifying method names using strings, you should specify them using the `nameof` keyword. Use string names only if the method you're trying to patch is not public.
 :::
 
@@ -89,37 +48,33 @@ Patch methods should have the following name: `<TargetType>_<TargetMethod>`. In 
 
 You can change the type to search patch methods in. Specify it in the constructor or set the property between patches:
 
-<Tabs defaultValue="roguepatcher"
-    values={[
-        {label:'RoguePatcher', value:'roguepatcher'},
-        {label:'Harmony', value:'harmony'},
-    ]}>
-<TabItem value="roguepatcher">
+<Tabs values="RoguePatcher,Harmony">
+<TabItem value="RoguePatcher">
 
-```csharp
-public class MyCoolPlugin : BaseUnityPlugin
+```csharp title="/MyAwesomeProject/MyAwesomePlugin.cs"
+public class MyAwesomePlugin : BaseUnityPlugin
 {
     public void Awake()
     {
         // highlight-next-line
-        RoguePatcher patcher = new RoguePatcher(this, typeof(MyCoolPatches));
+        RoguePatcher patcher = new RoguePatcher(this, typeof(MyAwesomePatches));
 
         patcher.Postfix(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
 
         // highlight-next-line
-        patcher.TypeWithPatches = typeof(MyEvenCoolerPatches);
+        patcher.TypeWithPatches = typeof(MyEvenMoreAwesomePatches);
 
         patcher.Postfix(typeof(InvDatabase), nameof(InvDatabase.ChooseArmor), new Type[1] { typeof(string) });
     }
 }
-public class MyCoolPatches
+public class MyAwesomePatches
 {
     public static void StatusEffects_hasStatusEffect(StatusEffects __instance)
     {
         /* ... */
     }
 }
-public class MyEvenCoolerPatches
+public class MyEvenMoreAwesomePatches
 {
     public static void InvDatabase_ChooseArmor(InvDatabase __instance, string previousArmorName)
     {
@@ -129,34 +84,34 @@ public class MyEvenCoolerPatches
 ```
 
 </TabItem>
-<TabItem value="harmony">
+<TabItem value="Harmony">
 
 ```csharp
-public class MyCoolPlugin : BaseUnityPlugin
+public class MyAwesomePlugin : BaseUnityPlugin
 {
     public void Awake()
     {
         Harmony harmony = new Harmony(pluginGUID);
 
         MethodInfo original = AccessTools.Method(typeof(StatusEffects), nameof(StatusEffects.hasStatusEffect));
-        MethodInfo patch = AccessTools.Method(typeof(MyCoolPatches), nameof(MyPatchMethod));
+        MethodInfo patch = AccessTools.Method(typeof(MyAwesomePatches), nameof(MyAwesomePatchMethod));
         harmony.Patch(original, new HarmonyMethod(patch));
 
         original = AccessTools.Method(typeof(InvDatabase), nameof(InvDatabase.ChooseArmor), new Type[1] { typeof(string) });
-        patch = AccessTools.Method(typeof(MyEvenCoolerPatches), nameof(MyPatchMethod2));
+        patch = AccessTools.Method(typeof(MyEvenMoreAwesomePatches), nameof(MyAwesomePatchMethod2));
         harmony.Patch(original, new HarmonyMethod(patch));
     }
 }
-public class MyCoolPatches
+public class MyAwesomePatches
 {
-    public static void MyPatchMethod(StatusEffects __instance)
+    public static void MyAwesomePatchMethod(StatusEffects __instance)
     {
         /* ... */
     }
 }
-public class MyEvenCoolerPatches
+public class MyEvenMoreAwesomePatches
 {
-    public static void MyPatchMethod2(InvDatabase __instance, string previousArmorName)
+    public static void MyAwesomePatchMethod2(InvDatabase __instance, string previousArmorName)
     {
         /* ... */
     }
@@ -170,11 +125,7 @@ public class MyEvenCoolerPatches
 
 Transpilers are kind of complicated, since they use a low-level Intermediate Language (IL) instead of C# (branches, loops and conditions are the hardest part in here). As an example, here's one of the simplest transpilers from RogueLibs:
 
-<Tabs defaultValue="helper"
-    values={[
-        {label:'Helper methods', value:'helper'},
-        {label:'Harmony', value:'harmony'},
-    ]}>
+<Tabs values={{ helper: "Helper methods", harmony: "Harmony" }}>
 <TabItem value="helper">
 
 ```csharp
@@ -236,7 +187,7 @@ Yeah, it looks easy. But that's only because it's a very simple example.
 </TabItem>
 </Tabs>
 
-:::tip Avoid heavy calculations
+:::tip{title="Avoid heavy calculations"}
 When writing predicates, keep in mind that they might get called hundreds or thousands of times. For example, you can pre-calculate the `FieldInfo` value, used by your predicate, just put it in a static readonly field, like in the example above.
 
 Heavy calculations like that can cost you **hundreds of milliseconds** of start-up time (or even entire seconds, if you're working on a big project).
@@ -244,12 +195,7 @@ Heavy calculations like that can cost you **hundreds of milliseconds** of start-
 
 Here's another example from RogueLibs:
 
-<Tabs defaultValue="helper"
-    values={[
-        {label:'Helper methods', value:'helper'},
-        {label:'Harmony', value:'harmony'},
-    ]}>
-
+<Tabs values={{ helper: "Helper methods", harmony: "Harmony" }}>
 <TabItem value="helper">
 
 ```csharp
@@ -338,6 +284,6 @@ Still relatively simple. I just don't want to spend my time writing a really com
 </TabItem>
 </Tabs>
 
-:::info BTHarmonyUtils
+:::info{title="BTHarmonyUtils"}
 You might also want to consider using BlazingTwist's [BTHarmonyUtils](https://github.com/BlazingTwist/BTHarmonyUtils). It provides several useful transpiler-patching utilities, similar to the ones in RogueLibs. It is easier to use, but I don't think there's any documentation on it.
 :::
