@@ -1,10 +1,66 @@
 ---
 title: Usable Abilities
-description: Work-In-Progress
+description: Custom abilities are by default usable (otherwise, how would you use them?). As you saw on the previous documentation page, CustomAbility class already provides you with everything you would need to make a simple usable ability. Just override the OnAdded and OnPressed methods. There's not much to say. It's just that simple.
 ---
 
 # Usable Abilities
 
-:::info{title="Work-In-Progress"}
-TODO: DOCUMENTATION AND EXAMPLES NEEDED
-:::
+Custom abilities are by default usable (otherwise, how would you use them?). As you saw on the previous documentation page, `CustomAbility` class already provides you with everything you would need to make a simple usable ability. Just override the `OnAdded` and `OnPressed` methods. There's not much to say. It's just that simple.
+
+```csharp title="/MyAwesomeProject/MyUsableAbility.cs"
+public class MyUsableAbility : CustomAbility
+{
+    // highlight-start
+    public override void OnAdded() { /* ... */ }
+    public override void OnPressed() { /* ... */ }
+    // highlight-end
+}
+```
+
+## Examples {#examples}
+
+<Tabs>
+<TabItem value="Dragon's Stomach">
+
+```csharp title="/MyAwesomeProject/DragonStomach.cs"
+using RogueLibsCore;
+
+namespace MyAwesomeMod
+{
+    public class DragonStomach : CustomAbility
+    {
+        [RLSetup]
+        public static void Setup()
+        {
+            RogueLibs.CreateCustomAbility<DragonStomach>()
+                .WithName(new CustomNameInfo("Dragon's Stomach"))
+                .WithDescription(new CustomNameInfo("You can eat coins to restore your health! That's why dragons hoard all the treasure, right?"))
+                .WithSprite(Properties.Resources.DragonStomach)
+                .WithUnlock(new AbilityUnlock
+                {
+                    UnlockCost = 10,
+                    CharacterCreationCost = 10,
+                    Prerequisites = { VanillaItems.KillHealthenizer },
+                });
+        }
+
+        public override void OnAdded() { }
+        public override void OnPressed()
+        {
+            if (Inventory!.money.invItemCount < 5 || Owner.health >= Owner.healthMax)
+            {
+                gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
+                return;
+            }
+            Inventory.SubtractFromItemCount(Inventory.money, 5);
+            Owner.ChangeHealth(5);
+            
+            gc.audioHandler.Play(Owner, VanillaAudio.BuyItem);
+            gc.audioHandler.Play(Owner, VanillaAudio.UseFood);
+        }
+    }
+}
+```
+
+</TabItem>
+</Tabs>

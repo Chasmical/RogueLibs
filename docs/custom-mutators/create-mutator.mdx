@@ -5,6 +5,61 @@ description: Work-In-Progress
 
 # Creating a Custom Mutator
 
-:::info{title="Work-In-Progress"}
-TODO: DOCUMENTATION AND EXAMPLES NEEDED
+Mutators may be really tricky to implement, since most of the time they require patches to the game's code. The best, that RogueLibs can do in this case, is just simplify the process of initializing them and checking whether they're active or not.
+
+## `MutatorUnlock` class {#mutatorunlock}
+
+Mutators are implemented as unlocks of class `MutatorUnlock`:
+
+```csharp title="/MyAwesomeProject/MyAwesomeMutators.cs"
+[RLSetup]
+public static void Setup()
+{
+    RogueLibs.CreateCustomUnlock(new MutatorUnlock("MyAwesomeMutator"))
+        .WithName(new CustomNameInfo("My Awesome Mutator"))
+        .WithDescription(new CustomNameInfo("My Awesome Mutator is very cool and does a lot of great stuff, and it's also awesome."));
+}
+```
+
+:::info
+See [Custom Names](../localization/custom-names), [Custom Unlocks](../custom-unlocks/custom-unlocks) for more info.
 :::
+
+You can assign the created mutator unlock to a static variable, and then use it anywhere:
+
+```csharp title="/MyAwesomeProject/MyAwesomeMutators.cs"
+[RLSetup]
+public static void Setup()
+{
+    MyAwesomeMutator = RogueLibs.CreateCustomUnlock(new MutatorUnlock("MyAwesomeMutator"))
+        .WithName(new CustomNameInfo("My Awesome Mutator"))
+        .WithDescription(new CustomNameInfo("My Awesome Mutator is very cool and does a lot of great stuff, and it's also awesome."));
+}
+public static MutatorUnlock MyAwesomeMutator;
+```
+
+```csharp title="/MyAwesomeProject/MyAwesomePatches.cs"
+if (MyAwesomeMutator.IsEnabled)
+{
+    /* Do one thing */
+}
+else
+{
+    /* Do the other thing */
+}
+```
+
+## Unlock Properties {#unlock-properties}
+
+You can use the following properties when initializing `MutatorUnlock`s:
+
+Property                      | Default | Description
+------------------------------|---------|------------
+`UnlockCost`                  | `0`     | Unlock cost of the mutator, in nuggets. If set to 0, it will unlock automatically, once all prerequisites are unlocked.
+`IsAvailable`                 | `true`  | Determines whether the mutator is available in the Mutators menu.
+`IsAvailableInDailyRun`       | `false` | Determines whether the mutator can be selected for the Daily Run.
+`Cancellations`               |         | Determines what mutators cannot be enabled together with this mutator.
+`Prerequisites`               |         | Determines what unlocks must be unlocked in order to unlock this mutator.
+`Recommendations`             |         | Just shows these unlocks in a separate Recommendations paragraph in the menus.
+
+Other properties should not be used during initialization.

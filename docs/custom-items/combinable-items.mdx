@@ -32,47 +32,11 @@ public class MyCombinableItem : CustomItem, IItemCombinable
 
 `CombineCursorText` determines the cursor text when hovering over the item. `Text` set to `null` will default to "Combine", and `Color` set to `null` will default to `#FFFFFF`.
 
-:::info{title="Work-In-Progress"}
-TODO: Add color squares above for `#FFED00` and `#FFFFFF`.
-:::
-
 ### Inventory Slot Preview {#slot-preview}
 
 Wanna see how your `CombineTooltip` will look in the game? Check out this small tool:
 
-:::info{title="Work-In-Progress"}
-TODO: Reimplement `<PreviewTooltip/>`
-```jsx
-import InventorySlot from '@site/src/components/InventorySlot';
-import { useState } from 'react';
-
-export function PreviewTooltip ({props}) {
-  const [sprite, setSprite] = useState(useBaseUrl(`/img/TestItem.png`));
-  const [tooltipColor, setTooltipColor] = useState("#FFED00");
-  const spriteHandler = e => {
-    if (e.target.files[0]) {
-      const reader = new FileReader();
-      reader.addEventListener("load", () => setSprite(reader.result));
-      reader.readAsDataURL(e.target.files[0]);
-    }
-  };
-  const [text, setText] = useState("$123");
-  return (
-    <div style={{padding: '10px', border: '5px dashed var(--ifm-menu-color-background-hover)', width: 'max-content'}}>
-      <input type="file" accept="image/*"
-        onChange={spriteHandler} style={{margin: '5px'}}/>
-      <div style={{margin: '5px'}}>
-        <InventorySlot sprite={sprite} tooltip={text} tooltipColor={tooltipColor}/>
-      </div>
-      <input type="text" placeholder="$123" onChange={e => setText(e.target.value)} style={{fontSize: '22px', margin: '5px'}}/>
-      <input type="color" value={tooltipColor} onChange={e => setTooltipColor(e.target.value)}/>
-    </div>
-  );
-}
-
-<PreviewTooltip/>
-```
-:::
+<InventoryTooltipPreview />
 
 ## Examples {#examples}
 
@@ -81,9 +45,73 @@ export function PreviewTooltip ({props}) {
 
 A simple example that inverts the Syringes' effects.
 
-:::info{title="Work-In-Progress"}
-TODO: `<CodeSnippet>{Centrifuge}</CodeSnippet>`
-:::
+```csharp title="/MyAwesomeProject/Centrifuge.cs"
+using System.Collections.Generic;
+using System.Linq;
+using RogueLibsCore;
+
+namespace MyAwesomeMod
+{
+    public class Centrifuge : CustomItem, IItemCombinable
+    {
+        [RLSetup]
+        public static void Setup()
+        {
+            RogueLibs.CreateCustomItem<Centrifuge>()
+                .WithName(new CustomNameInfo("Centrifuge"))
+                .WithDescription(new CustomNameInfo("Combine with a syringe to invert its effect."))
+                .WithSprite(Properties.Resources.Centrifuge)
+                .WithUnlock(new ItemUnlock
+                {
+                    UnlockCost = 10,
+                    LoadoutCost = 5,
+                    CharacterCreationCost = 3,
+                    Prerequisites = { VanillaItems.Antidote },
+                });
+        }
+
+        public override void SetupDetails()
+        {
+            Item.itemType = ItemTypes.Combine;
+            Item.itemValue = 8;
+            Item.initCount = 10;
+            Item.stackable = true;
+            Item.hasCharges = true;
+        }
+
+        private static readonly Dictionary<string, string> invertDictionary = new Dictionary<string, string>
+        {
+            [VanillaEffects.Poisoned] = VanillaEffects.RegenerateHealth,
+            [VanillaEffects.Slow] = VanillaEffects.Fast,
+            [VanillaEffects.Weak] = VanillaEffects.Strength,
+            [VanillaEffects.Acid] = VanillaEffects.Invincible,
+            [VanillaEffects.Confused] = VanillaEffects.Invisible,
+        };
+        static Centrifuge()
+        {
+            foreach (KeyValuePair<string, string> pair in invertDictionary.ToArray())
+                invertDictionary.Add(pair.Value, pair.Key);
+        }
+
+        public bool CombineFilter(InvItem other)
+            => other.invItemName == VanillaItems.Syringe
+            && other.contents.Count > 0
+            && invertDictionary.ContainsKey(other.contents[0]);
+        public bool CombineItems(InvItem other)
+        {
+            if (!CombineFilter(other)) return false;
+
+            other.contents[0] = invertDictionary[other.contents[0]];
+
+            Count--;
+            gc.audioHandler.Play(Owner, VanillaAudio.CombineItem);
+            return true;
+        }
+        public CustomTooltip CombineCursorText(InvItem other) => default;
+        public CustomTooltip CombineTooltip(InvItem other) => default;
+    }
+}
+```
 
 </TabItem>
 <TabItem value="Spice Rack">
@@ -92,18 +120,186 @@ A simple example, with custom hooks to keep track of seasoned items.
 
 See more about custom hooks [here](../advanced/hooks).
 
-:::info{title="Work-In-Progress"}
-TODO: `<CodeSnippet>{SpiceRack}</CodeSnippet>`
-:::
+```csharp title="/MyAwesomeProject/SpiceRack.cs"
+using UnityEngine;
+using RogueLibsCore;
+
+namespace MyAwesomeMod
+{
+    [ItemCategories(RogueCategories.Food, RogueCategories.Health)]
+    public class SpiceRack : CustomItem, IItemCombinable
+    {
+        [RLSetup]
+        public static void Setup()
+        {
+            RogueLibs.CreateCustomItem<SpiceRack>()
+                .WithName(new CustomNameInfo("Spice Rack"))
+                .WithDescription(new CustomNameInfo("Combine with any food item to increase its healing properties."))
+                .WithSprite(Properties.Resources.SpiceRack)
+                .WithUnlock(new ItemUnlock
+                {
+                    UnlockCost = 10,
+                    LoadoutCost = 3,
+                    CharacterCreationCost = 2,
+                    Prerequisites = { VanillaItems.FoodProcessor },
+                });
+
+            SeasonCursorText = RogueLibs.CreateCustomName("SeasonItem", NameTypes.Interface, new CustomNameInfo("Season"));
+        }
+        private static CustomName SeasonCursorText = null!;
+
+        public override void SetupDetails()
+        {
+            Item.itemType = ItemTypes.Combine;
+            Item.itemValue = 4;
+            Item.initCount = 10;
+            Item.rewardCount = 15;
+            Item.stackable = true;
+            Item.hasCharges = true;
+        }
+        public bool CombineFilter(InvItem other)
+        {
+            if (other.itemType != ItemTypes.Food || other.healthChange == 0
+                || !other.Categories.Contains(RogueCategories.Food)) return false;
+
+            SpicedHook? hook = other.GetHook<SpicedHook>();
+            return hook is null || hook.Spiciness < 3;
+        }
+        public bool CombineItems(InvItem other)
+        {
+            if (!CombineFilter(other)) return false;
+
+            SpicedHook hook = other.GetHook<SpicedHook>() ?? other.AddHook<SpicedHook>();
+            hook.IncreaseSpiciness();
+
+            Count--;
+            gc.audioHandler.Play(Owner, VanillaAudio.CombineItem);
+            return true;
+        }
+        public CustomTooltip CombineCursorText(InvItem other)
+            => SeasonCursorText;
+        public CustomTooltip CombineTooltip(InvItem other)
+        {
+            if (!CombineFilter(other)) return default;
+
+            SpicedHook? hook = other.GetHook<SpicedHook>();
+            int bonus = hook is null ? (int)Mathf.Ceil(other.healthChange / 4f) : hook.HealthBonus;
+            return new CustomTooltip($"+{bonus}", Color.green);
+        }
+
+        private class SpicedHook : HookBase<InvItem>
+        {
+            protected override void Initialize()
+                => HealthBonus = (int)Mathf.Ceil(Instance.healthChange / 4f);
+
+            public int HealthBonus { get; private set; }
+            public int Spiciness { get; private set; }
+
+            public void IncreaseSpiciness()
+            {
+                if (Spiciness == 3) return;
+
+                Spiciness++;
+                Instance.healthChange += HealthBonus;
+            }
+        }
+    }
+}
+```
 
 </TabItem>
 <TabItem value="Ammo Box">
 
 A pretty complicated example with a lot of math.
 
-:::info{title="Work-In-Progress"}
-TODO: `<CodeSnippet>{AmmoBox}</CodeSnippet>`
-:::
+```csharp title="/MyAwesomeProject/AmmoBox.cs"
+using UnityEngine;
+using RogueLibsCore;
+
+namespace MyAwesomeMod
+{
+    [ItemCategories(RogueCategories.Technology, RogueCategories.GunAccessory, RogueCategories.Guns)]
+    public class AmmoBox : CustomItem, IItemCombinable
+    {
+        [RLSetup]
+        public static void Setup()
+        {
+            RogueLibs.CreateCustomItem<AmmoBox>()
+                .WithName(new CustomNameInfo("Ammo Box"))
+                .WithDescription(new CustomNameInfo("Combine with any refillable weapon to refill it. Limited ammo."))
+                .WithSprite(Properties.Resources.AmmoBox)
+                .WithUnlock(new ItemUnlock
+                {
+                    UnlockCost = 10,
+                    LoadoutCost = 5,
+                    CharacterCreationCost = 3,
+                    Prerequisites = { VanillaItems.KillAmmunizer },
+                });
+        }
+
+        public override void SetupDetails()
+        {
+            Item.itemType = ItemTypes.Combine;
+            Item.itemValue = 4;
+            Item.initCount = 100;
+            Item.rewardCount = 200;
+            Item.hasCharges = true;
+            Item.stackable = true;
+        }
+        public bool CombineFilter(InvItem other)
+            => other.itemType == ItemTypes.WeaponProjectile && !other.noRefills;
+        public bool CombineItems(InvItem other)
+        {
+            if (!CombineFilter(other))
+            {
+                gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
+                return false;
+            }
+            if (other.invItemCount >= other.maxAmmo)
+            {
+                Owner!.SayDialogue("AmmoDispenserFull");
+                gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
+                return false;
+            }
+
+            int amountToRefill = other.maxAmmo - other.invItemCount;
+            float singleCost = (float)other.itemValue / other.maxAmmo;
+            if (Owner!.oma.superSpecialAbility && Owner.agentName is VanillaAgents.Soldier or VanillaAgents.Doctor)
+                singleCost = 0f;
+
+            int affordableAmount = (int)Mathf.Ceil(Count / singleCost);
+            int willBeBought = Mathf.Min(affordableAmount, amountToRefill);
+            int willBeReduced = (int)Mathf.Min(Count, willBeBought * singleCost);
+
+            Count -= willBeReduced;
+            other.invItemCount += willBeBought;
+            Owner.SayDialogue("AmmoDispenserFilled");
+            gc.audioHandler.Play(Owner, VanillaAudio.BuyItem);
+            return true;
+        }
+
+        public CustomTooltip CombineTooltip(InvItem other)
+        {
+            if (!CombineFilter(other)) return default;
+
+            int amountToRefill = other.maxAmmo - other.invItemCount;
+            if (amountToRefill == 0) return default;
+
+            float singleCost = (float)other.itemValue / other.maxAmmo;
+            if (Owner!.oma.superSpecialAbility && Owner.agentName is VanillaAgents.Soldier or VanillaAgents.Doctor)
+                singleCost = 0f;
+            int cost = (int)Mathf.Floor(amountToRefill * singleCost);
+            int canAfford = (int)Mathf.Ceil(Count / singleCost);
+
+            return "+" + Mathf.Min(amountToRefill, canAfford) + " (" + Mathf.Min(cost, Count) + ")";
+        }
+
+        public CustomTooltip CombineCursorText(InvItem other)
+            => gc.nameDB.GetName("RefillGun", NameTypes.Interface);
+        // it's one of the vanilla dialogues, so there's no need to define it in the mod
+    }
+}
+```
 
 </TabItem>
 </Tabs>

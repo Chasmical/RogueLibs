@@ -57,10 +57,6 @@ public class MyAwesomeItem : CustomItem
 }
 ```
 
-:::info{title="Work-In-Progress"}
-TODO: The below is to be moved to [Creating a Custom Mutator](../custom-mutators/create-mutator).
-:::
-
 Or you can just initialize them directly (like in case of mutators):
 
 ```csharp title="/MyAwesomeProject/MyAwesomeMutators.cs"
@@ -68,3 +64,7 @@ RogueLibs.CreateCustomUnlock(new MutatorUnlock("MyAwesomeMutator"))
     .WithName(new CustomNameInfo("My Awesome Mutator"))
     .WithDescription(new CustomNameInfo("My Awesome Mutator is very cool and does a lot of great stuff, and it's also awesome."));
 ```
+
+:::info{title="Custom Mutators"}
+See more about custom mutators' unlocks in [Creating a Custom Mutator](../custom-mutators/create-mutator).
+:::

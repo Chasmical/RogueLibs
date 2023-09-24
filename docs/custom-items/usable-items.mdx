@@ -43,27 +43,192 @@ You're responsible for decrementing the item's `Count`. So, don't forget to do t
 
 A simple usable item that allows the player to use the Joke ability.
 
-:::info{title="Work-In-Progress"}
-TODO: `<CodeSnippet>{JokeBook}</CodeSnippet>`
-:::
+```csharp title="/MyAwesomeProject/JokeBook.cs"
+using RogueLibsCore;
+
+namespace MyAwesomeMod
+{
+    [ItemCategories(RogueCategories.Usable, RogueCategories.Social)]
+    public class JokeBook : CustomItem, IItemUsable
+    {
+        [RLSetup]
+        public static void Setup()
+        {
+            RogueLibs.CreateCustomItem<JokeBook>()
+                .WithName(new CustomNameInfo("Joke Book"))
+                .WithDescription(new CustomNameInfo("Always wanted to be a Comedian? Now you can! (kind of)"))
+                .WithSprite(Properties.Resources.JokeBook)
+                .WithUnlock(new ItemUnlock
+                {
+                    UnlockCost = 10,
+                    LoadoutCost = 5,
+                    CharacterCreationCost = 3,
+                    Prerequisites = { VanillaAgents.Comedian + "_BQ" },
+                });
+        }
+
+        public override void SetupDetails()
+        {
+            Item.itemType = ItemTypes.Tool;
+            Item.itemValue = 15;
+            Item.initCount = 10;
+            Item.rewardCount = 10;
+            Item.stackable = true;
+            Item.hasCharges = true;
+            Item.goesInToolbar = true;
+        }
+        public bool UseItem()
+        {
+            if (Owner!.statusEffects.makingJoke) return false;
+
+            string prev = Owner.specialAbility;
+            Owner.specialAbility = VanillaAbilities.Joke;
+            Owner.statusEffects.PressedSpecialAbility();
+            Owner.specialAbility = prev;
+
+            Count--;
+            return true;
+        }
+    }
+}
+```
 
 </TabItem>
 <TabItem value="Adrenaline Shot">
 
-A simple usable item that gives the player an effect called "Adrenaline". You can see Adrenaline effect's implementation in [Creating a Custom Effect: Examples](../traits/create-effect#examples).
+A simple usable item that gives the player an effect called "Adrenaline". You can see Adrenaline effect's implementation in [Creating a Custom Effect: Examples](../custom-traits-effects/custom-effects#examples).
 
-:::info{title="Work-In-Progress"}
-TODO: `<CodeSnippet>{AdrenalineShot}</CodeSnippet>`
-:::
+```csharp title="/MyAwesomeProject/AdrenalineShot.cs"
+using RogueLibsCore;
+
+namespace MyAwesomeMod
+{
+    [ItemCategories(RogueCategories.Drugs, RogueCategories.Melee, RogueCategories.Usable)]
+    public class AdrenalineShot : CustomItem, IItemUsable
+    {
+        [RLSetup]
+        public static void Setup()
+        {
+            RogueLibs.CreateCustomItem<AdrenalineShot>()
+                .WithName(new CustomNameInfo("Adrenaline Shot"))
+                .WithDescription(new CustomNameInfo("Gives you a ton of boosts for a short period of time."))
+                .WithSprite(Properties.Resources.AdrenalineShot)
+                .WithUnlock(new ItemUnlock
+                {
+                    UnlockCost = 10,
+                    LoadoutCost = 5,
+                    CharacterCreationCost = 3,
+                    Prerequisites = { VanillaItems.RagePoison, VanillaItems.Antidote },
+                });
+
+            RogueLibs.CreateCustomName("AdrenalineElectronic", NameTypes.Dialogue,
+                new CustomNameInfo("I don't have a circulatory system."));
+        }
+
+        public override void SetupDetails()
+        {
+            Item.itemType = ItemTypes.Consumable;
+            Item.healthChange = 20;
+            Item.itemValue = 60;
+            Item.initCount = 1;
+            Item.rewardCount = 2;
+            Item.stackable = true;
+            Item.goesInToolbar = true;
+        }
+        [IgnoreChecks("FullHealth")]
+        public bool UseItem()
+        {
+            if (Owner!.electronic)
+            {
+                Owner.SayDialogue("AdrenalineElectronic");
+                gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
+                return false;
+            }
+            Owner.AddEffect<Adrenaline>();
+            gc.audioHandler.Play(Owner, VanillaAudio.UseSyringe);
+            Count--;
+            return true;
+        }
+    }
+}
+```
 
 </TabItem>
 <TabItem value="Wild Bypasser">
 
 A more complicated usable item, based on Wall Bypasser's code (see `ItemFunctions.UseItem`).
 
-:::info{title="Work-In-Progress"}
-TODO: `<CodeSnippet>{WildBypasser}</CodeSnippet>`
-:::
+```csharp title="/MyAwesomeProject/WildBypasser.cs"
+using UnityEngine;
+using RogueLibsCore;
+
+namespace MyAwesomeMod
+{
+    [ItemCategories(RogueCategories.Technology, RogueCategories.Usable, RogueCategories.Stealth)]
+    public class WildBypasser : CustomItem, IItemUsable
+    {
+        [RLSetup]
+        public static void Setup()
+        {
+            RogueLibs.CreateCustomItem<WildBypasser>()
+                .WithName(new CustomNameInfo("Wild Bypasser"))
+                .WithDescription(new CustomNameInfo("Warps you in the direction you're facing. Teleports through any amount of walls."))
+                .WithSprite(Properties.Resources.WildBypasser)
+                .WithUnlock(new ItemUnlock
+                {
+                    UnlockCost = 10,
+                    LoadoutCost = 7,
+                    CharacterCreationCost = 3,
+                    Prerequisites = { VanillaItems.WallBypasser },
+                });
+        }
+
+        public override void SetupDetails()
+        {
+            Item.itemType = ItemTypes.Tool;
+            Item.itemValue = 60;
+            Item.initCount = 2;
+            Item.rewardCount = 3;
+            Item.stackable = true;
+            Item.goesInToolbar = true;
+        }
+        public bool UseItem()
+        {
+            Vector3 position = Owner!.agentHelperTr.localPosition = Vector3.zero;
+            TileData tileData;
+            int limit = 0;
+            do
+            {
+                position.x += 0.64f;
+                Owner.agentHelperTr.localPosition = position;
+                tileData = gc.tileInfo.GetTileData(Owner.agentHelperTr.position);
+
+            } while ((gc.tileInfo.IsOverlapping(Owner.agentHelperTr.position, "Anything")
+                || tileData.wallMaterial != wallMaterialType.None) && limit++ < 250);
+
+            if (limit > 250)
+            {
+                gc.audioHandler.Play(Owner, VanillaAudio.CantDo);
+                return false;
+            }
+
+            Owner.SpawnParticleEffect("Spawn", Owner.tr.position);
+            Owner.Teleport(Owner.agentHelperTr.position, false, true);
+            Owner.rb.velocity = Vector2.zero;
+
+            if (!(Owner.HasTrait(VanillaTraits.IntrusionArtist)
+                    && gc.percentChance(Owner.DetermineLuck(80, "ThiefToolsMayNotSubtract", true)))
+                && !(Owner.HasTrait(VanillaTraits.IntrusionArtist2)
+                    && gc.percentChance(Owner.DetermineLuck(40, "ThiefToolsMayNotSubtract", true))))
+                Count--;
+
+            Owner.SpawnParticleEffect("Spawn", Owner.tr.position, false);
+            gc.audioHandler.Play(Owner, VanillaAudio.Spawn);
+            return true;
+        }
+    }
+}
+```
 
 </TabItem>
 </Tabs>
