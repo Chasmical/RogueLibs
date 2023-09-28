@@ -37,17 +37,18 @@ namespace RogueLibsCore
 
             Patcher.AnyErrors();
 
-            RogueLibs.CreateCustomName("DiscordLink", NameTypes.Interface, new CustomNameInfo
-            {
-                English = "https://discord.gg/ucsAHt62eB",
-                Russian = "https://discord.gg/neDvsmk",
-            });
             RogueLibs.CreateCustomName("DiscordButton", NameTypes.Interface, new CustomNameInfo
             {
                 English = "Discord",
                 Russian = @"Оф. Русский Discord",
             });
+            DiscordLinkInfo = new CustomNameInfo
+            {
+                English = "https://discord.gg/ucsAHt62eB",
+                Russian = "https://discord.gg/neDvsmk",
+            };
         }
+        private static CustomNameInfo DiscordLinkInfo;
 
         private static bool firstRun = true;
         public static void NameDB_RealAwake(NameDB __instance)
@@ -144,7 +145,10 @@ namespace RogueLibsCore
         public static bool MenuGUI_PressedDiscordButton()
         {
             GameController gc = GameController.gameController;
-            Application.OpenURL(gc.nameDB.GetName("DiscordLink", NameTypes.Interface));
+            LanguageCode cur = LanguageService.Current;
+            if (Application.systemLanguage == SystemLanguage.Russian)
+                cur = LanguageCode.Russian;
+            Application.OpenURL(DiscordLinkInfo[cur] ?? DiscordLinkInfo.English);
             return false;
         }
 
