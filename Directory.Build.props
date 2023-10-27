@@ -16,4 +16,8 @@
     <NoWarn>$(NoWarn),1591</NoWarn> <!-- Suppress the 'Missing XML Documentation' warning -->
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+
 </Project>
