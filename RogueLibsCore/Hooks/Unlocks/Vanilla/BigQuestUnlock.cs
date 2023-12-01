@@ -158,7 +158,18 @@ namespace RogueLibsCore
             if (Agent is null) return name;
             string agentName = Agent.GetName();
             if (Agent.Name is VanillaAgents.GangsterCrepe or VanillaAgents.GangsterBlahd)
-                agentName += $", {gc.nameDB.GetName(Agent.Name + "_N", NameTypes.Agent)}";
+            {
+                int parenthesisIndex = agentName.IndexOf('(');
+                if (parenthesisIndex != -1)
+                {
+                    int endParenthesisIndex = agentName.IndexOf(')', parenthesisIndex + 1);
+                    if (endParenthesisIndex != -1)
+                    {
+                        agentName = agentName.Substring(0, parenthesisIndex).TrimEnd() + agentName.Substring(endParenthesisIndex + 1).TrimStart();
+                        agentName += $", {gc.nameDB.GetName(Agent.Name + "_N", NameTypes.Agent)}";
+                    }
+                }
+            }
             return $"{name} ({agentName})";
         }
         /// <inheritdoc/>
