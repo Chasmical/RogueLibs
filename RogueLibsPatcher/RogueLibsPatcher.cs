@@ -77,7 +77,7 @@ namespace RogueLibsPatcher
 
             if (type.Fields is null) Error(5, typeName);
             // Note: Do not use LINQ here. Apparently, some versions of Mono may be missing System.Func and System.Action.
-            // (see https://github.com/SugarBarrel/ECTD/issues/4)
+            // (see https://github.com/Chasmical/ECTD/issues/4)
             for (int i = 0, count = type.Fields.Count; i < count; i++)
                 if (type.Fields[i].Name == fieldName)
                     return;
