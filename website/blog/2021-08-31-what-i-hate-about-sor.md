@@ -2,8 +2,8 @@
 title: What I hate about SoR
 author: Abbysssal
 author_title: Creator of RogueLibs
-author_url: https://github.com/SugarBarrel
-author_image_url: https://github.com/SugarBarrel.png
+author_url: https://github.com/Chasmical
+author_image_url: https://github.com/Chasmical.png
 tags: [blog, sor2]
 description: The code is really hard and wet.
 hide_table_of_contents: false
@@ -52,7 +52,7 @@ For example, `Unlock` has three fields: `unavailable`, `onlyInCharacterCreation`
 
 ![unavailable, onlyInCharacterCreation and freeItem fields](https://imgur.com/gjnxvNM.png)
 
-I spent **dozens of hours** converting that kind of system into something more maintainable: `Available`, `AvailableInCC` and `AvailableInItemTeleporter` - properties that you can find in RogueLibs. And even after that, [there still were issues](https://github.com/SugarBarrel/RogueLibs/issues/40). *I'm bad at discrete mathematics, that's why I had a hard time doing that.*
+I spent **dozens of hours** converting that kind of system into something more maintainable: `Available`, `AvailableInCC` and `AvailableInItemTeleporter` - properties that you can find in RogueLibs. And even after that, [there still were issues](https://github.com/Chasmical/RogueLibs/issues/40). *I'm bad at discrete mathematics, that's why I had a hard time doing that.*
 
 ### Hard code
 

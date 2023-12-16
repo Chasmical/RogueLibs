@@ -2,12 +2,12 @@
 module.exports = {
   title: 'RogueLibs Documentation',
   tagline: 'Doing the impossible.',
-  url: 'https://sugarbarrel.github.io',
+  url: 'https://chasmical.github.io',
   baseUrl: '/RogueLibs/',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
-  organizationName: 'SugarBarrel',
+  organizationName: 'Chasmical',
   projectName: 'RogueLibs',
   i18n: {
     defaultLocale: 'en',
@@ -24,7 +24,7 @@ module.exports = {
   plugins: ['docusaurus-plugin-sass'],
   themeConfig: {
     metadata: [
-      { name: "twitter:image", content: "https://sugarbarrel.github.io/RogueLibs/img/logo.png" },
+      { name: "twitter:image", content: "https://chasmical.github.io/RogueLibs/img/logo.png" },
     ],
     docs: {
       sidebar: {
@@ -38,7 +38,7 @@ module.exports = {
     announcementBar: {
       id: 'star',
       content:
-        '<span style="font-size: 1rem;">⭐️ If you like RogueLibs, give it a star on <a target="_blank" href="https://github.com/SugarBarrel/RogueLibs">GitHub</a>! ⭐️</span>',
+        '<span style="font-size: 1rem;">⭐️ If you like RogueLibs, give it a star on <a target="_blank" href="https://github.com/Chasmical/RogueLibs">GitHub</a>! ⭐️</span>',
     },
     navbar: {
       hideOnScroll: true,
@@ -73,7 +73,7 @@ module.exports = {
           position: 'right',
         },
         {
-          href: 'https://github.com/SugarBarrel/RogueLibs',
+          href: 'https://github.com/Chasmical/RogueLibs',
           position: 'right',
           className: 'header-github-link',
           'aria-label': 'GitHub repository',
@@ -106,7 +106,7 @@ module.exports = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/SugarBarrel/RogueLibs',
+              href: 'https://github.com/Chasmical/RogueLibs',
             },
           ],
         },
@@ -121,12 +121,12 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           editUrl:
-            'https://github.com/SugarBarrel/RogueLibs/edit/main/website/',
+            'https://github.com/Chasmical/RogueLibs/edit/main/website/',
         },
         blog: {
           showReadingTime: true,
           editUrl:
-            'https://github.com/SugarBarrel/RogueLibs/edit/main/website/blog/',
+            'https://github.com/Chasmical/RogueLibs/edit/main/website/blog/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),

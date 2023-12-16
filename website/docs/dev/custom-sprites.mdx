@@ -1,6 +1,6 @@
 # Custom Sprites and Resources
 
-Adding image resources to a plugin is a bit tricky. Visual Studio loads any image resources as bitmaps, but we don't want that. You'll need to modify the resources manifest yourself, and add your images as binary files (or byte arrays). RogueLibs supports cropping and resizing your sprites, so, technically, you could even upload a spritesheet, and cut sprites out of it, but the performance gain would not be worth it (loading all of the 1204 64x64 sprites from [Sidi's spritepack](https://sugarbarrel.github.io/SoRModHub/) takes about 350 milliseconds, while patching methods is significantly slower - RogueLibs takes about 5 seconds to load).
+Adding image resources to a plugin is a bit tricky. Visual Studio loads any image resources as bitmaps, but we don't want that. You'll need to modify the resources manifest yourself, and add your images as binary files (or byte arrays). RogueLibs supports cropping and resizing your sprites, so, technically, you could even upload a spritesheet, and cut sprites out of it, but the performance gain would not be worth it (loading all of the 1204 64x64 sprites from [Sidi's spritepack](https://chasmical.github.io/SoRModHub/) takes about 350 milliseconds, while patching methods is significantly slower - RogueLibs takes about 5 seconds to load).
 
 import Tabs from '@site/src/components/Tabs';
 import TabItem from '@site/src/components/TabItem';
