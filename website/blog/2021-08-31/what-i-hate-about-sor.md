@@ -6,7 +6,6 @@ author_url: https://github.com/Chasmical
 author_image_url: https://github.com/Chasmical.png
 tags: [blog, sor2]
 description: The code is really hard and wet.
-hide_table_of_contents: false
 ---
 
 ## The code is really hard and wet
@@ -107,10 +106,8 @@ Why would you try to repeat the operation, if you know that the results will be 
 ![An unnecessary for loop](https://imgur.com/vjCshb5.png)
 
 Why the hell would you write all of these giant `for` loops with a ton of conditions, `break`s and `continue`s and stuff like that, when there are already methods that do exactly that?  
-**Just use System.Linq extensions and List<T\> methods!**
+**Just use System.Linq extensions and List&lt;T&gt; methods!**
 
 ## Conclusion
 
-Well, that's it. For now, at least.
-
-I wish Matt would fix all of that and make SoR 2 at least slightly more moddable and maintainable. If all of that stuff gets fixed in SoR 2, I'd be really happy, and I'd definitely make sure that SoR 2 has the best modding library possible. Otherwise, I might just refuse to make mods for the sequel, when it comes out.
+Well, that's it. For now, at least...

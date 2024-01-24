@@ -66,22 +66,6 @@ module.exports = {
           ],
         },
       ],
-      'Site Stuff': [
-        'site/intro',
-        'site/index',
-        {
-          'Components': [
-            'site/components/InventorySlot',
-            'site/components/InventoryRow',
-            'site/components/InventoryGrid',
-          ],
-          'Hooks': [
-            'site/hooks/useSelector',
-            'site/hooks/useStorage',
-            'site/hooks/useStorageArray',
-          ],
-        },
-      ],
     },
   ],
 };

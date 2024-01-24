@@ -1,5 +1,7 @@
+import { themes } from "prism-react-renderer";
+
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
-module.exports = {
+export default {
   title: 'RogueLibs Documentation',
   tagline: 'Doing the impossible.',
   url: 'https://chasmical.github.io',
@@ -23,6 +25,9 @@ module.exports = {
   },
   plugins: ['docusaurus-plugin-sass'],
   themeConfig: {
+    colorMode: {
+      defaultMode: 'dark',
+    },
     metadata: [
       { name: "twitter:image", content: "https://chasmical.github.io/RogueLibs/img/logo.png" },
     ],
@@ -32,7 +37,7 @@ module.exports = {
       },
     },
     prism: {
-      theme: require('prism-react-renderer/themes/dracula'),
+      theme: themes.vsDark,
       additionalLanguages: ['clike', 'csharp', 'bash'],
     },
     announcementBar: {

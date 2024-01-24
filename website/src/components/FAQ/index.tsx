@@ -30,8 +30,8 @@ export default function ({children}: Props): JSX.Element {
   const [expanded, setExpanded] = useState(false);
 
   const childrenArr = React.Children.toArray(children);
-  const questions = childrenArr.filter(c => (c as any)?.props?.mdxType === "Question");
-  const answer = childrenArr.filter(c => (c as any)?.props?.mdxType !== "Question");
+  const questions = childrenArr.filter(c => (c as any)?.type?.name === 'Question');
+  const answer = childrenArr.filter(c => (c as any)?.type?.name !== "Question");
 
   return (
     <div className={styles.faq} onClick={() => setExpanded(!expanded)}>

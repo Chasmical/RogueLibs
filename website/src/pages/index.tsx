@@ -10,12 +10,12 @@ import LogoPokemon from '@site/static/img/logo-pokemon.png';
 import LogoLegacy from '@site/static/img/logo-legacy.png';
 import Translate from '@docusaurus/Translate';
 import { useLocation } from '@docusaurus/router';
-import { parse as queryParse } from 'query-string';
+import queryString from 'query-string';
 import Head from '@docusaurus/Head';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 
-function getLogo(location) {
-  const params = queryParse(location.search);
+function getLogo(location: { search: string }) {
+  const params = queryString.parse(location.search);
   if (params.pokemon !== undefined) return LogoPokemon;
   if (params.legacy !== undefined) return LogoLegacy;
   return Logo;
