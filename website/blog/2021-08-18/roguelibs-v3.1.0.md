@@ -1,10 +1,10 @@
 ---
-title: RogueLibs v3.1.0 released!
+title: RogueLibs v3.1.0
 author: Abbysssal
 author_title: Creator of RogueLibs
 author_url: https://github.com/Chasmical
 author_image_url: https://github.com/Chasmical.png
-tags: [roguelibs, release]
+tags: [blog, roguelibs]
 description: Completely replaced the vanilla localization system.
 image: https://i.imgur.com/XaNGCx7.png
 hide_table_of_contents: false

@@ -4,7 +4,7 @@ author: Abbysssal
 author_title: Creator of RogueLibs
 author_url: https://github.com/Chasmical
 author_image_url: https://github.com/Chasmical.png
-tags: [blog, sor2]
+tags: [blog, modding, sor, sor2]
 description: The code is really hard and wet.
 ---
 

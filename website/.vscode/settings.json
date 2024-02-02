@@ -1,0 +1,19 @@
+{
+  "typescript.tsdk": "node_modules\\typescript\\lib",
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "[javascript][javascriptreact][typescript][typescriptreact][json][jsonc][css][scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "auto-close-tag.disableOnLanguage": [
+    "typescript",
+    "typescriptreact",
+    "csharp"
+  ],
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "[markdown][mdx]": {
+    "files.trimTrailingWhitespace": false
+  }
+}

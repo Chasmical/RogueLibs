@@ -41,9 +41,13 @@ export default {
       additionalLanguages: ['clike', 'csharp', 'bash'],
     },
     announcementBar: {
-      id: 'star',
-      content:
-        '<span style="font-size: 1rem;">⭐️ If you like RogueLibs, give it a star on <a target="_blank" href="https://github.com/Chasmical/RogueLibs">GitHub</a>! ⭐️</span>',
+      id: 'discontinued',
+      isCloseable: false,
+      textColor: 'var(--ifm-color-white)',
+      backgroundColor: '#FF5060',
+      content: (
+        '<span style="font-size: 1rem;">⚰️ RogueLibs has been discontinued. See more information in <a href="/RogueLibs/blog/2024/02/03/discontinuing-roguelibs">the latest blog post</a>. ⚰️</span>'
+      ),
     },
     navbar: {
       hideOnScroll: true,
@@ -61,11 +65,6 @@ export default {
         {
           to: 'docs/dev/getting-started',
           label: 'Documentation',
-          position: 'left',
-        },
-        {
-          to: 'docs/site/intro',
-          label: 'Components',
           position: 'left',
         },
         {
@@ -130,11 +129,13 @@ export default {
         },
         blog: {
           showReadingTime: true,
+          readingTime: ({content, frontMatter, defaultReadingTime}) =>
+            defaultReadingTime({content, options: { wordsPerMinute: 240 }}),
           editUrl:
             'https://github.com/Chasmical/RogueLibs/edit/main/website/blog/',
         },
         theme: {
-          customCss: require.resolve('./src/css/custom.css'),
+          customCss: require.resolve('./src/css/custom.scss'),
         },
       },
     ],

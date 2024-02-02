@@ -13,8 +13,38 @@
 .navbar__logo {
   height: 3rem;
 }
-.sidebarLogo_node_modules-\@docusaurus-theme-classic-lib-theme-DocSidebar-Desktop-styles-module img {
-  height: auto !important;
+
+#__docusaurus {
+  &::after {
+    position: absolute;
+    inset: 0;
+  }
+
+  > div[role=banner] {
+    position: sticky;
+    top: 0;
+    z-index: calc(var(--ifm-z-index-fixed) + 1);
+  }
+  > nav {
+    top: 30px;
+    &[class*='navbarHidden'] {
+      transform: translate3d(0, calc(-100% - 32px), 0);
+      ~ div aside.theme-doc-sidebar-container > div > div:first-child > a {
+        margin-bottom: 0;
+      }
+    }
+  }
+  aside.theme-doc-sidebar-container > div {
+    top: 32px;
+    > div:first-child > a {
+      transition: margin var(--ifm-transition-fast) ease;
+      margin: 0 1rem;
+      max-height: 8rem;
+      > img {
+        height: auto !important;
+      }
+    }
+  }
 }
 
 .menu__list .menu__list .menu__link {

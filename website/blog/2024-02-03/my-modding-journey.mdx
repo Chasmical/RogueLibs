@@ -1,0 +1,106 @@
+---
+title: My Modding Journey
+author: Abbysssal
+author_title: Creator of RogueLibs
+author_url: https://github.com/Chasmical
+author_image_url: https://github.com/Chasmical.png
+tags: [blog, sor, modding]
+description: "I've given it some thought, and decided to quit doing Streets of Rogue stuff. And to finish this chapter in my life, I wrote this autobiographic post. TL;DR: Friction in the community made me realize that I don't actually care about Streets of Rogue."
+---
+
+import Spoiler from "@site/src/components/Spoiler";
+
+export const Abbr = props => (
+  <abbr title={props.title} style={{ cursor: "help", textDecoration: "underline 1px dashed #888", textUnderlineOffset: 3 }}>{props.children}</abbr>
+);
+
+
+
+<br/>
+
+I've given it some thought, and decided to quit doing Streets of Rogue stuff.  
+And to finish this chapter in my life, I wrote this autobiographic post.
+
+**TL;DR:** <Spoiler>Friction in the community made me realize that I don't actually care about Streets of Rogue.</Spoiler>
+
+
+
+## Blog Retrospective
+
+It's been more than 2 years since the last post in this blog. Since then, my programming skills and knowledge have vastly improved, I've practiced a bit of technical writing, did some project management, web-development, learned several languages, and gotten familiar with more technical terms.
+
+I've also reflected on the [*"What I hate about SoR"* post](/blog/2021/08/31/what-i-hate-about-sor) and noted what I did wrong. There was too much critique, and not nearly enough examples to convey the full extent of how bad it is. I've pointed out problems, but poorly explained the reasons behind my proposed solutions. Sometimes the answers hid in the irony, and that's not something that should be in a constructive review.
+
+I've considered writing a second part, *"What I hate about SoR. Part 2"*, where I would clearly document and explain all the issues in the game's code, but ended up not finishing it. Only 3 paragraphs worth of text (about 900 words), out of planned 20-30 paragraphs. Maybe all these pieces of advice will end up on my website at some point relatively far in the future.
+
+
+
+## My Modding Journey
+
+Anyway, let's go back to the very beginning...
+
+{/* truncate */}
+
+It was year 2016, and a YouTuber that I grew up watching has retired and stopped making videos. But then, 2 years later he comes back, revives the channel, makes like a hundred more videos and, not even a year later, retires once again. Among the new videos there were ~10 hours worth of gameplay recorded by one of his friends playing some weird roguelike game. That's how I found Streets of Rogue.
+
+At the time (2019), I was fascinated by the possibilities that the game offered.  
+"You can play as a Doctor and still kill people?! WOW!"  
+"There are 17 unique, distinct characters?! WOW."  
+"You can make custom characters?! And there are stealth mechanics?! WOW!"  
+"The humour in the [original] flavor texts meshes so well with the graphics and music!"  
+"But... The Russian localization is crap."
+
+That was the first time I used my very basic understanding of programming and computers in general for something useful. I examined the game files, found a Localization folder, read the instructions, fixed the translations, and uploaded it as a guide on Steam. Soon after, I was contacted by someone who wanted to help, we wrote several extensive Steam guides together, and then were invited to join the Russian SoR Discord server, led by Starinis – two Twitch streamers. They had multiple other games' communities on the same server, but I didn't give it much thought back then.
+
+During my stay on Starinis' server, I learned JavaScript and created a modular multi-purpose Discord bot for their server's various needs. It could crosspost <Abbr title="Russian equivalent of Twitter, basically">VKontakte</Abbr> posts, notify about new YouTube videos and Twitch streams, play music in voice channels, and it had some fun commands. In parallel with this, I tried myself in game dev, but ended up only making a cool unique inventory system. At the time I didn't know about value and reference types, so, kinda makes sense why I didn't make it far.
+
+By the end of 2019, I tried my hand at modding SoR and created ECTD. Half a year later I questioned the mod-making strategy of the time, and started the BepInEx/RogueLibs revolution in modding. Then, with a firm foundation in place, I made some mods (CustomAudioLoader, RogueLibs, aToM, aToI), and edited and published some videos about them. During 2020, I gained plenty of experience with C#, Unity, ECS, graphics, IL code and patching.
+
+Remember Starinis, Russian SoR Discord admins, from a couple of paragraphs back? They suddenly decided to take away the channels dedicated to separate games, and put all communities in just one single channel. That day it became clear, that they were collecting game communities like pokemon, just to promote their own Twitch career. The SoR community and I had to revolt. We founded our own server, with lots of channels for all topics, and we've never heard from Starinis again.
+
+In 2021, I got back to JavaScript, made this documentation website, and released RogueLibs v3, which would last for a while, and created a bunch of cool and more extensive mods. Then I noticed that my interest in SoR started fading... But I wasn't ready to drop Streets of Rogue completely, so instead I focused my efforts on a proper website for RogueLibs, with all kinds of stuff that the big websites have: authorization, dynamic pages, CMS, API, CDN. The design and styling were tough, and in addition to that, the university was taking its toll on me, so things were going very slowly.
+
+In the middle of 2022, I dropped out of university. I waited for two entire years, hoping they would eventually get serious with the programming courses, but they never did – they stuck with basic constructs, arithmetics, structures and pointers, all of which I had already learned myself three years earlier. Then I got a remote job as a web-developer, and I haven't had much free time ever since.
+
+
+
+## Discord in Discord
+
+Well, I guess, it all started with tinyBuild taking over SoR's community, in autumn of 2023. Due to some legal issues, they couldn't make the Russian Discord server official, and ended up creating 3 Russian channels on the official English server instead: #*rules*, #*general* and #*offtopic*. Predictably, everyone stayed on the Russian Discord server, but the existence of these 3 channels stumped the community's growth nonetheless.
+
+I was a moderator on the official Discord server for about 4 months, but decided to leave, because I didn't like the amount of seemingly irresponsible shortcuts being taken, and I felt like my efforts would be better placed elsewhere. Strangely, the statement "Ignorance is bliss" seems to almost always apply to the backstage of SoR-related things: the code behind the game's mechanics, the markup behind the wiki, the management behind the community. And because I'm a perfectionist, that huge amount of little flaws and mistakes accumulated over time felt like an unliftable burden.
+
+This friction made me rethink whether I want to be here at all. I reflected back on my past and realized that I don't have any sincere reason to be here anymore. I've lost interest in the game, and it feels like I've hit the ceiling, now stuck with SoR weighing me down, and unable to move forward.
+
+
+
+## Morals of the story
+
+1. Think carefully and critically of the programming courses in universities/colleges. Consider learning programming on your own, and make sure to do some research on what you'll learn during the courses. But most importantly, don't pay attention to the pretentious buzz words, look for specific knowledge instead. Let me list what some of the courses in my university had:  
+    <div style={{ fontSize: "0.9rem", margin: "1rem 0" }}>
+    - "AI and Logical programming" – basic binary logic and graphs. There's no AI ***or*** programming.
+    - "Basics of Cryptography" – Caesar and Vigenere ciphers, and then some math tricks.
+    - "Internet Culture" – some memes, political discussions and stuff about aggression on the web.
+    - "Programming languages and transpiling" – writing simple programs in Assembler.
+    - "Creating modern crossplatform web apps" – just basic HTML, JS and PHP, also, really outdated.
+    - "Database technologies" – the very basics of MySQL, not even functions or indexes.
+    - "Computer Graphics" – textures, shaders and shadows. I literally learned how to do that and more in the first day of me learning OpenGL! And they are stretching it all out over two entire semesters!
+    - "Neural networks" – no nodes, no networks, just computing weird numbers, almost as if cracking hashes.
+    - "Modern programming technologies" – solving purely geological problems for some reason.
+    </div>
+    I'm not saying to completely disregard higher education though. It gives you more career opportunities, and may be a deciding factor when applying to a job, so take that into consideration.
+
+
+2. If all hope is lost, you can find hope elsewhere. It's better to find something else that you like, than to see the thing dear to you sink to the very bottom and turn into the opposite of what it stood for. It will save you the heartbreak. Just persist, think carefully and do what you think is right.
+
+    I know, this advice sound a bit cynical. But that's the bias you get by listening to a human being – their opinion is shaped by their experiences and thoughts. And those are **my** experiences and thoughts. Think about them and take them into consideration, but never dismiss.
+
+3. And lastly, don't underestimate your own subconciousness – when you learn the reasons behind your intuition, it may already be too late. For me, it often happens when coding – some part of the project suddenly feels off, but I can't understand why. Then, days or weeks later, I'd discover a fundamental flaw in the architectural design, directly related to that exact part that I doubted, forcing me to redo everything.
+
+
+
+## Conclusion
+
+Well, thanks for reading, I guess. :smile: I hope this post helped you in one way or another.
+
+

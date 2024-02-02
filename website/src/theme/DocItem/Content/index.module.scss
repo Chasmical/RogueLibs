@@ -1,0 +1,13 @@
+.label {
+  font-size: 1.25rem;
+  text-transform: none;
+}
+.disclaimer {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: center;
+
+  &:last-child {
+    margin: 3rem auto 0;
+  }
+}

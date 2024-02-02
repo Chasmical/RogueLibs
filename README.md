@@ -1,3 +1,7 @@
+## ⚰️ RogueLibs has been discontinued ⚰️
+
+The project's repository is archived as part of the GitHub Archive Program. RogueLibs' code and the documentation will no longer be updated. See more information in the [latest blog post](https://chasmical.github.io/RogueLibs/blog/2024/02/03/discontinuing-roguelibs). Feel free to fork the repository to continue working on the project.
+
 <div align="center">
   <p>
     <a href="https://chasmical.github.io/RogueLibs">
