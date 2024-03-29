@@ -333,14 +333,40 @@ Click **OK** and run the game through Steam.
 ## Installing RogueLibs {#roguelibs}
 
 <Tabs
-    defaultValue="v3"
+    defaultValue="v4"
     values={[
+        {label:'RogueLibs v4.0.0-rc.1', value:'v4'},
         {label:'RogueLibs v3.x.x', value:'v3'},
         {label:'RogueLibs v2.x.x', value:'v2'},
     ]}>
+<TabItem value="v4">
+
+:::info Backwards compatibility
+RL v4 is compatible with mods made on RL v3!
+:::
+
+**[Download the latest RogueLibs v4.0.0-rc.1 version](https://github.com/Chasmical/RogueLibs/releases/latest)**
+
+You need to download only one file - `RogueLibsCore.dll`.
+
+<img src={useBaseUrl('/img/installation/download-roguelibs-v2.png')}/>
+
+Go to the BepInEx's directory and put `RogueLibsCore.dll` file into `plugins` directory:
+
+<img src={useBaseUrl('/img/i18n/ru/installation/drag-plugins.gif')} width="600"/>
+
+:::note `RogueLibsPatcher.dll`
+In previous versions, you would also need to install a patcher, but now it's installed :sparkles:**automatically**:sparkles:!
+:::
+
+</TabItem>
 <TabItem value="v3">
 
-**[Download the latest RogueLibs version](https://github.com/Chasmical/RogueLibs/releases/latest)**
+:::caution
+RogueLibs v3.x.x is outdated and may not support newer mods!
+:::
+
+**[Download the latest RogueLibs v3.x.x version](https://github.com/Chasmical/RogueLibs/releases/tag/v3.6.9)**
 
 You need to download only two files: `RogueLibsCore.dll` and `RogueLibsPatcher.dll`.
 
@@ -365,7 +391,7 @@ The directory is called **`patchers`**, it's different from **`plugins`**.
 RogueLibs v2.x.x is outdated and is not compatible with new mods!
 :::
 
-**[Download the latest RogueLibs version](https://github.com/Chasmical/RogueLibs/releases/tag/v2.2-pre.2)**
+**[Download the latest RogueLibs v2.x.x version](https://github.com/Chasmical/RogueLibs/releases/tag/v2.2-pre.2)**
 
 You need to download only one file - `RogueLibs.dll`.
 

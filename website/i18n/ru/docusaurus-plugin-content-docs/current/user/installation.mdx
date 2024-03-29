@@ -327,12 +327,38 @@ pwd
 ## Установка RogueLibs {#roguelibs}
 
 <Tabs
-    defaultValue="v3"
+    defaultValue="v4"
     values={[
+        {label:'RogueLibs v4.0.0-rc.1', value:'v4'},
         {label:'RogueLibs v3.x.x', value:'v3'},
         {label:'RogueLibs v2.x.x', value:'v2'},
     ]}>
+<TabItem value="v4">
+
+:::info Обратная совместимость
+RL v4 совместим с модами сделанными на RL v3!
+:::
+
+**[Скачайте последнюю версию RogueLibs - v4.0.0-rc.1](https://github.com/Chasmical/RogueLibs/releases/latest)**
+
+Вам надо скачать только один файл - `RogueLibsCore.dll`.
+
+<img src={useBaseUrl('/img/installation/download-roguelibs-v2.png')}/>
+
+Перейдите к папке BepInEx и положите файл `RogueLibsCore.dll` в папку `plugins`:
+
+<img src={useBaseUrl('/img/i18n/ru/installation/drag-plugins.gif')} width="600"/>
+
+:::note `RogueLibsPatcher.dll`
+В предыдущих версиях надо было также устанавливать патчер, но теперь он устанавливается :sparkles:**автоматически**:sparkles:!
+:::
+
+</TabItem>
 <TabItem value="v3">
+
+:::caution
+RogueLibs v3.x.x уже устарел и может не поддерживать новые моды!
+:::
 
 **[Скачайте последнюю версию RogueLibs](https://github.com/Chasmical/RogueLibs/releases/latest)**
 
