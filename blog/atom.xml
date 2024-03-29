@@ -22,10 +22,13 @@
 <p>Here's the list, in order from most to least significant:</p>
 <ol>
 <li>
-<p><strong>Loss of interest, and stagnancy.</strong> For 5 years now, I've focused all my efforts on Streets of Rogue. Practically everything I know is directly related to SoR. I need a change of pace. I want opportunities to learn other stuff, not related to SoR, as well.</p>
+<p><strong>Loss of interest, and stagnancy.</strong> For 5 years now, I've focused all my efforts on Streets of Rogue. Almost everything I know is directly related to SoR. I need a change of pace. I want opportunities to learn other stuff, not related to SoR, as well.</p>
 </li>
 <li>
-<p><strong>SoR's disgustingly awful code.</strong> I don't see many reasons to stick around with this kind of code any longer. With my self-esteem now back to normal levels, I believe I deserve to work with better code.</p>
+<p><strong>SoR's disgustingly awful code.</strong> I don't see many reasons to stick around with this kind of code any longer. I am so done with it, and I believe I deserve to work on stuff with better code.</p>
+</li>
+<li>
+<p><strong>I feel overqualified for this.</strong> When I first started modding, SoR felt like a challenge. But now it's just an obstacle, stalling my growth, one that I would rather avoid instead of smashing through.</p>
 </li>
 <li>
 <p><strong>Dissatisfaction with community management.</strong> To be honest, I had expected more involvement, more teasers and such, with more effort put into it. Other than the trailers, nothing really stood out. The disproportionate amount of hype I had for the sequel led to disappointment. And to be fair, that's on me, my expectations were too high.</p>
@@ -33,24 +36,29 @@
 <li>
 <p><strong>Responsibilities and stress.</strong> With the huge amount of issues and projects in progress, and no one else capable of handling them, it's getting rather stressful, and I really want some time for myself. And by that I don't mean just a small break, I mean finishing this chapter in my life, and moving forward. There's more to life, than just Streets of Rogue, after all.</p>
 </li>
-<li>
-<p><strong>Stress from work.</strong> The projects at my work are just as bad as SoR's code. This factor definitely contributed to, and accelerated my descent into madness. The work conditions are really convenient though, and it's hard to say no to money, so I don't want to quit yet.</p>
-</li>
-<li>
-<p><strong>Discouragement of discussions in the community.</strong> I saw quite a few constructive discussions on Discord get shut down for no apparent reason. I want to discuss issues and problems with the server, since, you know, discussing it is the only way to improve. But here, you'll get called petty and rude, if you point out a problem or that someone's argument doesn't make sense.</p>
-</li>
-<li>
-<p><strong>Questionable approval of modding.</strong> tinyBuild is very clear about their policy of strict adherence to all services' terms of service and agreements; and Steam's Subscriber Agreement does not allow <abbr title="(something that gives players an unfair advantage in multiplayer)" style="cursor:help;text-decoration:underline 1px dashed #888;text-underline-offset:3px">"cheats"</abbr> and mods. If Steam Achievement Manager (the mention of which had to be deleted) is considered a "cheat", then what about <em>mods</em> that may act as these <em>"cheats"</em>? Intent is not something that can be judged objectively, after all; and a double standard is scarier than ignorance. I don't feel as confident when making mods, knowing that it all may come crashing down the next day.</p>
-</li>
 </ol>
-<p>The last two are far from being the deciding factors, but they did set it all in motion.<br>
-<!-- -->And arguably, some of these issues can be solved, but at that point it'd be more trouble than it's worth. Perhaps, I'll just find my happiness elsewhere. It can't be hard to find a place better than this.</p>
-<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="so-whats-next">So, what's next?<a href="https://chasmical.github.io/RogueLibs/blog/2024/02/03/discontinuing-roguelibs#so-whats-next" class="hash-link" aria-label="Direct link to So, what's next?" title="Direct link to So, what's next?">​</a></h2>
+<p>Arguably, some of these issues can be solved, but at that point it'd be more trouble than it's worth. Perhaps, I'll just find my happiness elsewhere. It can't be hard to find a place better than this.</p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="so-whats-gonna-happen">So, what's gonna happen?<a href="https://chasmical.github.io/RogueLibs/blog/2024/02/03/discontinuing-roguelibs#so-whats-gonna-happen" class="hash-link" aria-label="Direct link to So, what's gonna happen?" title="Direct link to So, what's gonna happen?">​</a></h2>
 <p>I'll just stop working on SoR-related projects, and I'll archive their repositories. If you want to carry on the legacy, feel free to fork the repositories and continue working on these projects.</p>
 <p>This documentation website and all currently released files and assets will remain available. The only exception is the newer beta of the website, the one at roguelibs.com, since it incurs some maintenance costs (web server, database, CMS, CDN, domain name). I'll wipe the data there and have it shut down. The <a href="https://github.com/Chasmical/roguelibs-web" target="_blank" rel="noopener noreferrer">source repository</a> is still available, so feel free to host one yourself.</p>
 <p>The official Discord server can carry on without me. The Russian Discord server, though, will probably bite the dust, unless someone stands up and continues managing the Russian community.</p>
 <hr>
-<div style="display:flex;flex-wrap:wrap;justify-content:space-around"><div><h4 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="official-discord-server">Official Discord server<a href="https://chasmical.github.io/RogueLibs/blog/2024/02/03/discontinuing-roguelibs#official-discord-server" class="hash-link" aria-label="Direct link to Official Discord server" title="Direct link to Official Discord server">​</a></h4><iframe src="https://canary.discord.com/widget?id=187414758536773632&amp;theme=dark" width="320" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe></div><div><h4 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="russian-discord-server">Russian Discord server<a href="https://chasmical.github.io/RogueLibs/blog/2024/02/03/discontinuing-roguelibs#russian-discord-server" class="hash-link" aria-label="Direct link to Russian Discord server" title="Direct link to Russian Discord server">​</a></h4><iframe src="https://canary.discord.com/widget?id=766725034445635634&amp;theme=dark" width="320" height="500" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe></div></div>]]></content>
+<div style="display:flex;flex-wrap:wrap;justify-content:space-around"><div><h4 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="official-discord-server">Official Discord server<a href="https://chasmical.github.io/RogueLibs/blog/2024/02/03/discontinuing-roguelibs#official-discord-server" class="hash-link" aria-label="Direct link to Official Discord server" title="Direct link to Official Discord server">​</a></h4><iframe src="https://canary.discord.com/widget?id=187414758536773632&amp;theme=dark" width="320" height="300" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe></div><div><h4 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="russian-discord-server">Russian Discord server<a href="https://chasmical.github.io/RogueLibs/blog/2024/02/03/discontinuing-roguelibs#russian-discord-server" class="hash-link" aria-label="Direct link to Russian Discord server" title="Direct link to Russian Discord server">​</a></h4><iframe src="https://canary.discord.com/widget?id=766725034445635634&amp;theme=dark" width="320" height="300" allowtransparency="true" frameborder="0" sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"></iframe></div></div>
+<hr>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="what-will-i-do-next">What will I do next?<a href="https://chasmical.github.io/RogueLibs/blog/2024/02/03/discontinuing-roguelibs#what-will-i-do-next" class="hash-link" aria-label="Direct link to What will I do next?" title="Direct link to What will I do next?">​</a></h2>
+<p>I've been thinking a lot about more artistic and creative hobbies that I could try, such as art and writing. I&nbsp;have near-zero experience in both (I've only done simple pixel art and technical writing), but I&nbsp;guess we'll see how it works out.</p>
+<p>As for programming, <em>"once a programmer, always a programmer!"</em> as they say.<br>
+<!-- -->Need to repeat a simple mundane task on your computer thousands of times? Easy-peasy!<br>
+<!-- -->Need to reliably solve some parametrized problem or build cool graphs? Yes can do!<br>
+<!-- -->Something's wrong with a program? That's... investigateable and maybe fixable.<br>
+<!-- -->Need a website/app/bot for a new project? Not as easy, but possible.<br>
+<!-- -->An annoying ad popup on a website? <em>*BOOM*</em> Deleted. <!-- -->😎</p>
+<p>Since the website's repo is archived now, this blog won't be updated anymore.<br>
+<!-- -->You can check on me through my <a href="https://github.com/Chasmical" target="_blank" rel="noopener noreferrer">GitHub profile</a> or my accounts on other platforms.</p>
+<br>
+<br>
+<br>
+<span style="font-size:1.5rem;font-weight:bold"><span>And now, I bid you farewell.</span><br><span>Mayhaps our paths will cross once more...</span></span>]]></content>
         <author>
             <name>Abbysssal</name>
             <uri>https://github.com/Chasmical</uri>
@@ -113,7 +121,7 @@
 </li>
 <li>
 <p>If all hope is lost, you can find hope elsewhere. It's better to find something else that you like, than to see the thing dear to you sink to the very bottom and turn into the opposite of what it stood for. It will save you the heartbreak. Just persist, think carefully and do what you think is right.</p>
-<p>I know, this advice sound a bit cynical. But that's the bias you get by listening to a human being – their opinion is shaped by their experiences and thoughts. And those are <strong>my</strong> experiences and thoughts. Think about them and take them into consideration, but never dismiss.</p>
+<p>I know, this advice sounds a bit cynical. But that's the bias you get by listening to a human being – their opinion is shaped by their experiences and thoughts. And those are <strong>my</strong> experiences and thoughts. Think about them and take them into consideration, but never dismiss.</p>
 </li>
 <li>
 <p>And lastly, don't underestimate your own subconciousness – when you learn the reasons behind your intuition, it may already be too late. For me, it often happens when coding – some part of the project suddenly feels off, but I can't understand why. Then, days or weeks later, I'd discover a fundamental flaw in the architectural design, directly related to that exact part that I doubted, forcing me to redo everything.</p>
