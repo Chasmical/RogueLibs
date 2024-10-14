@@ -2,11 +2,52 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
     <id>https://chasmical.github.io/RogueLibs/blog</id>
     <title>RogueLibs Documentation Blog</title>
-    <updated>2024-02-03T00:00:00.000Z</updated>
+    <updated>2024-10-15T00:00:00.000Z</updated>
     <generator>https://github.com/jpmonette/feed</generator>
     <link rel="alternate" href="https://chasmical.github.io/RogueLibs/blog"/>
     <subtitle>RogueLibs Documentation Blog</subtitle>
     <icon>https://chasmical.github.io/RogueLibs/img/favicon.ico</icon>
+    <entry>
+        <title type="html"><![CDATA[Advice to SoR2 modders]]></title>
+        <id>https://chasmical.github.io/RogueLibs/blog/2024/10/15/advice-to-sor2-modders</id>
+        <link href="https://chasmical.github.io/RogueLibs/blog/2024/10/15/advice-to-sor2-modders"/>
+        <updated>2024-10-15T00:00:00.000Z</updated>
+        <summary type="html"><![CDATA[I am writing this under an appreciable mental strain, since by tonight I shall be modding no more. If you're interested in modding Streets of Rogue 2, then I suggest you read this short story, that I believe accurately represents what an experience modding this game will be.]]></summary>
+        <content type="html"><![CDATA[<p><img loading="lazy" src="https://chasmical.github.io/RogueLibs/assets/images/my-bingo-card-a89ae239b07f2c9ed353cb37f0e35fb6.png" width="3747" height="1735" class="img_ev3q"></p>
+<p>I am writing this under an appreciable mental strain, since by tonight I shall be modding no more. If&nbsp;you're interested in modding Streets of Rogue 2, then I suggest you read this short story, that I believe accurately represents what an experience modding this game will be...</p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="product-of-a-twisted-mind">Product of a twisted mind<a href="https://chasmical.github.io/RogueLibs/blog/2024/10/15/advice-to-sor2-modders#product-of-a-twisted-mind" class="hash-link" aria-label="Direct link to Product of a twisted mind" title="Direct link to Product of a twisted mind">​</a></h2>
+<p>At a first glance, SoR1 may appear as just the first project of an unexperienced developer. All of the mistakes Matt made were understandable, forgiveable, <em>negligible</em>. When I first started modding the game, I didn't even realize that they were bad, since I had no C# knowledge at the time. But in just a few months I learned that they <em>weren't normal</em>, they were <em>abhorrent abominations</em>, commonly brought to life by beginner developers. I had thought that it was so <em>uncannily weird</em> that Matt, a developer with many years of experience, left so many in his code. He himself had admitted that the code was bad, and said he planned to fix everything in preparation for SoR2, so I didn't think much of it. <em>Oh, how was I wrong...</em></p>
+<p>No one could comprehend the entirety of SoR1's code, and very few have been able to modify just a small part of it. <em>I was one of the lucky most successful few</em>, with a library and many mods under my belt. I've seen many modders come and go, — they'd ask about getting into modding... But after directing them to dnSpy, I'd never hear from them again. SoR2 is even worse. I knew better than to expect much from Matt, but I <em>did</em> have some bare minimum expectations, — <em>I expected some improvements</em>.</p>
+<p><strong>I was naive...</strong> I didn't think it could get much worse than it already was. I was not prepared for the reserve of unguessed horrors, that Matt would let loose upon the world with the demo.</p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="descent-into-madness">Descent into madness<a href="https://chasmical.github.io/RogueLibs/blog/2024/10/15/advice-to-sor2-modders#descent-into-madness" class="hash-link" aria-label="Direct link to Descent into madness" title="Direct link to Descent into madness">​</a></h2>
+<p>It's straight up <strong>Cthulhuesque-adjacent</strong>. I feel like a character in one of H.P. Lovecraft's stories, that peered into the unknown too much and went insane... It damaged my sanity, and now I find myself here, rambling about the horrors I've had the unfortune to witness. But unlike true cosmic horror, I could comprehend everything I saw. I don't think I'll ever be able to look at bad code the same way again.</p>
+<p>The code... It simply cannot be described — there is no language for such abysms of shrieking and immemorial lunacy, such eldritch contradictions of principles, patterns and underlying logic. The stars were right again, and what a decades-old walk of life had failed to produce by design, a foolish inexperienced programmer had done by accident.</p>
+<p>The labyrinthine execution paths twist and warp in cunning spirals that I dare not seek to interpret. The&nbsp;bizzare perversions of the familiar and the monstrous, horribly remote and distinct from programming as we know it. I <strong>never ever</strong> want to see that codebase again.</p>
+<h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="if-you-are">If you are...<a href="https://chasmical.github.io/RogueLibs/blog/2024/10/15/advice-to-sor2-modders#if-you-are" class="hash-link" aria-label="Direct link to If you are..." title="Direct link to If you are...">​</a></h2>
+<h4 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="-a-developer-with-any-degree-of-experience-3-months">... a developer with ANY degree of experience (3+ months)<a href="https://chasmical.github.io/RogueLibs/blog/2024/10/15/advice-to-sor2-modders#-a-developer-with-any-degree-of-experience-3-months" class="hash-link" aria-label="Direct link to ... a developer with ANY degree of experience (3+ months)" title="Direct link to ... a developer with ANY degree of experience (3+ months)">​</a></h4>
+<p>Give up on trying to mod SoR2. After working for so long with code of tolerable quality, you won't be able to get into modding SoR2, — its code is <em>just that horrible</em>. And by "tolerable quality" I mean the <strong>baseline lowest</strong>, the kind that money-hungry and uncaring corporations have devs work on, with no time to refactor or even fix anything. The kind of code that you hear of in anecdotes, and see in DailyWTF posts, — <strong>that</strong> is what I mean by "code of tolerable quality"! I'd much rather work on these almost mythical failures of the programming world, than attempt modding SoR2! You've got enough experience to make a decision yourself, so I'll leave the final judgement to you. Choose wisely.</p>
+<h4 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="if-you-are-a-beginner-developer-0-2-months">If you are... a beginner developer (0-2 months)<a href="https://chasmical.github.io/RogueLibs/blog/2024/10/15/advice-to-sor2-modders#if-you-are-a-beginner-developer-0-2-months" class="hash-link" aria-label="Direct link to If you are... a beginner developer (0-2 months)" title="Direct link to If you are... a beginner developer (0-2 months)">​</a></h4>
+<p>Go ahead! Try modding it. Your sanity won't be damaged as much, as you don't yet know what good and bad code is. You may succeed at a few things, but you'll get to learn programming from the worst code in the world, so I'm unsure if you'll want to continue on this harrowing path. As you learn how to actually write code, you'll begin to understand just what kind of horrible pit you've put yourself into... Forsake the people idolizing you for your endeavors. No one will blame you for quitting.</p>
+<br>
+<br>
+<br>
+<div style="text-align:center;--ifm-paragraph-margin-bottom:0.75rem"><h2 class="anchor anchorWithHideOnScrollNavbar_WYt5" id="final-epigram">Final epigram<a href="https://chasmical.github.io/RogueLibs/blog/2024/10/15/advice-to-sor2-modders#final-epigram" class="hash-link" aria-label="Direct link to Final epigram" title="Direct link to Final epigram">​</a></h2><br><p>Heed my fable. Don't repeat my mistakes.</p><p>You may think that I'm being irrational.</p><p>But just try modding the game.</p><p><em>You'll see what I saw.</em></p></div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<small style="opacity:0.5">Was this all satirical? Unironically, only in part.</small>]]></content>
+        <author>
+            <name>Abbysssal</name>
+            <uri>https://github.com/Chasmical</uri>
+        </author>
+        <category label="blog" term="blog"/>
+        <category label="roguelibs" term="roguelibs"/>
+        <category label="sor" term="sor"/>
+        <category label="sor2" term="sor2"/>
+    </entry>
     <entry>
         <title type="html"><![CDATA[Discontinuing RogueLibs]]></title>
         <id>https://chasmical.github.io/RogueLibs/blog/2024/02/03/discontinuing-roguelibs</id>
