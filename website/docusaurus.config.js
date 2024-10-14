@@ -130,9 +130,7 @@ export default {
         blog: {
           showReadingTime: true,
           readingTime: ({content, frontMatter, defaultReadingTime}) =>
-            defaultReadingTime({content, options: { wordsPerMinute: 240 }}),
-          editUrl:
-            'https://github.com/Chasmical/RogueLibs/edit/main/website/blog/',
+            defaultReadingTime({content, options: { wordsPerMinute: 180 }}),
         },
         theme: {
           customCss: require.resolve('./src/css/custom.scss'),
