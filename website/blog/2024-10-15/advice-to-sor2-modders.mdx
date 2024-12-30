@@ -6,105 +6,78 @@ author_url: https://github.com/Chasmical
 author_image_url: https://github.com/Chasmical.png
 image: https://raw.githubusercontent.com/Chasmical/RogueLibs/refs/heads/main/website/blog/2024-10-15/my-bingo-card.png
 tags: [blog, roguelibs, sor, sor2]
-description: "I am writing this under an appreciable mental strain, since by tonight I shall be modding no more. If you're interested in modding Streets of Rogue 2, then I suggest you read this short story, that I believe accurately represents what an experience modding this game will be."
+description: ... I really did want to mod SoR2, but the current state of the code doesn't allow it. The excuse "It's just a demo/playtest" doesn't work here. I didn't test how optimized or buggy the game is, I only looked at the code itself. And it's a mess. It's a mess that I don't want to deal with. If you want to mod SoR2, then... good luck.
 ---
 
 # Advice to SoR2 modders
 
+<p><span style={{ fontSize: "0.9em", color: "var(--ifm-color-emphasis-500)" }}>(there was a lovecraftian-type story here that I wrote, but I was left unsatisfied with it, so I removed it; if&nbsp;you want, you can still find it and read it through GitHub's repo commit history)</span></p>
+
 ![](./my-bingo-card.png)
 
-I am writing this under an appreciable mental strain, since by tonight I shall be modding no more. If&nbsp;you're interested in modding Streets of Rogue 2, then I suggest you read this short story, that I believe accurately represents what an experience modding this game will be...
+Several weeks prior to the demo, I thought it'd be fun to play a bingo game, centered around SoR2's code. I came up with a bunch of spaces, about both the good and the bad code. I announced that in SoR's Discord, and started slowly revealing the spaces on the cards. At first, one space a day, and then two spaces per day, as the demo's release date approached.
+
+:::note
+Update (30/12/24): Ignore the "Directions are enums" space being checked on the left. At the time, I was just so happy to see an enum in the code, that I didn't even look at how that enum was used. I&nbsp;was not aware it was possible to misuse enums that badly...
+:::
 
 <!-- truncate -->
 
 
 
-## Product of a twisted mind
+## Bingo space explanations
 
-At a first glance, SoR1 may appear as just the first project of an unexperienced developer. All of the mistakes Matt made were understandable, forgiveable, *negligible*. When I first started modding the game, I didn't even realize that they were bad, since I had no C# knowledge at the time. But in just a few months I learned that they *weren't normal*, they were *abhorrent abominations*, commonly brought to life by beginner developers. I had thought that it was so *uncannily weird* that Matt, a developer with many years of experience, left so many in his code. He himself had admitted that the code was bad, and said he planned to fix everything in preparation for SoR2, so I didn't think much of it. *Oh, how was I wrong...*
+When I was in the process of revealing bingo card spaces, I had plenty of time, so I provided detailed explanations for some of them.
 
-No one could comprehend the entirety of SoR1's code, and very few have been able to modify just a small part of it. *I was one of the lucky most successful few*, with a library and many mods under my belt. I've seen many modders come and go, — they'd ask about getting into modding... But after directing them to dnSpy, I'd never hear from them again. SoR2 is even worse. I knew better than to expect much from Matt, but I *did* have some bare minimum expectations, — *I expected some improvements*.
+export const Bad = ({ children }) => (<b style={{ color: "#d54e4e" }}>{children}</b>)
+export const Good = ({ children }) => (<b style={{ color: "#4ed54e" }}>{children}</b>)
 
-**I was naive...** I didn't think it could get much worse than it already was. I was not prepared for the reserve of unguessed horrors, that Matt would let loose upon the world with the demo.
+Good spaces are <Good>green</Good> (left card), Bad spaces are <Bad>red</Bad> (right card).
 
+- <Bad>X and Y instead of Vector2.</Bad> The entire purpose of structures is to group similar and relevant data together. This way the processor can address the data much faster. Another thing that structures can do - is align the fields' padding with the processor's architecture (that's what the JIT compiler does) for more efficient access. Structures can also be copied much quicker than individual components, - that's just the value type semantics. And, of course, Vector2 is much more readable and easier to understand than just a pair of separate components.
 
+- <Good>Argument validation.</Good> Validating input data and throwing exceptions. Invalid state is the main cause of errors that are caused by other errors. An exception throw in a correct place (or even just a conditional statement) would stop the program, before it does anything that corrupts state. Sure, I understand that it'd be weird for a game to crash after just a single exception, but that's what exception handling is for (try-catch block).
 
-## Descent into madness
+- <Bad>Loop-switch sequence.</Bad> This one has [a Wikipedia article](https://en.wikipedia.org/wiki/Loop-switch_sequence), so I'll suggest you read it instead. Examples in SoR1: `Agent.LoadDialogue()`, `AgentHitbox.SetupBodyStrings()`, `InvSlot.SortItems()`, `InvSlot.SortUseItems()`, `LevelEditor.RefreshCustomCharacters()` (x2), `LevelEditor.SaveChunkData()`, `LevelEditor.OpenLoadExtra()`, `MouseCursorSets.SetupCursors()` (x2), `PoolsScene.SetupWalls()` (x2), `PoolsScene.DoInstantiate()`.
 
-It's straight up **Cthulhuesque-adjacent**. I feel like a character in one of H.P. Lovecraft's stories, that peered into the unknown too much and went insane... It damaged my sanity, and now I find myself here, rambling about the horrors I've had the unfortune to witness. But unlike true cosmic horror, I could comprehend everything I saw. I don't think I'll ever be able to look at bad code the same way again.
+- <Good>SPANS?!?!?.</Good> Now this is quite a reach, I know. The purpose of `Span<T>` is to reduce the amount of unnecessary array/string allocations in synchronous operations. The performance improvement would be noticeable, and memory usage would go down by a lot, but that's only if all the libraries involved can handle this sort of data, and Unity doesn't know how to handle spans (or even `Memory<T>`). This is more of a "new .NET" thing, rather than a general code improvement. If one were to be looking for a .NET library for something, they'd definitely give more preference to ones that use spans. SoR doesn't have much of a "back-end" that could use this sort of improvement, so I wouldn't expect it.
 
-The code... It simply cannot be described — there is no language for such abysms of shrieking and immemorial lunacy, such eldritch contradictions of principles, patterns and underlying logic. The stars were right again, and what a decades-old walk of life had failed to produce by design, a foolish inexperienced programmer had done by accident.
+- <Bad>Improper list population w/ excessive copying.</Bad> There is a way to populate a list very inefficiently, that involves `Insert`. And that's pretty much all there is to it. It's very inefficient, forcing the list to recopy the entire array just one item over, every time an item is added. Also, another few small, related things: `Add` in a loop is much less efficient than `AddRange`, - lists are good at copying collections. And lastly, lists shouldn't be used as queues, queues should be used as queues.
 
-The labyrinthine execution paths twist and warp in cunning spirals that I dare not seek to interpret. The&nbsp;bizzare perversions of the familiar and the monstrous, horribly remote and distinct from programming as we know it. I **never ever** want to see that codebase again.
+- <Good>Version control (free!).</Good> A free space! We already know that Matt is using version control (Unity's kind, but version control nonetheless). Version control is an important element in development of any project, even if you're the only developer. It helps keep track of the changes you made since the last release, allows you to easily backtrack and look back at old code, makes you think in terms of features and components instead of just doing whatever works and going along with it, and makes collaboration with others easy.
 
+- <Bad>Enormous if-chain.</Bad> A lot of `if`s chained one after another (more than, like, 10). It never makes sense to have that many chained `if`s, - you either don't know what a `switch` statement is, or you messed up really badly with your program's structure.
 
+- <Good>Directions are enums.</Good> In SoR1 directions are **strings**, - the most inefficient method anyone could ever think of. A beginner programmer's instinct should be to use small integers to represent directions, not strings! The overhead here is enormous even on the latest versions of .NET: comparison is 3x slower, memory usage is 2x greater (Note: interned strings in the SOH are negligible, but still...).
 
-## If you are...
+- <Bad>isAgent, isItem, isFire, isBullet, isObjectReal fields.</Bad> Instead of type-checking an object (`is` expression), Matt first uses one of these 11 fields, defined on `PlayfieldObject`, and only then casts an object to the needed type. It's completely unnecessary, as this doesn't eliminate the type-check, - the runtime still needs to be sure the object is of the correct type, and throws an exception if it isn't. These fields add an overhead of 11 bytes to each object, and don't do anything besides these unnecessarily complex type casts. It's just a bad, uninformed design decision, nothing too serious, since modders can still use type-checks in a correct way.
 
-#### ... a developer with ANY degree of experience (3+ months)
-Give up on trying to mod SoR2. After working for so long with code of tolerable quality, you won't be able to get into modding SoR2, — its code is *just that horrible*. And by "tolerable quality" I mean the **baseline lowest**, the kind that money-hungry and uncaring corporations have devs work on, with no time to refactor or even fix anything. The kind of code that you hear of in anecdotes, and see in DailyWTF posts, — **that** is what I mean by "code of tolerable quality"! I'd much rather work on these almost mythical failures of the programming world, than attempt modding SoR2! You've got enough experience to make a decision yourself, so I'll leave the final judgement to you. Choose wisely.
+export const nearXmas = () => {
+  const monthIndex = new Date().getUTCMonth();
+  return monthIndex == 0 || monthIndex == 11;
+};
 
-#### If you are... a beginner developer (0-2 months)
-Go ahead! Try modding it. Your sanity won't be damaged as much, as you don't yet know what good and bad code is. You may succeed at a few things, but you'll get to learn programming from the worst code in the world, so I'm unsure if you'll want to continue on this harrowing path. As you learn how to actually write code, you'll begin to understand just what kind of horrible pit you've put yourself into... Forsake the people idolizing you for your endeavors. No one will blame you for quitting.
+{nearXmas() ? <p>{"Festive, huh?"}</p> : ""}
 
-
-
-<br/>
-<br/>
-<br/>
-
-<div style={{ textAlign: 'center', "--ifm-paragraph-margin-bottom": "0.75rem" }}>
-
-## Final epigram
-
-<br/>
-
-Heed my fable. Don't repeat my mistakes.
-
-You may think that I'm being irrational.
-
-But just try modding the game.
-
-*You'll see what I saw.*
-
-</div>
-
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
+And that's all the explanations. I only had the time to explain 9 random spaces, before the demo dropped, and now I'm not nearly as motivated to do the rest, since I've got nothing to hype up.
 
 
 
-<!-- <small style={{ opacity: 0.5 }}>Was this all satirical? Unironically, only in part.</small> -->
+## The evil code prevails
+
+Needless to say, none of the <Good>good</Good> spaces, listed or otherwise, ended up being checked in the bingo. Aside from the 3 <Good>FREE good</Good> spaces, that is, but even they're under scrutiny (especially <Good>OOP</Good>).
+
+I couldn't confirm a few <Bad>bad</Bad> spaces on my bingo card, since those ones required a deeper and more thorough investigation. It'd be easier to list the ones that were confirmed as **NOT** checked:
+
+- <Bad>Unrelated code.</Bad> This time only SoR2's stuff was added to the game. No irrelevant snippets or fragments of code blindly copied from elsewhere for unknown reasons.
+
+- <Bad>Data clumps.</Bad> I couldn't find any methods that this term would apply to, since it specifically refers to variables and method parameters. Some parts of the code certainly do feel full of data-clumps, but they're all already grouped into classes.
+
+The rest of the <Bad>bad</Bad> spaces either were checked or are unconfirmed.
 
 
 
-## Upd: Literary breakdown
-
-Yes, this is a short cosmic horror story. A lot of people took it literally and drew conclusions out of thin air. I'm not a professional writer or anything, so it's understandable, I should have made clear that this post isn't literal. It's a mix of fiction and non-fiction. The fiction parts consisted of overexaggerated "indescribable horrors", common to the Lovecraftian horror genre. The non-fiction parts consisted of my aversion to Matt's code.
-
-The first lines of the post paraphrase Lovecraft's short story "Dagon":
-
-> **I am writing this under an appreciable mental strain, since by tonight I shall be no more.** Penniless, and at the end of my supply of the drug which alone makes life endurable, I can bear the torture no longer; and shall cast myself from this garret window into the squalid street below.
-
-The first section ends with the paraphrasing of this part from Lovecraft's "Facts Concerning the Late Arthur Jermyn and His Family":
-
-> Science, already oppressive with its shocking revelations, will perhaps be the ultimate exterminator of our human species — if separate species we be — for **its reserve of unguessed horrors could never be borne by mortal brains if loosed upon the world**.
-
-The satiricity should have been extremely obvious by *"It's straight up **Cthulhuesque-adjacent**. I feel like a character in one of H.P. Lovecraft's stories"*. I noted the usual structure of Lovecraft's stories — written accounts of those who survived incomprehensible horrors, and even paraphrased one of the most famous quotes from "The Call of Cthulhu".
-
-> **The Thing can not be described—there is no language for such abysms of shrieking and immemorial lunacy, such eldritch contradictions of all matter, force, and cosmic order.** A mountain walked or stumbled. God! What wonder that across the earth a great architect went mad, and poor Wilcox raved with fever in that telepathic instant? The Thing of the idols, the green, sticky spawn of the stars, had awaked to claim his own. **The stars were right again, and what an age-old cult had failed to do by design, a band of innocent sailors had done by accident.** After vigintillions of years great Cthulhu was loose again, and ravening for delight.
-
-The last paragraph of the second section was pretty standard for cosmic horror - a mess of contradicting pretentious words and descriptors, with a bit of paraphrasing of Lovecraft's "The Call of Cthulhu":
-
-> The characters along the base were equally baffling; and no member present, despite a representation of half the world’s expert learning in this field, could form the least notion of even their remotest linguistic kinship. They, like the subject and material, belonged to something **horribly remote and distinct from mankind as we know it**; something frightfully suggestive of old and unhallowed cycles of life in which our world and our conceptions have no part.
-
-The third section couldn't have much quotes and paraphrasing, as it needed a lot of non-fiction to tie it all together, so I just put it together myself. And then the story ends with a slightly ominous warning.
-
-#### On a serious note,
+## State of the game
 
 I really did want to mod SoR2, but the current state of the code doesn't allow it. The excuse "It's just a demo/playtest" doesn't work here. I didn't test how optimized or buggy the game is, I only looked at the code itself. And it's a mess. It's a mess that I don't want to deal with.
 
@@ -112,4 +85,37 @@ Regarding modding tooling that Matt promises: that would be completely different
 
 And finally, for me personally, the most interesting thing about modding is creating something, that's vastly different from the original. Something weird, extrinsic, grand, silly, weird. For something of that degree of peculiarity, you'd at least have to make use of C#'s more advanced constructs. And Matt outright refuses to use any, other than classes, methods and fields.
 
-If you want to mod SoR2, then good luck.
+If you want to mod SoR2, then... good luck.
+
+
+
+## A few last tidbits
+
+Apparently, in SoR2, gender is a bool variable (see `bool Agent.genderF`).
+
+The only thing separating animals from humans is an `isAnimal` flag.
+
+Boats are just water cars in SoR2's world. (all vehicles are instances of the `Car` class)
+
+The code initializing outfit colors just couldn't be more wet or hardcoded.
+
+Direction enums in SoR2 are awful and completely non-mathable. Take a look at this:
+
+```csharp
+public enum DirectionType { None, N, S, E, W, NE, SE, NW, SW, Wait }
+```
+
+North (0°), then South (180°), then East (90°), and then West (270°)... WTF.  
+It's all out of order AND misaligned as well, due to `None` taking up the `0`.
+
+Speaking of directions... The vehicles... They're.. uh... Their directions are both strings **and** numbers... There are no switches. Just ifs... Wet. It's so wet... It's painful to describe. It's arguably one of the most disgusting pieces of code in the game.
+
+No signs of generics, interfaces, exception handling, structures, properties, events, reflection, attributes, try-finally, asynchronicity, object disposal, or any other above-basic-level constructs.
+
+
+
+## 👋 {#goodbye}
+
+Once again, good luck trying to mod this. I'll be taking my leave here.
+
+
